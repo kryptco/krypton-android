@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="KryptCo" pattern="test[app]:co.krypt.kryptonite..*&amp;&amp;!test[app]:*..*&amp;&amp;!test:*..*||test[app]:co.krypt.kryptonite.*||src[app]:co.krypt.kryptonite..*||src[app]:layout..*||src:*..*||test[app]:co.krypt.kryptonite.test..*" />
+</component>
