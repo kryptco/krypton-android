@@ -1,15 +1,18 @@
 package co.krypt.kryptonite;
 
 import android.os.Bundle;
-import android.security.keystore.KeyInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import java.security.KeyFactory;
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPair;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
-import java.security.spec.InvalidKeySpecException;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
 
 
 public class MeActivity extends AppCompatActivity {
@@ -19,18 +22,20 @@ public class MeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_me);
-        PrivateKey sk = KeyManager.generateKeyPair();
         try {
-            KeyInfo keyInfo;
-            KeyFactory factory  = KeyFactory.getInstance(sk.getAlgorithm(), "AndroidKeyStore");
-            keyInfo = factory.getKeySpec(sk, KeyInfo.class);
-            Log.i(LOG_TAG, String.valueOf(keyInfo.isInsideSecureHardware()));
-            Log.i(LOG_TAG, String.valueOf(keyInfo.isUserAuthenticationRequired()));
-            Log.i(LOG_TAG, String.valueOf(keyInfo.isUserAuthenticationRequirementEnforcedBySecureHardware()));
-        } catch (InvalidKeySpecException e) {
-            // Not an Android KeyStore key.
+            SSHKeyPair sk = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
+            Log.i(LOG_TAG, String.valueOf(sk.isKeyStoredInSecureHardware()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (UnrecoverableEntryException e) {
+            e.printStackTrace();
+        } catch (InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         } catch (NoSuchProviderException e) {
             e.printStackTrace();
