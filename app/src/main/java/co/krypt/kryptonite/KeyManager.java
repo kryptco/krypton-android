@@ -6,7 +6,6 @@ import android.security.keystore.KeyProperties;
 import android.util.Log;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyFactory;
 import java.security.KeyPair;

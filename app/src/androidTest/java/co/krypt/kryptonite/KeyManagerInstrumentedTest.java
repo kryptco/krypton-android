@@ -6,9 +6,7 @@ import android.util.Log;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.security.InvalidKeyException;
 import java.security.SecureRandom;
-import java.security.Signature;
 import java.security.SignatureException;
 
 import static org.junit.Assert.assertEquals;

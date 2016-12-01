@@ -3,7 +3,6 @@ package co.krypt.kryptonite;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * Created by Kevin King on 12/1/16.
