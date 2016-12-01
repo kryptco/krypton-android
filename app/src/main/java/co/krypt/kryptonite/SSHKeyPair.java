@@ -4,6 +4,8 @@ import android.security.keystore.KeyInfo;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.security.AlgorithmParameters;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -13,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 
 /**
@@ -29,6 +32,21 @@ public class SSHKeyPair {
 
     public String publicKeyDERBase64() {
         return Base64.encodeToString(keyPair.getPublic().getEncoded(), Base64.DEFAULT);
+    }
+
+    public byte[] publicKeySSHWireFormat() throws InvalidKeyException, IOException {
+        if (!(keyPair.getPublic() instanceof RSAPublicKey)) {
+            throw new InvalidKeyException("Only RSA Supported");
+        }
+        RSAPublicKey rsaPub = (RSAPublicKey) keyPair.getPublic();
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        out.write(SSHWire.encode("ssh-rsa".getBytes()));
+        out.write(SSHWire.encode(rsaPub.getPublicExponent().toByteArray()));
+        out.write(SSHWire.encode(rsaPub.getModulus().toByteArray()));
+
+        return out.toByteArray();
     }
 
     public byte[] signDigest(byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
