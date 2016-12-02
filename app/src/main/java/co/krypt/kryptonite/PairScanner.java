@@ -69,8 +69,14 @@ public class PairScanner {
                             bmData.copyTo(bitmap);
                             Frame frame = new Frame.Builder().setBitmap(bitmap).build();
                             SparseArray<Barcode> barcodes = detector.detect(frame);
-                            if (barcodes.size() > 0) {
-                                Log.i(TAG, "found " + barcodes.size() + " barcodes");
+                            for (int i = 0; i < barcodes.size(); i++) {
+                                Barcode barcode = barcodes.valueAt(i);
+                                if (barcode == null) {
+                                    return;
+                                }
+                                if (barcode.rawValue != null) {
+                                    Log.i(TAG, "found barcode raw value: " + barcode.rawValue);
+                                }
                             }
                         }
                     } catch (InterruptedException e) {
