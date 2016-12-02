@@ -43,6 +43,8 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
     private String mParam2;
 
     private Camera mCamera;
+    private int previewWidth;
+    private int previewHeight;
     private CameraPreview mPreview;
     private FrameLayout preview;
 
@@ -143,6 +145,8 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
                     public void run() {
                         synchronized (self) {
                             mCamera = camera;
+                            previewWidth = camera.getParameters().getPreviewSize().width;
+                            previewHeight = camera.getParameters().getPreviewSize().height;
                             mPreview.setCamera(mCamera);
                             camera.setPreviewCallback(self);
                         }
@@ -170,13 +174,11 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        int height = camera.getParameters().getPreviewSize().height;
-        int width = camera.getParameters().getPreviewSize().width;
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(previewWidth, previewHeight, Bitmap.Config.ARGB_8888);
         Allocation bmData = renderScriptNV21ToRGBA888(
                 getContext(),
-                width,
-                height,
+                previewWidth,
+                previewHeight,
                 data);
         bmData.copyTo(bitmap);
         Frame frame = new Frame.Builder().setBitmap(bitmap).build();
