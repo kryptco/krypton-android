@@ -38,7 +38,7 @@ public class PairScanner {
         this.context = context;
         this.height = height;
         this.width = width;
-        frames = new LinkedBlockingQueue<>(30);
+        frames = new LinkedBlockingQueue<>(1);
         stopped = new AtomicBoolean(false);
         detector = new BarcodeDetector.Builder(context)
                 .setBarcodeFormats(Barcode.QR_CODE)
@@ -86,11 +86,7 @@ public class PairScanner {
     }
 
     public void pushFrame(byte[] frame) {
-        try {
-            frames.put(frame);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        frames.offer(frame);
     }
 
     private static Allocation renderScriptNV21ToRGBA888(Context context, int width, int height, byte[] nv21) {
