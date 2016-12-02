@@ -167,10 +167,12 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
         boolean visible;
         synchronized (this) {
             visible = this.visible;
+            if (!visible) {
+                return;
+            }
+            if (pairScanner != null) {
+                pairScanner.pushFrame(data);
+            }
         }
-        if (!visible) {
-            return;
-        }
-        pairScanner.pushFrame(data);
     }
 }
