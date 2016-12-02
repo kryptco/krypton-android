@@ -79,7 +79,6 @@ public class PairScanner {
                                 if (barcode.rawValue != null) {
                                     PairingQR pairingQR = PairingQR.parseJson(barcode.rawValue);
                                     Log.i(TAG, "found pairingQR: " + Base64.encodeToString(pairingQR.workstationPublicKey, Base64.DEFAULT));
-
                                 }
                             }
                         }

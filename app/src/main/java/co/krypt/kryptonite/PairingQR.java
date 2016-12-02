@@ -18,7 +18,7 @@ public class PairingQR {
     private PairingQR() {
     }
 
-    public static PairingQR parseJson(String json) {
+    public static PairingQR parseJson(String json) throws JsonParseException {
         PairingQR pairingQR = JSON.fromJson(json, PairingQR.class);
         if (
                 pairingQR.workstationPublicKey == null ||
