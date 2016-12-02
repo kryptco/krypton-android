@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Kryptonite-android.iml" filepath="$PROJECT_DIR$/Kryptonite-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libsodium-jni-release/libsodium-jni-release.iml" filepath="$PROJECT_DIR$/libsodium-jni-release/libsodium-jni-release.iml" />
     </modules>
   </component>
 </project>
