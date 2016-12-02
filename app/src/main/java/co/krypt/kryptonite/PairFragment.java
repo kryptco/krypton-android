@@ -97,6 +97,10 @@ public class PairFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_pair, container, false);
+        preview = (FrameLayout) rootView.findViewById(R.id.camera_preview);
+        mPreview = new CameraPreview(getContext());
+        preview.addView(mPreview);
+
         return rootView;
     }
 
@@ -134,24 +138,16 @@ public class PairFragment extends Fragment {
         }
     }
 
-    synchronized private void setCamera(Camera camera) {
-        mCamera = camera;
-    }
     synchronized private void startCamera() {
-        // Create an instance of Camera
-
         new Thread(new Runnable() {
             public void run() {
-                setCamera(getCameraInstance());
+                final Camera camera = getCameraInstance();
 
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        // Create our Preview view and set it as the content of our activity.
-                        mPreview = new CameraPreview(getContext(), mCamera);
-
-                        preview = (FrameLayout) getView().findViewById(R.id.camera_preview);
-                        preview.addView(mPreview);
+                        mCamera = camera;
+                        mPreview.setCamera(mCamera);
                     }
                 });
 
@@ -161,23 +157,15 @@ public class PairFragment extends Fragment {
 
     synchronized private void stopCamera() {
         mListener = null;
-        if (mCamera != null) {
-            final Camera camera = mCamera;
-            mCamera = null;
-            new Thread(new Runnable() {
-                public void run() {
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (preview != null && mPreview != null ) {
-                                preview.removeView(mPreview);
-                            }
-                            mPreview = null;
-                        }
-                    });
+        new Thread(new Runnable() {
+            public void run() {
+                if (mCamera != null) {
+                    mCamera.stopPreview();
+                    mCamera.release();
+                    mCamera = null;
                 }
-            }).start();
-        }
+            }
+        }).start();
     }
 
     /**
