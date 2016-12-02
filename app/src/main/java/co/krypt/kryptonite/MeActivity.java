@@ -20,7 +20,6 @@ public class MeActivity extends AppCompatActivity {
     public static String LOG_TAG = "kryptonite";
 
     TextView sshKeyTextView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
