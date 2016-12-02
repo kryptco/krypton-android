@@ -7,12 +7,14 @@ import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicYuvToRGB;
 import android.renderscript.Type;
+import android.util.Base64;
 import android.util.Log;
 import android.util.SparseArray;
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.gson.JsonParseException;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -75,7 +77,9 @@ public class PairScanner {
                                     return;
                                 }
                                 if (barcode.rawValue != null) {
-                                    Log.i(TAG, "found barcode raw value: " + barcode.rawValue);
+                                    PairingQR pairingQR = PairingQR.parseJson(barcode.rawValue);
+                                    Log.i(TAG, "found pairingQR: " + Base64.encodeToString(pairingQR.workstationPublicKey, Base64.DEFAULT));
+                                    
                                 }
                             }
                         }
