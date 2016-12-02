@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.util.Pair;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -121,15 +122,21 @@ public class PairFragment extends Fragment {
     }
 
     synchronized private void startCamera() {
+        final PairFragment self = this;
         new Thread(new Runnable() {
             public void run() {
                 final Camera camera = getCameraInstance();
+                if (camera == null) {
+                    return;
+                }
 
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        mCamera = camera;
-                        mPreview.setCamera(mCamera);
+                        synchronized (self) {
+                            mCamera = camera;
+                            mPreview.setCamera(mCamera);
+                        }
                     }
                 });
 
@@ -138,12 +145,15 @@ public class PairFragment extends Fragment {
     }
 
     synchronized private void stopCamera() {
+        final PairFragment self = this;
         new Thread(new Runnable() {
             public void run() {
-                if (mCamera != null) {
-                    mCamera.stopPreview();
-                    mCamera.release();
-                    mCamera = null;
+                synchronized (self) {
+                    if (mCamera != null) {
+                        mCamera.stopPreview();
+                        mCamera.release();
+                        mCamera = null;
+                    }
                 }
             }
         }).start();
