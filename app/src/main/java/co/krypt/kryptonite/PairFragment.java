@@ -1,25 +1,24 @@
 package co.krypt.kryptonite;
 
-import android.hardware.Camera;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.hardware.Camera;
 import android.os.Bundle;
-import android.support.v4.util.Pair;
+import android.os.Handler;
+import android.os.Looper;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicYuvToRGB;
+import android.renderscript.Type;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.google.android.gms.fitness.data.Goal;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
@@ -30,11 +29,14 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
  * Use the {@link PairFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PairFragment extends Fragment {
+public class PairFragment extends Fragment implements Camera.PreviewCallback {
+    private static final String TAG = "PairFragment";
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private BarcodeDetector detector;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -85,7 +87,13 @@ public class PairFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
+        detector = new BarcodeDetector.Builder(getContext())
+                .setBarcodeFormats(Barcode.QR_CODE)
+                .build();
+        if(!detector.isOperational()){
+            Log.e(TAG, "Could not set up the detector!");
+            return;
+        }
     }
 
     @Override
@@ -136,6 +144,7 @@ public class PairFragment extends Fragment {
                         synchronized (self) {
                             mCamera = camera;
                             mPreview.setCamera(mCamera);
+                            camera.setPreviewCallback(self);
                         }
                     }
                 });
@@ -157,5 +166,40 @@ public class PairFragment extends Fragment {
                 }
             }
         }).start();
+    }
+
+    @Override
+    public void onPreviewFrame(byte[] data, Camera camera) {
+        int height = camera.getParameters().getPreviewSize().height;
+        int width = camera.getParameters().getPreviewSize().width;
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Allocation bmData = renderScriptNV21ToRGBA888(
+                getContext(),
+                width,
+                height,
+                data);
+        bmData.copyTo(bitmap);
+        Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+        SparseArray<Barcode> barcodes = detector.detect(frame);
+        if (barcodes.size() > 0) {
+            Log.i(TAG, "found " + barcodes.size() + " barcodes");
+        }
+    }
+
+    public Allocation renderScriptNV21ToRGBA888(Context context, int width, int height, byte[] nv21) {
+        RenderScript rs = RenderScript.create(context);
+        ScriptIntrinsicYuvToRGB yuvToRgbIntrinsic = ScriptIntrinsicYuvToRGB.create(rs, Element.U8_4(rs));
+
+        Type.Builder yuvType = new Type.Builder(rs, Element.U8(rs)).setX(nv21.length);
+        Allocation in = Allocation.createTyped(rs, yuvType.create(), Allocation.USAGE_SCRIPT);
+
+        Type.Builder rgbaType = new Type.Builder(rs, Element.RGBA_8888(rs)).setX(width).setY(height);
+        Allocation out = Allocation.createTyped(rs, rgbaType.create(), Allocation.USAGE_SCRIPT);
+
+        in.copyFrom(nv21);
+
+        yuvToRgbIntrinsic.setInput(in);
+        yuvToRgbIntrinsic.forEach(out);
+        return out;
     }
 }
