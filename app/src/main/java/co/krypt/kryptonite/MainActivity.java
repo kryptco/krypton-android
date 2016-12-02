@@ -20,7 +20,7 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements PairFragment.OnFragmentInteractionListener, BlankFragment.OnFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -86,11 +86,6 @@ public class MainActivity extends AppCompatActivity implements PairFragment.OnFr
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 
     /**

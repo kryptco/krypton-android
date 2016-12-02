@@ -26,9 +26,6 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link PairFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link PairFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
@@ -45,8 +42,6 @@ public class PairFragment extends Fragment {
     private Camera mCamera;
     private CameraPreview mPreview;
     private FrameLayout preview;
-
-    private OnFragmentInteractionListener mListener;
 
     public PairFragment() {
         // Required empty public constructor
@@ -120,22 +115,9 @@ public class PairFragment extends Fragment {
         return c; // returns null if camera is unavailable
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
     }
 
     synchronized private void startCamera() {
@@ -156,7 +138,6 @@ public class PairFragment extends Fragment {
     }
 
     synchronized private void stopCamera() {
-        mListener = null;
         new Thread(new Runnable() {
             public void run() {
                 if (mCamera != null) {
@@ -166,20 +147,5 @@ public class PairFragment extends Fragment {
                 }
             }
         }).start();
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 }
