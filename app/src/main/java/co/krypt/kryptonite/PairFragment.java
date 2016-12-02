@@ -31,26 +31,17 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
  */
 public class PairFragment extends Fragment implements Camera.PreviewCallback {
     private static final String TAG = "PairFragment";
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private BarcodeDetector detector;
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private Camera mCamera;
     private int previewWidth;
     private int previewHeight;
     private CameraPreview mPreview;
     private FrameLayout preview;
+    private boolean visible;
 
-    public PairFragment() {
-        // Required empty public constructor
-    }
+    private PairScanner pairScanner;
+
+    public PairFragment() { }
 
     @Override
     public void setUserVisibleHint(boolean visible) {
@@ -61,10 +52,9 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
             //Otherwise allow natural fragment lifecycle to call onResume
             onResume();
         }
-        if (visible) {
-            startCamera();
-        } else {
-            stopCamera();
+        Log.i(TAG, "visible: " + String.valueOf(visible));
+        synchronized (this) {
+            this.visible = visible;
         }
     }
 
@@ -85,17 +75,6 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        detector = new BarcodeDetector.Builder(getContext())
-                .setBarcodeFormats(Barcode.QR_CODE)
-                .build();
-        if(!detector.isOperational()){
-            Log.e(TAG, "Could not set up the detector!");
-            return;
-        }
     }
 
     @Override
@@ -133,6 +112,9 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
 
     synchronized private void startCamera() {
         final PairFragment self = this;
+        if (mCamera != null) {
+            return;
+        }
         new Thread(new Runnable() {
             public void run() {
                 final Camera camera = getCameraInstance();
@@ -149,6 +131,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
                             previewHeight = camera.getParameters().getPreviewSize().height;
                             mPreview.setCamera(mCamera);
                             camera.setPreviewCallback(self);
+                            pairScanner = new PairScanner(getContext(), previewHeight, previewWidth);
                         }
                     }
                 });
@@ -167,41 +150,38 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
                         mCamera.release();
                         mCamera = null;
                     }
+                    if (pairScanner != null) {
+                        pairScanner.stop();
+                        pairScanner = null;
+                    }
                 }
             }
         }).start();
     }
 
     @Override
-    public void onPreviewFrame(byte[] data, Camera camera) {
-        Bitmap bitmap = Bitmap.createBitmap(previewWidth, previewHeight, Bitmap.Config.ARGB_8888);
-        Allocation bmData = renderScriptNV21ToRGBA888(
-                getContext(),
-                previewWidth,
-                previewHeight,
-                data);
-        bmData.copyTo(bitmap);
-        Frame frame = new Frame.Builder().setBitmap(bitmap).build();
-        SparseArray<Barcode> barcodes = detector.detect(frame);
-        if (barcodes.size() > 0) {
-            Log.i(TAG, "found " + barcodes.size() + " barcodes");
-        }
+    public void onResume() {
+        super.onResume();
+        Log.i(TAG, "resume");
+        startCamera();
     }
 
-    public Allocation renderScriptNV21ToRGBA888(Context context, int width, int height, byte[] nv21) {
-        RenderScript rs = RenderScript.create(context);
-        ScriptIntrinsicYuvToRGB yuvToRgbIntrinsic = ScriptIntrinsicYuvToRGB.create(rs, Element.U8_4(rs));
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(TAG, "pause");
+        stopCamera();
+    }
 
-        Type.Builder yuvType = new Type.Builder(rs, Element.U8(rs)).setX(nv21.length);
-        Allocation in = Allocation.createTyped(rs, yuvType.create(), Allocation.USAGE_SCRIPT);
-
-        Type.Builder rgbaType = new Type.Builder(rs, Element.RGBA_8888(rs)).setX(width).setY(height);
-        Allocation out = Allocation.createTyped(rs, rgbaType.create(), Allocation.USAGE_SCRIPT);
-
-        in.copyFrom(nv21);
-
-        yuvToRgbIntrinsic.setInput(in);
-        yuvToRgbIntrinsic.forEach(out);
-        return out;
+    @Override
+    public void onPreviewFrame(byte[] data, Camera camera) {
+        boolean visible;
+        synchronized (this) {
+            visible = this.visible;
+        }
+        if (!visible) {
+            return;
+        }
+        pairScanner.pushFrame(data);
     }
 }
