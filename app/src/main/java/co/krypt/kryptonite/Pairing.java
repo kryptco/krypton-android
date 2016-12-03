@@ -15,6 +15,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -23,6 +24,7 @@ import java.util.UUID;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -89,10 +91,20 @@ public class Pairing {
             IvParameterSpec iv = new IvParameterSpec(SecureRandom.getSeed(AES_256_IV_LENGTH));
             c.init(Cipher.ENCRYPT_MODE, key, iv);
             byte[] ciphertext = c.doFinal(message);
-            ByteArrayOutputStream ivCiphertext = new ByteArrayOutputStream();
-            ivCiphertext.write(iv.getIV());
-            ivCiphertext.write(ciphertext);
-            return ivCiphertext.toByteArray();
+
+
+            Mac mac = Mac.getInstance("HmacSHA256");
+            SecretKeySpec macKey = new SecretKeySpec(symmetricSecretKey, "HmacSHA256");
+            mac.init(macKey);
+            mac.update(iv.getIV());
+            mac.update(ciphertext);
+
+            ByteArrayOutputStream ivCiphertextMac = new ByteArrayOutputStream();
+            ivCiphertextMac.write(iv.getIV());
+            ivCiphertextMac.write(ciphertext);
+            ivCiphertextMac.write(mac.doFinal());
+
+            return ivCiphertextMac.toByteArray();
         } catch (NoSuchAlgorithmException e) {
             throw new CryptoException(e.getMessage());
         } catch (NoSuchPaddingException e) {
@@ -110,15 +122,27 @@ public class Pairing {
         }
     }
 
-    public byte[] unseal(byte[] ivCiphertext) throws CryptoException {
+    public byte[] unseal(byte[] ivCiphertextMac) throws CryptoException {
         try {
             Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
             SecretKeySpec key = new SecretKeySpec(symmetricSecretKey, "AES");
-            if (ivCiphertext.length < AES_256_IV_LENGTH + AES_256_BLOCK_SIZE) {
-                throw new CryptoException("ivCiphertext shorter than IV");
+            Mac mac = Mac.getInstance("HmacSHA256");
+            SecretKeySpec macKey = new SecretKeySpec(symmetricSecretKey, "HmacSHA256");
+
+            if (ivCiphertextMac.length < AES_256_IV_LENGTH + AES_256_BLOCK_SIZE + mac.getMacLength()) {
+                throw new CryptoException("ivCiphertextMac shorter than IV");
             }
-            IvParameterSpec iv = new IvParameterSpec(Arrays.copyOfRange(ivCiphertext, 0, AES_256_IV_LENGTH));
-            byte[] ciphertext = Arrays.copyOfRange(ivCiphertext, AES_256_IV_LENGTH, ivCiphertext.length);
+            IvParameterSpec iv = new IvParameterSpec(Arrays.copyOfRange(ivCiphertextMac, 0, AES_256_IV_LENGTH));
+            byte[] ivCiphertext = Arrays.copyOfRange(ivCiphertextMac, 0, ivCiphertextMac.length - mac.getMacLength());
+            byte[] expectedMac = Arrays.copyOfRange(ivCiphertextMac, ivCiphertextMac.length - mac.getMacLength(), ivCiphertextMac.length);
+
+            mac.init(macKey);
+            byte[] computedMac = mac.doFinal(ivCiphertext);
+            if (!MessageDigest.isEqual(expectedMac, computedMac)) {
+                throw new CryptoException("invalid MAC");
+            }
+
+            byte[] ciphertext = Arrays.copyOfRange(ivCiphertextMac, AES_256_IV_LENGTH, ivCiphertextMac.length - mac.getMacLength());
             c.init(Cipher.DECRYPT_MODE, key, iv);
             return c.doFinal(ciphertext);
         } catch (NoSuchAlgorithmException e) {
@@ -137,11 +161,12 @@ public class Pairing {
 
     }
 
-    public UUID getUUID(){
-        return uuid;
+    public String getUUIDString(){
+        return uuid.toString().toUpperCase();
     }
 
-    // Used to load the 'native-lib' library on application startup.
+
+        // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("sodiumjni");
     }

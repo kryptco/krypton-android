@@ -10,4 +10,9 @@ import com.google.gson.annotations.SerializedName;
 public class MeResponse {
     @SerializedName("me")
     public Profile me;
+
+    public MeResponse() {}
+    public MeResponse(Profile me) {
+        this.me = me;
+    }
 }

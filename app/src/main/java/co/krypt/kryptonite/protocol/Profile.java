@@ -12,4 +12,11 @@ public class Profile {
     public String email;
     @SerializedName("rsa_public_key_wire")
     public byte[] sshWirePublicKey;
+
+    public Profile() { }
+
+    public Profile(String email, byte[] sshWirePublicKey) {
+        this.email = email;
+        this.sshWirePublicKey = sshWirePublicKey;
+    }
 }

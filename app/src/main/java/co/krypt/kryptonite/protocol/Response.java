@@ -12,4 +12,10 @@ public class Response {
     public String requestID;
     @SerializedName("me_response")
     public MeResponse meResponse;
+
+    public static Response with(Request request) {
+        Response response = new Response();
+        response.requestID = request.requestID;
+        return response;
+    }
 }

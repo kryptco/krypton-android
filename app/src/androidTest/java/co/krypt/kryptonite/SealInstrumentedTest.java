@@ -6,6 +6,8 @@ import org.libsodium.jni.Sodium;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
+import co.krypt.kryptonite.exception.CryptoException;
+
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -26,6 +28,18 @@ public class SealInstrumentedTest {
             byte[] unsealed = pairing.unseal(ciphertext);
             assertTrue(Arrays.equals(message, unsealed));
         }
+    }
+
+    @Test(expected = CryptoException.class)
+    public void sealTamper_fails() throws Exception {
+        byte[] pubKey = new byte[Sodium.crypto_box_publickeybytes()];
+        byte[] privKey = new byte[Sodium.crypto_box_secretkeybytes()];
+        assertTrue(0 == Sodium.crypto_box_seed_keypair(pubKey, privKey, SecureRandom.getSeed(Sodium.crypto_box_seedbytes())));
+        Pairing pairing = Pairing.generate(pubKey, "workstation");
+        byte[] message = SecureRandom.getSeed(37);
+        byte[] ciphertext = pairing.seal(message);
+        ciphertext[17] ^= 0xff;
+        byte[] unsealed = pairing.unseal(ciphertext);
     }
     static {
         System.loadLibrary("sodiumjni");

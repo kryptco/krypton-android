@@ -13,6 +13,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 
 /**
@@ -21,9 +22,20 @@ import java.lang.reflect.Type;
  */
 
 public class JSON {
+    public static <T> T fromJson(byte[] json, Class<T> classOfT) throws JsonSyntaxException {
+        try {
+            return gson.fromJson(new String(json, "UTF-8"), classOfT);
+        } catch (UnsupportedEncodingException e) {
+            throw new JsonSyntaxException(e.getMessage());
+        }
+    }
 
     public static <T> T fromJson(String json, Class<T> classOfT) throws JsonSyntaxException {
         return gson.fromJson(json, classOfT);
+    }
+
+    public static String toJson(Object object) {
+        return gson.toJson(object);
     }
 
     private static final Gson gson = new GsonBuilder().registerTypeHierarchyAdapter(byte[].class,

@@ -14,14 +14,28 @@ import android.util.SparseArray;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.gson.JsonSyntaxException;
 
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.TransportException;
+import co.krypt.kryptonite.protocol.MeResponse;
 import co.krypt.kryptonite.protocol.PairingQR;
+import co.krypt.kryptonite.protocol.Profile;
+import co.krypt.kryptonite.protocol.Request;
+import co.krypt.kryptonite.protocol.Response;
 import co.krypt.kryptonite.transport.SQSTransport;
 
 /**
@@ -87,6 +101,51 @@ public class PairScanner {
                                     byte[] wrappedKey = pairing.wrapKey(pairing.symmetricSecretKey);
                                     NetworkMessage wrappedKeyMessage = new NetworkMessage(NetworkMessage.Header.WRAPPED_KEY, wrappedKey);
                                     SQSTransport.sendMessage(pairing, wrappedKeyMessage);
+                                    List<byte[]> messages = SQSTransport.receiveMessages(pairing);
+                                    for (byte[] incoming : messages) {
+                                        try {
+                                            NetworkMessage message = NetworkMessage.parse(incoming);
+                                            switch (message.header) {
+                                                case CIPHERTEXT:
+                                                    byte[] json = pairing.unseal(message.message);
+                                                    Log.i(TAG, "got JSON " + new String(json, "UTF-8"));
+                                                    Request request = JSON.fromJson(json, Request.class);
+                                                    Response response = Response.with(request);
+                                                    if (request.meRequest != null) {
+                                                        response.meResponse = new MeResponse(
+                                                                new Profile(
+                                                                        "kevin@krypt.co",
+                                                                        KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG).publicKeySSHWireFormat()));
+                                                    }
+                                                    byte[] responseJson = JSON.toJson(response).getBytes();
+                                                    byte[] sealed = pairing.seal(responseJson);
+                                                    SQSTransport.sendMessage(pairing, new NetworkMessage(NetworkMessage.Header.CIPHERTEXT, sealed));
+                                                    break;
+                                                case WRAPPED_KEY:
+                                                    break;
+                                            }
+                                        } catch (TransportException e) {
+                                            Log.e(TAG, e.getMessage());
+                                        } catch (UnrecoverableEntryException e) {
+                                            e.printStackTrace();
+                                        } catch (NoSuchAlgorithmException e) {
+                                            e.printStackTrace();
+                                        } catch (CertificateException e) {
+                                            e.printStackTrace();
+                                        } catch (InvalidKeyException e) {
+                                            e.printStackTrace();
+                                        } catch (InvalidAlgorithmParameterException e) {
+                                            e.printStackTrace();
+                                        } catch (KeyStoreException e) {
+                                            e.printStackTrace();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        } catch (NoSuchProviderException e) {
+                                            e.printStackTrace();
+                                        } catch (JsonSyntaxException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
                                 }
                             }
                         }
