@@ -10,13 +10,17 @@ import android.support.annotation.NonNull;
 
 import org.libsodium.jni.Sodium;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.UUID;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -32,6 +36,7 @@ public class Pairing {
     final byte[] workstationPublicKey;
     final byte[] symmetricSecretKey;
     final String workstationName;
+    final UUID uuid;
 
     private static final int AES_256_KEY_LENGTH = 32;
     private static final int AES_256_IV_LENGTH = 16;
@@ -47,6 +52,18 @@ public class Pairing {
         }
         this.symmetricSecretKey = symmetricSecretKey;
         this.workstationName = workstationName;
+
+        byte[] hash = SHA256.digest(workstationPublicKey);
+        DataInputStream bytes = new DataInputStream(new ByteArrayInputStream(hash));
+        long msb = 0;
+        long lsb = 0;
+        try {
+            msb = bytes.readLong();
+            lsb = bytes.readLong();
+        } catch (IOException e) {
+            throw new CryptoException(e.getMessage());
+        }
+        this.uuid = new UUID(msb, lsb);
     }
 
     public static Pairing generate(@NonNull byte[] workstationPublicKey, String workstationName) throws CryptoException {
@@ -114,6 +131,11 @@ public class Pairing {
         } catch (IllegalBlockSizeException e) {
             throw new CryptoException(e.getMessage());
         }
+
+    }
+
+    public UUID getUUID(){
+        return uuid;
     }
 
     // Used to load the 'native-lib' library on application startup.

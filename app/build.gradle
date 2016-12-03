@@ -44,6 +44,9 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
     compile 'com.android.support:design:23.4.0'
     compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.amazonaws:aws-android-sdk-core:2.2.+'
+    compile 'com.amazonaws:aws-android-sdk-sqs:2.2.+'
+    compile 'com.amazonaws:aws-android-sdk-sns:2.2.+'
     compile project(':libsodium-jni-release')
     testCompile project(':libsodium-jni-release')
     testCompile 'junit:junit:4.12'
