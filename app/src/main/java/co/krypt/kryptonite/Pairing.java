@@ -29,6 +29,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.SodiumException;
+import co.krypt.kryptonite.protocol.PairingQR;
 
 public class Pairing {
     final byte[] workstationPublicKey;

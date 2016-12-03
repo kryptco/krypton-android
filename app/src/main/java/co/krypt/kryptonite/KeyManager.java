@@ -18,6 +18,8 @@ import java.security.PrivateKey;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Objects;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Created by Kevin King on 11/30/16.
@@ -30,7 +32,7 @@ public class KeyManager {
 
     public static String MY_RSA_KEY_TAG = "RSA.me";
 
-    public static SSHKeyPair loadOrGenerateKeyPair(String tag) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableEntryException, NoSuchProviderException, InvalidAlgorithmParameterException {
+    public static synchronized SSHKeyPair loadOrGenerateKeyPair(String tag) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableEntryException, NoSuchProviderException, InvalidAlgorithmParameterException {
         // The key pair can also be obtained from the Android Keystore any time as follows:
         KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
@@ -61,7 +63,7 @@ public class KeyManager {
         return new SSHKeyPair(keyPair);
     }
 
-    public static boolean keyExists(String tag) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableEntryException {
+    public static synchronized boolean keyExists(String tag) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableEntryException {
 
         // The key pair can also be obtained from the Android Keystore any time as follows:
         KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
@@ -73,7 +75,7 @@ public class KeyManager {
         return false;
     }
 
-    public static void deleteKeyPair(String tag) throws Exception {
+    public static synchronized void deleteKeyPair(String tag) throws Exception {
         // The key pair can also be obtained from the Android Keystore any time as follows:
         KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);

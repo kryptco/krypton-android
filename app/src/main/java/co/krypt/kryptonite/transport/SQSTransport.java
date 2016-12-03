@@ -1,10 +1,12 @@
-package co.krypt.kryptonite;
+package co.krypt.kryptonite.transport;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.util.Base64;
 
+import co.krypt.kryptonite.NetworkMessage;
+import co.krypt.kryptonite.Pairing;
 import co.krypt.kryptonite.exception.TransportException;
 
 /**

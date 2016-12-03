@@ -21,6 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.TransportException;
+import co.krypt.kryptonite.protocol.PairingQR;
+import co.krypt.kryptonite.transport.SQSTransport;
 
 /**
  * Created by Kevin King on 12/2/16.
