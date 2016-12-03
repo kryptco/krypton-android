@@ -1,5 +1,7 @@
 package co.krypt.kryptonite;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 
 import co.krypt.kryptonite.exception.TransportException;
@@ -42,6 +44,17 @@ public class NetworkMessage {
             }
         }
         throw new TransportException("unknown message header");
+    }
+
+    public byte[] bytes() throws TransportException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        out.write(header.getValue());
+        try {
+            out.write(message);
+        } catch (IOException e) {
+            throw new TransportException(e.getMessage());
+        }
+        return out.toByteArray();
     }
 
 }

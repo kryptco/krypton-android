@@ -20,6 +20,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import co.krypt.kryptonite.exception.CryptoException;
+import co.krypt.kryptonite.exception.TransportException;
+
 /**
  * Created by Kevin King on 12/2/16.
  * Copyright 2016. KryptCo, Inc.
@@ -79,10 +82,18 @@ public class PairScanner {
                                 if (barcode.rawValue != null) {
                                     PairingQR pairingQR = PairingQR.parseJson(barcode.rawValue);
                                     Log.i(TAG, "found pairingQR: " + Base64.encodeToString(pairingQR.workstationPublicKey, Base64.DEFAULT));
+                                    Pairing pairing = Pairing.generate(pairingQR);
+                                    byte[] wrappedKey = pairing.wrapKey(pairing.symmetricSecretKey);
+                                    NetworkMessage wrappedKeyMessage = new NetworkMessage(NetworkMessage.Header.WRAPPED_KEY, wrappedKey);
+                                    SQSTransport.sendMessage(pairing, wrappedKeyMessage);
                                 }
                             }
                         }
                     } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (CryptoException e) {
+                        e.printStackTrace();
+                    } catch (TransportException e) {
                         e.printStackTrace();
                     }
                 }

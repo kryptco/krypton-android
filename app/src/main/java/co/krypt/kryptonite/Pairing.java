@@ -71,6 +71,10 @@ public class Pairing {
         return new Pairing(workstationPublicKey, symmetricKey, workstationName);
     }
 
+    public static Pairing generate(PairingQR pairingQR) throws CryptoException {
+        return Pairing.generate(pairingQR.workstationPublicKey, pairingQR.workstationName);
+    }
+
     public byte[] wrapKey(byte[] symmetricKey) throws CryptoException {
         byte[] ciphertext = new byte[symmetricKey.length + Sodium.crypto_box_sealbytes()];
         if (0 != Sodium.crypto_box_seal(ciphertext, symmetricKey, symmetricKey.length, workstationPublicKey)) {

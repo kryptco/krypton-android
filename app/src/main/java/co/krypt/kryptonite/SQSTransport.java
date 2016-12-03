@@ -3,9 +3,11 @@ package co.krypt.kryptonite;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.sqs.AmazonSQSClient;
+import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.amazonaws.util.Base64;
 
 import co.krypt.kryptonite.exception.CryptoException;
+import co.krypt.kryptonite.exception.TransportException;
 
 /**
  * Created by Kevin King on 12/3/16.
@@ -21,12 +23,12 @@ public class SQSTransport {
     }
 
     private static String recvQueueURL(String pairingUUID) {
-        return "https://sqs.us-east-1.amazonaws.com/911777333295/" + pairingUUID + "-recv";
+        return "https://sqs.us-east-1.amazonaws.com/911777333295/" + pairingUUID + "-responder";
     }
 
-    public static void sendMessage(Pairing pairing, byte[] message) {
+    public static void sendMessage(Pairing pairing, NetworkMessage message) throws TransportException {
         StaticCredentialsProvider creds = new StaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
         AmazonSQSClient client = new AmazonSQSClient(creds);
-        client.sendMessage(sendQueueURL(pairing.getUUID().toString()), Base64.encodeAsString(message));
+        client.sendMessage(recvQueueURL(pairing.getUUID().toString().toUpperCase()), Base64.encodeAsString(message.bytes()));
     }
 }
