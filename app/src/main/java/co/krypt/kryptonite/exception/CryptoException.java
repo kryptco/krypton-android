@@ -5,7 +5,7 @@ package co.krypt.kryptonite.exception;
  * Copyright 2016. KryptCo, Inc.
  */
 
-public class CryptoException extends RuntimeException {
+public class CryptoException extends Exception {
     public CryptoException(String message) {
         super(message);
     }

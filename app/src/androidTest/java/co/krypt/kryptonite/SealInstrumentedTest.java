@@ -2,9 +2,7 @@ package co.krypt.kryptonite;
 
 import org.junit.Test;
 import org.libsodium.jni.Sodium;
-import org.libsodium.jni.keys.PublicKey;
 
-import java.lang.reflect.Array;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
@@ -15,19 +13,19 @@ import static org.junit.Assert.assertTrue;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-public class SodiumInstrumentedTest {
+public class SealInstrumentedTest {
     @Test
-    public void wrap_isCorrect() throws Exception {
+    public void seal_inverts() throws Exception {
         byte[] pubKey = new byte[Sodium.crypto_box_publickeybytes()];
         byte[] privKey = new byte[Sodium.crypto_box_secretkeybytes()];
         assertTrue(0 == Sodium.crypto_box_seed_keypair(pubKey, privKey, SecureRandom.getSeed(Sodium.crypto_box_seedbytes())));
-        byte[] symmetricKey = SecureRandom.getSeed(32);
-        Pairing pairing = new Pairing(pubKey, symmetricKey, "workstation");
-        byte[] ciphertext = pairing.wrapKey(symmetricKey);
-
-        byte[] unwrapped = new byte[ciphertext.length - Sodium.crypto_box_sealbytes()];
-        assertTrue(0 == Sodium.crypto_box_seal_open(unwrapped, ciphertext, ciphertext.length, pubKey, privKey));
-        assertTrue(Arrays.equals(unwrapped, symmetricKey));
+        Pairing pairing = Pairing.generate(pubKey, "workstation");
+        for (int i = 0; i < 1024; i++) {
+            byte[] message = SecureRandom.getSeed(i);
+            byte[] ciphertext = pairing.seal(message);
+            byte[] unsealed = pairing.unseal(ciphertext);
+            assertTrue(Arrays.equals(message, unsealed));
+        }
     }
     static {
         System.loadLibrary("sodiumjni");
