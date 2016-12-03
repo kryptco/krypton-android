@@ -5,7 +5,6 @@ package co.krypt.kryptonite;
  * Copyright 2016. KryptCo, Inc.
  */
 
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 
 import org.libsodium.jni.Sodium;
@@ -14,7 +13,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.nio.ByteOrder;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

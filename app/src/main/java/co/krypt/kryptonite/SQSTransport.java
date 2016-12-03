@@ -3,10 +3,8 @@ package co.krypt.kryptonite;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.sqs.AmazonSQSClient;
-import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.amazonaws.util.Base64;
 
-import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.TransportException;
 
 /**

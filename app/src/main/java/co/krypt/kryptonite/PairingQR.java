@@ -1,6 +1,5 @@
 package co.krypt.kryptonite;
 
-import com.google.android.gms.common.api.Api;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
 
