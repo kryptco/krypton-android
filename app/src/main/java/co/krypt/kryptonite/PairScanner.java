@@ -31,11 +31,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.TransportException;
-import co.krypt.kryptonite.protocol.MeResponse;
 import co.krypt.kryptonite.protocol.PairingQR;
-import co.krypt.kryptonite.protocol.Profile;
 import co.krypt.kryptonite.protocol.Request;
-import co.krypt.kryptonite.protocol.Response;
+import co.krypt.kryptonite.silo.Silo;
 import co.krypt.kryptonite.transport.SQSTransport;
 
 /**
@@ -110,16 +108,7 @@ public class PairScanner {
                                                     byte[] json = pairing.unseal(message.message);
                                                     Log.i(TAG, "got JSON " + new String(json, "UTF-8"));
                                                     Request request = JSON.fromJson(json, Request.class);
-                                                    Response response = Response.with(request);
-                                                    if (request.meRequest != null) {
-                                                        response.meResponse = new MeResponse(
-                                                                new Profile(
-                                                                        "kevin@krypt.co",
-                                                                        KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG).publicKeySSHWireFormat()));
-                                                    }
-                                                    byte[] responseJson = JSON.toJson(response).getBytes();
-                                                    byte[] sealed = pairing.seal(responseJson);
-                                                    SQSTransport.sendMessage(pairing, new NetworkMessage(NetworkMessage.Header.CIPHERTEXT, sealed));
+                                                    Silo.handle(pairing, request);
                                                     break;
                                                 case WRAPPED_KEY:
                                                     break;

@@ -7,13 +7,9 @@ import android.util.Log;
 import android.widget.TextView;
 
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.UnrecoverableEntryException;
-import java.security.cert.CertificateException;
+
+import co.krypt.kryptonite.exception.CryptoException;
 
 
 public class MeActivity extends AppCompatActivity {
@@ -31,17 +27,7 @@ public class MeActivity extends AppCompatActivity {
             sshKeyTextView.setText(Base64.encodeToString(sk.publicKeySSHWireFormat(), Base64.DEFAULT));
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        } catch (UnrecoverableEntryException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
-        } catch (NoSuchProviderException e) {
+        } catch (CryptoException e) {
             e.printStackTrace();
         } catch (InvalidKeyException e) {
             e.printStackTrace();
