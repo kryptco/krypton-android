@@ -180,9 +180,7 @@ public class Pairing {
         Pairing pairing = (Pairing) o;
 
         if (!MessageDigest.isEqual(workstationPublicKey, pairing.workstationPublicKey)) return false;
-        if (!MessageDigest.isEqual(symmetricSecretKey, pairing.symmetricSecretKey)) return false;
         return workstationName.equals(pairing.workstationName);
-
     }
 
     @Override

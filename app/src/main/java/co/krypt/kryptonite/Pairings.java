@@ -21,8 +21,8 @@ public class Pairings {
         preferences = context.getSharedPreferences("PAIRING_MANAGER_PREFERENCES", Context.MODE_PRIVATE);
     }
 
-    private ArrayList<Pairing> loadAllLocked() {
-        ArrayList<Pairing> pairings = new ArrayList<>();
+    private HashSet<Pairing> loadAllLocked() {
+        HashSet<Pairing> pairings = new HashSet<>();
         Set<String> jsonPairings = preferences.getStringSet("PAIRINGS", new ArraySet<String>());
         for (String jsonPairing : jsonPairings) {
             pairings.add(JSON.fromJson(jsonPairing, Pairing.class));
@@ -30,7 +30,7 @@ public class Pairings {
         return pairings;
     }
 
-    private ArrayList<Pairing> setAllLocked(ArrayList<Pairing> pairings) {
+    private HashSet<Pairing> setAllLocked(HashSet<Pairing> pairings) {
         Set<String> jsonPairings = new ArraySet<>();
         for (Pairing pairing : pairings) {
             jsonPairings.add(JSON.toJson(pairing));
@@ -39,7 +39,7 @@ public class Pairings {
         return pairings;
     }
 
-    public ArrayList<Pairing> loadAll() {
+    public HashSet<Pairing> loadAll() {
         synchronized (lock) {
             return loadAllLocked();
         }
@@ -47,7 +47,7 @@ public class Pairings {
 
     public void unpair(Pairing pairing) {
         synchronized (lock) {
-            ArrayList<Pairing> currentPairings = loadAllLocked();
+            HashSet<Pairing> currentPairings = loadAllLocked();
             currentPairings.remove(pairing);
             setAllLocked(currentPairings);
         }
@@ -55,7 +55,7 @@ public class Pairings {
 
     public void pair(Pairing pairing) {
         synchronized (lock) {
-            ArrayList<Pairing> currentPairings = loadAllLocked();
+            HashSet<Pairing> currentPairings = loadAllLocked();
             currentPairings.add(pairing);
             setAllLocked(currentPairings);
         }
@@ -63,7 +63,7 @@ public class Pairings {
 
     public void unpairAll() {
         synchronized (lock) {
-            setAllLocked(new ArrayList<Pairing>());
+            setAllLocked(new HashSet<Pairing>());
         }
     }
 }

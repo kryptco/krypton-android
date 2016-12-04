@@ -10,8 +10,12 @@ import com.google.gson.annotations.SerializedName;
 public class Response {
     @SerializedName("request_id")
     public String requestID;
+
     @SerializedName("me_response")
     public MeResponse meResponse;
+
+    @SerializedName("sign_response")
+    public SignResponse signResponse;
 
     public static Response with(Request request) {
         Response response = new Response();

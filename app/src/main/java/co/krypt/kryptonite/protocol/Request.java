@@ -12,4 +12,6 @@ public class Request {
     public String requestID;
     @SerializedName("me_request")
     public MeRequest meRequest;
+    @SerializedName("sign_request")
+    public SignRequest signRequest;
 }

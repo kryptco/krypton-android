@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import co.krypt.kryptonite.JSON;
@@ -37,7 +38,7 @@ public class Silo {
     private static Silo singleton;
 
     private Pairings pairingStorage;
-    private ArrayList<Pairing> activePairings;
+    private HashSet<Pairing> activePairings;
     private HashMap<Pairing, SQSPoller> pollers;
 
     private Silo(Context context) {
@@ -70,6 +71,10 @@ public class Silo {
 
     public synchronized void pair(PairingQR pairingQR) throws CryptoException, TransportException {
         Pairing pairing = Pairing.generate(pairingQR);
+        if (activePairings.contains(pairing)) {
+            Log.w(TAG, "already paired with " + pairing.workstationName);
+            return;
+        }
         byte[] wrappedKey = pairing.wrapKey();
         NetworkMessage wrappedKeyMessage = new NetworkMessage(NetworkMessage.Header.WRAPPED_KEY, wrappedKey);
         send(pairing, wrappedKeyMessage);
