@@ -14,16 +14,9 @@ import android.util.SparseArray;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.UnrecoverableEntryException;
-import java.security.cert.CertificateException;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -52,7 +45,7 @@ public class PairScanner {
 
     private static final String TAG = "PairScanner";
 
-    public PairScanner(Context context, int height, int width) {
+    public PairScanner(final Context context, int height, int width) {
         this.context = context;
         this.height = height;
         this.width = width;
@@ -95,46 +88,7 @@ public class PairScanner {
                                 if (barcode.rawValue != null) {
                                     PairingQR pairingQR = PairingQR.parseJson(barcode.rawValue);
                                     Log.i(TAG, "found pairingQR: " + Base64.encodeToString(pairingQR.workstationPublicKey, Base64.DEFAULT));
-                                    Pairing pairing = Pairing.generate(pairingQR);
-                                    byte[] wrappedKey = pairing.wrapKey(pairing.symmetricSecretKey);
-                                    NetworkMessage wrappedKeyMessage = new NetworkMessage(NetworkMessage.Header.WRAPPED_KEY, wrappedKey);
-                                    SQSTransport.sendMessage(pairing, wrappedKeyMessage);
-                                    List<byte[]> messages = SQSTransport.receiveMessages(pairing);
-                                    for (byte[] incoming : messages) {
-                                        try {
-                                            NetworkMessage message = NetworkMessage.parse(incoming);
-                                            switch (message.header) {
-                                                case CIPHERTEXT:
-                                                    byte[] json = pairing.unseal(message.message);
-                                                    Log.i(TAG, "got JSON " + new String(json, "UTF-8"));
-                                                    Request request = JSON.fromJson(json, Request.class);
-                                                    Silo.handle(pairing, request);
-                                                    break;
-                                                case WRAPPED_KEY:
-                                                    break;
-                                            }
-                                        } catch (TransportException e) {
-                                            Log.e(TAG, e.getMessage());
-                                        } catch (UnrecoverableEntryException e) {
-                                            e.printStackTrace();
-                                        } catch (NoSuchAlgorithmException e) {
-                                            e.printStackTrace();
-                                        } catch (CertificateException e) {
-                                            e.printStackTrace();
-                                        } catch (InvalidKeyException e) {
-                                            e.printStackTrace();
-                                        } catch (InvalidAlgorithmParameterException e) {
-                                            e.printStackTrace();
-                                        } catch (KeyStoreException e) {
-                                            e.printStackTrace();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        } catch (NoSuchProviderException e) {
-                                            e.printStackTrace();
-                                        } catch (JsonSyntaxException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
+                                    Silo.shared(context).pair(pairingQR);
                                 }
                             }
                         }

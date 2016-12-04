@@ -34,14 +34,15 @@ import co.krypt.kryptonite.exception.SodiumException;
 import co.krypt.kryptonite.protocol.PairingQR;
 
 public class Pairing {
-    final byte[] workstationPublicKey;
+    public final byte[] workstationPublicKey;
     final byte[] symmetricSecretKey;
-    final String workstationName;
-    final UUID uuid;
+    public final String workstationName;
+    public final UUID uuid;
 
     private static final int AES_256_KEY_LENGTH = 32;
     private static final int AES_256_IV_LENGTH = 16;
     private static final int AES_256_BLOCK_SIZE = 16;
+
 
     public Pairing(@NonNull byte[] workstationPublicKey, @NonNull byte[] symmetricSecretKey, String workstationName) throws CryptoException {
         if (workstationPublicKey.length != Sodium.crypto_box_publickeybytes()) {
@@ -76,9 +77,9 @@ public class Pairing {
         return Pairing.generate(pairingQR.workstationPublicKey, pairingQR.workstationName);
     }
 
-    public byte[] wrapKey(byte[] symmetricKey) throws CryptoException {
-        byte[] ciphertext = new byte[symmetricKey.length + Sodium.crypto_box_sealbytes()];
-        if (0 != Sodium.crypto_box_seal(ciphertext, symmetricKey, symmetricKey.length, workstationPublicKey)) {
+    public byte[] wrapKey() throws CryptoException {
+        byte[] ciphertext = new byte[symmetricSecretKey.length + Sodium.crypto_box_sealbytes()];
+        if (0 != Sodium.crypto_box_seal(ciphertext, symmetricSecretKey, symmetricSecretKey.length, workstationPublicKey)) {
             throw new SodiumException("crypto_box_seal failed");
         }
         return ciphertext;
@@ -169,5 +170,23 @@ public class Pairing {
         // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("sodiumjni");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Pairing pairing = (Pairing) o;
+
+        if (!MessageDigest.isEqual(workstationPublicKey, pairing.workstationPublicKey)) return false;
+        if (!MessageDigest.isEqual(symmetricSecretKey, pairing.symmetricSecretKey)) return false;
+        return workstationName.equals(pairing.workstationName);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(workstationPublicKey);
     }
 }

@@ -23,7 +23,7 @@ public class SodiumInstrumentedTest {
         assertTrue(0 == Sodium.crypto_box_seed_keypair(pubKey, privKey, SecureRandom.getSeed(Sodium.crypto_box_seedbytes())));
         byte[] symmetricKey = SecureRandom.getSeed(32);
         Pairing pairing = new Pairing(pubKey, symmetricKey, "workstation");
-        byte[] ciphertext = pairing.wrapKey(symmetricKey);
+        byte[] ciphertext = pairing.wrapKey();
 
         byte[] unwrapped = new byte[ciphertext.length - Sodium.crypto_box_sealbytes()];
         assertTrue(0 == Sodium.crypto_box_seal_open(unwrapped, ciphertext, ciphertext.length, pubKey, privKey));

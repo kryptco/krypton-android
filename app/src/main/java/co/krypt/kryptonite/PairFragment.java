@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import co.krypt.kryptonite.silo.Silo;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,7 +32,8 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
 
     private PairScanner pairScanner;
 
-    public PairFragment() { }
+    public PairFragment() {
+    }
 
     @Override
     public void setUserVisibleHint(boolean visible) {
@@ -56,8 +59,6 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
     // TODO: Rename and change types and number of parameters
     public static PairFragment newInstance() {
         PairFragment fragment = new PairFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
         return fragment;
     }
 

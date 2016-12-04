@@ -5,6 +5,8 @@ import android.util.Log;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.sqs.AmazonSQSClient;
+import com.amazonaws.services.sqs.model.DeleteMessageBatchRequest;
+import com.amazonaws.services.sqs.model.DeleteMessageBatchRequestEntry;
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.ReceiveMessageResult;
@@ -45,21 +47,40 @@ public class SQSTransport {
         client.sendMessage(recvQueueURL(pairing), Base64.encodeAsString(message.bytes()));
     }
 
-    public static List<byte[]> receiveMessages(Pairing pairing) throws TransportException {
-        AmazonSQSClient client = getClient();
+    public static List<byte[]> receiveMessages(final Pairing pairing) throws TransportException {
+        final AmazonSQSClient client = getClient();
         ReceiveMessageRequest request = new ReceiveMessageRequest(sendQueueURL(pairing));
         request.setWaitTimeSeconds(10);
         request.setMaxNumberOfMessages(10);
         ReceiveMessageResult result = client.receiveMessage(request);
 
+        final List<DeleteMessageBatchRequestEntry> deleteEntries = new ArrayList<>();
+
         ArrayList<byte[]> messages = new ArrayList<byte[]>();
         for (Message m : result.getMessages()) {
+            deleteEntries.add(new DeleteMessageBatchRequestEntry(m.getMessageId(), m.getReceiptHandle()));
             try {
                 messages.add(Base64.decode(m.getBody()));
             } catch (Exception e) {
                 Log.e(TAG, "failed to decode message: " + e.getMessage());
             }
         }
+
+        if (!deleteEntries.isEmpty()) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        DeleteMessageBatchRequest deleteRequest = new DeleteMessageBatchRequest(sendQueueURL(pairing))
+                                .withEntries(deleteEntries);
+                        client.deleteMessageBatch(deleteRequest);
+                    } catch (Exception e) {
+                        Log.e(TAG, "failed to delete messages: " + e.getMessage());
+                    }
+                }
+            }).start();
+        }
+
         return messages;
     }
 }
