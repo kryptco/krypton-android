@@ -3,6 +3,7 @@ package co.krypt.kryptonite;
 import android.security.keystore.KeyInfo;
 import android.support.annotation.NonNull;
 import android.util.Base64;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import co.krypt.kryptonite.exception.CryptoException;
 
 public class SSHKeyPair {
     private final @NonNull KeyPair keyPair;
+    private static final String TAG = "SSHKeyPair";
 
     SSHKeyPair(@NonNull KeyPair keyPair) {
         this.keyPair = keyPair;
@@ -54,10 +56,14 @@ public class SSHKeyPair {
     }
 
     public byte[] signDigest(byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        long start = System.currentTimeMillis();
         Signature s = Signature.getInstance("NONEwithRSA");
         s.initSign(keyPair.getPrivate());
         s.update(data);
-        return s.sign();
+        byte[] signature = s.sign();
+        long stop = System.currentTimeMillis();
+        Log.d(TAG, "signature took " + String.valueOf((stop - start) / 1000.0) + " seconds");
+        return signature;
     }
 
     public boolean verifyDigest(byte[] signature, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
