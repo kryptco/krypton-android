@@ -16,6 +16,8 @@ import java.security.SignatureException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 
+import co.krypt.kryptonite.exception.CryptoException;
+
 /**
  * Created by Kevin King on 11/30/16.
  * Copyright 2016. KryptCo, Inc.
@@ -47,10 +49,11 @@ public class SSHKeyPair {
         return out.toByteArray();
     }
 
+    public byte[] publicKeyFingerprint() throws IOException, InvalidKeyException, CryptoException {
+        return SHA256.digest(publicKeySSHWireFormat());
+    }
+
     public byte[] signDigest(byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        if (data.length != SHA256.BLOCK_SIZE) {
-            throw new SignatureException("Invalid length of digest.");
-        }
         Signature s = Signature.getInstance("NONEwithRSA");
         s.initSign(keyPair.getPrivate());
         s.update(data);

@@ -7,6 +7,9 @@ import com.amazonaws.util.Base64;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +20,7 @@ import co.krypt.kryptonite.KeyManager;
 import co.krypt.kryptonite.NetworkMessage;
 import co.krypt.kryptonite.Pairing;
 import co.krypt.kryptonite.Pairings;
+import co.krypt.kryptonite.SSHKeyPair;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.protocol.MeResponse;
@@ -24,6 +28,7 @@ import co.krypt.kryptonite.protocol.PairingQR;
 import co.krypt.kryptonite.protocol.Profile;
 import co.krypt.kryptonite.protocol.Request;
 import co.krypt.kryptonite.protocol.Response;
+import co.krypt.kryptonite.protocol.SignResponse;
 import co.krypt.kryptonite.transport.SQSPoller;
 import co.krypt.kryptonite.transport.SQSTransport;
 
@@ -131,6 +136,23 @@ public class Silo {
                     new Profile(
                             "kevin@krypt.co",
                             KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG).publicKeySSHWireFormat()));
+        }
+
+        if (request.signRequest != null) {
+            try {
+                response.signResponse = new SignResponse();
+                SSHKeyPair key = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
+                if (MessageDigest.isEqual(request.signRequest.publicKeyFingerprint, key.publicKeyFingerprint())) {
+                    response.signResponse.signature = key.signDigest(request.signRequest.digest);
+                } else {
+                    Log.e(TAG, Base64.encodeAsString(request.signRequest.publicKeyFingerprint) + " != " + Base64.encodeAsString(key.publicKeyFingerprint()));
+                    response.signResponse.error = "unknown key fingerprint";
+                }
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (SignatureException e) {
+                e.printStackTrace();
+            }
         }
 
         byte[] responseJson = JSON.toJson(response).getBytes();

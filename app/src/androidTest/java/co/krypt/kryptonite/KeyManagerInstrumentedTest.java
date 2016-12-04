@@ -42,13 +42,6 @@ public class KeyManagerInstrumentedTest {
         key.signDigest(SHA256.digest(data));
     }
 
-    @Test(expected = SignatureException.class)
-    public void signWrongLength_fails() throws Exception {
-        SSHKeyPair key = KeyManager.loadOrGenerateKeyPair("test");
-        byte[] data = SecureRandom.getSeed(16);
-        key.signDigest(data);
-    }
-
     @Test
     public void signAndVerify_succeed() throws Exception {
         SSHKeyPair key = KeyManager.loadOrGenerateKeyPair("test");

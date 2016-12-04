@@ -10,8 +10,10 @@ import com.google.gson.annotations.SerializedName;
 public class Request {
     @SerializedName("request_id")
     public String requestID;
+
     @SerializedName("me_request")
     public MeRequest meRequest;
+
     @SerializedName("sign_request")
     public SignRequest signRequest;
 }

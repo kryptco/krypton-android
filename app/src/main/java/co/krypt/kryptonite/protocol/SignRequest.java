@@ -9,11 +9,11 @@ import com.google.gson.annotations.SerializedName;
 
 public class SignRequest {
     @SerializedName("digest")
-    byte[] Digest;
+    public byte[] digest;
 
     @SerializedName("public_key_fingerprint")
-    byte[] PublicKeyFingerprint;
+    public byte[] publicKeyFingerprint;
 
     @SerializedName("command")
-    String command;
+    public String command;
 }
