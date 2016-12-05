@@ -17,6 +17,9 @@ public class Response {
     @SerializedName("sign_response")
     public SignResponse signResponse;
 
+    @SerializedName("sns_endpoint_arn")
+    public String snsEndpointARN;
+
     public static Response with(Request request) {
         Response response = new Response();
         response.requestID = request.requestID;

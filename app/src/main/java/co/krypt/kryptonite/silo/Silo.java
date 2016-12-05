@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import co.krypt.kryptonite.JSON;
 import co.krypt.kryptonite.KeyManager;
@@ -29,6 +30,7 @@ import co.krypt.kryptonite.protocol.Profile;
 import co.krypt.kryptonite.protocol.Request;
 import co.krypt.kryptonite.protocol.Response;
 import co.krypt.kryptonite.protocol.SignResponse;
+import co.krypt.kryptonite.transport.SNSTransport;
 import co.krypt.kryptonite.transport.SQSPoller;
 import co.krypt.kryptonite.transport.SQSTransport;
 
@@ -43,12 +45,18 @@ public class Silo {
     private static Silo singleton;
 
     private Pairings pairingStorage;
-    private HashSet<Pairing> activePairings;
+    private HashMap<String, Pairing> activePairingsByUUID;
     private HashMap<Pairing, SQSPoller> pollers;
+    private final Context context;
 
     private Silo(Context context) {
+        this.context = context;
         pairingStorage = new Pairings(context);
-        activePairings = pairingStorage.loadAll();
+        Set<Pairing> pairings = pairingStorage.loadAll();
+        activePairingsByUUID = new HashMap<>();
+        for (Pairing p : pairings) {
+            activePairingsByUUID.put(p.getUUIDString(), p);
+        }
         pollers = new HashMap<>();
     }
 
@@ -60,9 +68,9 @@ public class Silo {
     }
 
     public synchronized void start() {
-        for (Pairing pairing : activePairings) {
+        for (Pairing pairing : activePairingsByUUID.values()) {
             Log.i(TAG, "starting "+ Base64.encodeAsString(pairing.workstationPublicKey));
-            pollers.put(pairing, new SQSPoller(pairing));
+            pollers.put(pairing, new SQSPoller(context, pairing));
         }
     }
 
@@ -76,7 +84,7 @@ public class Silo {
 
     public synchronized void pair(PairingQR pairingQR) throws CryptoException, TransportException {
         Pairing pairing = Pairing.generate(pairingQR);
-        if (activePairings.contains(pairing)) {
+        if (activePairingsByUUID.containsValue(pairing)) {
             Log.w(TAG, "already paired with " + pairing.workstationName);
             return;
         }
@@ -85,33 +93,39 @@ public class Silo {
         send(pairing, wrappedKeyMessage);
 
         pairingStorage.pair(pairing);
-        activePairings.add(pairing);
-        pollers.put(pairing, new SQSPoller(pairing));
+        activePairingsByUUID.put(pairing.getUUIDString(), pairing);
+        pollers.put(pairing, new SQSPoller(context, pairing));
     }
 
     public synchronized void unpair(Pairing pairing) {
         //  TODO: send unpair response
         pairingStorage.unpair(pairing);
-        activePairings.remove(pairing);
+        activePairingsByUUID.remove(pairing.getUUIDString());
         SQSPoller poller = pollers.remove(pairing);
         poller.stop();
     }
 
     public synchronized void unpairAll() {
-        List<Pairing> toDelete = new ArrayList<>(activePairings);
+        List<Pairing> toDelete = new ArrayList<>(activePairingsByUUID.values());
         for (Pairing pairing: toDelete) {
             unpair(pairing);
         }
     }
 
-    public static synchronized void onMessage(Pairing pairing, NetworkMessage message) {
+    public synchronized void onMessage(String pairingUUID, byte[] incoming) {
         try {
+            NetworkMessage message = NetworkMessage.parse(incoming);
+            Pairing pairing = activePairingsByUUID.get(pairingUUID);
+            if (pairing == null) {
+                Log.e(TAG, "not valid pairing: " + pairingUUID);
+                return;
+            }
             switch (message.header) {
                 case CIPHERTEXT:
                     byte[] json = pairing.unseal(message.message);
                     Log.i(TAG, "got JSON " + new String(json, "UTF-8"));
                     Request request = JSON.fromJson(json, Request.class);
-                    Silo.handle(pairing, request);
+                    handle(pairing, request);
                     break;
                 case WRAPPED_KEY:
                     break;
@@ -129,7 +143,7 @@ public class Silo {
         SQSTransport.sendMessage(pairing, message);
     }
 
-    public static synchronized void handle(Pairing pairing, Request request) throws CryptoException, TransportException, IOException, InvalidKeyException {
+    public synchronized void handle(Pairing pairing, Request request) throws CryptoException, TransportException, IOException, InvalidKeyException {
         Response response = Response.with(request);
         if (request.meRequest != null) {
             response.meResponse = new MeResponse(
@@ -154,6 +168,8 @@ public class Silo {
                 e.printStackTrace();
             }
         }
+
+        response.snsEndpointARN = SNSTransport.getInstance(context).getEndpointARN();
 
         byte[] responseJson = JSON.toJson(response).getBytes();
         byte[] sealed = pairing.seal(responseJson);

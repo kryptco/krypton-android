@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "827719695024",
+    "firebase_url": "https://kryptonite2-3ab75.firebaseio.com",
+    "project_id": "kryptonite2-3ab75",
+    "storage_bucket": "kryptonite2-3ab75.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:827719695024:android:46a968d774d8afa1",
+        "android_client_info": {
+          "package_name": "co.krypt.kryptonite"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "827719695024-efve60lg1qeovh40cc5n176715gqo2t9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdN5IiKXHBFDuEkdn6xlNvWSHaUQLJoAU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

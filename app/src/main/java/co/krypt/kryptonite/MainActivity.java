@@ -15,6 +15,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+
 import co.krypt.kryptonite.silo.Silo;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (ConnectionResult.SUCCESS != GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getApplicationContext())) {
+            //  TODO: warn about no push notifications, prompt to install google play services
+        }
 
         silo = Silo.shared(getApplicationContext());
 
