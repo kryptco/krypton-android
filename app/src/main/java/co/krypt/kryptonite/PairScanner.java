@@ -93,11 +93,11 @@ public class PairScanner {
                             }
                         }
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, Log.getStackTraceString(e));
                     } catch (CryptoException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, Log.getStackTraceString(e));
                     } catch (TransportException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, Log.getStackTraceString(e));
                     }
                 }
             }

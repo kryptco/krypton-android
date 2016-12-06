@@ -152,7 +152,13 @@ public class Silo {
     }
 
     public static void send(Pairing pairing, NetworkMessage message) throws TransportException {
-        SQSTransport.sendMessage(pairing, message);
+        try {
+            SQSTransport.sendMessage(pairing, message);
+        } catch (TransportException e){
+            throw e;
+        } catch (RuntimeException e) {
+            throw new TransportException(e.getMessage());
+        }
     }
 
     public synchronized void handle(Pairing pairing, Request request) throws CryptoException, TransportException, IOException, InvalidKeyException {
