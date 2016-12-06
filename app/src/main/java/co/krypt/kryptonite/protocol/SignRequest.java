@@ -1,5 +1,6 @@
 package co.krypt.kryptonite.protocol;
 
+import com.amazonaws.util.Base64;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -16,4 +17,11 @@ public class SignRequest {
 
     @SerializedName("command")
     public String command;
+
+    public String getCommandOrDefault(String defaultString) {
+        if (command != null) {
+            return command;
+        }
+        return defaultString;
+    }
 }
