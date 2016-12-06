@@ -137,6 +137,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
                 synchronized (self) {
                     if (mCamera != null) {
                         mCamera.stopPreview();
+                        mCamera.setPreviewCallback(null);
                         mCamera.release();
                         mCamera = null;
                     }
