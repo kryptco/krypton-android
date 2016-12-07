@@ -1,4 +1,4 @@
-package co.krypt.kryptonite;
+package co.krypt.kryptonite.pairing;
 
 import android.content.Context;
 import android.hardware.Camera;
@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import co.krypt.kryptonite.silo.Silo;
+import co.krypt.kryptonite.R;
 
 
 /**

@@ -1,14 +1,6 @@
 package co.krypt.kryptonite.silo;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.amazonaws.util.Base64;
@@ -20,18 +12,15 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import co.krypt.kryptonite.JSON;
-import co.krypt.kryptonite.KeyManager;
-import co.krypt.kryptonite.MainActivity;
-import co.krypt.kryptonite.NetworkMessage;
-import co.krypt.kryptonite.Pairing;
-import co.krypt.kryptonite.Pairings;
-import co.krypt.kryptonite.R;
-import co.krypt.kryptonite.SSHKeyPair;
+import co.krypt.kryptonite.protocol.JSON;
+import co.krypt.kryptonite.crypto.KeyManager;
+import co.krypt.kryptonite.protocol.NetworkMessage;
+import co.krypt.kryptonite.pairing.Pairing;
+import co.krypt.kryptonite.pairing.Pairings;
+import co.krypt.kryptonite.crypto.SSHKeyPair;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.protocol.MeResponse;
@@ -43,8 +32,6 @@ import co.krypt.kryptonite.protocol.SignResponse;
 import co.krypt.kryptonite.transport.SNSTransport;
 import co.krypt.kryptonite.transport.SQSPoller;
 import co.krypt.kryptonite.transport.SQSTransport;
-
-import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
  * Created by Kevin King on 12/3/16.

@@ -1,4 +1,4 @@
-package co.krypt.kryptonite;
+package co.krypt.kryptonite.pairing;
 
 /**
  * Created by Kevin King on 12/2/16.
@@ -29,6 +29,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import co.krypt.kryptonite.crypto.SHA256;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.SodiumException;
 import co.krypt.kryptonite.protocol.PairingQR;

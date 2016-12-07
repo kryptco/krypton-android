@@ -7,6 +7,7 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 
 import co.krypt.kryptonite.exception.CryptoException;
+import co.krypt.kryptonite.pairing.Pairing;
 
 import static org.junit.Assert.assertTrue;
 

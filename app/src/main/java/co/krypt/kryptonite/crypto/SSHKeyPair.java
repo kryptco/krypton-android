@@ -1,4 +1,4 @@
-package co.krypt.kryptonite;
+package co.krypt.kryptonite.crypto;
 
 import android.security.keystore.KeyInfo;
 import android.support.annotation.NonNull;

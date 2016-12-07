@@ -2,11 +2,11 @@ package co.krypt.kryptonite;
 
 import org.junit.Test;
 import org.libsodium.jni.Sodium;
-import org.libsodium.jni.keys.PublicKey;
 
-import java.lang.reflect.Array;
 import java.security.SecureRandom;
 import java.util.Arrays;
+
+import co.krypt.kryptonite.pairing.Pairing;
 
 import static org.junit.Assert.assertTrue;
 

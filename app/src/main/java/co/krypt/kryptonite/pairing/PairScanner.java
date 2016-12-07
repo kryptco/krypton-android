@@ -1,4 +1,4 @@
-package co.krypt.kryptonite;
+package co.krypt.kryptonite.pairing;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,9 +15,6 @@ import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -25,9 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.protocol.PairingQR;
-import co.krypt.kryptonite.protocol.Request;
 import co.krypt.kryptonite.silo.Silo;
-import co.krypt.kryptonite.transport.SQSTransport;
 
 /**
  * Created by Kevin King on 12/2/16.

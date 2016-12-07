@@ -3,14 +3,10 @@ package co.krypt.kryptonite.transport;
 import android.content.Context;
 import android.util.Log;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import co.krypt.kryptonite.NetworkMessage;
-import co.krypt.kryptonite.Pairing;
+import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.silo.Silo;
-
-import static co.krypt.kryptonite.transport.SQSTransport.receiveMessages;
 
 /**
  * Created by Kevin King on 12/3/16.

@@ -3,8 +3,6 @@ package co.krypt.kryptonite.protocol;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
 
-import co.krypt.kryptonite.JSON;
-
 /**
  * Created by Kevin King on 12/2/16.
  * Copyright 2016. KryptCo, Inc.

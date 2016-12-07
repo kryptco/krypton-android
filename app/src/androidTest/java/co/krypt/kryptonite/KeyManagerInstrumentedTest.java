@@ -7,7 +7,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.security.SecureRandom;
-import java.security.SignatureException;
+
+import co.krypt.kryptonite.crypto.KeyManager;
+import co.krypt.kryptonite.crypto.SHA256;
+import co.krypt.kryptonite.crypto.SSHKeyPair;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

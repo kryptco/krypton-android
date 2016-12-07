@@ -1,4 +1,4 @@
-package co.krypt.kryptonite;
+package co.krypt.kryptonite.protocol;
 
 import android.util.Base64;
 

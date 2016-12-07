@@ -1,4 +1,4 @@
-package co.krypt.kryptonite;
+package co.krypt.kryptonite.crypto;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

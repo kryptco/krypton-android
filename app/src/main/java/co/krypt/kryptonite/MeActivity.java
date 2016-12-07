@@ -9,6 +9,8 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 
+import co.krypt.kryptonite.crypto.KeyManager;
+import co.krypt.kryptonite.crypto.SSHKeyPair;
 import co.krypt.kryptonite.exception.CryptoException;
 
 

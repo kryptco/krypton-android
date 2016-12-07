@@ -1,12 +1,13 @@
-package co.krypt.kryptonite;
+package co.krypt.kryptonite.pairing;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.ArraySet;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import co.krypt.kryptonite.protocol.JSON;
 
 /**
  * Created by Kevin King on 12/3/16.

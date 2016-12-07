@@ -1,4 +1,4 @@
-package co.krypt.kryptonite;
+package co.krypt.kryptonite.crypto;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

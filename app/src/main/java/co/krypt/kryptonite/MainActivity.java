@@ -2,7 +2,6 @@ package co.krypt.kryptonite;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,8 +16,8 @@ import android.view.View;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 
+import co.krypt.kryptonite.pairing.PairFragment;
 import co.krypt.kryptonite.silo.Silo;
 
 public class MainActivity extends AppCompatActivity {
