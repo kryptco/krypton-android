@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.protocol.PairingQR;
 
 
 /**
@@ -33,6 +34,11 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
     private PairScanner pairScanner;
 
     public PairFragment() {
+    }
+
+    public synchronized void onPairingScanned(PairingQR pairingQR) {
+        PairDialogFragment pairDialog = new PairDialogFragment();
+        pairDialog.show(getFragmentManager(), "PAIR_NEW_DEVICE");
     }
 
     @Override
@@ -121,7 +127,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
                             previewHeight = camera.getParameters().getPreviewSize().height;
                             mPreview.setCamera(mCamera);
                             camera.setPreviewCallback(self);
-                            pairScanner = new PairScanner(getContext(), previewHeight, previewWidth);
+                            pairScanner = new PairScanner(getContext(), self, previewHeight, previewWidth);
                         }
                     }
                 });

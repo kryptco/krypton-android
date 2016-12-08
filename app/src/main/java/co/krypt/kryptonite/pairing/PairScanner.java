@@ -33,6 +33,7 @@ public class PairScanner {
     private LinkedBlockingQueue<byte[]> frames;
     private AtomicBoolean stopped;
     private final Context context;
+    private final PairFragment fragment;
     private final int height;
     private final int width;
 
@@ -40,8 +41,9 @@ public class PairScanner {
 
     private static final String TAG = "PairScanner";
 
-    public PairScanner(final Context context, int height, int width) {
+    public PairScanner(final Context context, final PairFragment fragment, int height, int width) {
         this.context = context;
+        this.fragment = fragment;
         this.height = height;
         this.width = width;
         frames = new LinkedBlockingQueue<>(1);
@@ -84,6 +86,7 @@ public class PairScanner {
                                     PairingQR pairingQR = PairingQR.parseJson(barcode.rawValue);
                                     Log.i(TAG, "found pairingQR: " + Base64.encodeToString(pairingQR.workstationPublicKey, Base64.DEFAULT));
                                     Silo.shared(context).pair(pairingQR);
+                                    fragment.onPairingScanned(pairingQR);
                                 }
                             }
                         }
