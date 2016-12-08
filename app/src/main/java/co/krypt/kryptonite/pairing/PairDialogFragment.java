@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
+import co.krypt.kryptonite.protocol.PairingQR;
+
 public class PairDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
