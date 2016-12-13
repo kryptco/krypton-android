@@ -35,7 +35,11 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
     private boolean visible;
 
     private PairScanner pairScanner;
-    public PairingQR pendingPairingQR;
+    private PairingQR pendingPairingQR;
+
+    public PairingQR getPendingPairingQR() {
+        return pendingPairingQR;
+    }
 
     public PairFragment() {
     }
