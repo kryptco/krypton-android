@@ -25,7 +25,7 @@ import co.krypt.kryptonite.pairing.PairFragment;
 import co.krypt.kryptonite.protocol.PairingQR;
 import co.krypt.kryptonite.silo.Silo;
 
-public class MainActivity extends AppCompatActivity implements PairDialogFragment.PairListener {
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static final int PAIR_FRAGMENT_POSITION = 1;
 
@@ -169,34 +169,5 @@ public class MainActivity extends AppCompatActivity implements PairDialogFragmen
         }
         Log.e(TAG, "fragment !instanceof PairFragment");
         return null;
-    }
-
-    @Override
-    public synchronized void pair() {
-        Log.i(TAG, "pair");
-        PairFragment pairFragment = getPairFragment();
-        if (pairFragment != null) {
-            PairingQR pendingQR = pairFragment.pendingPairingQR;
-            if (pendingQR != null) {
-                pairFragment.pendingPairingQR = null;
-                try {
-                    Silo.shared(getApplicationContext()).pair(pendingQR);
-                } catch (CryptoException e) {
-                    e.printStackTrace();
-                } catch (TransportException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Log.e(TAG, "pendingQR null");
-            }
-        }
-    }
-
-    @Override
-    public synchronized void cancel() {
-        PairFragment pairFragment = getPairFragment();
-        if (pairFragment != null) {
-            pairFragment.pendingPairingQR = null;
-        }
     }
 }

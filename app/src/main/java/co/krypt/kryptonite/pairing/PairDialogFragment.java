@@ -7,26 +7,35 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
-import co.krypt.kryptonite.protocol.PairingQR;
-
 public class PairDialogFragment extends DialogFragment {
-    private PairListener mListener;
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getTargetFragment().getContext());
         builder.setMessage("Pair with device?")
                 .setPositiveButton("Pair", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        if (mListener != null) {
-                            mListener.pair();
+                        if (getTargetFragment() instanceof PairListener) {
+                            final PairListener listener = (PairListener) getTargetFragment();
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.pair();
+                                }
+                            }).start();
                         }
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        if (mListener != null) {
-                            mListener.cancel();
+                        if (getTargetFragment() instanceof PairListener) {
+                            final PairListener listener = (PairListener) getTargetFragment();
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.cancel();
+                                }
+                            }).start();
                         }
                     }
                 });
@@ -36,18 +45,11 @@ public class PairDialogFragment extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof PairListener) {
-            mListener = (PairListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement PairListener");
-        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
     public interface PairListener {

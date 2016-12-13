@@ -144,6 +144,7 @@ public class Silo {
         } catch (TransportException e){
             throw e;
         } catch (RuntimeException e) {
+            Log.e(TAG, e.toString());
             throw new TransportException(e.getMessage());
         }
     }

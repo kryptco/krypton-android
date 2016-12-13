@@ -24,7 +24,7 @@ import co.krypt.kryptonite.silo.Silo;
  * Use the {@link PairFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PairFragment extends Fragment implements Camera.PreviewCallback {
+public class PairFragment extends Fragment implements Camera.PreviewCallback, PairDialogFragment.PairListener {
     private static final String TAG = "PairFragment";
 
     private Camera mCamera;
@@ -44,6 +44,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
         if (pendingPairingQR == null) {
             pendingPairingQR = pairingQR;
             PairDialogFragment pairDialog = new PairDialogFragment();
+            pairDialog.setTargetFragment(this, 0);
             pairDialog.show(getFragmentManager(), "PAIR_NEW_DEVICE");
         }
     }
@@ -189,5 +190,27 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
                 pairScanner.pushFrame(data);
             }
         }
+    }
+
+    @Override
+    public synchronized void pair() {
+        Log.i(TAG, "pair");
+        if (pendingPairingQR != null) {
+            try {
+                Silo.shared(getContext()).pair(pendingPairingQR);
+            } catch (CryptoException e) {
+                e.printStackTrace();
+            } catch (TransportException e) {
+                e.printStackTrace();
+            }
+            pendingPairingQR = null;
+        } else {
+            Log.e(TAG, "pendingQR null");
+        }
+    }
+
+    @Override
+    public synchronized void cancel() {
+        pendingPairingQR = null;
     }
 }
