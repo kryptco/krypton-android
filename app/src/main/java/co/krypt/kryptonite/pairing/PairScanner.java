@@ -85,16 +85,11 @@ public class PairScanner {
                                 if (barcode.rawValue != null) {
                                     PairingQR pairingQR = PairingQR.parseJson(barcode.rawValue);
                                     Log.i(TAG, "found pairingQR: " + Base64.encodeToString(pairingQR.workstationPublicKey, Base64.DEFAULT));
-                                    Silo.shared(context).pair(pairingQR);
                                     fragment.onPairingScanned(pairingQR);
                                 }
                             }
                         }
                     } catch (InterruptedException e) {
-                        Log.e(TAG, Log.getStackTraceString(e));
-                    } catch (CryptoException e) {
-                        Log.e(TAG, Log.getStackTraceString(e));
-                    } catch (TransportException e) {
                         Log.e(TAG, Log.getStackTraceString(e));
                     }
                 }

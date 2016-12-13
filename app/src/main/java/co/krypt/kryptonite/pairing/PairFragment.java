@@ -13,7 +13,10 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.exception.CryptoException;
+import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.protocol.PairingQR;
+import co.krypt.kryptonite.silo.Silo;
 
 
 /**
@@ -32,13 +35,17 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback {
     private boolean visible;
 
     private PairScanner pairScanner;
+    public PairingQR pendingPairingQR;
 
     public PairFragment() {
     }
 
     public synchronized void onPairingScanned(PairingQR pairingQR) {
-        PairDialogFragment pairDialog = new PairDialogFragment();
-        pairDialog.show(getFragmentManager(), "PAIR_NEW_DEVICE");
+        if (pendingPairingQR == null) {
+            pendingPairingQR = pairingQR;
+            PairDialogFragment pairDialog = new PairDialogFragment();
+            pairDialog.show(getFragmentManager(), "PAIR_NEW_DEVICE");
+        }
     }
 
     @Override

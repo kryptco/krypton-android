@@ -17,11 +17,17 @@ import android.view.View;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import co.krypt.kryptonite.exception.CryptoException;
+import co.krypt.kryptonite.exception.TransportException;
+import co.krypt.kryptonite.me.MeFragment;
+import co.krypt.kryptonite.pairing.PairDialogFragment;
 import co.krypt.kryptonite.pairing.PairFragment;
+import co.krypt.kryptonite.protocol.PairingQR;
 import co.krypt.kryptonite.silo.Silo;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PairDialogFragment.PairListener {
     private static final String TAG = "MainActivity";
+    private static final int PAIR_FRAGMENT_POSITION = 1;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -111,10 +117,10 @@ public class MainActivity extends AppCompatActivity {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
-                case 1:
+                case PAIR_FRAGMENT_POSITION:
                     return PairFragment.newInstance();
                 default:
-                    return BlankFragment.newInstance();
+                    return new MeFragment();
             }
         }
 
@@ -129,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
             switch (position) {
                 case 0:
                     return "Me";
-                case 1:
+                case PAIR_FRAGMENT_POSITION:
                     return "Pair";
                 case 2:
                     return "Devices";
@@ -150,5 +156,47 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         Log.i(TAG, "pause");
         silo.stop();
+    }
+
+    private PairFragment getPairFragment() {
+        Fragment fragment = mSectionsPagerAdapter.getItem(PAIR_FRAGMENT_POSITION);
+        if (fragment == null) {
+            Log.e(TAG, "PairFragment null");
+            return null;
+        }
+        if (fragment instanceof PairFragment) {
+            return (PairFragment)fragment;
+        }
+        Log.e(TAG, "fragment !instanceof PairFragment");
+        return null;
+    }
+
+    @Override
+    public synchronized void pair() {
+        Log.i(TAG, "pair");
+        PairFragment pairFragment = getPairFragment();
+        if (pairFragment != null) {
+            PairingQR pendingQR = pairFragment.pendingPairingQR;
+            if (pendingQR != null) {
+                pairFragment.pendingPairingQR = null;
+                try {
+                    Silo.shared(getApplicationContext()).pair(pendingQR);
+                } catch (CryptoException e) {
+                    e.printStackTrace();
+                } catch (TransportException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Log.e(TAG, "pendingQR null");
+            }
+        }
+    }
+
+    @Override
+    public synchronized void cancel() {
+        PairFragment pairFragment = getPairFragment();
+        if (pairFragment != null) {
+            pairFragment.pendingPairingQR = null;
+        }
     }
 }
