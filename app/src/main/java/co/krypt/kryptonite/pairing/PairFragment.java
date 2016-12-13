@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.exception.CryptoException;
@@ -33,6 +34,9 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
     private CameraPreview mPreview;
     private FrameLayout preview;
     private boolean visible;
+
+    private View pairingStatusView;
+    private TextView pairingStatusText;
 
     private PairScanner pairScanner;
     private PairingQR pendingPairingQR;
@@ -91,6 +95,8 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_pair, container, false);
         preview = (FrameLayout) rootView.findViewById(R.id.camera_preview);
+        pairingStatusView = rootView.findViewById(R.id.pairingStatusLayout);
+        pairingStatusText = (TextView) rootView.findViewById(R.id.pairingStatusText);
         mPreview = new CameraPreview(getContext());
         preview.addView(mPreview);
 
@@ -200,14 +206,22 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
     public synchronized void pair() {
         Log.i(TAG, "pair");
         if (pendingPairingQR != null) {
+            final PairingQR qr = pendingPairingQR;
             try {
-                Silo.shared(getContext()).pair(pendingPairingQR);
+                Silo.shared(getContext()).pair(qr);
+                new Handler(Looper.getMainLooper()).post(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                pairingStatusText.setText("Pairing with\n" + qr.workstationName);
+                                pairingStatusView.setVisibility(View.VISIBLE);
+                            }
+                        });
             } catch (CryptoException e) {
                 e.printStackTrace();
             } catch (TransportException e) {
                 e.printStackTrace();
             }
-            pendingPairingQR = null;
         } else {
             Log.e(TAG, "pendingQR null");
         }
