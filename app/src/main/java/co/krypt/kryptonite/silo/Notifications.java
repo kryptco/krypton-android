@@ -26,7 +26,8 @@ public class Notifications {
         Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setSmallIcon(R.drawable.ic_notification_white)
+                        .setColor(context.getColor(R.color.colorPrimary))
                         .setContentTitle("SSH Access Granted")
                         .setContentText(request.signRequest.getCommandOrDefault("SSH Login"))
                         .setAutoCancel(true)
