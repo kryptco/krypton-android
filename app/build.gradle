@@ -39,6 +39,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     // Optional -- Mockito framework
+    compile project(':libsodium-jni-release')
+    testCompile project(':libsodium-jni-release')
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.google.android.gms:play-services:10.0.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
@@ -47,9 +49,9 @@ dependencies {
     compile 'com.amazonaws:aws-android-sdk-core:2.2.22'
     compile 'com.amazonaws:aws-android-sdk-sqs:2.2.22'
     compile 'com.amazonaws:aws-android-sdk-sns:2.2.22'
-    compile project(':libsodium-jni-release')
     compile 'com.google.firebase:firebase-messaging:10.0.1'
-    testCompile project(':libsodium-jni-release')
+    compile 'com.android.support:recyclerview-v7:23.4.0'
+    compile 'com.android.support:cardview-v7:23.0.+'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.powermock:powermock-module-junit4:1.6.4'
@@ -57,5 +59,6 @@ dependencies {
     testCompile 'org.powermock:powermock-api-mockito:1.6.4'
     testCompile 'org.powermock:powermock-classloading-xstream:1.6.4'
 }
+
 
 apply plugin: 'com.google.gms.google-services'

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    android:id="@+id/root"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FEFEFE"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="4dp">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/unpairButton">
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/deviceName"
+            tools:layout_constraintTop_creator="1"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textSize="20sp"
+            android:textAlignment="viewStart"
+            android:paddingTop="20dp"
+            android:fontFamily="sans-serif"
+            android:textColor="@android:color/white"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:paddingLeft="10dp"
+            android:paddingBottom="5dp" />
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/deviceName"
+            android:minHeight="100dp"
+            app:layout_constraintHorizontal_bias="0.0">
+
+            <TextView
+                android:text="Command history empty"
+                android:layout_height="wrap_content"
+                android:id="@+id/lastCommandText"
+                android:paddingLeft="10dp"
+                android:textSize="16sp"
+                android:fontFamily="monospace"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_width="wrap_content"
+                android:textStyle="normal|bold"
+                app:layout_constraintBottom_toTopOf="@+id/unpairButton"
+                app:layout_constraintTop_toBottomOf="@+id/lastCommandTimeText" />
+
+            <TextView
+                android:text="5m ago"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/lastCommandTimeText"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:padding="5dp"
+                android:textSize="12sp" />
+
+            <TextView
+                android:text="Last SSH Command"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/lastCommandTitle"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:textAllCaps="true"
+                android:paddingLeft="10dp"
+                android:paddingTop="5dp"
+                android:textSize="12sp" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/unpairButton"
+                android:text="Unpair"
+                android:textColor="@color/colorDestructive"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:textSize="14sp"
+                android:backgroundTint="@color/cardview_light_background" />
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>

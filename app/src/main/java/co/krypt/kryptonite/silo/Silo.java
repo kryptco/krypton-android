@@ -66,6 +66,10 @@ public class Silo {
         return singleton;
     }
 
+    public Pairings pairings() {
+        return pairingStorage;
+    }
+
     public synchronized void start() {
         for (Pairing pairing : activePairingsByUUID.values()) {
             Log.i(TAG, "starting "+ Base64.encodeAsString(pairing.workstationPublicKey));

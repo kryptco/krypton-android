@@ -17,6 +17,7 @@ import android.view.View;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import co.krypt.kryptonite.devices.DevicesFragment;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.me.MeFragment;
@@ -28,6 +29,7 @@ import co.krypt.kryptonite.silo.Silo;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static final int PAIR_FRAGMENT_POSITION = 1;
+    private static final int DEVICES_FRAGMENT_POSITION = 2;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -119,6 +121,8 @@ public class MainActivity extends AppCompatActivity {
             switch (position) {
                 case PAIR_FRAGMENT_POSITION:
                     return PairFragment.newInstance();
+                case DEVICES_FRAGMENT_POSITION:
+                    return DevicesFragment.newInstance(1);
                 default:
                     return new MeFragment();
             }
@@ -137,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                     return "Me";
                 case PAIR_FRAGMENT_POSITION:
                     return "Pair";
-                case 2:
+                case DEVICES_FRAGMENT_POSITION:
                     return "Devices";
             }
             return null;
