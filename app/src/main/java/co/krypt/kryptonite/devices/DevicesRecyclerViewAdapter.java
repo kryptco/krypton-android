@@ -4,18 +4,21 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.List;
 
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.pairing.Pairing;
+import co.krypt.kryptonite.silo.Silo;
 
 public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Device> mValues;
+    private final List<Pairing> mValues;
     private final OnDeviceListInteractionListener mListener;
 
-    public DevicesRecyclerViewAdapter(List<Device> items, OnDeviceListInteractionListener listener) {
+    public DevicesRecyclerViewAdapter(List<Pairing> items, OnDeviceListInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -28,9 +31,19 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.mItem = mValues.get(position);
         holder.deviceName.setText(mValues.get(position).workstationName);
+
+        holder.unpairButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Silo.shared(v.getContext()).unpair(holder.mItem);
+                mValues.remove(position);
+                notifyItemRemoved(position);
+                notifyDataSetChanged();
+            }
+        });
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,12 +65,18 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView deviceName;
-        public Device mItem;
+        public final TextView lastCommand;
+        public final TextView lastCommandTime;
+        public final Button unpairButton;
+        public Pairing mItem;
 
-        public ViewHolder(View view) {
+        public ViewHolder(final View view) {
             super(view);
             mView = view;
             deviceName = (TextView) view.findViewById(R.id.deviceName);
+            lastCommand = (TextView) view.findViewById(R.id.lastCommandText);
+            lastCommandTime = (TextView) view.findViewById(R.id.lastCommandTimeText);
+            unpairButton = (Button) view.findViewById(R.id.unpairButton);
         }
 
         @Override

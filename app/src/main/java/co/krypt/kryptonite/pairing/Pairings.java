@@ -7,6 +7,7 @@ import android.util.ArraySet;
 import java.util.HashSet;
 import java.util.Set;
 
+import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.protocol.JSON;
 
 /**
@@ -66,5 +67,32 @@ public class Pairings {
         synchronized (lock) {
             setAllLocked(new HashSet<Pairing>());
         }
+    }
+
+    public void appendToLog(String pairingUUID, SignatureLog log) {
+        synchronized (lock) {
+            Set<String> logsSetJSON = preferences.getStringSet(pairingUUID + ".SIGNATURE_LOGS", new ArraySet<String>());
+            logsSetJSON.add(JSON.toJson(log));
+            preferences.edit().putStringSet(pairingUUID + ".SIGNATURE_LOGS", logsSetJSON).commit();
+        }
+    }
+
+    public void appendToLog(Pairing pairing, SignatureLog log) {
+        appendToLog(pairing.getUUIDString(), log);
+    }
+
+    public HashSet<SignatureLog> getLogs(String pairingUUID) {
+        synchronized (lock) {
+            HashSet<SignatureLog> logs = new HashSet<>();
+            Set<String> logsSetJSON = preferences.getStringSet(pairingUUID + ".SIGNATURE_LOGS", new ArraySet<String>());
+            for (String jsonLog : logsSetJSON) {
+                logs.add(JSON.fromJson(jsonLog, SignatureLog.class));
+            }
+            return logs;
+        }
+    }
+
+    public HashSet<SignatureLog> getLogs(Pairing pairing) {
+        return getLogs(pairing.getUUIDString());
     }
 }

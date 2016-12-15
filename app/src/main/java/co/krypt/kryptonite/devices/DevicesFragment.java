@@ -3,6 +3,7 @@ package co.krypt.kryptonite.devices;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -65,9 +66,8 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            Set<Pairing> pairings = Silo.shared(getContext()).pairings().loadAll();
-            List<Device> devices = Device.devicesFromPairings(new ArrayList<Pairing>(pairings));
-            recyclerView.setAdapter(new DevicesRecyclerViewAdapter(devices, this));
+            List<Pairing> pairings = new ArrayList<>(Silo.shared(getContext()).pairings().loadAll());
+            recyclerView.setAdapter(new DevicesRecyclerViewAdapter(pairings, this));
         }
         return view;
     }
@@ -84,7 +84,7 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
     }
 
     @Override
-    public void onListFragmentInteraction(Device device) {
+    public void onListFragmentInteraction(Pairing device) {
 
     }
 }
