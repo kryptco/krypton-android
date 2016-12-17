@@ -16,6 +16,7 @@ import co.krypt.kryptonite.protocol.JSON;
  */
 
 public class Pairings {
+    public static final String PAIRINGS_KEY = "PAIRINGS";
     private static Object lock = new Object();
     private SharedPreferences preferences;
 
@@ -23,9 +24,20 @@ public class Pairings {
         preferences = context.getSharedPreferences("PAIRING_MANAGER_PREFERENCES", Context.MODE_PRIVATE);
     }
 
+    public void registerOnSharedPreferenceChangedListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
+        synchronized (lock) {
+            preferences.registerOnSharedPreferenceChangeListener(listener);
+        }
+    }
+    public void unregisterOnSharedPreferenceChangedListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
+        synchronized (lock) {
+            preferences.unregisterOnSharedPreferenceChangeListener(listener);
+        }
+    }
+
     private HashSet<Pairing> loadAllLocked() {
         HashSet<Pairing> pairings = new HashSet<>();
-        Set<String> jsonPairings = new HashSet<>(preferences.getStringSet("PAIRINGS", new ArraySet<String>()));
+        Set<String> jsonPairings = new HashSet<>(preferences.getStringSet(PAIRINGS_KEY, new ArraySet<String>()));
         for (String jsonPairing : jsonPairings) {
             pairings.add(JSON.fromJson(jsonPairing, Pairing.class));
         }
@@ -37,7 +49,7 @@ public class Pairings {
         for (Pairing pairing : pairings) {
             jsonPairings.add(JSON.toJson(pairing));
         }
-        preferences.edit().putStringSet("PAIRINGS", jsonPairings).commit();
+        preferences.edit().putStringSet(PAIRINGS_KEY, jsonPairings).commit();
         return pairings;
     }
 

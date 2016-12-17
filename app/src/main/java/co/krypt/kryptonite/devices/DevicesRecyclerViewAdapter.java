@@ -23,6 +23,14 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         mListener = listener;
     }
 
+    public void setPairings(List<Pairing> newPairings) {
+        mValues.clear();
+        for (Pairing pairing : newPairings) {
+            mValues.add(pairing);
+        }
+        notifyDataSetChanged();
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
@@ -39,9 +47,6 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
             @Override
             public void onClick(View v) {
                 Silo.shared(v.getContext()).unpair(holder.mItem);
-                mValues.remove(position);
-                notifyItemRemoved(position);
-                notifyDataSetChanged();
             }
         });
 

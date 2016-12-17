@@ -1,6 +1,7 @@
 package co.krypt.kryptonite.devices;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -17,14 +18,17 @@ import java.util.List;
 
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.pairing.Pairing;
+import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.silo.Silo;
 
-public class DevicesFragment extends Fragment implements OnDeviceListInteractionListener {
+public class DevicesFragment extends Fragment implements OnDeviceListInteractionListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
+
+    private DevicesRecyclerViewAdapter devicesAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -47,6 +51,9 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        List<Pairing> pairings = new ArrayList<>(Silo.shared(getContext()).pairings().loadAll());
+        devicesAdapter = new DevicesRecyclerViewAdapter(pairings, this);
+
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
@@ -64,29 +71,36 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
         } else {
             recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
-        List<Pairing> pairings = new ArrayList<>(Silo.shared(getContext()).pairings().loadAll());
-        recyclerView.setAdapter(new DevicesRecyclerViewAdapter(pairings, this));
+        recyclerView.setAdapter(devicesAdapter);
         return view;
     }
-
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        Silo.shared(getContext()).pairings().registerOnSharedPreferenceChangedListener(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        Silo.shared(getContext()).pairings().unregisterOnSharedPreferenceChangedListener(this);
     }
 
     @Override
     public void onListFragmentInteraction(Pairing device) {
-        Log.i("device click", "click");
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction
                 .addToBackStack(null)
                 .add(R.id.deviceDetail, DeviceDetailFragment.newInstance(1, device.getUUIDString()))
                 .commit();
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key == Pairings.PAIRINGS_KEY) {
+            List<Pairing> pairings = new ArrayList<>(Silo.shared(getContext()).pairings().loadAll());
+            devicesAdapter.setPairings(pairings);
+        }
     }
 }
