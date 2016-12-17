@@ -11,6 +11,9 @@ public class Request {
     @SerializedName("request_id")
     public String requestID;
 
+    @SerializedName("unix_seconds")
+    public Long unixSeconds;
+
     @SerializedName("me_request")
     public MeRequest meRequest;
 

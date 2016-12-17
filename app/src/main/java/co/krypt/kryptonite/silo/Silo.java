@@ -18,6 +18,7 @@ import java.util.Set;
 import co.krypt.kryptonite.crypto.KeyManager;
 import co.krypt.kryptonite.crypto.SSHKeyPair;
 import co.krypt.kryptonite.exception.CryptoException;
+import co.krypt.kryptonite.exception.ProtocolException;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.pairing.Pairing;
@@ -136,9 +137,7 @@ public class Silo {
             }
         } catch (TransportException e) {
             Log.e(TAG, e.getMessage());
-        } catch (IOException | InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (CryptoException e) {
+        } catch (IOException | InvalidKeyException | ProtocolException | CryptoException e) {
             e.printStackTrace();
         }
     }
@@ -154,7 +153,10 @@ public class Silo {
         }
     }
 
-    public synchronized void handle(Pairing pairing, Request request) throws CryptoException, TransportException, IOException, InvalidKeyException {
+    public synchronized void handle(Pairing pairing, Request request) throws CryptoException, TransportException, IOException, InvalidKeyException, ProtocolException {
+        if (Math.abs(request.unixSeconds - (System.currentTimeMillis() / 1000)) > 120) {
+            throw new ProtocolException("invalid request time");
+        }
         Response response = Response.with(request);
         if (request.meRequest != null) {
             response.meResponse = new MeResponse(
