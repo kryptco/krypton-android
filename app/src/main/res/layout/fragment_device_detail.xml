@@ -27,8 +27,8 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
-        android:singleLine="true"
-        android:ellipsize="end" />
+        android:ellipsize="end"
+        android:maxLines="1" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list"
