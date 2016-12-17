@@ -1,6 +1,7 @@
 package co.krypt.kryptonite.devices;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,17 +36,17 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         holder.mItem = mValues.get(position);
         holder.deviceName.setText(mValues.get(position).workstationName);
 
-        holder.unpairButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Silo.shared(v.getContext()).unpair(holder.mItem);
-                mValues.remove(position);
-                notifyItemRemoved(position);
-                notifyDataSetChanged();
-            }
-        });
+//        holder.unpairButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Silo.shared(v.getContext()).unpair(holder.mItem);
+//                mValues.remove(position);
+//                notifyItemRemoved(position);
+//                notifyDataSetChanged();
+//            }
+//        });
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
+       holder.moreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
@@ -68,6 +69,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         public final TextView lastCommand;
         public final TextView lastCommandTime;
         public final Button unpairButton;
+        public final Button moreButton;
         public Pairing mItem;
 
         public ViewHolder(final View view) {
@@ -77,6 +79,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
             lastCommand = (TextView) view.findViewById(R.id.lastCommandText);
             lastCommandTime = (TextView) view.findViewById(R.id.lastCommandTimeText);
             unpairButton = (Button) view.findViewById(R.id.unpairButton);
+            moreButton = (Button) view.findViewById(R.id.moreButton);
         }
 
         @Override

@@ -54,14 +54,4 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        app:srcCompat="@android:drawable/ic_dialog_email"
-        app:backgroundTint="?attr/colorPrimary"
-        android:layout_marginBottom="50dp"
-        android:layout_marginRight="16dp" />
-
 </android.support.design.widget.CoordinatorLayout>

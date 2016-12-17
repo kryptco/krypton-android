@@ -1,7 +1,6 @@
 package co.krypt.kryptonite;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,18 +11,13 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import co.krypt.kryptonite.devices.DevicesFragment;
-import co.krypt.kryptonite.exception.CryptoException;
-import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.me.MeFragment;
-import co.krypt.kryptonite.pairing.PairDialogFragment;
 import co.krypt.kryptonite.pairing.PairFragment;
-import co.krypt.kryptonite.protocol.PairingQR;
 import co.krypt.kryptonite.silo.Silo;
 
 public class MainActivity extends AppCompatActivity {
@@ -71,14 +65,6 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Silo.shared(getApplicationContext()).unpairAll();
-            }
-        });
     }
 
 
@@ -162,16 +148,17 @@ public class MainActivity extends AppCompatActivity {
         silo.stop();
     }
 
-    private PairFragment getPairFragment() {
-        Fragment fragment = mSectionsPagerAdapter.getItem(PAIR_FRAGMENT_POSITION);
-        if (fragment == null) {
-            Log.e(TAG, "PairFragment null");
-            return null;
+
+    @Override
+    public void onBackPressed() {
+        for (Fragment fragment: getSupportFragmentManager().getFragments()) {
+            if (fragment.isVisible()) {
+                if (fragment.getChildFragmentManager().getBackStackEntryCount() > 0) {
+                    fragment.getChildFragmentManager().popBackStack();
+                    return;
+                }
+            }
         }
-        if (fragment instanceof PairFragment) {
-            return (PairFragment)fragment;
-        }
-        Log.e(TAG, "fragment !instanceof PairFragment");
-        return null;
+        super.onBackPressed();
     }
 }

@@ -51,7 +51,7 @@ dependencies {
     compile 'com.amazonaws:aws-android-sdk-sns:2.2.22'
     compile 'com.google.firebase:firebase-messaging:10.0.1'
     compile 'com.android.support:recyclerview-v7:23.4.0'
-    compile 'com.android.support:cardview-v7:23.0.+'
+    compile 'com.android.support:cardview-v7:23.4.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.powermock:powermock-module-junit4:1.6.4'
@@ -59,6 +59,7 @@ dependencies {
     testCompile 'org.powermock:powermock-api-mockito:1.6.4'
     testCompile 'org.powermock:powermock-classloading-xstream:1.6.4'
 }
+
 
 
 apply plugin: 'com.google.gms.google-services'

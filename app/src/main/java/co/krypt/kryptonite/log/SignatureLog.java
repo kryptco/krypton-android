@@ -4,7 +4,11 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Kevin King on 12/15/16.
@@ -47,5 +51,16 @@ public class SignatureLog {
         result = 31 * result + (command != null ? command.hashCode() : 0);
         result = 31 * result + (int) (unixSeconds ^ (unixSeconds >>> 32));
         return result;
+    }
+
+    public static List<SignatureLog> sortByTimeDescending(Set<SignatureLog> logs) {
+        List<SignatureLog> sortedLogs = new ArrayList<>(logs);
+        java.util.Collections.sort(sortedLogs, new Comparator<SignatureLog>() {
+            @Override
+            public int compare(SignatureLog lhs, SignatureLog rhs) {
+                return Long.compare(rhs.unixSeconds, lhs.unixSeconds);
+            }
+        });
+        return sortedLogs;
     }
 }

@@ -25,7 +25,7 @@ public class Pairings {
 
     private HashSet<Pairing> loadAllLocked() {
         HashSet<Pairing> pairings = new HashSet<>();
-        Set<String> jsonPairings = preferences.getStringSet("PAIRINGS", new ArraySet<String>());
+        Set<String> jsonPairings = new HashSet<>(preferences.getStringSet("PAIRINGS", new ArraySet<String>()));
         for (String jsonPairing : jsonPairings) {
             pairings.add(JSON.fromJson(jsonPairing, Pairing.class));
         }
@@ -44,6 +44,18 @@ public class Pairings {
     public HashSet<Pairing> loadAll() {
         synchronized (lock) {
             return loadAllLocked();
+        }
+    }
+
+    public Pairing getPairing(String pairingUUID) {
+        synchronized (lock) {
+            HashSet<Pairing> pairings =  loadAllLocked();
+            for (Pairing pairing: pairings) {
+                if (pairing.getUUIDString().equals(pairingUUID)) {
+                    return pairing;
+                }
+            }
+            return null;
         }
     }
 
@@ -69,9 +81,14 @@ public class Pairings {
         }
     }
 
+    private Set<String> getLogsJSONLocked(String pairingUUID) {
+        return new HashSet<>(
+                preferences.getStringSet(pairingUUID + ".SIGNATURE_LOGS", new ArraySet<String>()));
+    }
+
     public void appendToLog(String pairingUUID, SignatureLog log) {
         synchronized (lock) {
-            Set<String> logsSetJSON = preferences.getStringSet(pairingUUID + ".SIGNATURE_LOGS", new ArraySet<String>());
+            Set<String> logsSetJSON = getLogsJSONLocked(pairingUUID);
             logsSetJSON.add(JSON.toJson(log));
             preferences.edit().putStringSet(pairingUUID + ".SIGNATURE_LOGS", logsSetJSON).commit();
         }
@@ -84,7 +101,7 @@ public class Pairings {
     public HashSet<SignatureLog> getLogs(String pairingUUID) {
         synchronized (lock) {
             HashSet<SignatureLog> logs = new HashSet<>();
-            Set<String> logsSetJSON = preferences.getStringSet(pairingUUID + ".SIGNATURE_LOGS", new ArraySet<String>());
+            Set<String> logsSetJSON = getLogsJSONLocked(pairingUUID);
             for (String jsonLog : logsSetJSON) {
                 logs.add(JSON.fromJson(jsonLog, SignatureLog.class));
             }
