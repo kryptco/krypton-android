@@ -11,6 +11,7 @@ import java.util.List;
 
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.pairing.Pairing;
+import co.krypt.kryptonite.silo.Silo;
 
 public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecyclerViewAdapter.ViewHolder> {
 
@@ -34,15 +35,15 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         holder.mItem = mValues.get(position);
         holder.deviceName.setText(mValues.get(position).workstationName);
 
-//        holder.unpairButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Silo.shared(v.getContext()).unpair(holder.mItem);
-//                mValues.remove(position);
-//                notifyItemRemoved(position);
-//                notifyDataSetChanged();
-//            }
-//        });
+        holder.unpairButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Silo.shared(v.getContext()).unpair(holder.mItem);
+                mValues.remove(position);
+                notifyItemRemoved(position);
+                notifyDataSetChanged();
+            }
+        });
 
        holder.moreButton.setOnClickListener(new View.OnClickListener() {
             @Override
