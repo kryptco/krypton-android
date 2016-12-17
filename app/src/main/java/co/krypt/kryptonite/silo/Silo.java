@@ -75,6 +75,10 @@ public class Silo {
         return lastRequestTimeSeconds.get(pairing) != null;
     }
 
+    public synchronized Pairing getPairing(String pairingUUIDString) {
+        return activePairingsByUUID.get(pairingUUIDString);
+    }
+
     public Pairings pairings() {
         return pairingStorage;
     }

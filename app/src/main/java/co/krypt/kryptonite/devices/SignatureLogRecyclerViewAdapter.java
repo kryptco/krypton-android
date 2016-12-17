@@ -39,6 +39,14 @@ public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<Signat
         return mValues.size();
     }
 
+    public synchronized void setLogs(List<SignatureLog> newLogs) {
+        mValues.clear();
+        for (SignatureLog log : newLogs) {
+            mValues.add(log);
+        }
+        notifyDataSetChanged();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView commandText;

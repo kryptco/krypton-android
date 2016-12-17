@@ -1,6 +1,7 @@
 package co.krypt.kryptonite.devices;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,14 +17,17 @@ import java.util.List;
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.pairing.Pairing;
+import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.silo.Silo;
 
-public class DeviceDetailFragment extends Fragment {
+public class DeviceDetailFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private static final String ARG_PAIRING_UUID = "pairing-uuid";
     private int mColumnCount = 1;
     private String pairingUUID;
+
+    private SignatureLogRecyclerViewAdapter signatureLogAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -45,11 +49,15 @@ public class DeviceDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
             pairingUUID = getArguments().getString(ARG_PAIRING_UUID);
         }
+
+        List<SignatureLog> signatureLogs = SignatureLog.sortByTimeDescending(
+                Silo.shared(getContext()).pairings().getLogs(pairingUUID));
+        signatureLogAdapter = new SignatureLogRecyclerViewAdapter(signatureLogs);
+
     }
 
     @Override
@@ -71,9 +79,7 @@ public class DeviceDetailFragment extends Fragment {
         } else {
             recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
-        List<SignatureLog> signatureLogs = SignatureLog.sortByTimeDescending(
-                Silo.shared(getContext()).pairings().getLogs(pairingUUID));
-        recyclerView.setAdapter(new SignatureLogRecyclerViewAdapter(signatureLogs));
+        recyclerView.setAdapter(signatureLogAdapter);
 
         return view;
     }
@@ -82,10 +88,21 @@ public class DeviceDetailFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        Silo.shared(getContext()).pairings().registerOnSharedPreferenceChangedListener(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        Silo.shared(getContext()).pairings().unregisterOnSharedPreferenceChangedListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(Pairings.pairingLogsKey(pairingUUID))) {
+            List<SignatureLog> signatureLogs = SignatureLog.sortByTimeDescending(
+                    Silo.shared(getContext()).pairings().getLogs(pairingUUID));
+            signatureLogAdapter.setLogs(signatureLogs);
+        }
     }
 }

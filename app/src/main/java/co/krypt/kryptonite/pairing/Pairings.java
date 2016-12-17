@@ -24,6 +24,10 @@ public class Pairings {
         preferences = context.getSharedPreferences("PAIRING_MANAGER_PREFERENCES", Context.MODE_PRIVATE);
     }
 
+    public static String pairingLogsKey(String pairingUUIDString) {
+        return pairingUUIDString + ".SIGNATURE_LOGS";
+    }
+
     public void registerOnSharedPreferenceChangedListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
         synchronized (lock) {
             preferences.registerOnSharedPreferenceChangeListener(listener);
@@ -95,14 +99,14 @@ public class Pairings {
 
     private Set<String> getLogsJSONLocked(String pairingUUID) {
         return new HashSet<>(
-                preferences.getStringSet(pairingUUID + ".SIGNATURE_LOGS", new ArraySet<String>()));
+                preferences.getStringSet(pairingLogsKey(pairingUUID), new ArraySet<String>()));
     }
 
     public void appendToLog(String pairingUUID, SignatureLog log) {
         synchronized (lock) {
             Set<String> logsSetJSON = getLogsJSONLocked(pairingUUID);
             logsSetJSON.add(JSON.toJson(log));
-            preferences.edit().putStringSet(pairingUUID + ".SIGNATURE_LOGS", logsSetJSON).commit();
+            preferences.edit().putStringSet(pairingLogsKey(pairingUUID), logsSetJSON).commit();
         }
     }
 
