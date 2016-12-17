@@ -1,6 +1,5 @@
 package co.krypt.kryptonite.protocol;
 
-import com.amazonaws.util.Base64;
 import com.google.gson.annotations.SerializedName;
 
 /**

@@ -15,9 +15,9 @@ import com.amazonaws.util.Base64;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.krypt.kryptonite.protocol.NetworkMessage;
-import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.exception.TransportException;
+import co.krypt.kryptonite.pairing.Pairing;
+import co.krypt.kryptonite.protocol.NetworkMessage;
 
 /**
  * Created by Kevin King on 12/3/16.

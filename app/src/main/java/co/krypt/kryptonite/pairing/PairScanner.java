@@ -19,10 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import co.krypt.kryptonite.exception.CryptoException;
-import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.protocol.PairingQR;
-import co.krypt.kryptonite.silo.Silo;
 
 /**
  * Created by Kevin King on 12/2/16.

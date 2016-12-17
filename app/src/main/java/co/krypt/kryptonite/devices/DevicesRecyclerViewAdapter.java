@@ -1,7 +1,6 @@
 package co.krypt.kryptonite.devices;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import java.util.List;
 
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.pairing.Pairing;
-import co.krypt.kryptonite.silo.Silo;
 
 public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecyclerViewAdapter.ViewHolder> {
 
