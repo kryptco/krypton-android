@@ -28,7 +28,6 @@ import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.protocol.MeResponse;
 import co.krypt.kryptonite.protocol.NetworkMessage;
 import co.krypt.kryptonite.protocol.PairingQR;
-import co.krypt.kryptonite.protocol.Profile;
 import co.krypt.kryptonite.protocol.Request;
 import co.krypt.kryptonite.protocol.Response;
 import co.krypt.kryptonite.protocol.SignResponse;
@@ -51,6 +50,7 @@ public class Silo {
     private HashMap<String, Pairing> activePairingsByUUID;
     private HashMap<Pairing, SQSPoller> pollers;
     private final Context context;
+    private final HashMap<Pairing, Long> lastRequestTimeSeconds = new HashMap<>();
 
     private Silo(Context context) {
         this.context = context;
@@ -69,6 +69,10 @@ public class Silo {
             singleton = new Silo(context);
         }
         return singleton;
+    }
+
+    public synchronized boolean hasActivity(Pairing pairing) {
+        return lastRequestTimeSeconds.get(pairing) != null;
     }
 
     public Pairings pairings() {
@@ -94,11 +98,11 @@ public class Silo {
         pollers.clear();
     }
 
-    public synchronized void pair(PairingQR pairingQR) throws CryptoException, TransportException {
+    public synchronized Pairing pair(PairingQR pairingQR) throws CryptoException, TransportException {
         Pairing pairing = Pairing.generate(pairingQR);
         if (activePairingsByUUID.containsValue(pairing)) {
             Log.w(TAG, "already paired with " + pairing.workstationName);
-            return;
+            return activePairingsByUUID.get(pairing.getUUIDString());
         }
         byte[] wrappedKey = pairing.wrapKey();
         NetworkMessage wrappedKeyMessage = new NetworkMessage(NetworkMessage.Header.WRAPPED_KEY, wrappedKey);
@@ -107,6 +111,7 @@ public class Silo {
         pairingStorage.pair(pairing);
         activePairingsByUUID.put(pairing.getUUIDString(), pairing);
         pollers.put(pairing, new SQSPoller(context, pairing));
+        return pairing;
     }
 
     public synchronized void unpair(Pairing pairing) {
@@ -164,6 +169,9 @@ public class Silo {
         if (Math.abs(request.unixSeconds - (System.currentTimeMillis() / 1000)) > 120) {
             throw new ProtocolException("invalid request time");
         }
+
+        lastRequestTimeSeconds.put(pairing, System.currentTimeMillis() / 1000);
+
         Response response = Response.with(request);
         if (request.meRequest != null) {
             response.meResponse = new MeResponse(meStorage.load());

@@ -78,7 +78,6 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
      *
      * @return A new instance of fragment PairFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static PairFragment newInstance() {
         PairFragment fragment = new PairFragment();
         return fragment;
@@ -202,13 +201,72 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         }
     }
 
+    private synchronized void onPairingSuccess(final Pairing pairing) {
+        pendingPairingQR = null;
+        new Handler(Looper.getMainLooper()).post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        pairingStatusText.setText("Paired with\n" + pairing.workstationName);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(2000);
+                                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            pairingStatusView.setVisibility(View.INVISIBLE);
+                                        }
+                                    });
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                        pairingStatusView.setVisibility(View.VISIBLE);
+                    }
+                }
+        );
+    }
+
+    private synchronized void onPairingFailure(final Pairing pairing) {
+        pendingPairingQR = null;
+        new Handler(Looper.getMainLooper()).post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        pairingStatusText.setText("Failed to pair with\n" + pairing.workstationName);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(2000);
+                                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            pairingStatusView.setVisibility(View.INVISIBLE);
+                                        }
+                                    });
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                        pairingStatusView.setVisibility(View.VISIBLE);
+                    }
+                }
+        );
+    }
+
     @Override
     public synchronized void pair() {
         Log.i(TAG, "pair");
         if (pendingPairingQR != null) {
             final PairingQR qr = pendingPairingQR;
             try {
-                Silo.shared(getContext()).pair(qr);
+                final Pairing pairing = Silo.shared(getContext()).pair(qr);
+                final long pairTime = System.currentTimeMillis();
                 new Handler(Looper.getMainLooper()).post(
                         new Runnable() {
                             @Override
@@ -217,9 +275,25 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
                                 pairingStatusView.setVisibility(View.VISIBLE);
                             }
                         });
-            } catch (CryptoException e) {
-                e.printStackTrace();
-            } catch (TransportException e) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while((System.currentTimeMillis() - pairTime) < 10000) {
+                            if (Silo.shared(getContext()).hasActivity(pairing)) {
+                                onPairingSuccess(pairing);
+                                return;
+                            }
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                                return;
+                            }
+                        }
+                        onPairingFailure(pairing);
+                    }
+                }).start();
+            } catch (CryptoException | TransportException e) {
                 e.printStackTrace();
             }
         } else {
