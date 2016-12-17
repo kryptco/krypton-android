@@ -21,6 +21,7 @@ import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.ProtocolException;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.log.SignatureLog;
+import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.protocol.JSON;
@@ -45,7 +46,8 @@ public class Silo {
 
     private static Silo singleton;
 
-    private Pairings pairingStorage;
+    private final Pairings pairingStorage;
+    private final MeStorage meStorage;
     private HashMap<String, Pairing> activePairingsByUUID;
     private HashMap<Pairing, SQSPoller> pollers;
     private final Context context;
@@ -53,6 +55,7 @@ public class Silo {
     private Silo(Context context) {
         this.context = context;
         pairingStorage = new Pairings(context);
+        meStorage = new MeStorage(context);
         Set<Pairing> pairings = pairingStorage.loadAll();
         activePairingsByUUID = new HashMap<>();
         for (Pairing p : pairings) {
@@ -70,6 +73,10 @@ public class Silo {
 
     public Pairings pairings() {
         return pairingStorage;
+    }
+
+    public MeStorage meStorage() {
+        return meStorage;
     }
 
     public synchronized void start() {
@@ -159,10 +166,7 @@ public class Silo {
         }
         Response response = Response.with(request);
         if (request.meRequest != null) {
-            response.meResponse = new MeResponse(
-                    new Profile(
-                            "kevin@krypt.co",
-                            KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG).publicKeySSHWireFormat()));
+            response.meResponse = new MeResponse(meStorage.load());
         }
 
         if (request.signRequest != null) {
