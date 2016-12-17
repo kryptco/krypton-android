@@ -231,6 +231,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
     }
 
     private synchronized void onPairingFailure(final Pairing pairing) {
+        Silo.shared(getContext()).unpair(pairing);
         pendingPairingQR = null;
         new Handler(Looper.getMainLooper()).post(
                 new Runnable() {
