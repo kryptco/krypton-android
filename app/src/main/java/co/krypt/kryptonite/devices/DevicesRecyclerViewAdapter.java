@@ -1,6 +1,8 @@
 package co.krypt.kryptonite.devices;
 
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,23 +12,24 @@ import android.widget.TextView;
 import java.util.List;
 
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.silo.Silo;
 
 public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Pairing> mValues;
+    private final List<Pair<Pairing, SignatureLog>> devicesAndLastLogs;
     private final OnDeviceListInteractionListener mListener;
 
-    public DevicesRecyclerViewAdapter(List<Pairing> items, OnDeviceListInteractionListener listener) {
-        mValues = items;
+    public DevicesRecyclerViewAdapter(List<Pair<Pairing, SignatureLog>> items, OnDeviceListInteractionListener listener) {
+        devicesAndLastLogs = items;
         mListener = listener;
     }
 
-    public void setPairings(List<Pairing> newPairings) {
-        mValues.clear();
-        for (Pairing pairing : newPairings) {
-            mValues.add(pairing);
+    public void setPairings(List<Pair<Pairing, SignatureLog>> newPairings) {
+        devicesAndLastLogs.clear();
+        for (Pair<Pairing, SignatureLog> pairingAndLastLog : newPairings) {
+            devicesAndLastLogs.add(pairingAndLastLog);
         }
         notifyDataSetChanged();
     }
@@ -40,13 +43,19 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.mItem = mValues.get(position);
-        holder.deviceName.setText(mValues.get(position).workstationName);
+        holder.device = devicesAndLastLogs.get(position).first;
+        holder.lastLog = devicesAndLastLogs.get(position).second;
+
+        holder.deviceName.setText(devicesAndLastLogs.get(position).first.workstationName);
+        if (holder.lastLog != null) {
+            holder.lastCommand.setText(holder.lastLog.command);
+            holder.lastCommandTime.setText(DateUtils.getRelativeTimeSpanString(holder.lastLog.unixSeconds * 1000, System.currentTimeMillis(), 1000));
+        }
 
         holder.unpairButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Silo.shared(v.getContext()).unpair(holder.mItem);
+                Silo.shared(v.getContext()).unpair(holder.device);
             }
         });
 
@@ -56,7 +65,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onListFragmentInteraction(holder.device);
                 }
             }
         });
@@ -64,7 +73,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return devicesAndLastLogs.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -74,7 +83,8 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         public final TextView lastCommandTime;
         public final Button unpairButton;
         public final Button moreButton;
-        public Pairing mItem;
+        public Pairing device;
+        public SignatureLog lastLog;
 
         public ViewHolder(final View view) {
             super(view);

@@ -61,7 +61,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/lastCommandTimeText" />
 
             <TextView
-                android:text="5m ago"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/lastCommandTimeText"
@@ -88,7 +87,7 @@
                 android:id="@+id/unpairButton"
                 android:text="Unpair"
                 android:textColor="@color/colorDestructive"
-                app:layout_constraintTop_toBottomOf="@id/lastCommandText"
+                app:layout_constraintTop_toBottomOf="@+id/lastCommandText"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:textSize="14sp"
@@ -103,7 +102,7 @@
                 android:id="@+id/moreButton"
                 android:text="More"
                 android:textColor="@color/colorPrimary"
-                app:layout_constraintTop_toBottomOf="@id/lastCommandText"
+                app:layout_constraintTop_toBottomOf="@+id/lastCommandText"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:textSize="14sp"

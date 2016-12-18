@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.silo.Silo;
@@ -51,7 +53,7 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        List<Pairing> pairings = new ArrayList<>(Silo.shared(getContext()).pairings().loadAll());
+        List<Pair<Pairing, SignatureLog>> pairings = new ArrayList<>(Silo.shared(getContext()).pairings().loadAllWithLastCommand());
         devicesAdapter = new DevicesRecyclerViewAdapter(pairings, this);
 
         if (getArguments() != null) {
@@ -98,9 +100,7 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key == Pairings.PAIRINGS_KEY) {
-            List<Pairing> pairings = new ArrayList<>(Silo.shared(getContext()).pairings().loadAll());
-            devicesAdapter.setPairings(pairings);
-        }
+        List<Pair<Pairing, SignatureLog>> pairings = new ArrayList<>(Silo.shared(getContext()).pairings().loadAllWithLastCommand());
+        devicesAdapter.setPairings(pairings);
     }
 }

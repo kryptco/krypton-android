@@ -2,9 +2,12 @@ package co.krypt.kryptonite.pairing;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.Signature;
+import android.support.v4.util.Pair;
 import android.util.ArraySet;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import co.krypt.kryptonite.log.SignatureLog;
@@ -60,6 +63,23 @@ public class Pairings {
     public HashSet<Pairing> loadAll() {
         synchronized (lock) {
             return loadAllLocked();
+        }
+    }
+
+    public HashSet<Pair<Pairing, SignatureLog>> loadAllWithLastCommand() {
+        synchronized (lock) {
+            HashSet<Pairing> pairings = loadAllLocked();
+            HashSet<Pair<Pairing, SignatureLog>> pairingsWithLastCommand = new HashSet<>();
+            for (Pairing pairing: pairings) {
+                Pair<Pairing, SignatureLog> pair = new Pair<>(pairing, null);
+                List<SignatureLog> sortedLogs = SignatureLog.sortByTimeDescending(getLogs(pairing));
+                if (sortedLogs.size() > 0) {
+                    pairingsWithLastCommand.add(new Pair<Pairing, SignatureLog>(pairing, sortedLogs.get(0)));
+                } else {
+                    pairingsWithLastCommand.add(new Pair<Pairing, SignatureLog>(pairing, null));
+                }
+            }
+            return pairingsWithLastCommand;
         }
     }
 
