@@ -58,7 +58,9 @@
                 android:layout_width="wrap_content"
                 android:textStyle="normal|bold"
                 app:layout_constraintBottom_toTopOf="@+id/unpairButton"
-                app:layout_constraintTop_toBottomOf="@+id/lastCommandTimeText" />
+                app:layout_constraintTop_toBottomOf="@+id/lastCommandTimeText"
+                android:maxLines="2"
+                android:ellipsize="end" />
 
             <TextView
                 android:layout_width="wrap_content"
