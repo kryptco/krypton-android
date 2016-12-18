@@ -1,6 +1,7 @@
 package co.krypt.kryptonite.silo;
 
 import android.content.Context;
+import android.support.v4.util.LruCache;
 import android.util.Log;
 
 import com.amazonaws.util.Base64;
@@ -51,6 +52,7 @@ public class Silo {
     private HashMap<Pairing, SQSPoller> pollers;
     private final Context context;
     private final HashMap<Pairing, Long> lastRequestTimeSeconds = new HashMap<>();
+    private final LruCache<String, Response> responseCacheByRequestID = new LruCache<>(8192);
 
     private Silo(Context context) {
         this.context = context;
@@ -158,6 +160,12 @@ public class Silo {
         }
     }
 
+    public static void send(Pairing pairing, Response response) throws CryptoException, TransportException {
+        byte[] responseJson = JSON.toJson(response).getBytes();
+        byte[] sealed = pairing.seal(responseJson);
+        send(pairing, new NetworkMessage(NetworkMessage.Header.CIPHERTEXT, sealed));
+    }
+
     public static void send(Pairing pairing, NetworkMessage message) throws TransportException {
         try {
             SQSTransport.sendMessage(pairing, message);
@@ -172,6 +180,12 @@ public class Silo {
     public synchronized void handle(Pairing pairing, Request request) throws CryptoException, TransportException, IOException, InvalidKeyException, ProtocolException {
         if (Math.abs(request.unixSeconds - (System.currentTimeMillis() / 1000)) > 120) {
             throw new ProtocolException("invalid request time");
+        }
+
+        Response cachedResponse = responseCacheByRequestID.get(request.requestID);
+        if (cachedResponse != null) {
+            send(pairing, cachedResponse);
+            return;
         }
 
         lastRequestTimeSeconds.put(pairing, System.currentTimeMillis() / 1000);
@@ -202,6 +216,7 @@ public class Silo {
 
         response.snsEndpointARN = SNSTransport.getInstance(context).getEndpointARN();
 
+        responseCacheByRequestID.put(request.requestID, response);
         byte[] responseJson = JSON.toJson(response).getBytes();
         byte[] sealed = pairing.seal(responseJson);
         send(pairing, new NetworkMessage(NetworkMessage.Header.CIPHERTEXT, sealed));
