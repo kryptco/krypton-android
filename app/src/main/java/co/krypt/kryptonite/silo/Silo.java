@@ -217,9 +217,7 @@ public class Silo {
         response.snsEndpointARN = SNSTransport.getInstance(context).getEndpointARN();
 
         responseCacheByRequestID.put(request.requestID, response);
-        byte[] responseJson = JSON.toJson(response).getBytes();
-        byte[] sealed = pairing.seal(responseJson);
-        send(pairing, new NetworkMessage(NetworkMessage.Header.CIPHERTEXT, sealed));
+        send(pairing, response);
     }
 
 }
