@@ -207,9 +207,7 @@ public class Silo {
                     Log.e(TAG, Base64.encodeAsString(request.signRequest.publicKeyFingerprint) + " != " + Base64.encodeAsString(key.publicKeyFingerprint()));
                     response.signResponse.error = "unknown key fingerprint";
                 }
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (SignatureException e) {
+            } catch (NoSuchAlgorithmException | SignatureException e) {
                 e.printStackTrace();
             }
         }

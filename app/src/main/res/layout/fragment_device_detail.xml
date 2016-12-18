@@ -22,13 +22,70 @@
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/list"
+        app:layout_constraintBottom_toTopOf="@+id/approvalLabel"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
         android:ellipsize="end"
         android:maxLines="1" />
+
+    <TextView
+        android:text="When should Kryptonite ask for your approval?"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/approvalSettingsLayout"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deviceName"
+        android:id="@+id/approvalLabel" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/approvalSettingsLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/list"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/approvalLabel">
+        <RadioButton
+            android:text="Always ask"
+            android:id="@+id/manualApprovalButton"
+            android:button="@android:color/transparent"
+            android:background="@android:color/transparent"
+            android:drawableTop="?android:attr/listChoiceIndicatorSingle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/temporaryApprovalButton"
+            tools:layout_editor_absoluteY="0dp"
+            tools:layout_editor_absoluteX="0dp"
+            />
+
+        <RadioButton
+            android:text="Don't ask for 1 hour"
+            android:button="@android:color/transparent"
+            android:background="@android:color/transparent"
+            android:drawableTop="?android:attr/listChoiceIndicatorSingle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@+id/manualApprovalButton"
+            app:layout_constraintRight_toLeftOf="@+id/automaticApprovalButton"
+            android:id="@+id/temporaryApprovalButton"
+            />
+
+        <RadioButton
+            android:text="Never ask"
+            android:button="@android:color/transparent"
+            android:background="@android:color/transparent"
+            android:drawableTop="?android:attr/listChoiceIndicatorSingle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@+id/temporaryApprovalButton"
+            app:layout_constraintRight_toRightOf="parent"
+            android:id="@+id/automaticApprovalButton"
+            />
+    </android.support.constraint.ConstraintLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list"
@@ -42,11 +99,13 @@
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/deviceName"
+        app:layout_constraintTop_toBottomOf="@+id/approvalSettingsLayout"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1">
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintVertical_bias="1.0">
 
     </android.support.v7.widget.RecyclerView>
 </android.support.constraint.ConstraintLayout>

@@ -3,6 +3,7 @@ package co.krypt.kryptonite.devices;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -20,7 +23,7 @@ import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.silo.Silo;
 
-public class DeviceDetailFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class DeviceDetailFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener, CompoundButton.OnCheckedChangeListener {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private static final String ARG_PAIRING_UUID = "pairing-uuid";
@@ -28,6 +31,9 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     private String pairingUUID;
 
     private SignatureLogRecyclerViewAdapter signatureLogAdapter;
+    private RadioButton manualButton;
+    private RadioButton temporaryButton;
+    private RadioButton automaticButton;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -36,7 +42,6 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     public DeviceDetailFragment() {
     }
 
-    @SuppressWarnings("unused")
     public static DeviceDetailFragment newInstance(int columnCount, String pairingUUID) {
         DeviceDetailFragment fragment = new DeviceDetailFragment();
         Bundle args = new Bundle();
@@ -72,6 +77,13 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         TextView deviceName = (TextView) view.findViewById(R.id.deviceName);
         deviceName.setText(pairing.workstationName);
 
+        manualButton = (RadioButton) view.findViewById(R.id.manualApprovalButton);
+        manualButton.setOnCheckedChangeListener(this);
+        temporaryButton = (RadioButton) view.findViewById(R.id.temporaryApprovalButton);
+        temporaryButton.setOnCheckedChangeListener(this);
+        automaticButton = (RadioButton) view.findViewById(R.id.automaticApprovalButton);
+        automaticButton.setOnCheckedChangeListener(this);
+
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
         Context context = recyclerView.getContext();
         if (mColumnCount <= 1) {
@@ -103,6 +115,21 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
             List<SignatureLog> signatureLogs = SignatureLog.sortByTimeDescending(
                     Silo.shared(getContext()).pairings().getLogs(pairingUUID));
             signatureLogAdapter.setLogs(signatureLogs);
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (isChecked) {
+            if (buttonView != manualButton) {
+                manualButton.setChecked(false);
+            }
+            if (buttonView != temporaryButton) {
+                temporaryButton.setChecked(false);
+            }
+            if (buttonView != automaticButton) {
+                automaticButton.setChecked(false);
+            }
         }
     }
 }
