@@ -2,7 +2,6 @@ package co.krypt.kryptonite.pairing;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.Signature;
 import android.support.v4.util.Pair;
 import android.util.ArraySet;
 
