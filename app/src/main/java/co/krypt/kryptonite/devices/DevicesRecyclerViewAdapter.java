@@ -14,22 +14,23 @@ import java.util.List;
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.pairing.Pairing;
+import co.krypt.kryptonite.pairing.Session;
 import co.krypt.kryptonite.silo.Silo;
 
 public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Pair<Pairing, SignatureLog>> devicesAndLastLogs;
+    private final List<Session> sessions;
     private final OnDeviceListInteractionListener mListener;
 
-    public DevicesRecyclerViewAdapter(List<Pair<Pairing, SignatureLog>> items, OnDeviceListInteractionListener listener) {
-        devicesAndLastLogs = items;
+    public DevicesRecyclerViewAdapter(List<Session> items, OnDeviceListInteractionListener listener) {
+        sessions = items;
         mListener = listener;
     }
 
-    public void setPairings(List<Pair<Pairing, SignatureLog>> newPairings) {
-        devicesAndLastLogs.clear();
-        for (Pair<Pairing, SignatureLog> pairingAndLastLog : newPairings) {
-            devicesAndLastLogs.add(pairingAndLastLog);
+    public void setPairings(List<Session> sessions) {
+        this.sessions.clear();
+        for (Session session : sessions) {
+            this.sessions.add(session);
         }
         notifyDataSetChanged();
     }
@@ -43,10 +44,10 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.device = devicesAndLastLogs.get(position).first;
-        holder.lastLog = devicesAndLastLogs.get(position).second;
+        holder.device = sessions.get(position).pairing;
+        holder.lastLog = sessions.get(position).lastCommand;
 
-        holder.deviceName.setText(devicesAndLastLogs.get(position).first.workstationName);
+        holder.deviceName.setText(sessions.get(position).pairing.workstationName);
         if (holder.lastLog != null) {
             holder.lastCommand.setText(holder.lastLog.command);
             holder.lastCommandTime.setText(DateUtils.getRelativeTimeSpanString(holder.lastLog.unixSeconds * 1000, System.currentTimeMillis(), 1000));
@@ -73,7 +74,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
 
     @Override
     public int getItemCount() {
-        return devicesAndLastLogs.size();
+        return sessions.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

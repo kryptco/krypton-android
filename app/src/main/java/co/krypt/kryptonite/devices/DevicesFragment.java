@@ -21,6 +21,7 @@ import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Pairings;
+import co.krypt.kryptonite.pairing.Session;
 import co.krypt.kryptonite.silo.Silo;
 
 public class DevicesFragment extends Fragment implements OnDeviceListInteractionListener, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -39,7 +40,6 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
     public DevicesFragment() {
     }
 
-    // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
     public static DevicesFragment newInstance(int columnCount) {
         DevicesFragment fragment = new DevicesFragment();
@@ -53,8 +53,8 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        List<Pair<Pairing, SignatureLog>> pairings = new ArrayList<>(Silo.shared(getContext()).pairings().loadAllWithLastCommand());
-        devicesAdapter = new DevicesRecyclerViewAdapter(pairings, this);
+        List<Session> sessions = new ArrayList<>(Silo.shared(getContext()).pairings().loadAllSessions());
+        devicesAdapter = new DevicesRecyclerViewAdapter(sessions, this);
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
@@ -100,7 +100,7 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        List<Pair<Pairing, SignatureLog>> pairings = new ArrayList<>(Silo.shared(getContext()).pairings().loadAllWithLastCommand());
-        devicesAdapter.setPairings(pairings);
+        List<Session> sessions = new ArrayList<>(Silo.shared(getContext()).pairings().loadAllSessions());
+        devicesAdapter.setPairings(sessions);
     }
 }

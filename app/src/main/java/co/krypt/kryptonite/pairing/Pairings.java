@@ -31,6 +31,14 @@ public class Pairings {
         return pairingUUIDString + ".SIGNATURE_LOGS";
     }
 
+    public static String pairingApprovedKey(String pairingUUIDString) {
+        return pairingUUIDString + ".APPROVED";
+    }
+
+    public static String pairingApprovedUntilKey(String pairingUUIDString) {
+        return pairingUUIDString + ".APPROVED_UNTIL";
+    }
+
     public void registerOnSharedPreferenceChangedListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
         synchronized (lock) {
             preferences.registerOnSharedPreferenceChangeListener(listener);
@@ -66,20 +74,81 @@ public class Pairings {
         }
     }
 
-    public HashSet<Pair<Pairing, SignatureLog>> loadAllWithLastCommand() {
+    public Boolean getApproved(String pairingUUID) {
+        synchronized (lock) {
+            return preferences.getBoolean(pairingApprovedKey(pairingUUID), false);
+        }
+    }
+
+    public Boolean getApproved(Pairing pairing) {
+        return getApproved(pairing.getUUIDString());
+    }
+
+    public void setApproved(String pairingUUID, boolean approved) {
+        synchronized (lock) {
+            SharedPreferences.Editor editor = preferences.edit().putBoolean(pairingApprovedKey(pairingUUID), approved);
+            if (!approved) {
+                editor.putLong(pairingApprovedUntilKey(pairingUUID), -1);
+            }
+            editor.commit();
+        }
+    }
+
+    public Long getApprovedUntil(String pairingUUID) {
+        synchronized (lock) {
+            long approvedUntil = preferences.getLong(pairingApprovedUntilKey(pairingUUID), -1);
+            if (approvedUntil == -1) {
+                return null;
+            }
+            return approvedUntil;
+        }
+    }
+
+    public Long getApprovedUntil(Pairing pairing) {
+        return getApprovedUntil(pairing.getUUIDString());
+    }
+
+    public void setApprovedUntil(String pairingUUID, Long time) {
+        synchronized (lock) {
+            preferences.edit()
+                    .putLong(pairingApprovedUntilKey(pairingUUID), time)
+                    .putBoolean(pairingApprovedKey(pairingUUID), false)
+                    .commit();
+        }
+    }
+
+    public void setApprovedUntil(Pairing pairing, Long time) {
+        setApprovedUntil(pairing.getUUIDString(), time);
+    }
+
+    public boolean isApprovedNow(String pairingUUID) {
+        synchronized (lock) {
+            if (getApproved(pairingUUID)) {
+                return true;
+            }
+            Long approvedUntil = getApprovedUntil(pairingUUID);
+            return approvedUntil != null && System.currentTimeMillis() < approvedUntil * 1000;
+        }
+    }
+
+    public boolean isApprovedNow(Pairing pairing) {
+        return isApprovedNow(pairing.getUUIDString());
+    }
+
+   public HashSet<Session> loadAllSessions() {
         synchronized (lock) {
             HashSet<Pairing> pairings = loadAllLocked();
-            HashSet<Pair<Pairing, SignatureLog>> pairingsWithLastCommand = new HashSet<>();
+            HashSet<Session> sessions = new HashSet<>();
             for (Pairing pairing: pairings) {
                 Pair<Pairing, SignatureLog> pair = new Pair<>(pairing, null);
                 List<SignatureLog> sortedLogs = SignatureLog.sortByTimeDescending(getLogs(pairing));
                 if (sortedLogs.size() > 0) {
-                    pairingsWithLastCommand.add(new Pair<Pairing, SignatureLog>(pairing, sortedLogs.get(0)));
+                    sessions.add(new Session(pairing, sortedLogs.get(0), getApproved(pairing), getApprovedUntil(pairing)));
                 } else {
-                    pairingsWithLastCommand.add(new Pair<Pairing, SignatureLog>(pairing, null));
+                    sessions.add(new Session(pairing, null, getApproved(pairing), getApprovedUntil(pairing)));
                 }
             }
-            return pairingsWithLastCommand;
+            return sessions;
         }
     }
 

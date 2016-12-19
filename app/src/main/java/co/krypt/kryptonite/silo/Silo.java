@@ -196,19 +196,23 @@ public class Silo {
         }
 
         if (request.signRequest != null) {
-            try {
-                response.signResponse = new SignResponse();
-                SSHKeyPair key = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
-                if (MessageDigest.isEqual(request.signRequest.publicKeyFingerprint, key.publicKeyFingerprint())) {
-                    response.signResponse.signature = key.signDigest(request.signRequest.digest);
-                    pairings().appendToLog(pairing, new SignatureLog(request.signRequest.digest, request.signRequest.command, System.currentTimeMillis() / 1000));
-                    Notifications.notify(context, request);
-                } else {
-                    Log.e(TAG, Base64.encodeAsString(request.signRequest.publicKeyFingerprint) + " != " + Base64.encodeAsString(key.publicKeyFingerprint()));
-                    response.signResponse.error = "unknown key fingerprint";
+            response.signResponse = new SignResponse();
+            if (pairings().isApprovedNow(pairing)) {
+                try {
+                    SSHKeyPair key = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
+                    if (MessageDigest.isEqual(request.signRequest.publicKeyFingerprint, key.publicKeyFingerprint())) {
+                        response.signResponse.signature = key.signDigest(request.signRequest.digest);
+                        pairings().appendToLog(pairing, new SignatureLog(request.signRequest.digest, request.signRequest.command, System.currentTimeMillis() / 1000));
+                        Notifications.notify(context, request);
+                    } else {
+                        Log.e(TAG, Base64.encodeAsString(request.signRequest.publicKeyFingerprint) + " != " + Base64.encodeAsString(key.publicKeyFingerprint()));
+                        response.signResponse.error = "unknown key fingerprint";
+                    }
+                } catch (NoSuchAlgorithmException | SignatureException e) {
+                    e.printStackTrace();
                 }
-            } catch (NoSuchAlgorithmException | SignatureException e) {
-                e.printStackTrace();
+            } else {
+                response.signResponse.error = "rejected";
             }
         }
 

@@ -3,11 +3,13 @@ package co.krypt.kryptonite.devices;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,11 +80,10 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         deviceName.setText(pairing.workstationName);
 
         manualButton = (RadioButton) view.findViewById(R.id.manualApprovalButton);
-        manualButton.setOnCheckedChangeListener(this);
         temporaryButton = (RadioButton) view.findViewById(R.id.temporaryApprovalButton);
-        temporaryButton.setOnCheckedChangeListener(this);
         automaticButton = (RadioButton) view.findViewById(R.id.automaticApprovalButton);
-        automaticButton.setOnCheckedChangeListener(this);
+
+        updateApprovalButtons();
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
         Context context = recyclerView.getContext();
@@ -94,6 +95,37 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         recyclerView.setAdapter(signatureLogAdapter);
 
         return view;
+    }
+
+    private synchronized void updateApprovalButtons() {
+        manualButton.setOnCheckedChangeListener(null);
+        temporaryButton.setOnCheckedChangeListener(null);
+        automaticButton.setOnCheckedChangeListener(null);
+        Pairings pairings = Silo.shared(getContext()).pairings();
+        temporaryButton.setText("Don't ask for 1 hour");
+        if (pairings.getApproved(pairingUUID)) {
+            automaticButton.setChecked(true);
+            manualButton.setChecked(false);
+            temporaryButton.setChecked(false);
+        } else {
+            Long approvedUntil = pairings.getApprovedUntil(pairingUUID);
+            if (approvedUntil == null || (approvedUntil * 1000 < System.currentTimeMillis())) {
+                manualButton.setChecked(true);
+                automaticButton.setChecked(false);
+                temporaryButton.setChecked(false);
+            } else {
+                temporaryButton.setChecked(true);
+                automaticButton.setChecked(false);
+                manualButton.setChecked(false);
+                String temporaryApprovalText = "Ask " +
+                        DateUtils.getRelativeTimeSpanString(approvedUntil * 1000, System.currentTimeMillis(), 1000)
+                                .toString().toLowerCase();
+                temporaryButton.setText(temporaryApprovalText);
+            }
+        }
+        manualButton.setOnCheckedChangeListener(this);
+        temporaryButton.setOnCheckedChangeListener(this);
+        automaticButton.setOnCheckedChangeListener(this);
     }
 
 
@@ -116,20 +148,25 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
                     Silo.shared(getContext()).pairings().getLogs(pairingUUID));
             signatureLogAdapter.setLogs(signatureLogs);
         }
+        if (key.equals(Pairings.pairingApprovedKey(pairingUUID)) || key.equals(Pairings.pairingApprovedUntilKey(pairingUUID))) {
+            updateApprovalButtons();
+        }
     }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
-            if (buttonView != manualButton) {
-                manualButton.setChecked(false);
+            Pairings pairings = Silo.shared(getContext()).pairings();
+            if (buttonView == manualButton) {
+                pairings.setApproved(pairingUUID, false);
             }
-            if (buttonView != temporaryButton) {
-                temporaryButton.setChecked(false);
+            if (buttonView == temporaryButton) {
+                pairings.setApprovedUntil(pairingUUID, (System.currentTimeMillis() / 1000) + 3600);
             }
-            if (buttonView != automaticButton) {
-                automaticButton.setChecked(false);
+            if (buttonView == automaticButton) {
+                pairings.setApproved(pairingUUID, true);
             }
+            updateApprovalButtons();
         }
     }
 }
