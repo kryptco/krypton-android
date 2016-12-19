@@ -25,6 +25,7 @@ import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Pairings;
+import co.krypt.kryptonite.policy.Policy;
 import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.protocol.MeResponse;
 import co.krypt.kryptonite.protocol.NetworkMessage;
@@ -190,6 +191,20 @@ public class Silo {
 
         lastRequestTimeSeconds.put(pairing, System.currentTimeMillis() / 1000);
 
+        if (request.signRequest != null && !pairings().isApprovedNow(pairing)) {
+            Policy.requestApproval(context, pairing, request);
+        } else {
+            respondToRequest(pairing, request, true);
+        }
+    }
+
+    public synchronized void respondToRequest(Pairing pairing, Request request, boolean signatureAllowed) throws CryptoException, InvalidKeyException, IOException, TransportException {
+        Response cachedResponse = responseCacheByRequestID.get(request.requestID);
+        if (cachedResponse != null) {
+            send(pairing, cachedResponse);
+            return;
+        }
+
         Response response = Response.with(request);
         if (request.meRequest != null) {
             response.meResponse = new MeResponse(meStorage.load());
@@ -197,18 +212,19 @@ public class Silo {
 
         if (request.signRequest != null) {
             response.signResponse = new SignResponse();
-            if (pairings().isApprovedNow(pairing)) {
+            if (signatureAllowed) {
                 try {
                     SSHKeyPair key = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
                     if (MessageDigest.isEqual(request.signRequest.publicKeyFingerprint, key.publicKeyFingerprint())) {
                         response.signResponse.signature = key.signDigest(request.signRequest.digest);
                         pairings().appendToLog(pairing, new SignatureLog(request.signRequest.digest, request.signRequest.command, System.currentTimeMillis() / 1000));
-                        Notifications.notify(context, request);
+                        Notifications.notifySuccess(context, pairing, request);
                     } else {
                         Log.e(TAG, Base64.encodeAsString(request.signRequest.publicKeyFingerprint) + " != " + Base64.encodeAsString(key.publicKeyFingerprint()));
                         response.signResponse.error = "unknown key fingerprint";
                     }
                 } catch (NoSuchAlgorithmException | SignatureException e) {
+                    response.signResponse.error = "unknown error";
                     e.printStackTrace();
                 }
             } else {
