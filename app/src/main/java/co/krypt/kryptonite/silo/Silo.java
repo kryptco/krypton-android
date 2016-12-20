@@ -33,6 +33,7 @@ import co.krypt.kryptonite.protocol.PairingQR;
 import co.krypt.kryptonite.protocol.Request;
 import co.krypt.kryptonite.protocol.Response;
 import co.krypt.kryptonite.protocol.SignResponse;
+import co.krypt.kryptonite.transport.BluetoothTransport;
 import co.krypt.kryptonite.transport.SNSTransport;
 import co.krypt.kryptonite.transport.SQSPoller;
 import co.krypt.kryptonite.transport.SQSTransport;
@@ -51,6 +52,7 @@ public class Silo {
     private final MeStorage meStorage;
     private HashMap<String, Pairing> activePairingsByUUID;
     private HashMap<Pairing, SQSPoller> pollers;
+    private final BluetoothTransport bluetoothTransport;
     private final Context context;
     private final HashMap<Pairing, Long> lastRequestTimeSeconds = new HashMap<>();
     private final LruCache<String, Response> responseCacheByRequestID = new LruCache<>(8192);
@@ -61,8 +63,12 @@ public class Silo {
         meStorage = new MeStorage(context);
         Set<Pairing> pairings = pairingStorage.loadAll();
         activePairingsByUUID = new HashMap<>();
+        bluetoothTransport = BluetoothTransport.init(context);
         for (Pairing p : pairings) {
             activePairingsByUUID.put(p.getUUIDString(), p);
+            if (bluetoothTransport != null) {
+                bluetoothTransport.add(p);
+            }
         }
         pollers = new HashMap<>();
     }
@@ -118,6 +124,9 @@ public class Silo {
         pairingStorage.pair(pairing);
         activePairingsByUUID.put(pairing.getUUIDString(), pairing);
         pollers.put(pairing, new SQSPoller(context, pairing));
+        if (bluetoothTransport != null) {
+            bluetoothTransport.add(pairing);
+        }
         return pairing;
     }
 
