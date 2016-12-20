@@ -18,7 +18,23 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_width="0dp"
-        android:layout_height="0dp" />
+        android:layout_height="0dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:srcCompat="@drawable/crosshair"
+        android:id="@+id/imageView"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintRight_toRightOf="@+id/camera_preview"
+        app:layout_constraintLeft_toLeftOf="@+id/camera_preview"
+        app:layout_constraintTop_toTopOf="@+id/camera_preview"
+        app:layout_constraintBottom_toBottomOf="@+id/camera_preview"
+        android:padding="50dp"
+        android:alpha=".5" />
 
     <android.support.constraint.ConstraintLayout
         android:layout_height="wrap_content"
@@ -34,15 +50,16 @@
         android:id="@+id/pairingStatusLayout"
         android:visibility="gone"
         android:padding="15dp"
-        android:animateLayoutChanges="true">
+        android:animateLayoutChanges="true"
+        tools:layout_constraintTop_creator="1">
 
         <TextView
             android:text="Pairing..."
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/pairingStatusText"
-            tools:layout_editor_absoluteY="0dp"
-            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="15dp"
+            tools:layout_editor_absoluteX="15dp"
             android:textSize="24sp"
             android:padding="3dp"
             android:textAlignment="center" />
