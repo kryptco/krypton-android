@@ -123,7 +123,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         super.onAttach(context);
     }
 
-    synchronized private void startCamera() {
+    synchronized private void startCamera(final Context context) {
         final PairFragment self = this;
         if (mCamera != null) {
             return;
@@ -144,7 +144,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
                             previewHeight = camera.getParameters().getPreviewSize().height;
                             mPreview.setCamera(mCamera);
                             camera.setPreviewCallback(self);
-                            pairScanner = new PairScanner(getContext(), self, previewHeight, previewWidth);
+                            pairScanner = new PairScanner(context, self, previewHeight, previewWidth);
                         }
                     }
                 });
@@ -177,7 +177,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
     public void onResume() {
         super.onResume();
         Log.i(TAG, "resume");
-        startCamera();
+        startCamera(getContext());
     }
 
     @Override
