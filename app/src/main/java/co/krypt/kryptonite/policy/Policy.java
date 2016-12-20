@@ -47,6 +47,7 @@ public class Policy {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Notifications.clearRequest(context, pairingAndRequest.second);
                 switch (action) {
                     case APPROVE_ONCE:
                         try {

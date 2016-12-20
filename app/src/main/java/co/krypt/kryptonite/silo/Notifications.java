@@ -127,4 +127,10 @@ public class Notifications {
                 (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         mNotifyMgr.notify(request.requestID, 0, mBuilder.build());
     }
+
+    public static void clearRequest(Context context, Request request) {
+        NotificationManager mNotifyMgr =
+                (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        mNotifyMgr.cancel(request.requestID, 0);
+    }
 }
