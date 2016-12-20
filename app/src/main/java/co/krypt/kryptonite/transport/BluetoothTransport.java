@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.ParcelUuid;
+import android.support.v4.util.Pair;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -39,19 +40,21 @@ public class BluetoothTransport {
     private static final UUID KR_BLUETOOTH_CHARACTERISTIC = UUID.fromString("20F53E48-C08D-423A-B2C2-1C797889AF24");
     private static final String TAG = "BluetoothTransport";
 
-    final BluetoothManager manager;
-    final BluetoothAdapter adapter;
-    final Set<UUID> allServiceUUIDS = new HashSet<>();
-    final Set<UUID> scanningServiceUUIDS = new HashSet<>();
+    private final BluetoothManager manager;
+    private final BluetoothAdapter adapter;
+    private final Set<UUID> allServiceUUIDS = new HashSet<>();
+    private final Set<UUID> scanningServiceUUIDS = new HashSet<>();
 
-    final Set<BluetoothDevice> connectedDevices = new HashSet<>();
-    final Set<BluetoothDevice> connectingDevices = new HashSet<>();
-    final Map<BluetoothDevice, Set<UUID>> discoveredServiceUUIDSByDevice = new HashMap<>();
-    final Map<UUID, BluetoothGattCharacteristic> characteristicsByServiceUUID = new HashMap<>();
+    private final Set<BluetoothDevice> connectedDevices = new HashSet<>();
+    private final Set<BluetoothDevice> connectingDevices = new HashSet<>();
+    private final Map<BluetoothDevice, Set<UUID>> discoveredServiceUUIDSByDevice = new HashMap<>();
+    private final Map<UUID, BluetoothGattCharacteristic> characteristicsByServiceUUID = new HashMap<>();
 
-    final ScanCallback scanCallback;
-    final BluetoothGattCallback gattCallback;
-    final Context context;
+    private final Map<UUID, Pair<Byte, List<Byte>>> incomingMessageBuffersByServiceUUID = new HashMap<>();
+
+    private final ScanCallback scanCallback;
+    private final BluetoothGattCallback gattCallback;
+    private final Context context;
 
     private BluetoothTransport(Context context, BluetoothManager manager, BluetoothAdapter adapter) {
         this.context = context;
@@ -83,17 +86,15 @@ public class BluetoothTransport {
 
             @Override
             public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-                Log.v(TAG, "onCharacteristicRead");
             }
 
             @Override
             public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-                Log.v(TAG, "onCharacteristicWrite");
             }
 
             @Override
             public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-                Log.v(TAG, "onCharacteristicChanged");
+                self.onCharacteristicChanged(gatt, characteristic);
             }
 
             @Override
@@ -231,6 +232,50 @@ public class BluetoothTransport {
         discoveredServiceUUIDSByDevice.put(gatt.getDevice(), serviceUUIDS);
 
         scanLogic();
+    }
+
+    private synchronized void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        UUID uuid = characteristic.getService().getUuid();
+        byte[] value = characteristic.getValue();
+        if (value == null) {
+            return;
+        }
+        if (value.length == 0) {
+            return;
+        }
+
+        if (value.length == 1) {
+            switch (value[0]) {
+
+            }
+        }
+
+
+        if (value.length > 1) {
+            List<Byte> newMessageBuffer = new ArrayList<>();
+            List<Byte> messageSplit = new ArrayList<>();
+            for (byte b : value) {
+                messageSplit.add(b);
+            }
+            byte n = messageSplit.remove(0);
+            Pair<Byte, List<Byte>> lastNAndBuffer = incomingMessageBuffersByServiceUUID.get(uuid);
+            if (lastNAndBuffer != null) {
+                if (lastNAndBuffer.first != n + 1) {
+                    incomingMessageBuffersByServiceUUID.remove(uuid);
+                } else {
+                    newMessageBuffer = new ArrayList<>(lastNAndBuffer.second);
+                }
+                newMessageBuffer.addAll(messageSplit);
+            } else {
+                newMessageBuffer = messageSplit;
+            }
+            if (n == 0) {
+                Log.v(TAG, "received message of length " + String.valueOf(newMessageBuffer.size()));
+                incomingMessageBuffersByServiceUUID.remove(uuid);
+            } else {
+                incomingMessageBuffersByServiceUUID.put(uuid, new Pair<>(n, newMessageBuffer));
+            }
+        }
     }
 
     public static synchronized void requestUserEnableBluetooth(Activity activity, int requestID) {
