@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
@@ -46,6 +47,7 @@ public class BluetoothTransport {
     final Set<BluetoothDevice> connectedDevices = new HashSet<>();
     final Set<BluetoothDevice> connectingDevices = new HashSet<>();
     final Map<BluetoothDevice, Set<UUID>> discoveredServiceUUIDSByDevice = new HashMap<>();
+    final Map<UUID, BluetoothGattCharacteristic> characteristicsByServiceUUID = new HashMap<>();
 
     final ScanCallback scanCallback;
     final BluetoothGattCallback gattCallback;
@@ -81,10 +83,12 @@ public class BluetoothTransport {
 
             @Override
             public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+                Log.v(TAG, "onCharacteristicRead");
             }
 
             @Override
             public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+                Log.v(TAG, "onCharacteristicWrite");
             }
 
             @Override
@@ -212,6 +216,15 @@ public class BluetoothTransport {
                 serviceUUIDS.add(service.getUuid());
                 BluetoothGattCharacteristic characteristic = service.getCharacteristic(KR_BLUETOOTH_CHARACTERISTIC);
                 if (characteristic != null) {
+                    boolean success = gatt.setCharacteristicNotification(characteristic, true);
+                    if (!success) {
+                        Log.e(TAG, "failed to enable characteristic notification");
+                    }
+                    for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
+                        descriptor.setValue( BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                        gatt.writeDescriptor(descriptor);
+                    }
+                    characteristicsByServiceUUID.put(service.getUuid(), characteristic);
                 }
             }
         }
