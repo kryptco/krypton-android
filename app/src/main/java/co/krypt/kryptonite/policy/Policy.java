@@ -58,6 +58,7 @@ public class Policy {
                         break;
                     case APPROVE_TEMPORARILY:
                         try {
+                            Silo.shared(context).pairings().setApprovedUntil(pairingAndRequest.first.getUUIDString(), (System.currentTimeMillis() / 1000) + 3600);
                             Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
                         } catch (CryptoException | InvalidKeyException | IOException | TransportException e) {
                             e.printStackTrace();
