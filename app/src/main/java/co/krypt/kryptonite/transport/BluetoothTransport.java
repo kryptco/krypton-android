@@ -184,6 +184,8 @@ public class BluetoothTransport {
             } else {
                 Log.v(TAG, "stopped scanning");
             }
+        } else {
+            Log.e(TAG, "bluetooth disabled, not scanning");
         }
     }
 
@@ -223,13 +225,12 @@ public class BluetoothTransport {
                 gatt.discoverServices();
                 connectingDevices.remove(gatt.getDevice());
                 connectedDevices.add(gatt.getDevice());
-                if (!gatt.requestMtu(20)) {
-                    Log.e(TAG, "initial MTU request failed");
-                }
-                if (!gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)) {
-                    Log.e(TAG, "initial connection priority request failed");
-                }
-                scanLogic();
+//                if (!gatt.requestMtu(20)) {
+//                    Log.e(TAG, "initial MTU request failed");
+//                }
+//                if (!gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)) {
+//                    Log.e(TAG, "initial connection priority request failed");
+//                }
                 break;
             case BluetoothGatt.STATE_DISCONNECTED:
                 Log.v(TAG, gatt.getDevice().getAddress() + " disconnected");
@@ -240,7 +241,7 @@ public class BluetoothTransport {
         }
     }
 
-    private synchronized void onServicesDiscovered(BluetoothGatt gatt, int status) {
+    private synchronized void onServicesDiscovered(final BluetoothGatt gatt, int status) {
         if (!connectedDevices.contains(gatt.getDevice())) {
             Log.e(TAG, gatt.getDevice().getAddress() + " not connected");
             return;
@@ -252,17 +253,39 @@ public class BluetoothTransport {
             if (allServiceUUIDS.contains(service.getUuid())) {
                 Log.v(TAG, gatt.getDevice().getAddress() + " discovered paired service");
                 serviceUUIDS.add(service.getUuid());
-                BluetoothGattCharacteristic characteristic = service.getCharacteristic(KR_BLUETOOTH_CHARACTERISTIC);
+                final BluetoothGattCharacteristic characteristic = service.getCharacteristic(KR_BLUETOOTH_CHARACTERISTIC);
                 if (characteristic != null) {
-                    boolean success = gatt.setCharacteristicNotification(characteristic, true);
-                    if (!success) {
-                        Log.e(TAG, "failed to enable characteristic notification");
-                    }
-                    for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
-                        descriptor.setValue( BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-                        gatt.writeDescriptor(descriptor);
-                    }
                     characteristicsAndDevicesByServiceUUID.put(service.getUuid(), new Pair<>(gatt, characteristic));
+                    Log.v(TAG, "subscribing to characteristic");
+//                    UUID configDescriptorUUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+//                    BluetoothGattDescriptor descriptor = characteristic.getDescriptor(configDescriptorUUID);
+//                    if (descriptor != null) {
+//                        descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+//                        gatt.writeDescriptor(descriptor);
+//                    } else {
+//                        Log.e(TAG, "config descriptor null");
+//                    }
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            boolean success = gatt.setCharacteristicNotification(characteristic, true);
+                            if (!success) {
+                                Log.e(TAG, "failed to enable characteristic notification");
+                            }
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
+//                        descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                                descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                                if (!gatt.writeDescriptor(descriptor)) {
+                                    Log.e(TAG, "failed to write descriptor notification");
+                                }
+                            }
+                        }
+                    }).start();
                 }
             }
         }

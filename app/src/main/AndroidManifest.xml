@@ -8,11 +8,14 @@
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-    <!--required for bluetooth scan results-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <!-- required for bluetooth scan results -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="false" />
 
     <application
         android:allowBackup="false"
@@ -25,9 +28,9 @@
         <activity
             android:name=".MainActivity"
             android:label="Kryptonite"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
-            android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,11 +40,9 @@
         </activity>
         <activity
             android:name=".policy.UnlockScreenDummyActivity"
-            android:taskAffinity=""
             android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            >
-        </activity>
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
 
         <service
             android:name=".transport.FirebaseMessagingService"
@@ -62,7 +63,16 @@
         <receiver
             android:name=".policy.NoAuthReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="false" />
+        <receiver
+            android:name=".transport.BluetoothStateReceiver"
+            android:enabled="true"
+            android:exported="false"
+            >
+            <intent-filter>
+                <action android:name="android"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
