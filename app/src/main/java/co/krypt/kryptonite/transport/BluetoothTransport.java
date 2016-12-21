@@ -24,6 +24,7 @@ import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +32,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.pairing.Pairing;
+import co.krypt.kryptonite.protocol.NetworkMessage;
 import co.krypt.kryptonite.silo.Silo;
 
 /**
@@ -51,9 +54,12 @@ public class BluetoothTransport {
     private final Set<BluetoothDevice> connectedDevices = new HashSet<>();
     private final Set<BluetoothDevice> connectingDevices = new HashSet<>();
     private final Map<BluetoothDevice, Set<UUID>> discoveredServiceUUIDSByDevice = new HashMap<>();
-    private final Map<UUID, BluetoothGattCharacteristic> characteristicsByServiceUUID = new HashMap<>();
+    private final Map<UUID, Pair<BluetoothGatt, BluetoothGattCharacteristic>> characteristicsAndDevicesByServiceUUID = new HashMap<>();
 
     private final Map<UUID, Pair<Byte, ByteArrayOutputStream>> incomingMessageBuffersByServiceUUID = new HashMap<>();
+    private final Map<BluetoothGatt, Integer> mtuByBluetoothGatt = new HashMap<>();
+    private final Map<BluetoothGattCharacteristic, List<byte[]>> outgoingMessagesByCharacteristic = new HashMap<>();
+    private final Map<BluetoothGattCharacteristic, Boolean> characteristicWritePending = new HashMap<>();
 
     private final ScanCallback scanCallback;
     private final BluetoothGattCallback gattCallback;
@@ -89,10 +95,17 @@ public class BluetoothTransport {
 
             @Override
             public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+                Log.v(TAG, "characteristic read");
             }
 
             @Override
             public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+                if (status == BluetoothGatt.GATT_SUCCESS) {
+                    Log.v(TAG, "write completed");
+                } else {
+                    Log.v(TAG, "write failed");
+                }
+                self.onCharacteristicWrite(gatt, characteristic, status);
             }
 
             @Override
@@ -102,10 +115,23 @@ public class BluetoothTransport {
 
             @Override
             public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
+                self.onMtuChanged(gatt, mtu, status);
             }
 
             @Override
             public void onReliableWriteCompleted(BluetoothGatt gatt, int status) {
+                Log.v(TAG, "reliable write completed");
+            }
+
+            @Override
+            public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
+                                          int status) {
+                if (status == BluetoothGatt.GATT_SUCCESS) {
+                    Log.v(TAG, "descriptor write completed");
+                } else {
+                    Log.v(TAG, "descriptor write failed");
+                }
+                self.onDescriptorWrite(gatt, descriptor, status);
             }
         };
 
@@ -197,6 +223,12 @@ public class BluetoothTransport {
                 gatt.discoverServices();
                 connectingDevices.remove(gatt.getDevice());
                 connectedDevices.add(gatt.getDevice());
+                if (!gatt.requestMtu(20)) {
+                    Log.e(TAG, "initial MTU request failed");
+                }
+                if (!gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)) {
+                    Log.e(TAG, "initial connection priority request failed");
+                }
                 scanLogic();
                 break;
             case BluetoothGatt.STATE_DISCONNECTED:
@@ -213,10 +245,12 @@ public class BluetoothTransport {
             Log.e(TAG, gatt.getDevice().getAddress() + " not connected");
             return;
         }
-        Log.v(TAG, gatt.getDevice().getAddress() + " discovered services");
+        Log.v(TAG, gatt.getDevice().getAddress() + " discovered services ");
         HashSet<UUID> serviceUUIDS = new HashSet<>();
         for (BluetoothGattService service : gatt.getServices()) {
+            Log.v(TAG, service.getUuid().toString());
             if (allServiceUUIDS.contains(service.getUuid())) {
+                Log.v(TAG, gatt.getDevice().getAddress() + " discovered paired service");
                 serviceUUIDS.add(service.getUuid());
                 BluetoothGattCharacteristic characteristic = service.getCharacteristic(KR_BLUETOOTH_CHARACTERISTIC);
                 if (characteristic != null) {
@@ -228,7 +262,7 @@ public class BluetoothTransport {
                         descriptor.setValue( BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
                         gatt.writeDescriptor(descriptor);
                     }
-                    characteristicsByServiceUUID.put(service.getUuid(), characteristic);
+                    characteristicsAndDevicesByServiceUUID.put(service.getUuid(), new Pair<>(gatt, characteristic));
                 }
             }
         }
@@ -282,6 +316,107 @@ public class BluetoothTransport {
                 incomingMessageBuffersByServiceUUID.put(uuid, new Pair<>(n, newMessageBuffer));
             }
         }
+    }
+
+    public synchronized void send(Pairing pairing, NetworkMessage message) throws TransportException {
+        Pair<BluetoothGatt, BluetoothGattCharacteristic> characteristicAndDevice = characteristicsAndDevicesByServiceUUID.get(pairing.uuid);
+        if (characteristicAndDevice == null) {
+            return;
+        }
+//        characteristicAndDevice.second.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
+        Integer mtu = mtuByBluetoothGatt.get(characteristicAndDevice.first);
+        if (mtu == null) {
+            mtu = 20;
+        }
+        List<byte[]> queue = outgoingMessagesByCharacteristic.get(characteristicAndDevice.second);
+        if (queue == null) {
+            queue = new ArrayList<>();
+        }
+        queue.addAll(splitMessage(message.bytes(), mtu));
+        outgoingMessagesByCharacteristic.put(characteristicAndDevice.second, queue);
+
+        tryWrite(characteristicAndDevice.first, characteristicAndDevice.second);
+    }
+
+    private synchronized void tryWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        if (characteristicWritePending.get(characteristic) != null) {
+            return;
+        }
+        characteristicWritePending.put(characteristic, true);
+        List<byte[]> queue = outgoingMessagesByCharacteristic.get(characteristic);
+        if (queue != null && queue.size() > 0) {
+            byte[] value = queue.remove(0);
+            Log.v(TAG, "set value n=" + String.valueOf(value[0]) + " length=" + String.valueOf(value.length));
+            characteristic.setValue(value);
+            if (!gatt.writeCharacteristic(characteristic)) {
+                Log.e(TAG, "characteristic write failed");
+                queue.add(0, value);
+                characteristicWritePending.remove(characteristic);
+            }
+        }
+    }
+
+    private synchronized List<byte[]> splitMessage(final byte[] message, final int mtu) {
+        List<byte[]> splits = new ArrayList<>();
+        if (message.length == 0 || message.length > (mtu - 1) * 255) {
+            Log.e(TAG, "invalid message length for Bluetooth: " + String.valueOf(message.length));
+            return splits;
+        }
+        if (mtu <= 1) {
+            Log.e(TAG, "invalid mtu: " + String.valueOf(mtu));
+            return splits;
+        }
+
+        int blockSize = mtu - 1;
+
+        int offset = 0;
+        for (int n = (message.length - 1) / blockSize; n >= 0; --n) {
+            ByteArrayOutputStream split = new ByteArrayOutputStream();
+            split.write(n);
+            try {
+                split.write(Arrays.copyOfRange(message, offset, Math.min(offset + blockSize, message.length)));
+            } catch (IOException e) {
+                e.printStackTrace();
+                return new ArrayList<>();
+            }
+            splits.add(split.toByteArray());
+            offset += blockSize;
+        }
+        Log.v(TAG, "split message into " + String.valueOf(splits.size()));
+        return splits;
+    }
+
+    private synchronized void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
+        if (status == BluetoothGatt.GATT_SUCCESS) {
+            Log.v(TAG, "mtu change success: " + String.valueOf(mtu));
+            Integer oldMTU = mtuByBluetoothGatt.get(gatt);
+            if (oldMTU != null && oldMTU == mtu) {
+                return;
+            }
+            mtuByBluetoothGatt.put(gatt, mtu);
+            gatt.requestMtu(mtu * 2);
+        } else {
+            Log.v(TAG, "mtu change failure: " + String.valueOf(mtu));
+        }
+    }
+
+    private synchronized void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+        characteristicWritePending.remove(characteristic);
+        List<byte[]> queue = outgoingMessagesByCharacteristic.get(characteristic);
+        if (queue != null && queue.size() > 0) {
+            byte[] nextSplit = queue.remove(0);
+            Log.v(TAG, "set value n=" + String.valueOf(nextSplit[0]) + " length=" + String.valueOf(nextSplit.length));
+            characteristic.setValue(nextSplit);
+            if (!gatt.writeCharacteristic(characteristic)) {
+                Log.e(TAG, "characteristic write failed");
+                queue.add(0, nextSplit);
+                characteristicWritePending.remove(characteristic);
+            }
+        }
+    }
+
+    private synchronized void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
+                                  int status) {
     }
 
     public static synchronized void requestUserEnableBluetooth(Activity activity, int requestID) {

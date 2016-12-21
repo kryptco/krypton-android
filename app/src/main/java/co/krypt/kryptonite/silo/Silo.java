@@ -170,21 +170,33 @@ public class Silo {
         }
     }
 
-    public static void send(Pairing pairing, Response response) throws CryptoException, TransportException {
+    public void send(Pairing pairing, Response response) throws CryptoException, TransportException {
         byte[] responseJson = JSON.toJson(response).getBytes();
         byte[] sealed = pairing.seal(responseJson);
         send(pairing, new NetworkMessage(NetworkMessage.Header.CIPHERTEXT, sealed));
     }
 
-    public static void send(Pairing pairing, NetworkMessage message) throws TransportException {
-        try {
-            SQSTransport.sendMessage(pairing, message);
-        } catch (TransportException e){
-            throw e;
-        } catch (RuntimeException e) {
-            Log.e(TAG, e.toString());
-            throw new TransportException(e.getMessage());
-        }
+    public void send(final Pairing pairing, final NetworkMessage message) throws TransportException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    bluetoothTransport.send(pairing, message);
+                } catch (TransportException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    SQSTransport.sendMessage(pairing, message);
+                } catch (TransportException | RuntimeException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     public synchronized void handle(Pairing pairing, Request request) throws CryptoException, TransportException, IOException, InvalidKeyException, ProtocolException {
