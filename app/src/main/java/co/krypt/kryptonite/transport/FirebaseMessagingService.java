@@ -6,6 +6,7 @@ import com.amazonaws.util.Base64;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
+import java.util.UUID;
 
 import co.krypt.kryptonite.silo.Silo;
 
@@ -25,7 +26,12 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         }
         String message = notification.get("message");
         String queue = notification.get("queue");
-        Log.i(TAG, "received message " + message + " from queue " + queue);
-        Silo.shared(getApplicationContext()).onMessage(queue, Base64.decode(message));
+        try {
+            UUID uuid = UUID.fromString(queue);
+            Log.i(TAG, "received message " + message + " from queue " + queue);
+            Silo.shared(getApplicationContext()).onMessage(uuid, Base64.decode(message));
+        } catch(IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -21,6 +21,8 @@ import android.os.ParcelUuid;
 import android.support.v4.util.Pair;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,6 +32,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import co.krypt.kryptonite.pairing.Pairing;
+import co.krypt.kryptonite.silo.Silo;
 
 /**
  * Created by Kevin King on 12/20/16.
@@ -50,7 +53,7 @@ public class BluetoothTransport {
     private final Map<BluetoothDevice, Set<UUID>> discoveredServiceUUIDSByDevice = new HashMap<>();
     private final Map<UUID, BluetoothGattCharacteristic> characteristicsByServiceUUID = new HashMap<>();
 
-    private final Map<UUID, Pair<Byte, List<Byte>>> incomingMessageBuffersByServiceUUID = new HashMap<>();
+    private final Map<UUID, Pair<Byte, ByteArrayOutputStream>> incomingMessageBuffersByServiceUUID = new HashMap<>();
 
     private final ScanCallback scanCallback;
     private final BluetoothGattCallback gattCallback;
@@ -252,26 +255,29 @@ public class BluetoothTransport {
 
 
         if (value.length > 1) {
-            List<Byte> newMessageBuffer = new ArrayList<>();
-            List<Byte> messageSplit = new ArrayList<>();
-            for (byte b : value) {
-                messageSplit.add(b);
-            }
-            byte n = messageSplit.remove(0);
-            Pair<Byte, List<Byte>> lastNAndBuffer = incomingMessageBuffersByServiceUUID.get(uuid);
-            if (lastNAndBuffer != null) {
-                if (lastNAndBuffer.first != n + 1) {
-                    incomingMessageBuffersByServiceUUID.remove(uuid);
+            byte n = value[0];
+            ByteArrayOutputStream messageSplit = new ByteArrayOutputStream();
+            messageSplit.write(value, 1, value.length - 1);
+            ByteArrayOutputStream newMessageBuffer = new ByteArrayOutputStream();
+
+            Pair<Byte, ByteArrayOutputStream> lastNAndBuffer = incomingMessageBuffersByServiceUUID.get(uuid);
+            try {
+                if (lastNAndBuffer != null) {
+                    if (lastNAndBuffer.first == n + 1) {
+                        newMessageBuffer.write(lastNAndBuffer.second.toByteArray());
+                    }
+                    newMessageBuffer.write(messageSplit.toByteArray());
                 } else {
-                    newMessageBuffer = new ArrayList<>(lastNAndBuffer.second);
+                    newMessageBuffer = messageSplit;
                 }
-                newMessageBuffer.addAll(messageSplit);
-            } else {
-                newMessageBuffer = messageSplit;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
             }
             if (n == 0) {
-                Log.v(TAG, "received message of length " + String.valueOf(newMessageBuffer.size()));
+                Log.v(TAG, "received message of length " + String.valueOf(newMessageBuffer.toByteArray().length));
                 incomingMessageBuffersByServiceUUID.remove(uuid);
+                Silo.shared(context).onMessage(uuid, newMessageBuffer.toByteArray());
             } else {
                 incomingMessageBuffersByServiceUUID.put(uuid, new Pair<>(n, newMessageBuffer));
             }

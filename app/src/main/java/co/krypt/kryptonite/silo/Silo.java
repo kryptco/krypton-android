@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import co.krypt.kryptonite.crypto.KeyManager;
 import co.krypt.kryptonite.crypto.SSHKeyPair;
@@ -50,7 +51,7 @@ public class Silo {
 
     private final Pairings pairingStorage;
     private final MeStorage meStorage;
-    private HashMap<String, Pairing> activePairingsByUUID;
+    private HashMap<UUID, Pairing> activePairingsByUUID;
     private HashMap<Pairing, SQSPoller> pollers;
     private final BluetoothTransport bluetoothTransport;
     private final Context context;
@@ -65,7 +66,7 @@ public class Silo {
         activePairingsByUUID = new HashMap<>();
         bluetoothTransport = BluetoothTransport.init(context);
         for (Pairing p : pairings) {
-            activePairingsByUUID.put(p.getUUIDString(), p);
+            activePairingsByUUID.put(p.uuid, p);
             if (bluetoothTransport != null) {
                 bluetoothTransport.add(p);
             }
@@ -122,7 +123,7 @@ public class Silo {
         send(pairing, wrappedKeyMessage);
 
         pairingStorage.pair(pairing);
-        activePairingsByUUID.put(pairing.getUUIDString(), pairing);
+        activePairingsByUUID.put(pairing.uuid, pairing);
         pollers.put(pairing, new SQSPoller(context, pairing));
         if (bluetoothTransport != null) {
             bluetoothTransport.add(pairing);
@@ -145,7 +146,7 @@ public class Silo {
         }
     }
 
-    public synchronized void onMessage(String pairingUUID, byte[] incoming) {
+    public synchronized void onMessage(UUID pairingUUID, byte[] incoming) {
         try {
             NetworkMessage message = NetworkMessage.parse(incoming);
             Pairing pairing = activePairingsByUUID.get(pairingUUID);
@@ -156,7 +157,6 @@ public class Silo {
             switch (message.header) {
                 case CIPHERTEXT:
                     byte[] json = pairing.unseal(message.message);
-                    Log.i(TAG, "got JSON " + new String(json, "UTF-8"));
                     Request request = JSON.fromJson(json, Request.class);
                     handle(pairing, request);
                     break;

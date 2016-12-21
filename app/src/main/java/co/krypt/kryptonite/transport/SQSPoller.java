@@ -35,7 +35,7 @@ public class SQSPoller {
                     try {
                         Log.d(TAG, "read " + pairing.workstationName);
                         for (byte[] message : SQSTransport.receiveMessages(pairing)) {
-                            Silo.shared(context).onMessage(pairing.getUUIDString(), message);
+                            Silo.shared(context).onMessage(pairing.uuid, message);
                         }
                     } catch (Exception e) {
                         Log.e(TAG, e.getMessage());
