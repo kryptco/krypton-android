@@ -14,6 +14,7 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,6 +24,7 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,7 +44,7 @@ import co.krypt.kryptonite.silo.Silo;
  * Copyright 2016. KryptCo, Inc.
  */
 
-public class BluetoothTransport {
+public class BluetoothTransport extends BroadcastReceiver {
     private static final UUID KR_BLUETOOTH_CHARACTERISTIC = UUID.fromString("20F53E48-C08D-423A-B2C2-1C797889AF24");
     private static final String TAG = "BluetoothTransport";
 
@@ -137,6 +139,28 @@ public class BluetoothTransport {
 
     }
 
+    private boolean refreshDeviceCache(BluetoothGatt gatt){
+        try {
+            BluetoothGatt localBluetoothGatt = gatt;
+            Method localMethod = localBluetoothGatt.getClass().getMethod("refresh", new Class[0]);
+            if (localMethod != null) {
+                boolean bool = ((Boolean) localMethod.invoke(localBluetoothGatt, new Object[0])).booleanValue();
+                return bool;
+            }
+        }
+        catch (Exception localException) {
+            Log.e(TAG, "An exception occurred while refreshing device");
+        }
+        return false;
+    }
+
+    public synchronized void stop() {
+        for (Pair<BluetoothGatt, BluetoothGattCharacteristic> pair : characteristicsAndDevicesByServiceUUID.values()) {
+            pair.first.close();
+            pair.first.disconnect();
+        }
+    }
+
 
     public static synchronized BluetoothTransport init(Context context) {
         if (!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -214,7 +238,7 @@ public class BluetoothTransport {
             return;
         }
         connectingDevices.add(result.getDevice());
-        result.getDevice().connectGatt(context, true, gattCallback);
+        refreshDeviceCache(result.getDevice().connectGatt(context, false, gattCallback));
         Log.v(TAG, "scan result: " + result.getDevice().getName());
     }
 
@@ -225,16 +249,17 @@ public class BluetoothTransport {
                 gatt.discoverServices();
                 connectingDevices.remove(gatt.getDevice());
                 connectedDevices.add(gatt.getDevice());
-//                if (!gatt.requestMtu(20)) {
-//                    Log.e(TAG, "initial MTU request failed");
-//                }
-//                if (!gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)) {
-//                    Log.e(TAG, "initial connection priority request failed");
-//                }
+                if (!gatt.requestMtu(22)) {
+                    Log.e(TAG, "initial MTU request failed");
+                }
+                if (!gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)) {
+                    Log.e(TAG, "initial connection priority request failed");
+                }
                 break;
             case BluetoothGatt.STATE_DISCONNECTED:
                 Log.v(TAG, gatt.getDevice().getAddress() + " disconnected");
                 connectedDevices.remove(gatt.getDevice());
+                connectingDevices.remove(gatt.getDevice());
                 discoveredServiceUUIDSByDevice.remove(gatt.getDevice());
                 scanLogic();
                 break;
@@ -256,45 +281,33 @@ public class BluetoothTransport {
                 final BluetoothGattCharacteristic characteristic = service.getCharacteristic(KR_BLUETOOTH_CHARACTERISTIC);
                 if (characteristic != null) {
                     characteristicsAndDevicesByServiceUUID.put(service.getUuid(), new Pair<>(gatt, characteristic));
+                    characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
+                    gatt.setCharacteristicNotification(characteristic, true);
                     Log.v(TAG, "subscribing to characteristic");
-//                    UUID configDescriptorUUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-//                    BluetoothGattDescriptor descriptor = characteristic.getDescriptor(configDescriptorUUID);
-//                    if (descriptor != null) {
-//                        descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-//                        gatt.writeDescriptor(descriptor);
-//                    } else {
-//                        Log.e(TAG, "config descriptor null");
-//                    }
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            boolean success = gatt.setCharacteristicNotification(characteristic, true);
-                            if (!success) {
-                                Log.e(TAG, "failed to enable characteristic notification");
-                            }
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
-//                        descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                                descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-                                if (!gatt.writeDescriptor(descriptor)) {
-                                    Log.e(TAG, "failed to write descriptor notification");
-                                }
-                            }
+                    UUID configDescriptorUUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+                    BluetoothGattDescriptor descriptor = characteristic.getDescriptor(configDescriptorUUID);
+                    if (descriptor != null) {
+                        descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                        if (!gatt.writeDescriptor(descriptor)) {
+                            Log.e(TAG, "failed to write descriptor");
                         }
-                    }).start();
+                    } else {
+                        Log.e(TAG, "config descriptor null");
+                    }
                 }
             }
         }
-        discoveredServiceUUIDSByDevice.put(gatt.getDevice(), serviceUUIDS);
-
-        scanLogic();
+        if (serviceUUIDS.size() > 0) {
+            discoveredServiceUUIDSByDevice.put(gatt.getDevice(), serviceUUIDS);
+            scanLogic();
+        } else {
+            //  failed to find paired service
+            gatt.discoverServices();
+        }
     }
 
     private synchronized void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        Log.v(TAG, "onCharacteristicChanged");
         UUID uuid = characteristic.getService().getUuid();
         byte[] value = characteristic.getValue();
         if (value == null) {
@@ -346,7 +359,6 @@ public class BluetoothTransport {
         if (characteristicAndDevice == null) {
             return;
         }
-//        characteristicAndDevice.second.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
         Integer mtu = mtuByBluetoothGatt.get(characteristicAndDevice.first);
         if (mtu == null) {
             mtu = 20;
@@ -445,5 +457,10 @@ public class BluetoothTransport {
     public static synchronized void requestUserEnableBluetooth(Activity activity, int requestID) {
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         activity.startActivityForResult(enableBtIntent, requestID);
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+
     }
 }

@@ -42,7 +42,7 @@
             android:name=".policy.UnlockScreenDummyActivity"
             android:launchMode="singleInstance"
             android:taskAffinity=""
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <service
             android:name=".transport.FirebaseMessagingService"
@@ -67,12 +67,18 @@
         <receiver
             android:name=".transport.BluetoothStateReceiver"
             android:enabled="true"
-            android:exported="false"
-            >
+            android:exported="true">
             <intent-filter>
-                <action android:name="android"/>
+                <action android:name="android.bluetooth.adapter.action.STATE_CHANGED" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".transport.BluetoothService"
+            android:enabled="true"
+            android:exported="true">
+
+        </service>
     </application>
 
 </manifest>
