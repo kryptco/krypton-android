@@ -33,6 +33,9 @@ public class MeStorage {
         synchronized (lock) {
             String meJSON = preferences.getString("ME", "");
             Profile me = JSON.fromJson(meJSON, Profile.class);
+            if (me == null) {
+                return null;
+            }
             try {
                 me.sshWirePublicKey = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG).publicKeySSHWireFormat();
             } catch (InvalidKeyException | IOException | CryptoException e) {

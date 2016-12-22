@@ -112,6 +112,10 @@ public class Silo {
         pollers.clear();
     }
 
+    public synchronized void exit() {
+        bluetoothTransport.stop();
+    }
+
     public synchronized Pairing pair(PairingQR pairingQR) throws CryptoException, TransportException {
         Pairing pairing = Pairing.generate(pairingQR);
         if (activePairingsByUUID.containsValue(pairing)) {

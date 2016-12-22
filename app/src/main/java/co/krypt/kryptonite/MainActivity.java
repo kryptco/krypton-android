@@ -21,9 +21,17 @@ import android.widget.EditText;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+
+import co.krypt.kryptonite.crypto.KeyManager;
+import co.krypt.kryptonite.crypto.SSHKeyPair;
 import co.krypt.kryptonite.devices.DevicesFragment;
+import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.me.MeFragment;
+import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.pairing.PairFragment;
+import co.krypt.kryptonite.protocol.Profile;
 import co.krypt.kryptonite.silo.Silo;
 
 public class MainActivity extends AppCompatActivity {
@@ -52,6 +60,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        try {
+            SSHKeyPair pair = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
+            if (new MeStorage(getApplicationContext()).load() == null) {
+                new MeStorage(getApplicationContext()).set(new Profile("enter email", pair.publicKeySSHWireFormat()));
+            }
+        } catch (CryptoException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         if (ConnectionResult.SUCCESS != GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getApplicationContext())) {
             //  TODO: warn about no push notifications, prompt to install google play services
@@ -153,6 +174,11 @@ public class MainActivity extends AppCompatActivity {
         silo.stop();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        silo.exit();
+    }
 
     @Override
     public void onBackPressed() {
