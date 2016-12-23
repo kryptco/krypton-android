@@ -249,9 +249,9 @@ public class BluetoothTransport extends BroadcastReceiver {
                 gatt.discoverServices();
                 connectingDevices.remove(gatt.getDevice());
                 connectedDevices.add(gatt.getDevice());
-                if (!gatt.requestMtu(22)) {
-                    Log.e(TAG, "initial MTU request failed");
-                }
+//                if (!gatt.requestMtu(40)) {
+//                    Log.e(TAG, "initial MTU request failed");
+//                }
                 if (!gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)) {
                     Log.e(TAG, "initial connection priority request failed");
                 }
@@ -377,7 +377,6 @@ public class BluetoothTransport extends BroadcastReceiver {
         if (characteristicWritePending.get(characteristic) != null) {
             return;
         }
-        characteristicWritePending.put(characteristic, true);
         List<byte[]> queue = outgoingMessagesByCharacteristic.get(characteristic);
         if (queue != null && queue.size() > 0) {
             byte[] value = queue.remove(0);
@@ -386,7 +385,8 @@ public class BluetoothTransport extends BroadcastReceiver {
             if (!gatt.writeCharacteristic(characteristic)) {
                 Log.e(TAG, "characteristic write failed");
                 queue.add(0, value);
-                characteristicWritePending.remove(characteristic);
+            } else {
+                characteristicWritePending.put(characteristic, true);
             }
         }
     }
@@ -437,17 +437,7 @@ public class BluetoothTransport extends BroadcastReceiver {
 
     private synchronized void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         characteristicWritePending.remove(characteristic);
-        List<byte[]> queue = outgoingMessagesByCharacteristic.get(characteristic);
-        if (queue != null && queue.size() > 0) {
-            byte[] nextSplit = queue.remove(0);
-            Log.v(TAG, "set value n=" + String.valueOf(nextSplit[0]) + " length=" + String.valueOf(nextSplit.length));
-            characteristic.setValue(nextSplit);
-            if (!gatt.writeCharacteristic(characteristic)) {
-                Log.e(TAG, "characteristic write failed");
-                queue.add(0, nextSplit);
-                characteristicWritePending.remove(characteristic);
-            }
-        }
+        tryWrite(gatt, characteristic);
     }
 
     private synchronized void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,

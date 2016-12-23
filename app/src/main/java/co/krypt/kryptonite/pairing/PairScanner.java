@@ -49,7 +49,7 @@ public class PairScanner {
                 .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
         if(!detector.isOperational()){
-            Log.e(TAG, "Could not set up the detector!");
+            Log.e(TAG, "Could not set up the detector");
             return;
         }
 
