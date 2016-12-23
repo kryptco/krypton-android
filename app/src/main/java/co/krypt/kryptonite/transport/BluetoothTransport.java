@@ -249,9 +249,6 @@ public class BluetoothTransport extends BroadcastReceiver {
                 gatt.discoverServices();
                 connectingDevices.remove(gatt.getDevice());
                 connectedDevices.add(gatt.getDevice());
-//                if (!gatt.requestMtu(40)) {
-//                    Log.e(TAG, "initial MTU request failed");
-//                }
                 if (!gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)) {
                     Log.e(TAG, "initial connection priority request failed");
                 }
@@ -373,10 +370,11 @@ public class BluetoothTransport extends BroadcastReceiver {
         tryWrite(characteristicAndDevice.first, characteristicAndDevice.second);
     }
 
-    private synchronized void tryWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+    private synchronized void tryWrite(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
         if (characteristicWritePending.get(characteristic) != null) {
             return;
         }
+        characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
         List<byte[]> queue = outgoingMessagesByCharacteristic.get(characteristic);
         if (queue != null && queue.size() > 0) {
             byte[] value = queue.remove(0);
@@ -429,7 +427,6 @@ public class BluetoothTransport extends BroadcastReceiver {
                 return;
             }
             mtuByBluetoothGatt.put(gatt, mtu);
-            gatt.requestMtu(mtu * 2);
         } else {
             Log.v(TAG, "mtu change failure: " + String.valueOf(mtu));
         }
