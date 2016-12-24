@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.protocol.NetworkMessage;
@@ -159,6 +160,7 @@ public class BluetoothTransport extends BroadcastReceiver {
             pair.first.close();
             pair.first.disconnect();
         }
+        adapter.cancelDiscovery();
     }
 
 
@@ -176,10 +178,39 @@ public class BluetoothTransport extends BroadcastReceiver {
         scanLogic();
     }
 
+    public synchronized void setPairingUUIDs(List<String> uuidStrings) {
+        Set<UUID> uuids = new HashSet<>();
+        for (String uuidString: uuidStrings) {
+            try {
+                uuids.add(UUID.fromString(uuidString));
+            } catch(IllegalArgumentException e) {
+                Log.e(TAG, "failed to parse uuid string " + uuidString);
+            }
+        }
+        allServiceUUIDS.clear();
+        allServiceUUIDS.addAll(uuids);
+        Set<UUID> deleteUUIDS = new HashSet<UUID>(characteristicsAndDevicesByServiceUUID.keySet());
+        deleteUUIDS.removeAll(allServiceUUIDS);
+        for (UUID deleteUUID: uuids) {
+            Pair<BluetoothGatt, BluetoothGattCharacteristic> removed = characteristicsAndDevicesByServiceUUID.remove(deleteUUID);
+            if (removed != null) {
+                removed.first.disconnect();
+            }
+        }
+        scanLogic();
+    }
+
     public synchronized void scanLogic() {
         Set<UUID> serviceUUIDSToScan = new HashSet<>(allServiceUUIDS);
         for (Set<UUID> discoveredServices: discoveredServiceUUIDSByDevice.values()) {
             serviceUUIDSToScan.removeAll(discoveredServices);
+        }
+
+        for (BluetoothDevice device: adapter.getBondedDevices()) {
+            if (!connectingDevices.contains(device)) {
+                device.connectGatt(context, true, gattCallback);
+                connectedDevices.add(device);
+            }
         }
 
         List<ScanFilter> scanFilters = new ArrayList<>();
@@ -238,7 +269,7 @@ public class BluetoothTransport extends BroadcastReceiver {
             return;
         }
         connectingDevices.add(result.getDevice());
-        refreshDeviceCache(result.getDevice().connectGatt(context, false, gattCallback));
+        refreshDeviceCache(result.getDevice().connectGatt(context, true, gattCallback));
         Log.v(TAG, "scan result: " + result.getDevice().getName());
     }
 

@@ -1,6 +1,9 @@
 package co.krypt.kryptonite;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -23,16 +26,20 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
+import java.util.UUID;
 
 import co.krypt.kryptonite.crypto.KeyManager;
 import co.krypt.kryptonite.crypto.SSHKeyPair;
 import co.krypt.kryptonite.devices.DevicesFragment;
 import co.krypt.kryptonite.exception.CryptoException;
+import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.me.MeFragment;
 import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.pairing.PairFragment;
+import co.krypt.kryptonite.protocol.NetworkMessage;
 import co.krypt.kryptonite.protocol.Profile;
 import co.krypt.kryptonite.silo.Silo;
+import co.krypt.kryptonite.transport.BluetoothService;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -73,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        startService(new Intent(this, BluetoothService.class));
 
         if (ConnectionResult.SUCCESS != GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getApplicationContext())) {
             //  TODO: warn about no push notifications, prompt to install google play services
@@ -181,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        silo.exit();
         super.onDestroy();
     }
 
