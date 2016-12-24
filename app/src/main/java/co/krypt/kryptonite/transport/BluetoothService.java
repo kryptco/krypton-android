@@ -1,17 +1,10 @@
 package co.krypt.kryptonite.transport;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.IBinder;
 import android.util.Log;
 
-import java.util.List;
-
-import co.krypt.kryptonite.MainActivity;
-import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.silo.Silo;
 
 public class BluetoothService extends Service {

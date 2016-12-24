@@ -131,6 +131,7 @@ public class Silo {
         pollers.put(pairing, new SQSPoller(context, pairing));
         if (bluetoothTransport != null) {
             bluetoothTransport.add(pairing);
+            bluetoothTransport.send(pairing, wrappedKeyMessage);
         }
         return pairing;
     }
@@ -141,6 +142,7 @@ public class Silo {
         activePairingsByUUID.remove(pairing.getUUIDString());
         SQSPoller poller = pollers.remove(pairing);
         poller.stop();
+        bluetoothTransport.remove(pairing);
     }
 
     public synchronized void unpairAll() {
@@ -167,9 +169,7 @@ public class Silo {
                 case WRAPPED_KEY:
                     break;
             }
-        } catch (TransportException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (IOException | InvalidKeyException | ProtocolException | CryptoException e) {
+        } catch (TransportException | IOException | InvalidKeyException | ProtocolException | CryptoException e) {
             e.printStackTrace();
         }
     }
