@@ -49,6 +49,9 @@ public class BluetoothTransport extends BroadcastReceiver {
     private static final UUID KR_BLUETOOTH_CHARACTERISTIC = UUID.fromString("20F53E48-C08D-423A-B2C2-1C797889AF24");
     private static final String TAG = "BluetoothTransport";
 
+    public static final byte REFRESH_BYTE = 0;
+    public static final byte PING_BYTE = 1;
+
     private final BluetoothManager manager;
     private final BluetoothAdapter adapter;
     private final Set<UUID> allServiceUUIDS = new HashSet<>();
@@ -289,7 +292,17 @@ public class BluetoothTransport extends BroadcastReceiver {
                 connectedDevices.remove(gatt.getDevice());
                 connectingDevices.remove(gatt.getDevice());
                 discoveredServiceUUIDSByDevice.remove(gatt.getDevice());
-                scanLogic();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        scanLogic();
+                    }
+                }).start();
                 break;
         }
     }
@@ -334,9 +347,27 @@ public class BluetoothTransport extends BroadcastReceiver {
         }
     }
 
-    private synchronized void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+    private synchronized void refreshConnection(UUID uuid, BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        Log.v(TAG, "refreshing connection to " + uuid.toString());
+        gatt.setCharacteristicNotification(characteristic, false);
+        gatt.disconnect();
+        connectedDevices.remove(gatt.getDevice());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                    scanLogic();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private synchronized void onCharacteristicChanged(final BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         Log.v(TAG, "onCharacteristicChanged");
-        UUID uuid = characteristic.getService().getUuid();
+        final UUID uuid = characteristic.getService().getUuid();
         byte[] value = characteristic.getValue();
         if (value == null) {
             return;
@@ -347,13 +378,16 @@ public class BluetoothTransport extends BroadcastReceiver {
 
         if (value.length == 1) {
             switch (value[0]) {
-
+                case REFRESH_BYTE:
+                    refreshConnection(uuid, gatt, characteristic);
+                    break;
             }
         }
 
 
         if (value.length > 1) {
             byte n = value[0];
+            Log.v(TAG, "split " + String.valueOf(n) + " from " + characteristic.toString());
             ByteArrayOutputStream messageSplit = new ByteArrayOutputStream();
             messageSplit.write(value, 1, value.length - 1);
             ByteArrayOutputStream newMessageBuffer = new ByteArrayOutputStream();
