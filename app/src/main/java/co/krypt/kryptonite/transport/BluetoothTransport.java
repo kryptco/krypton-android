@@ -360,6 +360,10 @@ public class BluetoothTransport extends BroadcastReceiver {
                 serviceUUIDS.add(service.getUuid());
                 final BluetoothGattCharacteristic characteristic = service.getCharacteristic(KR_BLUETOOTH_CHARACTERISTIC);
                 if (characteristic != null) {
+                    Pair<BluetoothGatt, BluetoothGattCharacteristic> oldCharacteristic = characteristicsAndDevicesByServiceUUID.get(service.getUuid());
+                    if (oldCharacteristic != null) {
+                        oldCharacteristic.first.setCharacteristicNotification(oldCharacteristic.second, false);
+                    }
                     characteristicsAndDevicesByServiceUUID.put(service.getUuid(), new Pair<>(gatt, characteristic));
                     characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
                     gatt.setCharacteristicNotification(characteristic, true);
