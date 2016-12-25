@@ -201,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        silo.exit();
         super.onDestroy();
     }
 
