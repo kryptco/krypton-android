@@ -93,6 +93,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         synchronized (this) {
             this.visible = visible;
         }
+        refreshCameraPermissionInfoVisibility();
     }
 
     /**
@@ -118,7 +119,19 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
 
     private void onCameraPermissionGranted() {
         Log.i(TAG, "camera permissions granted");
-        cameraPermissionInfoLayout.setVisibility(View.GONE);
+        refreshCameraPermissionInfoVisibility();
+    }
+
+    private void refreshCameraPermissionInfoVisibility() {
+        if (getActivity() == null || cameraPermissionInfoLayout == null) {
+            return;
+        }
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            cameraPermissionInfoLayout.setVisibility(View.VISIBLE);
+        } else {
+            cameraPermissionInfoLayout.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -138,10 +151,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         preview.addView(mPreview);
 
         cameraPermissionInfoLayout = (ConstraintLayout) rootView.findViewById(R.id.cameraPermissionInfo);
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            cameraPermissionInfoLayout.setVisibility(View.VISIBLE);
-        }
+        refreshCameraPermissionInfoVisibility();
 
         requestCameraPermissionButton = (Button) rootView.findViewById(R.id.requestCameraPermissionButton);
         requestCameraPermissionButton.setOnClickListener(new View.OnClickListener() {
