@@ -229,7 +229,7 @@ public class Silo {
                 String cachedJSON = cacheEntry.getString(0);
                 if (cachedJSON != null) {
                     send(pairing, JSON.fromJson(cachedJSON, Response.class));
-                    Log.v(TAG, "send cached response to " + request.requestID);
+                    Log.i(TAG, "sent cached response to " + request.requestID);
                     return true;
                 } else {
                     Log.v(TAG, "no cache JSON");
@@ -241,7 +241,7 @@ public class Silo {
         Response cachedResponse = responseMemCacheByRequestID.get(request.requestID);
         if (cachedResponse != null) {
             send(pairing, cachedResponse);
-            Log.v(TAG, "send memory cached response to " + request.requestID);
+            Log.i(TAG, "sent memory cached response to " + request.requestID);
             return true;
         }
         return false;
