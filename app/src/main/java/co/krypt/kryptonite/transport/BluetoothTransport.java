@@ -64,7 +64,7 @@ public class BluetoothTransport extends BroadcastReceiver {
 
     private final Map<UUID, NetworkMessage> pendingMessagesByUUID = new HashMap<>();
 
-    private final Map<UUID, Pair<Byte, ByteArrayOutputStream>> incomingMessageBuffersByServiceUUID = new HashMap<>();
+    private final Map<BluetoothGattCharacteristic, Pair<Byte, ByteArrayOutputStream>> incomingMessageBuffersByCharacteristic = new HashMap<>();
     private final Map<BluetoothGatt, Integer> mtuByBluetoothGatt = new HashMap<>();
     private final Map<BluetoothGattCharacteristic, List<byte[]>> outgoingMessagesByCharacteristic = new HashMap<>();
     private final Map<BluetoothGattCharacteristic, Boolean> characteristicWritePending = new HashMap<>();
@@ -422,7 +422,7 @@ public class BluetoothTransport extends BroadcastReceiver {
             messageSplit.write(value, 1, value.length - 1);
             ByteArrayOutputStream newMessageBuffer = new ByteArrayOutputStream();
 
-            Pair<Byte, ByteArrayOutputStream> lastNAndBuffer = incomingMessageBuffersByServiceUUID.get(uuid);
+            Pair<Byte, ByteArrayOutputStream> lastNAndBuffer = incomingMessageBuffersByCharacteristic.get(characteristic);
             try {
                 if (lastNAndBuffer != null) {
                     if (lastNAndBuffer.first == n + 1) {
@@ -438,10 +438,10 @@ public class BluetoothTransport extends BroadcastReceiver {
             }
             if (n == 0) {
                 Log.v(TAG, "received message of length " + String.valueOf(newMessageBuffer.toByteArray().length));
-                incomingMessageBuffersByServiceUUID.remove(uuid);
+                incomingMessageBuffersByCharacteristic.remove(uuid);
                 Silo.shared(context).onMessage(uuid, newMessageBuffer.toByteArray());
             } else {
-                incomingMessageBuffersByServiceUUID.put(uuid, new Pair<>(n, newMessageBuffer));
+                incomingMessageBuffersByCharacteristic.put(characteristic, new Pair<>(n, newMessageBuffer));
             }
         }
     }
