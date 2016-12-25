@@ -152,6 +152,7 @@ public class BluetoothTransport extends BroadcastReceiver {
     private final BroadcastReceiver bluetoothStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.v(TAG, "bluetooth adapter intent action: " + intent.getAction());
             switch (intent.getAction()) {
                 case BluetoothAdapter.ACTION_STATE_CHANGED:
                     int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
@@ -249,9 +250,9 @@ public class BluetoothTransport extends BroadcastReceiver {
         }
 
         for (BluetoothDevice device: adapter.getBondedDevices()) {
-            if (!connectingDevices.contains(device)) {
+            if (!connectingDevices.contains(device) && !connectedDevices.contains(device)) {
                 device.connectGatt(context, true, gattCallback);
-                connectedDevices.add(device);
+                connectingDevices.add(device);
             }
         }
 
