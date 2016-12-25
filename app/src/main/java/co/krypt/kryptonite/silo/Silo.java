@@ -35,6 +35,7 @@ import co.krypt.kryptonite.protocol.PairingQR;
 import co.krypt.kryptonite.protocol.Request;
 import co.krypt.kryptonite.protocol.Response;
 import co.krypt.kryptonite.protocol.SignResponse;
+import co.krypt.kryptonite.protocol.UnpairResponse;
 import co.krypt.kryptonite.transport.BluetoothTransport;
 import co.krypt.kryptonite.transport.SNSTransport;
 import co.krypt.kryptonite.transport.SQSPoller;
@@ -93,10 +94,6 @@ public class Silo {
         return lastRequestTimeSeconds.get(pairing) != null;
     }
 
-    public synchronized Pairing getPairing(String pairingUUIDString) {
-        return activePairingsByUUID.get(pairingUUIDString);
-    }
-
     public Pairings pairings() {
         return pairingStorage;
     }
@@ -135,7 +132,7 @@ public class Silo {
         Pairing pairing = Pairing.generate(pairingQR);
         if (activePairingsByUUID.containsValue(pairing)) {
             Log.w(TAG, "already paired with " + pairing.workstationName);
-            return activePairingsByUUID.get(pairing.getUUIDString());
+            return activePairingsByUUID.get(pairing.uuid);
         }
         byte[] wrappedKey = pairing.wrapKey();
         NetworkMessage wrappedKeyMessage = new NetworkMessage(NetworkMessage.Header.WRAPPED_KEY, wrappedKey);
@@ -151,19 +148,30 @@ public class Silo {
         return pairing;
     }
 
-    public synchronized void unpair(Pairing pairing) {
-        //  TODO: send unpair response
+    public synchronized void unpair(Pairing pairing, boolean sendResponse) {
+        if (sendResponse) {
+            Response unpairResponse = new Response();
+            unpairResponse.requestID = "";
+            unpairResponse.unpairResponse = new UnpairResponse();
+            try {
+                send(pairing, unpairResponse);
+            } catch (CryptoException | TransportException e) {
+                e.printStackTrace();
+            }
+        }
         pairingStorage.unpair(pairing);
-        activePairingsByUUID.remove(pairing.getUUIDString());
+        activePairingsByUUID.remove(pairing.uuid);
         SQSPoller poller = pollers.remove(pairing);
-        poller.stop();
+        if (poller != null) {
+            poller.stop();
+        }
         bluetoothTransport.remove(pairing);
     }
 
     public synchronized void unpairAll() {
         List<Pairing> toDelete = new ArrayList<>(activePairingsByUUID.values());
         for (Pairing pairing: toDelete) {
-            unpair(pairing);
+            unpair(pairing, true);
         }
     }
 
@@ -247,6 +255,10 @@ public class Silo {
     public synchronized void handle(Pairing pairing, Request request) throws CryptoException, TransportException, IOException, InvalidKeyException, ProtocolException {
         if (Math.abs(request.unixSeconds - (System.currentTimeMillis() / 1000)) > 120) {
             throw new ProtocolException("invalid request time");
+        }
+
+        if (request.unpairRequest != null) {
+            unpair(pairing, false);
         }
 
         if (sendCachedResponseIfPresent(pairing, request)) {

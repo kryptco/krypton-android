@@ -55,7 +55,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         holder.unpairButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Silo.shared(v.getContext()).unpair(holder.device);
+                Silo.shared(v.getContext()).unpair(holder.device, true);
             }
         });
 

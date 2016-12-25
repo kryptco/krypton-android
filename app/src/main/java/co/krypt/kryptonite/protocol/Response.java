@@ -17,6 +17,9 @@ public class Response {
     @SerializedName("sign_response")
     public SignResponse signResponse;
 
+    @SerializedName("unpair_response")
+    public UnpairResponse unpairResponse;
+
     @SerializedName("sns_endpoint_arn")
     public String snsEndpointARN;
 

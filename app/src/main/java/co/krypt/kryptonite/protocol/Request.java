@@ -25,4 +25,7 @@ public class Request {
 
     @SerializedName("sign_request")
     public SignRequest signRequest;
+
+    @SerializedName("unpair_request")
+    public UnpairRequest unpairRequest;
 }
