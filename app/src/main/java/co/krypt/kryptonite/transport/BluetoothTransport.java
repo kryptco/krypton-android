@@ -17,6 +17,7 @@ import android.bluetooth.le.ScanSettings;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.ParcelUuid;
 import android.support.v4.util.Pair;
@@ -143,7 +144,30 @@ public class BluetoothTransport extends BroadcastReceiver {
             }
         };
 
+        IntentFilter bluetoothStateFilter = new IntentFilter();
+        bluetoothStateFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        context.registerReceiver(bluetoothStateReceiver, bluetoothStateFilter);
     }
+
+    private final BroadcastReceiver bluetoothStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case BluetoothAdapter.ACTION_STATE_CHANGED:
+                    int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
+                    switch (state) {
+                        case BluetoothAdapter.STATE_ON:
+                            scanLogic();
+                            break;
+                        case BluetoothAdapter.STATE_OFF:
+                            scanLogic();
+                            break;
+                    }
+                    break;
+            }
+
+        }
+    };
 
     private synchronized boolean refreshDeviceCache(BluetoothGatt gatt){
         try {
@@ -166,6 +190,7 @@ public class BluetoothTransport extends BroadcastReceiver {
             pair.first.disconnect();
         }
         adapter.cancelDiscovery();
+        context.unregisterReceiver(bluetoothStateReceiver);
     }
 
 
