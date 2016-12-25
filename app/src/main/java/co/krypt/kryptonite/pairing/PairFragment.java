@@ -1,18 +1,28 @@
 package co.krypt.kryptonite.pairing;
 
+import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.TransportException;
@@ -37,6 +47,19 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
 
     private View pairingStatusView;
     private TextView pairingStatusText;
+
+    private ConstraintLayout cameraPermissionInfoLayout;
+    private Button requestCameraPermissionButton;
+    private final BroadcastReceiver permissionReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case MainActivity.CAMERA_PERMISSION_GRANTED_ACTION:
+                    onCameraPermissionGranted();
+                    break;
+            }
+        }
+    };
 
     private PairScanner pairScanner;
     private PairingQR pendingPairingQR;
@@ -83,6 +106,21 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         return fragment;
     }
 
+    private void onClickRequestCameraPermission() {
+        switch (ContextCompat.checkSelfPermission(getActivity(),
+                android.Manifest.permission.CAMERA)) {
+            case PackageManager.PERMISSION_DENIED:
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.CAMERA},
+                        MainActivity.CAMERA_PERMISSION_REQUEST);
+        }
+    }
+
+    private void onCameraPermissionGranted() {
+        Log.i(TAG, "camera permissions granted");
+        cameraPermissionInfoLayout.setVisibility(View.GONE);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +136,20 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         pairingStatusText = (TextView) rootView.findViewById(R.id.pairingStatusText);
         mPreview = new CameraPreview(getContext());
         preview.addView(mPreview);
+
+        cameraPermissionInfoLayout = (ConstraintLayout) rootView.findViewById(R.id.cameraPermissionInfo);
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            cameraPermissionInfoLayout.setVisibility(View.VISIBLE);
+        }
+
+        requestCameraPermissionButton = (Button) rootView.findViewById(R.id.requestCameraPermissionButton);
+        requestCameraPermissionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickRequestCameraPermission();
+            }
+        });
 
         return rootView;
     }
@@ -121,6 +173,15 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        IntentFilter permissionFilter = new IntentFilter();
+        permissionFilter.addAction(MainActivity.CAMERA_PERMISSION_GRANTED_ACTION);
+        context.registerReceiver(permissionReceiver, permissionFilter);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        getContext().unregisterReceiver(permissionReceiver);
     }
 
     synchronized private void startCamera(final Context context) {

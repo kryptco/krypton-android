@@ -1,7 +1,5 @@
 package co.krypt.kryptonite.protocol;
 
-import android.util.Log;
-
 import com.amazonaws.util.Base16;
 import com.google.gson.annotations.SerializedName;
 

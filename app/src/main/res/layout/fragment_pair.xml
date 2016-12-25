@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintVertical_bias="1.0" />
 
     <ImageView
@@ -34,7 +34,9 @@
         app:layout_constraintTop_toTopOf="@+id/camera_preview"
         app:layout_constraintBottom_toBottomOf="@+id/camera_preview"
         android:padding="50dp"
-        android:alpha=".5" />
+        android:alpha=".5"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1" />
 
     <android.support.constraint.ConstraintLayout
         android:layout_height="wrap_content"
@@ -63,6 +65,73 @@
             android:textSize="24sp"
             android:padding="3dp"
             android:textAlignment="center" />
+
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/cameraPermissionInfo"
+        android:background="@color/appWhite"
+        android:visibility="gone">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:background="@drawable/cast_skip_ad_label_border"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/cameraPermissionTitle"
+                android:text="Camera Permissions Required"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/cameraPermissionExplanation"
+                app:layout_constraintRight_toRightOf="parent"
+                android:textSize="22sp"
+                android:textStyle="normal|bold" />
+
+            <TextView
+                android:text='Kryptonite needs the camera to scan the QR code shown by the "kr pair" command on your workstation.'
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/cameraPermissionExplanation"
+                app:layout_constraintLeft_toLeftOf="@+id/cameraPermissionTitle"
+                app:layout_constraintTop_toBottomOf="@+id/cameraPermissionTitle"
+                app:layout_constraintBottom_toTopOf="@+id/requestCameraPermissionButton"
+                app:layout_constraintRight_toRightOf="@+id/cameraPermissionTitle"
+
+                android:paddingTop="20dp"
+                android:paddingBottom="40dp"
+                android:textSize="18sp" />
+
+            <Button
+                android:text="Enable Camera"
+                android:id="@+id/requestCameraPermissionButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cameraPermissionExplanation"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                 />
+        </android.support.constraint.ConstraintLayout>
+
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

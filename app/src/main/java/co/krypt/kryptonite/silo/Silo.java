@@ -4,13 +4,9 @@ import android.content.Context;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 
-import com.amazonaws.util.Base16;
 import com.amazonaws.util.Base64;
 import com.jakewharton.disklrucache.DiskLruCache;
 
-import org.libsodium.jni.encoders.Hex;
-
-import java.io.File;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
