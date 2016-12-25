@@ -40,6 +40,7 @@ import co.krypt.kryptonite.transport.BluetoothService;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private static final int ME_FRAGMENT_POSITION = 0;
     private static final int PAIR_FRAGMENT_POSITION = 1;
     private static final int DEVICES_FRAGMENT_POSITION = 2;
 
@@ -151,13 +152,14 @@ public class MainActivity extends AppCompatActivity {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
+                case ME_FRAGMENT_POSITION:
+                    return new MeFragment();
                 case PAIR_FRAGMENT_POSITION:
                     return PairFragment.newInstance();
                 case DEVICES_FRAGMENT_POSITION:
                     return DevicesFragment.newInstance(1);
-                default:
-                    return new MeFragment();
             }
+            return null;
         }
 
         @Override
@@ -169,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
-                case 0:
+                case ME_FRAGMENT_POSITION:
                     return "Me";
                 case PAIR_FRAGMENT_POSITION:
                     return "Pair";
