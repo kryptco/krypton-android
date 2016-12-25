@@ -28,4 +28,7 @@ public class Request {
 
     @SerializedName("unpair_request")
     public UnpairRequest unpairRequest;
+
+    @SerializedName("a")
+    public Boolean sendACK;
 }

@@ -28,6 +28,7 @@ import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.policy.Policy;
+import co.krypt.kryptonite.protocol.AckResponse;
 import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.protocol.MeResponse;
 import co.krypt.kryptonite.protocol.NetworkMessage;
@@ -269,6 +270,11 @@ public class Silo {
 
         if (request.signRequest != null && !pairings().isApprovedNow(pairing)) {
             Policy.requestApproval(context, pairing, request);
+            if (request.sendACK == true) {
+                Response ackResponse = Response.with(request);
+                ackResponse.ackResponse = new AckResponse();
+                send(pairing, ackResponse);
+            }
         } else {
             respondToRequest(pairing, request, true);
         }

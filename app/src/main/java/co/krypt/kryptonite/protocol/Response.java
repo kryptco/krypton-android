@@ -20,6 +20,9 @@ public class Response {
     @SerializedName("unpair_response")
     public UnpairResponse unpairResponse;
 
+    @SerializedName("ack_response")
+    public AckResponse ackResponse;
+
     @SerializedName("sns_endpoint_arn")
     public String snsEndpointARN;
 
