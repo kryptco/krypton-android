@@ -4,8 +4,13 @@ import android.content.Context;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 
+import com.amazonaws.util.Base16;
 import com.amazonaws.util.Base64;
+import com.jakewharton.disklrucache.DiskLruCache;
 
+import org.libsodium.jni.encoders.Hex;
+
+import java.io.File;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -56,7 +61,8 @@ public class Silo {
     private final BluetoothTransport bluetoothTransport;
     private final Context context;
     private final HashMap<Pairing, Long> lastRequestTimeSeconds = new HashMap<>();
-    private final LruCache<String, Response> responseCacheByRequestID = new LruCache<>(8192);
+    private final LruCache<String, Response> responseMemCacheByRequestID = new LruCache<>(8192);
+    private DiskLruCache responseDiskCacheByRequestID;
 
     private Silo(Context context) {
         this.context = context;
@@ -72,6 +78,12 @@ public class Silo {
             }
         }
         pollers = new HashMap<>();
+
+        try {
+             responseDiskCacheByRequestID = DiskLruCache.open(context.getCacheDir(), 0, 1, 2 << 19);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static synchronized Silo shared(Context context) {
@@ -114,6 +126,13 @@ public class Silo {
 
     public synchronized void exit() {
         bluetoothTransport.stop();
+        if (responseDiskCacheByRequestID != null) {
+            try {
+                responseDiskCacheByRequestID.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public synchronized Pairing pair(PairingQR pairingQR) throws CryptoException, TransportException {
@@ -203,14 +222,38 @@ public class Silo {
         }).start();
     }
 
+    private synchronized boolean sendCachedResponseIfPresent(Pairing pairing, Request request) throws CryptoException, TransportException, IOException {
+        if (responseDiskCacheByRequestID != null) {
+            DiskLruCache.Snapshot cacheEntry = responseDiskCacheByRequestID.get(request.requestIDCacheKey());
+            if (cacheEntry != null) {
+                String cachedJSON = cacheEntry.getString(0);
+                if (cachedJSON != null) {
+                    send(pairing, JSON.fromJson(cachedJSON, Response.class));
+                    Log.v(TAG, "send cached response to " + request.requestID);
+                    return true;
+                } else {
+                    Log.v(TAG, "no cache JSON");
+                }
+            } else {
+                Log.v(TAG, "no cache entry");
+            }
+        }
+        Response cachedResponse = responseMemCacheByRequestID.get(request.requestID);
+        if (cachedResponse != null) {
+            send(pairing, cachedResponse);
+            Log.v(TAG, "send memory cached response to " + request.requestID);
+            return true;
+        }
+        return false;
+    }
+
+
     public synchronized void handle(Pairing pairing, Request request) throws CryptoException, TransportException, IOException, InvalidKeyException, ProtocolException {
         if (Math.abs(request.unixSeconds - (System.currentTimeMillis() / 1000)) > 120) {
             throw new ProtocolException("invalid request time");
         }
 
-        Response cachedResponse = responseCacheByRequestID.get(request.requestID);
-        if (cachedResponse != null) {
-            send(pairing, cachedResponse);
+        if (sendCachedResponseIfPresent(pairing, request)) {
             return;
         }
 
@@ -224,9 +267,7 @@ public class Silo {
     }
 
     public synchronized void respondToRequest(Pairing pairing, Request request, boolean signatureAllowed) throws CryptoException, InvalidKeyException, IOException, TransportException {
-        Response cachedResponse = responseCacheByRequestID.get(request.requestID);
-        if (cachedResponse != null) {
-            send(pairing, cachedResponse);
+        if (sendCachedResponseIfPresent(pairing, request)) {
             return;
         }
 
@@ -259,7 +300,13 @@ public class Silo {
 
         response.snsEndpointARN = SNSTransport.getInstance(context).getEndpointARN();
 
-        responseCacheByRequestID.put(request.requestID, response);
+        if (responseDiskCacheByRequestID != null) {
+            DiskLruCache.Editor cacheEditor = responseDiskCacheByRequestID.edit(request.requestIDCacheKey());
+            cacheEditor.set(0, JSON.toJson(response));
+            cacheEditor.commit();
+            responseDiskCacheByRequestID.flush();
+        }
+        responseMemCacheByRequestID.put(request.requestID, response);
         send(pairing, response);
     }
 

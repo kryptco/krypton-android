@@ -1,5 +1,8 @@
 package co.krypt.kryptonite.protocol;
 
+import android.util.Log;
+
+import com.amazonaws.util.Base16;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -10,6 +13,11 @@ import com.google.gson.annotations.SerializedName;
 public class Request {
     @SerializedName("request_id")
     public String requestID;
+
+    public String requestIDCacheKey() {
+        String lowercaseBase16 = new String(Base16.encode(requestID.getBytes())).toLowerCase();
+        return lowercaseBase16;
+    }
 
     @SerializedName("unix_seconds")
     public Long unixSeconds;
