@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.protocol.NetworkMessage;
@@ -146,6 +147,7 @@ public class BluetoothTransport extends BroadcastReceiver {
 
         IntentFilter bluetoothStateFilter = new IntentFilter();
         bluetoothStateFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        bluetoothStateFilter.addAction(MainActivity.LOCATION_PERMISSION_GRANTED_ACTION);
         context.registerReceiver(bluetoothStateReceiver, bluetoothStateFilter);
     }
 
@@ -164,6 +166,9 @@ public class BluetoothTransport extends BroadcastReceiver {
                             scanLogic();
                             break;
                     }
+                    break;
+                case MainActivity.LOCATION_PERMISSION_GRANTED_ACTION:
+                    scanLogic();
                     break;
             }
 

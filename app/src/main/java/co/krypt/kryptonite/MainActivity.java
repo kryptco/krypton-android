@@ -45,8 +45,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int DEVICES_FRAGMENT_POSITION = 2;
 
     public static final int CAMERA_PERMISSION_REQUEST = 0;
+    public static final int LOCATION_PERMISSION_REQUEST = 1;
 
     public static final String CAMERA_PERMISSION_GRANTED_ACTION = "co.krypt.android.action.CAMERA_PERMISSION_GRANTED";
+    public static final String LOCATION_PERMISSION_GRANTED_ACTION = "co.krypt.android.action.LOCATION_PERMISSION_GRANTED";
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -133,6 +135,11 @@ public class MainActivity extends AppCompatActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent cameraIntent = new Intent(CAMERA_PERMISSION_GRANTED_ACTION);
                     sendBroadcast(cameraIntent);
+                }
+            case LOCATION_PERMISSION_REQUEST:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent locationIntent = new Intent(LOCATION_PERMISSION_GRANTED_ACTION);
+                    sendBroadcast(locationIntent);
                 }
         }
     }

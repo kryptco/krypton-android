@@ -48,6 +48,8 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
     private View pairingStatusView;
     private TextView pairingStatusText;
 
+    private ConstraintLayout locationPermissionLayout;
+
     private ConstraintLayout cameraPermissionInfoLayout;
     private Button requestCameraPermissionButton;
     private final BroadcastReceiver permissionReceiver = new BroadcastReceiver() {
@@ -56,6 +58,9 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
             switch (intent.getAction()) {
                 case MainActivity.CAMERA_PERMISSION_GRANTED_ACTION:
                     onCameraPermissionGranted();
+                    break;
+                case MainActivity.LOCATION_PERMISSION_GRANTED_ACTION:
+                    onLocationPermissionGranted();
                     break;
             }
         }
@@ -117,9 +122,24 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         }
     }
 
+    private void onClickRequestLocationPermission() {
+        switch (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            case PackageManager.PERMISSION_DENIED:
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        MainActivity.LOCATION_PERMISSION_REQUEST);
+        }
+    }
+
     private void onCameraPermissionGranted() {
-        Log.i(TAG, "camera permissions granted");
+        Log.i(TAG, "camera permission granted");
         refreshCameraPermissionInfoVisibility();
+    }
+
+    private void onLocationPermissionGranted() {
+        Log.i(TAG, "location permission granted");
+        refreshLocationPermissionInfoVisibility();
     }
 
     private void refreshCameraPermissionInfoVisibility() {
@@ -131,6 +151,18 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
             cameraPermissionInfoLayout.setVisibility(View.VISIBLE);
         } else {
             cameraPermissionInfoLayout.setVisibility(View.GONE);
+        }
+    }
+
+    private void refreshLocationPermissionInfoVisibility() {
+        if (getActivity() == null || locationPermissionLayout == null) {
+            return;
+        }
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            locationPermissionLayout.setVisibility(View.VISIBLE);
+        } else {
+            locationPermissionLayout.setVisibility(View.GONE);
         }
     }
 
@@ -161,6 +193,15 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
             }
         });
 
+        locationPermissionLayout = (ConstraintLayout) rootView.findViewById(R.id.locationPermissionLayout);
+        locationPermissionLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickRequestLocationPermission();
+            }
+        });
+        refreshLocationPermissionInfoVisibility();
+
         return rootView;
     }
 
@@ -185,6 +226,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         super.onAttach(context);
         IntentFilter permissionFilter = new IntentFilter();
         permissionFilter.addAction(MainActivity.CAMERA_PERMISSION_GRANTED_ACTION);
+        permissionFilter.addAction(MainActivity.LOCATION_PERMISSION_GRANTED_ACTION);
         context.registerReceiver(permissionReceiver, permissionFilter);
     }
 

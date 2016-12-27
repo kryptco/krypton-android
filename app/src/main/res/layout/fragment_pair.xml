@@ -26,17 +26,44 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:srcCompat="@drawable/crosshair"
-        android:id="@+id/imageView"
+        android:id="@+id/crosshair"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintRight_toRightOf="@+id/camera_preview"
         app:layout_constraintLeft_toLeftOf="@+id/camera_preview"
         app:layout_constraintTop_toTopOf="@+id/camera_preview"
         app:layout_constraintBottom_toBottomOf="@+id/camera_preview"
-        android:padding="50dp"
+        android:padding="75dp"
         android:alpha=".5"
         tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1" />
+        tools:layout_constraintBottom_creator="1"
+        android:tint="@color/appGreen" />
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/locationPermissionLayout"
+        android:layout_marginBottom="30dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:alpha=".75">
+
+        <TextView
+            android:text="Location permissions required to scan for new Bluetooth devices. Tap here to enable."
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/locationPermissionText"
+            tools:layout_editor_absoluteY="0dp"
+            tools:layout_editor_absoluteX="0dp"
+            android:background="@drawable/mr_dialog_material_background_dark"
+            android:padding="15dp"
+            android:textColor="@color/appWhite"
+            android:textSize="18sp"
+            android:textAllCaps="false" />
+    </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
         android:layout_height="wrap_content"
@@ -130,6 +157,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                  />
+
         </android.support.constraint.ConstraintLayout>
 
     </android.support.constraint.ConstraintLayout>
