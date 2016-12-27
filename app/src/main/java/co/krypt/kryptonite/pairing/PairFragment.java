@@ -350,7 +350,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        while((System.currentTimeMillis() - pairTime) < 10000) {
+                        while((System.currentTimeMillis() - pairTime) < 20000) {
                             if (Silo.shared(getContext()).hasActivity(pairing)) {
                                 onPairingSuccess(pairing);
                                 return;

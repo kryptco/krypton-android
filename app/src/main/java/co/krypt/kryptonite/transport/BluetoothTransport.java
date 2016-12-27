@@ -250,6 +250,7 @@ public class BluetoothTransport extends BroadcastReceiver {
         }
 
         for (BluetoothDevice device: adapter.getBondedDevices()) {
+            Log.v(TAG, "found bonded device: " + device.getName());
             if (!connectingDevices.contains(device) && !connectedDevices.contains(device)) {
                 device.connectGatt(context, true, gattCallback);
                 connectingDevices.add(device);
