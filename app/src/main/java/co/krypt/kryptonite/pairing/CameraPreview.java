@@ -14,6 +14,8 @@ import java.io.IOException;
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder mHolder;
 
+    private Camera.Size previewSize;
+
     private static final String TAG = "CAMERA_PREVIEW";
 
     public CameraPreview(Context context) {
@@ -28,6 +30,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
+        Log.d(TAG, "surfaceCreated");
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -38,6 +41,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
             camera.setPreviewDisplay(mHolder);
             camera.startPreview();
+            previewSize = camera.getParameters().getPreviewSize();
         } catch (IOException e) {
             Log.d(TAG, "Error setting camera preview: " + e.getMessage());
         }
@@ -45,6 +49,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         return;
+    }
+
+    public Camera.Size getPreviewSize() {
+        return previewSize;
     }
 }
 

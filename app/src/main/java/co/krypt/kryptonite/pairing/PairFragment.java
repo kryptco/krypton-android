@@ -42,7 +42,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
     private int previewWidth;
     private int previewHeight;
     private CameraPreview mPreview;
-    private FrameLayout preview;
+    private CroppedCameraPreview preview;
     private boolean visible;
 
     private View pairingStatusView;
@@ -176,11 +176,12 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_pair, container, false);
-        preview = (FrameLayout) rootView.findViewById(R.id.camera_preview);
+        preview = (CroppedCameraPreview) rootView.findViewById(R.id.camera_preview);
         pairingStatusView = rootView.findViewById(R.id.pairingStatusLayout);
         pairingStatusText = (TextView) rootView.findViewById(R.id.pairingStatusText);
         mPreview = new CameraPreview(getContext());
-        preview.addView(mPreview);
+        preview.setPreview(mPreview);
+//        preview.addView(mPreview);
 
         cameraPermissionInfoLayout = (ConstraintLayout) rootView.findViewById(R.id.cameraPermissionInfo);
         refreshCameraPermissionInfoVisibility();
@@ -258,6 +259,8 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
                             mPreview.setCamera(mCamera);
                             camera.setPreviewCallback(self);
                             pairScanner = new PairScanner(context, self, previewHeight, previewWidth);
+
+                            preview.requestLayout();
                         }
                     }
                 });
