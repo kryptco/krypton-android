@@ -77,7 +77,7 @@ public class PairScanner {
                             for (int i = 0; i < barcodes.size(); i++) {
                                 Barcode barcode = barcodes.valueAt(i);
                                 if (barcode == null) {
-                                    return;
+                                    continue;
                                 }
                                 if (barcode.rawValue != null) {
                                     PairingQR pairingQR = PairingQR.parseJson(barcode.rawValue);
