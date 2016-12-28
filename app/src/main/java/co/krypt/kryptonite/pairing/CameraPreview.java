@@ -8,6 +8,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.IOException;
+import java.util.List;
 
 /** A basic Camera preview class https://developer.android.com/guide/topics/media/camera.html#preview-layout */
 
@@ -41,6 +42,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
             camera.setPreviewDisplay(mHolder);
             camera.startPreview();
+            List<String> focusModes = camera.getParameters().getSupportedFocusModes();
+            if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+                Camera.Parameters params = camera.getParameters();
+                params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+                camera.setParameters(params);
+            }
             previewSize = camera.getParameters().getPreviewSize();
         } catch (IOException e) {
             Log.d(TAG, "Error setting camera preview: " + e.getMessage());
