@@ -3,6 +3,7 @@ package co.krypt.kryptonite.me;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.ArraySet;
+import android.util.Log;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -22,6 +23,7 @@ import co.krypt.kryptonite.protocol.Profile;
  */
 
 public class MeStorage {
+    private static final String TAG = "MeStorage";
     private static Object lock = new Object();
     private SharedPreferences preferences;
 
@@ -34,6 +36,7 @@ public class MeStorage {
             String meJSON = preferences.getString("ME", "");
             Profile me = JSON.fromJson(meJSON, Profile.class);
             if (me == null) {
+                Log.i(TAG, "no profile found");
                 return null;
             }
             try {

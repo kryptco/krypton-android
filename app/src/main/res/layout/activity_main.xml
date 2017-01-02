@@ -28,7 +28,7 @@
             android:layout_height="64dp"
             android:paddingTop="@dimen/appbar_padding_top"
             android:theme="@style/AppTheme.AppBarOverlay"
-            tools:layout_editor_absoluteY="0dp"
+            tools:layout_editor_absoluteY="25dp"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             android:background="@color/appWhite">
