@@ -1,7 +1,9 @@
 package co.krypt.kryptonite.onboarding;
 
 
+import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,21 +49,21 @@ public class GenerateFragment extends Fragment {
     }
 
     private void next() {
-        Toast.makeText(getContext(), "generating...", Toast.LENGTH_LONG).show();
+        final FragmentActivity context = getActivity();
         new Thread(new Runnable() {
             @Override
             public void run() {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.activity_onboarding, new GeneratingFragment()).commit();
                 try {
                     SSHKeyPair pair = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
-                    new MeStorage(getContext()).set(new Profile("enter email", pair.publicKeySSHWireFormat()));
+                    new MeStorage(context).set(new Profile("enter email", pair.publicKeySSHWireFormat()));
 
-                    FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.activity_onboarding, new EnterEmailFragment()).commit();
-                } catch (CryptoException e) {
-                    e.printStackTrace();
-                } catch (InvalidKeyException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
+                    context.getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.activity_onboarding, new EnterEmailFragment()).commit();
+                } catch (CryptoException | InvalidKeyException | IOException e) {
+                    context.getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.activity_onboarding, new GenerateFragment()).commit();
                     e.printStackTrace();
                 }
             }
