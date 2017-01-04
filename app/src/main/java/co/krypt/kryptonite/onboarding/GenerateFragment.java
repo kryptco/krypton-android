@@ -46,8 +46,9 @@ public class GenerateFragment extends Fragment {
     private void next() {
         final FragmentActivity context = getActivity();
         final long startMillis = System.currentTimeMillis();
+        final GeneratingFragment generatingFragment = new GeneratingFragment();
         getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.activity_onboarding, new GeneratingFragment()).commit();
+                .replace(R.id.activity_onboarding, generatingFragment).commit();
 
         new Thread(new Runnable() {
             @Override
@@ -71,6 +72,12 @@ public class GenerateFragment extends Fragment {
                         }
                     }
 
+                    generatingFragment.onGenerate();
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     context.getSupportFragmentManager().beginTransaction()
                             .replace(R.id.activity_onboarding, new EnterEmailFragment()).commit();
                 } catch (InvalidKeyException | IOException | CryptoException e) {

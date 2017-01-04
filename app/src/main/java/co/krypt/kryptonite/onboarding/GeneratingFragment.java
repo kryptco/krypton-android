@@ -5,6 +5,9 @@ import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,6 +33,8 @@ import co.krypt.kryptonite.R;
 public class GeneratingFragment extends Fragment {
     private static final String TAG = "GeneratingFragment";
 
+    private VideoView anim;
+
 
     public GeneratingFragment() {
     }
@@ -40,7 +45,8 @@ public class GeneratingFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_generating, container, false);
         final View animationContainer = root.findViewById(R.id.animationContainer);
-        final VideoView anim = (VideoView) root.findViewById(R.id.generateAnimation);
+        this.anim = (VideoView) root.findViewById(R.id.generateAnimation);
+        final VideoView anim = this.anim;
         anim.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -64,25 +70,30 @@ public class GeneratingFragment extends Fragment {
             }
         });
         anim.setVideoURI(Uri.parse("android.resource://"+getActivity().getPackageName()+"/"+R.raw.generate_animation));
+        anim.seekTo(0);
+
         return root;
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        AppCompatImageView image = (AppCompatImageView) view.findViewById(R.id.generatingImage);
-        final AnimatorSet tickAnimator = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.rotate_tick);
-        tickAnimator.setTarget(image);
-        tickAnimator.addListener(new AnimatorListenerAdapter() {
-            //  repeat
+    public void onGenerate() {
+        anim.post(new Runnable() {
             @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                tickAnimator.start();
+            public void run() {
+                final int duration = 500;
+                ColorDrawable[] color = {new ColorDrawable(Color.TRANSPARENT), new ColorDrawable(Color.WHITE)};
+                TransitionDrawable transition = new TransitionDrawable(color);
+                anim.setBackground(transition);
+                transition.startTransition(duration);
             }
         });
-        tickAnimator.setInterpolator(new OvershootInterpolator());
-        image.setRotation(0);
-        tickAnimator.start();
+    }
+
+
+
+    @Override
+    public void onStop() {
+        anim.setVisibility(View.GONE);
+//        anim.setBackgroundColor(Color.WHITE);
+        super.onStop();
     }
 }

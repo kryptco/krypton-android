@@ -3,19 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="co.krypt.kryptonite.onboarding.GeneratingFragment">
-
-    <android.support.v7.widget.AppCompatImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/kryptonite_icon_transparent_circle"
-        android:id="@+id/generatingImage"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent" />
+    tools:context="co.krypt.kryptonite.onboarding.GeneratingFragment"
+    android:background="@color/appWhite">
 
     <FrameLayout
         android:layout_width="wrap_content"
