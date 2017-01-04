@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:ordering="sequentially"
+    >
+
+    <!-- pause -->
+    <objectAnimator android:duration="1000" />
+
+    <objectAnimator
+        android:propertyName="rotation"
+        android:duration="500"
+        android:valueFrom="0"
+        android:valueTo="60"
+        android:valueType="floatType"/>
+
+    <!-- pause -->
+    <objectAnimator android:duration="1500" />
+
+    <objectAnimator
+        android:propertyName="rotation"
+        android:duration="500"
+        android:valueFrom="60"
+        android:valueTo="120"
+        android:valueType="floatType"/>
+
+    <!-- pause -->
+    <objectAnimator android:duration="1500" />
+
+    <objectAnimator
+        android:propertyName="rotation"
+        android:duration="500"
+        android:valueFrom="120"
+        android:valueTo="180"
+        android:valueType="floatType"/>
+
+    <!-- pause -->
+    <objectAnimator android:duration="1500" />
+
+    <objectAnimator
+        android:propertyName="rotation"
+        android:duration="500"
+        android:valueFrom="180"
+        android:valueTo="240"
+        android:valueType="floatType"/>
+
+    <!-- pause -->
+    <objectAnimator android:duration="1500" />
+
+    <objectAnimator
+        android:propertyName="rotation"
+        android:duration="500"
+        android:valueFrom="240"
+        android:valueTo="300"
+        android:valueType="floatType"/>
+
+    <!-- pause -->
+    <objectAnimator android:duration="1500" />
+
+    <objectAnimator
+        android:propertyName="rotation"
+        android:duration="500"
+        android:valueFrom="300"
+        android:valueTo="360"
+        android:valueType="floatType"/>
+
+    <!-- pause -->
+    <objectAnimator android:duration="500" />
+</set>

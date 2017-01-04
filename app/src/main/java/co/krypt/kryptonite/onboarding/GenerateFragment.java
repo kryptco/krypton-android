@@ -1,17 +1,14 @@
 package co.krypt.kryptonite.onboarding;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.support.v4.app.Fragment;
 import android.widget.Button;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -27,12 +24,10 @@ import co.krypt.kryptonite.protocol.Profile;
  * A simple {@link Fragment} subclass.
  */
 public class GenerateFragment extends Fragment {
-
+    private static final String TAG = "GenerateFragment";
 
     public GenerateFragment() {
-        // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,22 +45,40 @@ public class GenerateFragment extends Fragment {
 
     private void next() {
         final FragmentActivity context = getActivity();
+        final long startMillis = System.currentTimeMillis();
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_onboarding, new GeneratingFragment()).commit();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.activity_onboarding, new GeneratingFragment()).commit();
                 try {
+                    final long start = System.currentTimeMillis();
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     SSHKeyPair pair = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
                     new MeStorage(context).set(new Profile("enter email", pair.publicKeySSHWireFormat()));
 
+                    final long genTime = System.currentTimeMillis() - start;
+                    if (genTime < 5000) {
+                        try {
+                            Thread.sleep(5000 - genTime);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                     context.getSupportFragmentManager().beginTransaction()
                             .replace(R.id.activity_onboarding, new EnterEmailFragment()).commit();
-                } catch (CryptoException | InvalidKeyException | IOException e) {
-                    context.getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.activity_onboarding, new GenerateFragment()).commit();
+                } catch (InvalidKeyException | IOException | CryptoException e) {
                     e.printStackTrace();
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.activity_onboarding, new GenerateFragment()).commit();
                 }
+
             }
         }).start();
     }

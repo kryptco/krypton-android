@@ -33,7 +33,6 @@ public class KeyManager {
     public static String MY_RSA_KEY_TAG = "RSA.me";
 
     public static synchronized SSHKeyPair loadOrGenerateKeyPair(String tag) throws CryptoException {
-        // The key pair can also be obtained from the Android Keystore any time as follows:
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
