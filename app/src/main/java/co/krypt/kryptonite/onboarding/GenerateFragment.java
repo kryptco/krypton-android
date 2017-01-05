@@ -83,7 +83,7 @@ public class GenerateFragment extends Fragment {
                     }
                     EnterEmailFragment enterEmailFragment = new EnterEmailFragment();
                     context.getSupportFragmentManager().beginTransaction()
-                            .hide(self)
+                            .hide(generatingFragment)
                             .add(R.id.activity_onboarding, enterEmailFragment)
                             .show(enterEmailFragment)
                             .commit();
