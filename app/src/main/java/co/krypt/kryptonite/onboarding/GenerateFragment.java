@@ -1,8 +1,10 @@
 package co.krypt.kryptonite.onboarding;
 
 
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +51,7 @@ public class GenerateFragment extends Fragment {
         final GeneratingFragment generatingFragment = new GeneratingFragment();
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.activity_onboarding, generatingFragment).commit();
+        final Fragment self = this;
 
         new Thread(new Runnable() {
             @Override
@@ -78,8 +81,12 @@ public class GenerateFragment extends Fragment {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    EnterEmailFragment enterEmailFragment = new EnterEmailFragment();
                     context.getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.activity_onboarding, new EnterEmailFragment()).commit();
+                            .hide(self)
+                            .add(R.id.activity_onboarding, enterEmailFragment)
+                            .show(enterEmailFragment)
+                            .commit();
                 } catch (InvalidKeyException | IOException | CryptoException e) {
                     e.printStackTrace();
                     getActivity().getSupportFragmentManager().beginTransaction()
