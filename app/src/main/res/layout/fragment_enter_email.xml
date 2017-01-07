@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     tools:context="co.krypt.kryptonite.onboarding.EnterEmailFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <Button
         android:text="NEXT"
         android:layout_width="wrap_content"
@@ -16,19 +15,30 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="16dp" />
 
-    <TextView
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ENTER EMAIL FRAGMENT"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/emailText"
+        android:layout_marginEnd="16dp"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="8dp"
-        tools:layout_constraintLeft_creator="1"
+        android:layout_marginStart="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/textView4" />
+        android:hint="email address"
+        android:textAlignment="center"
+        android:layout_marginTop="48dp"
+        app:layout_constraintTop_toBottomOf="@+id/identicon" />
+
+    <co.krypt.kryptonite.uiutils.MLRoundedImageView
+        android:id="@+id/identicon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginStart="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

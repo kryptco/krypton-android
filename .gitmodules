@@ -4,3 +4,6 @@
 [submodule "zxing"]
 	path = zxing
 	url = https://github.com/zxing/zxing
+[submodule "identicon"]
+	path = identicon
+	url = https://github.com/KryptCo/identicon
