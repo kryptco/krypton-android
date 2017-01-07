@@ -1,15 +1,12 @@
 package co.krypt.kryptonite.onboarding;
 
 
-import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import android.support.v4.app.Fragment;
 import android.widget.Button;
 
 import java.io.IOException;

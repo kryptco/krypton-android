@@ -1,16 +1,13 @@
 package co.krypt.kryptonite.onboarding;
 
 
-import android.animation.LayoutTransition;
 import android.graphics.Color;
-import android.graphics.PixelFormat;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.transition.Fade;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

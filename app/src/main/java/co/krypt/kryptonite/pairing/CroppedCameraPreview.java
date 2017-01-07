@@ -1,7 +1,6 @@
 package co.krypt.kryptonite.pairing;
 
 import android.content.Context;
-import android.hardware.Camera;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.FrameLayout;

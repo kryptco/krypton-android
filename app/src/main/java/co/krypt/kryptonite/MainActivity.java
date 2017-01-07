@@ -24,18 +24,11 @@ import android.widget.EditText;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-
-import co.krypt.kryptonite.crypto.KeyManager;
-import co.krypt.kryptonite.crypto.SSHKeyPair;
 import co.krypt.kryptonite.devices.DevicesFragment;
-import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.me.MeFragment;
 import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.onboarding.OnboardingActivity;
 import co.krypt.kryptonite.pairing.PairFragment;
-import co.krypt.kryptonite.protocol.Profile;
 import co.krypt.kryptonite.silo.Silo;
 import co.krypt.kryptonite.transport.BluetoothService;
 
