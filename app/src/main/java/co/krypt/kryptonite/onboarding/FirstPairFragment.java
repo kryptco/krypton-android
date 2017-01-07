@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TabHost;
 
 import co.krypt.kryptonite.R;
 
@@ -17,9 +18,7 @@ import co.krypt.kryptonite.R;
 public class FirstPairFragment extends Fragment {
 
 
-    public FirstPairFragment() {
-        // Required empty public constructor
-    }
+    public FirstPairFragment() { }
 
 
 
@@ -34,6 +33,28 @@ public class FirstPairFragment extends Fragment {
                 next();
             }
         });
+
+        TabHost host = (TabHost) root.findViewById(R.id.tab_host);
+        host.setup();
+
+        //Tab 1
+        TabHost.TabSpec spec = host.newTabSpec("Tab One");
+        spec.setContent(R.id.tab1);
+        spec.setIndicator("brew");
+        host.addTab(spec);
+
+        //Tab 2
+        spec = host.newTabSpec("Tab Two");
+        spec.setContent(R.id.tab2);
+        spec.setIndicator("npm");
+        host.addTab(spec);
+
+        //Tab 3
+        spec = host.newTabSpec("Tab Three");
+        spec.setContent(R.id.tab3);
+        spec.setIndicator("curl");
+        host.addTab(spec);
+
         return root;
     }
 

@@ -6,29 +6,154 @@
     tools:context="co.krypt.kryptonite.onboarding.FirstPairFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="FIRST PAIR FRAGMENT"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="8dp"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/textView6" />
 
     <Button
-        android:text="NEXT"
+        android:text="SKIP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/nextButton"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="18sp"
+        android:textColor="@color/appGray"
+        android:background="@android:color/transparent"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:text="1. Install and run kr on your computer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/header1"
+        android:textStyle="normal|bold"
+        android:textSize="18sp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        android:layout_marginStart="16dp"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:layout_height="35dp"
+        app:srcCompat="@drawable/shield_outer"
+        android:id="@+id/imageView"
+        android:layout_width="35dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginStart="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TabHost
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/header1"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:id="@+id/tab_host"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginStart="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/tab1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:text="$ brew install kryptco/tap/kr\n$ kr pair"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tab_host"
+                        android:layout_width="match_parent"
+                        android:textSize="16sp"
+                        android:fontFamily="monospace"
+                        android:textColor="@color/appWhite"
+                        android:background="@drawable/terminal_bg_bottom"
+                        android:paddingLeft="4dp"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="10dp"
+                        android:typeface="monospace"
+                        android:textStyle="normal|bold"
+                        android:shadowRadius="4"
+                        android:shadowColor="@color/appBlack"
+                        app:layout_constraintHorizontal_bias="0.56" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/tab2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <TextView
+                        android:text="$ npm install -g krd\n$ kr pair"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tab_host"
+                        android:layout_width="match_parent"
+                        android:textSize="16sp"
+                        android:fontFamily="monospace"
+                        android:textColor="@color/appWhite"
+                        android:background="@drawable/terminal_bg_bottom"
+                        android:paddingLeft="4dp"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="10dp"
+                        android:typeface="monospace"
+                        android:textStyle="normal|bold"
+                        android:shadowRadius="4"
+                        android:shadowColor="@color/appBlack"
+                        app:layout_constraintHorizontal_bias="0.56" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/tab3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:text="$ curl https://krypt.co/kr | sh\n$ kr pair"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tab_host"
+                        android:layout_width="match_parent"
+                        android:textSize="16sp"
+                        android:fontFamily="monospace"
+                        android:textColor="@color/appWhite"
+                        android:background="@drawable/terminal_bg_bottom"
+                        android:paddingLeft="4dp"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="10dp"
+                        android:typeface="monospace"
+                        android:textStyle="normal|bold"
+                        android:shadowRadius="4"
+                        android:shadowColor="@color/appBlack"
+                        app:layout_constraintHorizontal_bias="0.56" />
+
+                </LinearLayout>
+            </FrameLayout>
+        </LinearLayout>
+    </TabHost>
 
 </android.support.constraint.ConstraintLayout>
