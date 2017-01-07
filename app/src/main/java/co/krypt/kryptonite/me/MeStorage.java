@@ -54,6 +54,17 @@ public class MeStorage {
         }
     }
 
+    public void setEmail(String email) {
+        synchronized (lock) {
+            Profile me = load();
+            if (me == null) {
+                me = new Profile();
+            }
+            me.email = email;
+            set(me);
+        }
+    }
+
     private HashSet<Pairing> loadAllLocked() {
         HashSet<Pairing> pairings = new HashSet<>();
         Set<String> jsonPairings = new HashSet<>(preferences.getStringSet("PAIRINGS", new ArraySet<String>()));

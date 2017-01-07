@@ -5,30 +5,43 @@
     android:layout_height="match_parent"
     tools:context="co.krypt.kryptonite.onboarding.EnterEmailFragment">
 
+    <!-- Dummy item to prevent EditText from receiving focus -->
     <Button
-        android:text="NEXT"
+        android:text="SKIP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/nextButton"
-        android:layout_marginEnd="16dp"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="16dp" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@android:color/transparent"
+        android:textColor="@color/appGray"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/dummy"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:ignore="MissingConstraints" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
+        android:inputType="textEmailAddress"
         android:ems="10"
-        android:id="@+id/emailText"
+        android:id="@+id/profileEmail"
         android:layout_marginEnd="16dp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginStart="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:hint="email address"
+        android:hint="what's your email?"
         android:textAlignment="center"
-        android:layout_marginTop="48dp"
-        app:layout_constraintTop_toBottomOf="@+id/identicon" />
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <co.krypt.kryptonite.uiutils.MLRoundedImageView
         android:id="@+id/identicon"
@@ -40,5 +53,34 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="16dp"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:text="Your email will be used as the comment string in the SSH public key. This is how other people can identify your public key."
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/profileEmail"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginStart="24dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:textAlignment="center"
+        android:textSize="10sp"
+        android:textColor="@color/appGray" />
+
+    <TextView
+        android:text="Your key pair is ready. Let's identify it with an email address."
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView4"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/identicon"
+        android:textStyle="normal|bold"
+        android:textAlignment="center"
+        android:layout_marginStart="32dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginEnd="32dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textSize="16sp" />
 
 </android.support.constraint.ConstraintLayout>
