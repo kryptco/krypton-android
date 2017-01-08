@@ -160,9 +160,11 @@ public class BluetoothTransport extends BroadcastReceiver {
                     int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
                     switch (state) {
                         case BluetoothAdapter.STATE_ON:
+                            connectingDevices.clear();
                             scanLogic();
                             break;
                         case BluetoothAdapter.STATE_OFF:
+                            connectingDevices.clear();
                             scanLogic();
                             break;
                     }
