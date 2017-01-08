@@ -341,6 +341,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
 
     private synchronized void onPairingSuccess(final Pairing pairing) {
         Intent successIntent = new Intent(PAIRING_SUCCESS_ACTION);
+        successIntent.putExtra("deviceName", pairing.workstationName);
         getContext().sendBroadcast(successIntent);
 
         pendingPairingQR = null;

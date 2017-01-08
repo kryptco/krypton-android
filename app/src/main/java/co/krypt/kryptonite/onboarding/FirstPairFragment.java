@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TabHost;
 
+import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.pairing.PairFragment;
 
@@ -27,7 +28,7 @@ public class FirstPairFragment extends Fragment {
 
     private BroadcastReceiver pairReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, final Intent intent) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -36,7 +37,7 @@ public class FirstPairFragment extends Fragment {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    next();
+                    next(intent.getStringExtra("deviceName"));
                 }
             }).start();
         }
@@ -56,6 +57,7 @@ public class FirstPairFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        getContext().unregisterReceiver(pairReceiver);
     }
 
     @Override
@@ -69,7 +71,7 @@ public class FirstPairFragment extends Fragment {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                next();
+                skip();
             }
         });
 
@@ -100,13 +102,17 @@ public class FirstPairFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        getChildFragmentManager().beginTransaction().remove(pairFragment).commit();
     }
 
-    private void next() {
+    private void next(String deviceName) {
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-        TestSSHFragment testSSHFragment = new TestSSHFragment();
+        TestSSHFragment testSSHFragment = TestSSHFragment.newInstance(deviceName);
         fragmentTransaction.hide(this).add(R.id.activity_onboarding, testSSHFragment).show(testSSHFragment).commit();
+    }
+
+    private void skip() {
+        startActivity(new Intent(getActivity(), MainActivity.class));
+        getActivity().finish();
     }
 
 }

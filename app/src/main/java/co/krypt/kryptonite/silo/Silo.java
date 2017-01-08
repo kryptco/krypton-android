@@ -1,6 +1,7 @@
 package co.krypt.kryptonite.silo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 
@@ -25,6 +26,7 @@ import co.krypt.kryptonite.exception.ProtocolException;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.me.MeStorage;
+import co.krypt.kryptonite.onboarding.TestSSHFragment;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.policy.Policy;
@@ -299,6 +301,10 @@ public class Silo {
                         response.signResponse.signature = key.signDigest(request.signRequest.digest);
                         pairings().appendToLog(pairing, new SignatureLog(request.signRequest.digest, request.signRequest.command, System.currentTimeMillis() / 1000));
                         Notifications.notifySuccess(context, pairing, request);
+                        if (request.signRequest.command != null && request.signRequest.command.equals("ssh me.krypt.co")) {
+                            Intent sshMeIntent = new Intent(TestSSHFragment.SSH_ME_ACTION);
+                            context.sendBroadcast(sshMeIntent);
+                        }
                     } else {
                         Log.e(TAG, Base64.encodeAsString(request.signRequest.publicKeyFingerprint) + " != " + Base64.encodeAsString(key.publicKeyFingerprint()));
                         response.signResponse.error = "unknown key fingerprint";
