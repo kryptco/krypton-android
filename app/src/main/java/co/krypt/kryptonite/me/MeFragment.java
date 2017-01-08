@@ -1,6 +1,8 @@
 package co.krypt.kryptonite.me;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -12,9 +14,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.docuverse.identicon.NineBlockIdenticonRenderer;
+
+import java.math.BigInteger;
+
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.crypto.SHA256;
+import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.protocol.Profile;
 import co.krypt.kryptonite.silo.Silo;
+import co.krypt.kryptonite.uiutils.MLRoundedImageView;
 
 public class MeFragment extends Fragment {
     private static final String TAG = "MeFragment";
@@ -55,9 +64,23 @@ public class MeFragment extends Fragment {
         Profile me = Silo.shared(getContext()).meStorage().load();
         if (me != null) {
             profileEmail.setText(me.email);
+            try {
+                BigInteger hash = new BigInteger(SHA256.digest(me.sshWirePublicKey));
+                MLRoundedImageView identiconImage = (MLRoundedImageView) v.findViewById(R.id.identicon);
+
+                NineBlockIdenticonRenderer renderer = new NineBlockIdenticonRenderer();
+                renderer.setBackgroundColor(Color.TRANSPARENT);
+                renderer.setPatchSize(80);
+                Bitmap identicon = renderer.render(hash, 2000);
+                identiconImage.setImageBitmap(identicon);
+            } catch (CryptoException e) {
+                e.printStackTrace();
+            }
+
         } else {
             Log.e(TAG, "no me profile");
         }
+
         return v;
     }
 
