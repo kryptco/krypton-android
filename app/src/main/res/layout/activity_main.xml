@@ -24,6 +24,20 @@
         android:elevation="5dp"
         android:background="@color/appWhite">
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            app:srcCompat="@drawable/settings"
+            android:id="@+id/settingsButton"
+            android:background="@android:color/transparent"
+            android:tint="@color/appGreen"
+            app:layout_constraintTop_toTopOf="@+id/imageView2"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginLeft="8dp"
+            tools:layout_editor_absoluteX="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+            android:scaleType="fitCenter"
+            android:layout_height="30dp" />
+
         <ImageView
             android:layout_width="34dp"
             app:srcCompat="@drawable/kryptonite_icon_transparent_circle"
@@ -38,6 +52,20 @@
             tools:layout_constraintRight_creator="1"
             tools:layout_constraintBottom_creator="1"
             tools:layout_constraintLeft_creator="1" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            app:srcCompat="@drawable/info"
+            android:id="@+id/infoButton"
+            android:background="@android:color/transparent"
+            android:tint="@color/appGreen"
+            app:layout_constraintTop_toTopOf="@+id/imageView2"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginRight="8dp"
+            tools:layout_editor_absoluteX="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+            android:scaleType="fitCenter"
+            android:layout_height="30dp" />
 
     </android.support.constraint.ConstraintLayout>
 
