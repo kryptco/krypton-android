@@ -56,16 +56,16 @@
         android:alpha=".75">
 
         <TextView
-            android:text="Location permissions required to scan for new Bluetooth devices. Tap here to enable."
+            android:text="Location permissions required to scan for new Bluetooth devices. Optionally tap here to enable."
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/locationPermissionText"
-            tools:layout_editor_absoluteY="75dp"
+            tools:layout_editor_absoluteY="100dp"
             tools:layout_editor_absoluteX="0dp"
             android:background="@drawable/mr_dialog_material_background_dark"
             android:padding="15dp"
             android:textColor="@color/appWhite"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textAllCaps="false" />
     </android.support.constraint.ConstraintLayout>
 
