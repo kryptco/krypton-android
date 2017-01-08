@@ -14,7 +14,7 @@
         android:id="@+id/nextButton"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textColor="@color/appGray"
         android:background="@android:color/transparent"
         android:layout_marginTop="8dp" />
