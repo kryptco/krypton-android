@@ -64,7 +64,6 @@ public class PairScanner {
                     try {
                         byte[] data = frames.poll(500, TimeUnit.MILLISECONDS);
                         if (data != null) {
-
                             Bitmap bitmap = Bitmap.createBitmap(self.width, self.height, Bitmap.Config.ARGB_8888);
                             Allocation bmData = renderScriptNV21ToRGBA888(
                                     self.context,

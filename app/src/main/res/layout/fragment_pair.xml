@@ -5,6 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
     android:animateLayoutChanges="true">
 
     <co.krypt.kryptonite.pairing.CroppedCameraPreview
@@ -33,7 +37,7 @@
         app:layout_constraintLeft_toLeftOf="@+id/camera_preview"
         app:layout_constraintTop_toTopOf="@+id/camera_preview"
         app:layout_constraintBottom_toBottomOf="@+id/camera_preview"
-        android:padding="75dp"
+        android:padding="10dp"
         android:alpha=".5"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
@@ -56,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/locationPermissionText"
-            tools:layout_editor_absoluteY="25dp"
+            tools:layout_editor_absoluteY="75dp"
             tools:layout_editor_absoluteX="0dp"
             android:background="@drawable/mr_dialog_material_background_dark"
             android:padding="15dp"
