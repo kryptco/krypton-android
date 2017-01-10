@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.crypto.KeyManager;
 import co.krypt.kryptonite.crypto.SSHKeyPair;
 import co.krypt.kryptonite.exception.CryptoException;
@@ -44,6 +45,7 @@ public class GenerateFragment extends Fragment {
 
     private void next() {
         final FragmentActivity context = getActivity();
+        new Analytics(context).postEvent("onboard", "generate tapped", null, null, false);
         final long startMillis = System.currentTimeMillis();
         final GeneratingFragment generatingFragment = new GeneratingFragment();
         getActivity().getSupportFragmentManager().beginTransaction()
@@ -64,6 +66,7 @@ public class GenerateFragment extends Fragment {
                     new MeStorage(context).set(new Profile("enter email", pair.publicKeySSHWireFormat()));
 
                     final long genTime = System.currentTimeMillis() - start;
+                    new Analytics(context).postEvent("keypair", "generate", null, (int) (genTime / 1000), false);
                     if (genTime < 5000) {
                         try {
                             Thread.sleep(5000 - genTime);

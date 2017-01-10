@@ -26,6 +26,9 @@ public class Response {
     @SerializedName("sns_endpoint_arn")
     public String snsEndpointARN;
 
+    @SerializedName("tracking_id")
+    public String trackingID;
+
     public static Response with(Request request) {
         Response response = new Response();
         response.requestID = request.requestID;

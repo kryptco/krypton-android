@@ -16,6 +16,7 @@ import android.widget.TabHost;
 
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.pairing.PairFragment;
 
 /**
@@ -79,22 +80,29 @@ public class FirstPairFragment extends Fragment {
         host.setup();
 
         //Tab 1
-        TabHost.TabSpec spec = host.newTabSpec("Tab One");
+        TabHost.TabSpec spec = host.newTabSpec("brew");
         spec.setContent(R.id.tab1);
         spec.setIndicator("brew");
         host.addTab(spec);
 
         //Tab 2
-        spec = host.newTabSpec("Tab Two");
+        spec = host.newTabSpec("npm");
         spec.setContent(R.id.tab2);
         spec.setIndicator("npm");
         host.addTab(spec);
 
         //Tab 3
-        spec = host.newTabSpec("Tab Three");
+        spec = host.newTabSpec("curl");
         spec.setContent(R.id.tab3);
         spec.setIndicator("curl");
         host.addTab(spec);
+
+        host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String tabId) {
+                new Analytics(getContext()).postEvent("install", tabId, null, null, false);
+            }
+        });
 
         return root;
     }

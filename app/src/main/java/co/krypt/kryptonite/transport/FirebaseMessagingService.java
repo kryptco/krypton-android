@@ -29,7 +29,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         try {
             UUID uuid = UUID.fromString(queue);
             Log.i(TAG, "received message " + message + " from queue " + queue);
-            Silo.shared(getApplicationContext()).onMessage(uuid, Base64.decode(message));
+            Silo.shared(getApplicationContext()).onMessage(uuid, Base64.decode(message), "remoteNotification");
         } catch(IllegalArgumentException e) {
             e.printStackTrace();
         }

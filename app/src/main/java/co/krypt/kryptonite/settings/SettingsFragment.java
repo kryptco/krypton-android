@@ -62,6 +62,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
+                    new Analytics(getContext()).postEvent("keypair", "destroy", null, null, false);
                     new Pairings(getContext()).unpairAll();
                     KeyManager.deleteKeyPair(KeyManager.MY_RSA_KEY_TAG);
                     new MeStorage(getContext()).delete();

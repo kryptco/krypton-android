@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.analytics.Analytics;
 
 import static co.krypt.kryptonite.MainActivity.CAMERA_PERMISSION_GRANTED_ACTION;
 import static co.krypt.kryptonite.MainActivity.CAMERA_PERMISSION_REQUEST;
@@ -26,6 +27,8 @@ public class OnboardingActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
+
+        new Analytics(getApplicationContext()).postEvent("onboard", "start", null, null, false);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         GenerateFragment generateFragment = new GenerateFragment();

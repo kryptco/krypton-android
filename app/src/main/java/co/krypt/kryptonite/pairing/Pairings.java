@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.protocol.JSON;
 
@@ -20,9 +21,13 @@ import co.krypt.kryptonite.protocol.JSON;
 public class Pairings {
     public static final String PAIRINGS_KEY = "PAIRINGS";
     private static Object lock = new Object();
-    private SharedPreferences preferences;
+    private final SharedPreferences preferences;
+    private final Context context;
+    private final Analytics analytics;
 
     public Pairings(Context context) {
+        this.context = context;
+        this.analytics = new Analytics(context);
         preferences = context.getSharedPreferences("PAIRING_MANAGER_PREFERENCES", Context.MODE_PRIVATE);
     }
 
@@ -85,6 +90,7 @@ public class Pairings {
 
     public void setApproved(String pairingUUID, boolean approved) {
         synchronized (lock) {
+            analytics.postEvent("manual approval", String.valueOf(!approved), null, null, false);
             SharedPreferences.Editor editor = preferences.edit().putBoolean(pairingApprovedKey(pairingUUID), approved);
             if (!approved) {
                 editor.putLong(pairingApprovedUntilKey(pairingUUID), -1);
@@ -109,6 +115,7 @@ public class Pairings {
 
     public void setApprovedUntil(String pairingUUID, Long time) {
         synchronized (lock) {
+            analytics.postEvent("manual approval", "time", null, 3600, false);
             preferences.edit()
                     .putLong(pairingApprovedUntilKey(pairingUUID), time)
                     .putBoolean(pairingApprovedKey(pairingUUID), false)

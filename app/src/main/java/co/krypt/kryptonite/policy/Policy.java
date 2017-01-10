@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.util.HashMap;
 
+import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.pairing.Pairing;
@@ -28,12 +29,13 @@ public class Policy {
 
     private static final HashMap<String, Pair<Pairing, Request>> pendingRequestCache = new HashMap<>();
 
-    public static synchronized void requestApproval(Context context, Pairing pairing, Request request) {
+    public static synchronized boolean requestApproval(Context context, Pairing pairing, Request request) {
         if (pendingRequestCache.get(request.requestID) != null) {
-            return;
+            return false;
         }
         pendingRequestCache.put(request.requestID, new Pair<>(pairing, request));
         Notifications.requestApproval(context, pairing, request);
+        return true;
     }
 
     public static synchronized void onAction(final Context context, final String requestID, final String action) {
@@ -52,6 +54,7 @@ public class Policy {
                     case APPROVE_ONCE:
                         try {
                             Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
+                            new Analytics(context).postEvent("signature", "background approve", "once", null, false);
                         } catch (CryptoException | InvalidKeyException | IOException | TransportException e) {
                             e.printStackTrace();
                         }
@@ -60,6 +63,7 @@ public class Policy {
                         try {
                             Silo.shared(context).pairings().setApprovedUntil(pairingAndRequest.first.getUUIDString(), (System.currentTimeMillis() / 1000) + 3600);
                             Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
+                            new Analytics(context).postEvent("signature", "background approve", "time", 3600, false);
                         } catch (CryptoException | InvalidKeyException | IOException | TransportException e) {
                             e.printStackTrace();
                         }
@@ -67,6 +71,7 @@ public class Policy {
                     case REJECT:
                         try {
                             Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, false);
+                            new Analytics(context).postEvent("signature", "background reject", null, null, false);
                         } catch (CryptoException | InvalidKeyException | IOException | TransportException e) {
                             e.printStackTrace();
                         }

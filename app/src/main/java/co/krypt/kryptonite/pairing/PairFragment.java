@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.protocol.PairingQR;
@@ -348,6 +349,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         Intent successIntent = new Intent(PAIRING_SUCCESS_ACTION);
         successIntent.putExtra("deviceName", pairing.workstationName);
         getContext().sendBroadcast(successIntent);
+        new Analytics(getContext()).postEvent("device", "pair", "success", null, false);
 
         pendingPairingQR = null;
         new Handler(Looper.getMainLooper()).post(
@@ -380,6 +382,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
     private synchronized void onPairingFailure(final Pairing pairing) {
         Silo.shared(getContext()).unpair(pairing, false);
         pendingPairingQR = null;
+        new Analytics(getContext()).postEvent("device", "pair", "failed", null, false);
         new Handler(Looper.getMainLooper()).post(
                 new Runnable() {
                     @Override

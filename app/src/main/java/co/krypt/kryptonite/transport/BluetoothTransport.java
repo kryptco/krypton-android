@@ -477,7 +477,7 @@ public class BluetoothTransport extends BroadcastReceiver {
             if (n == 0) {
                 Log.v(TAG, "received message of length " + String.valueOf(newMessageBuffer.toByteArray().length));
                 incomingMessageBuffersByCharacteristic.remove(uuid);
-                Silo.shared(context).onMessage(uuid, newMessageBuffer.toByteArray());
+                Silo.shared(context).onMessage(uuid, newMessageBuffer.toByteArray(), "bluetooth");
             } else {
                 incomingMessageBuffersByCharacteristic.put(characteristic, new Pair<>(n, newMessageBuffer));
             }

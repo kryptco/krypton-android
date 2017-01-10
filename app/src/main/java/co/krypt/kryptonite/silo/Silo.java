@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.crypto.KeyManager;
 import co.krypt.kryptonite.crypto.SSHKeyPair;
 import co.krypt.kryptonite.exception.CryptoException;
@@ -178,7 +179,7 @@ public class Silo {
         }
     }
 
-    public synchronized void onMessage(UUID pairingUUID, byte[] incoming) {
+    public synchronized void onMessage(UUID pairingUUID, byte[] incoming, String communicationMedium) {
         try {
             NetworkMessage message = NetworkMessage.parse(incoming);
             Pairing pairing = activePairingsByUUID.get(pairingUUID);
@@ -190,7 +191,7 @@ public class Silo {
                 case CIPHERTEXT:
                     byte[] json = pairing.unseal(message.message);
                     Request request = JSON.fromJson(json, Request.class);
-                    handle(pairing, request);
+                    handle(pairing, request, communicationMedium);
                     break;
                 case WRAPPED_KEY:
                     break;
@@ -255,13 +256,14 @@ public class Silo {
     }
 
 
-    public synchronized void handle(Pairing pairing, Request request) throws CryptoException, TransportException, IOException, InvalidKeyException, ProtocolException {
+    public synchronized void handle(Pairing pairing, Request request, String communicationMedium) throws CryptoException, TransportException, IOException, InvalidKeyException, ProtocolException {
         if (Math.abs(request.unixSeconds - (System.currentTimeMillis() / 1000)) > 120) {
             throw new ProtocolException("invalid request time");
         }
 
         if (request.unpairRequest != null) {
             unpair(pairing, false);
+            new Analytics(context).postEvent("device", "unpair", "request", null, false);
         }
 
         if (sendCachedResponseIfPresent(pairing, request)) {
@@ -271,13 +273,18 @@ public class Silo {
         lastRequestTimeSeconds.put(pairing, System.currentTimeMillis() / 1000);
 
         if (request.signRequest != null && !pairings().isApprovedNow(pairing)) {
-            Policy.requestApproval(context, pairing, request);
+            if (Policy.requestApproval(context, pairing, request)) {
+                new Analytics(context).postEvent("signature", "requires approval", communicationMedium, null, false);
+            }
             if (request.sendACK == true) {
                 Response ackResponse = Response.with(request);
                 ackResponse.ackResponse = new AckResponse();
                 send(pairing, ackResponse);
             }
         } else {
+            if (request.signRequest != null) {
+                new Analytics(context).postEvent("signature", "automatic approval", communicationMedium, null, false);
+            }
             respondToRequest(pairing, request, true);
         }
     }
@@ -288,6 +295,13 @@ public class Silo {
         }
 
         Response response = Response.with(request);
+        Analytics analytics = new Analytics(context);
+        if (analytics.isDisabled()) {
+            response.trackingID = "disabled";
+        } else {
+            response.trackingID = analytics.getClientID();
+        }
+
         if (request.meRequest != null) {
             response.meResponse = new MeResponse(meStorage.load());
         }

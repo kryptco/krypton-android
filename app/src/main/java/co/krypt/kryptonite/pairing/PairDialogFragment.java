@@ -8,6 +8,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.protocol.PairingQR;
 
 public class PairDialogFragment extends DialogFragment {
@@ -29,12 +30,14 @@ public class PairDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getTargetFragment().getContext());
         builder.setMessage("Pair with " + pairFragment.getPendingPairingQR().workstationName + "?")
                 .setPositiveButton("Pair", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                    public void onClick(final DialogInterface dialog, int id) {
                         if (getTargetFragment() instanceof PairListener) {
                             final PairListener listener = (PairListener) getTargetFragment();
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    //TODO: detect existing pairings
+                                    new Analytics(getDialog().getContext()).postEvent("device", "pair", "new", null, false);
                                     listener.pair();
                                 }
                             }).start();
@@ -48,6 +51,7 @@ public class PairDialogFragment extends DialogFragment {
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    new Analytics(getDialog().getContext()).postEvent("device", "pair", "reject", null, false);
                                     listener.cancel();
                                 }
                             }).start();

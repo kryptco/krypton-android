@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Session;
@@ -56,6 +57,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
             @Override
             public void onClick(View v) {
                 Silo.shared(v.getContext()).unpair(holder.device, true);
+                new Analytics(holder.unpairButton.getContext()).postEvent("device", "unpair", null, null, false);
             }
         });
 

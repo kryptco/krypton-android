@@ -3,6 +3,7 @@ package co.krypt.kryptonite.analytics;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 
 import com.amazonaws.util.Base64;
 
@@ -31,7 +32,7 @@ public class Analytics {
     //TODO: bump to prod
     private static final String TRACKING_ID = "UA-86173430-1";
 
-    private String getClientID() {
+    public String getClientID() {
         synchronized (lock) {
             if (!preferences.contains(CLIENT_ID_KEY)) {
                 preferences.edit().putString(CLIENT_ID_KEY, Base64.encodeAsString(SecureRandom.getSeed(16))).commit();
@@ -89,6 +90,21 @@ public class Analytics {
         post(getClientID(), params, false);
     }
 
+    public void postEvent(String category, String action, @Nullable String label, @Nullable Integer value, boolean force) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("t", "event");
+        params.put("ec", category);
+        params.put("ea", action);
+        if (label != null) {
+            params.put("el", label);
+        }
+        if (value != null) {
+            params.put("ev", String.valueOf(value));
+        }
+
+        post(getClientID(), params, force);
+    }
+
     public Analytics(Context context) {
         preferences = context.getSharedPreferences("ANALYTICS_PREFERENCES", Context.MODE_PRIVATE);
     }
@@ -101,6 +117,7 @@ public class Analytics {
 
     public void setAnalyticsDisabled(boolean disabled) {
         synchronized (lock) {
+            postEvent("analytics", disabled ? "disabled" : "enabled", null, null, true);
             preferences.edit().putBoolean(ANALYTICS_DISABLED_KEY, disabled).commit();
         }
     }
