@@ -26,6 +26,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.devices.DevicesFragment;
+import co.krypt.kryptonite.help.HelpFragment;
 import co.krypt.kryptonite.me.MeFragment;
 import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.onboarding.OnboardingActivity;
@@ -36,9 +37,9 @@ import co.krypt.kryptonite.transport.BluetoothService;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    private static final int ME_FRAGMENT_POSITION = 0;
-    private static final int PAIR_FRAGMENT_POSITION = 1;
-    private static final int DEVICES_FRAGMENT_POSITION = 2;
+    public static final int ME_FRAGMENT_POSITION = 0;
+    public static final int PAIR_FRAGMENT_POSITION = 1;
+    public static final int DEVICES_FRAGMENT_POSITION = 2;
 
     public static final int CAMERA_PERMISSION_REQUEST = 0;
     public static final int LOCATION_PERMISSION_REQUEST = 1;
@@ -105,6 +106,18 @@ public class MainActivity extends AppCompatActivity {
                 new Analytics(getApplicationContext()).postPageView("About");
             }
         });
+
+        ImageButton infoButton = (ImageButton) findViewById(R.id.infoButton);
+        infoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                HelpFragment helpFragment = new HelpFragment();
+                overlayFragment = helpFragment;
+                transaction.replace(R.id.fragmentOverlay, helpFragment).commit();
+                new Analytics(getApplicationContext()).postPageView("Help");
+            }
+        });
     }
 
     @Override
@@ -121,6 +134,10 @@ public class MainActivity extends AppCompatActivity {
                     sendBroadcast(locationIntent);
                 }
         }
+    }
+
+    public void setActiveTab(int position) {
+        mViewPager.setCurrentItem(PAIR_FRAGMENT_POSITION, true);
     }
 
     public void postCurrentActivePageView() {
