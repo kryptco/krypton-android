@@ -29,8 +29,7 @@ public class Analytics {
     private static Object lock = new Object();
     private SharedPreferences preferences;
 
-    //TODO: bump to prod
-    private static final String TRACKING_ID = "UA-86173430-1";
+    private static final String TRACKING_ID = "UA-86173430-2";
 
     public String getClientID() {
         synchronized (lock) {
