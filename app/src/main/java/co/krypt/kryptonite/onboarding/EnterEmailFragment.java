@@ -24,6 +24,7 @@ import com.docuverse.identicon.NineBlockIdenticonRenderer;
 import java.math.BigInteger;
 
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.crypto.KeyManager;
 import co.krypt.kryptonite.crypto.SSHKeyPair;
 import co.krypt.kryptonite.me.MeStorage;
@@ -96,15 +97,21 @@ public class EnterEmailFragment extends Fragment {
     }
 
     private void next() {
+        Analytics analytics = new Analytics(getContext());
         String email = profileEmail.getText().toString();
         if (email == null || email.trim().equals("")) {
+            analytics.postEvent("email", "typed", null, null, false);
             email = Build.MODEL;
         } else {
+            analytics.postEvent("email", "skipped", null, null, false);
             email = email.trim();
         }
+        analytics.publishEmailToTeamsIfNeeded(email);
+
         new MeStorage(getContext()).setEmail(email);
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.activity_onboarding, new FirstPairFragment()).commit();
+
     }
 
     private void onEmailChanged() {

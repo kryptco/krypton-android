@@ -11,6 +11,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import co.krypt.kryptonite.BuildConfig;
 public class Analytics {
     public static final String ANALYTICS_DISABLED_KEY = "ANALYTICS_DISABLED";
     public static final String CLIENT_ID_KEY = "CLIENT_ID";
+    public static final String PUBLISHED_EMAIL_KEY = "PUBLISHED_EMAIL";
     private static Object lock = new Object();
     private SharedPreferences preferences;
 
@@ -37,6 +39,43 @@ public class Analytics {
                 preferences.edit().putString(CLIENT_ID_KEY, Base64.encodeAsString(SecureRandom.getSeed(16))).commit();
             }
             return preferences.getString(CLIENT_ID_KEY, "");
+        }
+    }
+
+    private String getPublishedEmail() {
+        synchronized (lock) {
+            return preferences.getString(PUBLISHED_EMAIL_KEY, "");
+        }
+    }
+
+    public void publishEmailToTeamsIfNeeded(final String email) {
+        synchronized (lock) {
+            if (isDisabled()) {
+                return;
+            }
+            if (!email.equals(getPublishedEmail())) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Uri.Builder uri = new Uri.Builder().scheme("https").authority("teams.krypt.co")
+                                .appendQueryParameter("id", getClientID())
+                                .appendQueryParameter("email", email);
+                        try {
+                            URL url = new URL(uri.toString());
+                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                            connection.setRequestMethod("PUT");
+                            try {
+                                InputStream in = new BufferedInputStream(connection.getInputStream());
+                                preferences.edit().putString(PUBLISHED_EMAIL_KEY, email);
+                            } finally {
+                                connection.disconnect();
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
         }
     }
 

@@ -19,6 +19,7 @@ import com.docuverse.identicon.NineBlockIdenticonRenderer;
 import java.math.BigInteger;
 
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.crypto.SHA256;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.protocol.Profile;
@@ -91,6 +92,7 @@ public class MeFragment extends Fragment {
         }
         me.email = email;
         Silo.shared(getContext()).meStorage().set(me);
+        new Analytics(getContext()).publishEmailToTeamsIfNeeded(email);
     }
 
     @Override
