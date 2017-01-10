@@ -31,6 +31,7 @@ import co.krypt.kryptonite.me.MeFragment;
 import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.onboarding.OnboardingActivity;
 import co.krypt.kryptonite.pairing.PairFragment;
+import co.krypt.kryptonite.policy.LocalAuthentication;
 import co.krypt.kryptonite.settings.SettingsFragment;
 import co.krypt.kryptonite.silo.Silo;
 import co.krypt.kryptonite.transport.BluetoothService;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int CAMERA_PERMISSION_REQUEST = 0;
     public static final int LOCATION_PERMISSION_REQUEST = 1;
+    public static final int USER_AUTHENTICATION_REQUEST = 2;
 
     public static final String CAMERA_PERMISSION_GRANTED_ACTION = "co.krypt.android.action.CAMERA_PERMISSION_GRANTED";
     public static final String LOCATION_PERMISSION_GRANTED_ACTION = "co.krypt.android.action.LOCATION_PERMISSION_GRANTED";
@@ -266,5 +268,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return super.dispatchTouchEvent(event);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == USER_AUTHENTICATION_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                LocalAuthentication.onSuccess();
+            }
+        }
     }
 }

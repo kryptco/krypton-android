@@ -1,14 +1,20 @@
 package co.krypt.kryptonite.pairing;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.analytics.Analytics;
+import co.krypt.kryptonite.onboarding.OnboardingActivity;
+import co.krypt.kryptonite.policy.LocalAuthentication;
 import co.krypt.kryptonite.protocol.PairingQR;
 
 public class PairDialogFragment extends DialogFragment {
@@ -27,20 +33,38 @@ public class PairDialogFragment extends DialogFragment {
             return null;
         }
 
+        final Analytics analytics = new Analytics(getActivity());
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getTargetFragment().getContext());
         builder.setMessage("Pair with " + pairFragment.getPendingPairingQR().workstationName + "?")
                 .setPositiveButton("Pair", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         if (getTargetFragment() instanceof PairListener) {
-                            final PairListener listener = (PairListener) getTargetFragment();
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //TODO: detect existing pairings
-                                    new Analytics(getDialog().getContext()).postEvent("device", "pair", "new", null, false);
-                                    listener.pair();
-                                }
-                            }).start();
+                            Runnable onPair =
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            final PairListener listener = (PairListener) getTargetFragment();
+                                            new Thread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    //TODO: detect existing pairings
+                                                    analytics.postEvent("device", "pair", "new", null, false);
+                                                    listener.pair();
+                                                }
+                                            }).start();
+                                        }
+                                    };
+                            Activity activity = getActivity();
+                            if (activity instanceof OnboardingActivity) {
+                                onPair.run();
+                            } else {
+                                LocalAuthentication.requestAuthentication(
+                                        getActivity(),
+                                        "Pair Device Confirmation",
+                                        "Pair with " + pairFragment.getPendingPairingQR().workstationName + "?\nThis device will be able to request SSH operations.",
+                                        onPair);
+                            }
                         }
                     }
                 })
@@ -51,7 +75,7 @@ public class PairDialogFragment extends DialogFragment {
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    new Analytics(getDialog().getContext()).postEvent("device", "pair", "reject", null, false);
+                                    analytics.postEvent("device", "pair", "reject", null, false);
                                     listener.cancel();
                                 }
                             }).start();

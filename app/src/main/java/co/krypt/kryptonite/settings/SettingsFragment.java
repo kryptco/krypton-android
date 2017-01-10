@@ -23,6 +23,7 @@ import co.krypt.kryptonite.crypto.KeyManager;
 import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.onboarding.OnboardingActivity;
 import co.krypt.kryptonite.pairing.Pairings;
+import co.krypt.kryptonite.policy.LocalAuthentication;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,15 +62,21 @@ public class SettingsFragment extends Fragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    new Analytics(getContext()).postEvent("keypair", "destroy", null, null, false);
-                    new Pairings(getContext()).unpairAll();
-                    KeyManager.deleteKeyPair(KeyManager.MY_RSA_KEY_TAG);
-                    new MeStorage(getContext()).delete();
-                    startActivity(new Intent(getContext(), OnboardingActivity.class));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                LocalAuthentication.requestAuthentication(getActivity(), "Destroy key pair permanently?", "You will have to generate a new key pair and re-add it to services like GitHub.",
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    new Analytics(getContext()).postEvent("keypair", "destroy", null, null, false);
+                                    new Pairings(getContext()).unpairAll();
+                                    KeyManager.deleteKeyPair(KeyManager.MY_RSA_KEY_TAG);
+                                    new MeStorage(getContext()).delete();
+                                    startActivity(new Intent(getContext(), OnboardingActivity.class));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
             }
         });
 

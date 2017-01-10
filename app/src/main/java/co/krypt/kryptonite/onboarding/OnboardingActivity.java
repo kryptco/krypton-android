@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -15,11 +16,13 @@ import android.widget.EditText;
 
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
+import co.krypt.kryptonite.policy.LocalAuthentication;
 
 import static co.krypt.kryptonite.MainActivity.CAMERA_PERMISSION_GRANTED_ACTION;
 import static co.krypt.kryptonite.MainActivity.CAMERA_PERMISSION_REQUEST;
 import static co.krypt.kryptonite.MainActivity.LOCATION_PERMISSION_GRANTED_ACTION;
 import static co.krypt.kryptonite.MainActivity.LOCATION_PERMISSION_REQUEST;
+import static co.krypt.kryptonite.MainActivity.USER_AUTHENTICATION_REQUEST;
 
 public class OnboardingActivity extends FragmentActivity {
 
@@ -65,6 +68,15 @@ public class OnboardingActivity extends FragmentActivity {
                     Intent locationIntent = new Intent(LOCATION_PERMISSION_GRANTED_ACTION);
                     sendBroadcast(locationIntent);
                 }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == USER_AUTHENTICATION_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                LocalAuthentication.onSuccess();
+            }
         }
     }
 }
