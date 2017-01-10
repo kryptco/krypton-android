@@ -15,7 +15,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
@@ -45,6 +44,8 @@ public class SettingsFragment extends Fragment {
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MainActivity activity = (MainActivity) getActivity();
+                activity.postCurrentActivePageView();
                 getActivity().getSupportFragmentManager().beginTransaction().hide(self).remove(self).commit();
             }
         });

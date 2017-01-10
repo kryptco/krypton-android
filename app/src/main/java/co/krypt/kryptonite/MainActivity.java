@@ -13,12 +13,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -26,6 +24,7 @@ import android.widget.ImageButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.devices.DevicesFragment;
 import co.krypt.kryptonite.me.MeFragment;
 import co.krypt.kryptonite.me.MeStorage;
@@ -103,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
                 SettingsFragment settingsFragment = new SettingsFragment();
                 overlayFragment = settingsFragment;
                 transaction.replace(R.id.fragmentOverlay, settingsFragment).commit();
+                new Analytics(getApplicationContext()).postPageView("About");
             }
         });
     }
@@ -123,6 +123,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void postCurrentActivePageView() {
+        postActivePage(mSectionsPagerAdapter.lastPrimary);
+    }
+
+    private void postActivePage(int position) {
+        switch (position) {
+            case ME_FRAGMENT_POSITION:
+                new Analytics(getApplicationContext()).postPageView("Me");
+                break;
+            case PAIR_FRAGMENT_POSITION:
+                new Analytics(getApplicationContext()).postPageView("Pair");
+                break;
+            case DEVICES_FRAGMENT_POSITION:
+                new Analytics(getApplicationContext()).postPageView("Sessions");
+                break;
+        }
+    }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -131,6 +149,17 @@ public class MainActivity extends AppCompatActivity {
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+        }
+
+        public int lastPrimary = -1;
+
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            super.setPrimaryItem(container, position, object);
+            if (position != lastPrimary) {
+                lastPrimary = position;
+                postActivePage(position);
+            }
         }
 
         @Override
