@@ -115,7 +115,9 @@ public class FirstPairFragment extends Fragment {
     private void next(String deviceName) {
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         TestSSHFragment testSSHFragment = TestSSHFragment.newInstance(deviceName);
-        fragmentTransaction.hide(this).add(R.id.activity_onboarding, testSSHFragment).show(testSSHFragment).commit();
+        fragmentTransaction
+                .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
+                .hide(this).add(R.id.activity_onboarding, testSSHFragment).show(testSSHFragment).commit();
     }
 
     private void skip() {

@@ -47,7 +47,9 @@ public class SettingsFragment extends Fragment {
             public void onClick(View v) {
                 MainActivity activity = (MainActivity) getActivity();
                 activity.postCurrentActivePageView();
-                getActivity().getSupportFragmentManager().beginTransaction().hide(self).remove(self).commit();
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom)
+                        .hide(self).remove(self).commit();
             }
         });
         TextView versionText = (TextView) root.findViewById(R.id.versionText);

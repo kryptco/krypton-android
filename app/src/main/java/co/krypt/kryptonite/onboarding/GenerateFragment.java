@@ -49,6 +49,7 @@ public class GenerateFragment extends Fragment {
         final long startMillis = System.currentTimeMillis();
         final GeneratingFragment generatingFragment = new GeneratingFragment();
         getActivity().getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
                 .replace(R.id.activity_onboarding, generatingFragment).commit();
         final Fragment self = this;
 
@@ -83,6 +84,7 @@ public class GenerateFragment extends Fragment {
                     }
                     EnterEmailFragment enterEmailFragment = new EnterEmailFragment();
                     context.getSupportFragmentManager().beginTransaction()
+                            .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
                             .hide(generatingFragment)
                             .add(R.id.activity_onboarding, enterEmailFragment)
                             .show(enterEmailFragment)
@@ -90,6 +92,7 @@ public class GenerateFragment extends Fragment {
                 } catch (InvalidKeyException | IOException | CryptoException e) {
                     e.printStackTrace();
                     getActivity().getSupportFragmentManager().beginTransaction()
+                            .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
                             .replace(R.id.activity_onboarding, new GenerateFragment()).commit();
                 }
 

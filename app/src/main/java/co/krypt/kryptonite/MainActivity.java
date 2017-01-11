@@ -104,7 +104,8 @@ public class MainActivity extends AppCompatActivity {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 SettingsFragment settingsFragment = new SettingsFragment();
                 overlayFragment = settingsFragment;
-                transaction.replace(R.id.fragmentOverlay, settingsFragment).commit();
+                transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom)
+                        .replace(R.id.fragmentOverlay, settingsFragment).commit();
                 new Analytics(getApplicationContext()).postPageView("About");
             }
         });
@@ -116,7 +117,8 @@ public class MainActivity extends AppCompatActivity {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 HelpFragment helpFragment = new HelpFragment();
                 overlayFragment = helpFragment;
-                transaction.replace(R.id.fragmentOverlay, helpFragment).commit();
+                transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom)
+                        .replace(R.id.fragmentOverlay, helpFragment).commit();
                 new Analytics(getApplicationContext()).postPageView("Help");
             }
         });

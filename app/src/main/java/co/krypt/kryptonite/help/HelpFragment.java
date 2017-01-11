@@ -35,7 +35,9 @@ public class HelpFragment extends Fragment {
             public void onClick(View v) {
                 MainActivity activity = (MainActivity) getActivity();
                 activity.postCurrentActivePageView();
-                getActivity().getSupportFragmentManager().beginTransaction().hide(self).remove(self).commit();
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom)
+                        .hide(self).remove(self).commit();
             }
         });
 
@@ -74,7 +76,9 @@ public class HelpFragment extends Fragment {
                 Activity activity = getActivity();
                 if (activity != null && activity instanceof MainActivity) {
                     MainActivity mainActivity = (MainActivity) activity;
-                    mainActivity.getSupportFragmentManager().beginTransaction().hide(self).remove(self).commit();
+                    mainActivity.getSupportFragmentManager().beginTransaction()
+                            .setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom)
+                            .hide(self).remove(self).commit();
                     mainActivity.setActiveTab(MainActivity.PAIR_FRAGMENT_POSITION);
                 }
             }

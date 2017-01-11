@@ -28,6 +28,7 @@ public class TestSSHFragment extends Fragment {
     private TextView githubText;
 
     private Button nextButton;
+    private Button skipButton;
 
     private static final String ARG_DEVICE_NAME = "device_name";
     private String deviceName;
@@ -56,6 +57,7 @@ public class TestSSHFragment extends Fragment {
             githubHeader.animate().alpha(1.0f).setDuration(1000).setStartDelay(1000).start();
             githubText.animate().alpha(1.0f).setDuration(1000).setStartDelay(1000).start();
             nextButton.animate().alpha(1.0f).setDuration(1000).setStartDelay(1000).start();
+            skipButton.animate().alpha(0f).setDuration(1000).setStartDelay(1000).start();
         }
     };
 
@@ -88,7 +90,7 @@ public class TestSSHFragment extends Fragment {
         });
         nextButton.setAlpha(0f);
 
-        Button skipButton = (Button) root.findViewById(R.id.skipButton);
+        skipButton = (Button) root.findViewById(R.id.skipButton);
         skipButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

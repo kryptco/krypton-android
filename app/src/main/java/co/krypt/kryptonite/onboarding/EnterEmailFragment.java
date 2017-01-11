@@ -109,8 +109,12 @@ public class EnterEmailFragment extends Fragment {
         analytics.publishEmailToTeamsIfNeeded(email);
 
         new MeStorage(getContext()).setEmail(email);
+        FirstPairFragment firstPairFragment = new FirstPairFragment();
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.activity_onboarding, new FirstPairFragment()).commit();
+        fragmentTransaction
+                .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
+                .add(R.id.activity_onboarding, firstPairFragment)
+                .hide(this).show(firstPairFragment).commit();
 
     }
 
