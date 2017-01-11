@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.docuverse.identicon.NineBlockIdenticonRenderer;
@@ -81,6 +82,34 @@ public class MeFragment extends Fragment {
         } else {
             Log.e(TAG, "no me profile");
         }
+
+        TabHost host = (TabHost) v.findViewById(R.id.addKeyInstructions);
+        host.setup();
+
+        //Tab 1
+        TabHost.TabSpec spec = host.newTabSpec("GitHub");
+        spec.setContent(R.id.tab1);
+        spec.setIndicator("GitHub");
+        host.addTab(spec);
+
+        //Tab 2
+        spec = host.newTabSpec("DigitalOcean");
+        spec.setContent(R.id.tab2);
+        spec.setIndicator("Digital Ocean");
+        host.addTab(spec);
+
+        //Tab 3
+        spec = host.newTabSpec("AWS");
+        spec.setContent(R.id.tab3);
+        spec.setIndicator("AWS");
+        host.addTab(spec);
+
+        host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String tabId) {
+                new Analytics(getContext()).postEvent("add key", tabId, null, null, false);
+            }
+        });
 
         return v;
     }
