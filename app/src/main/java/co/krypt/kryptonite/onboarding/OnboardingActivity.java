@@ -34,8 +34,39 @@ public class OnboardingActivity extends FragmentActivity {
         new Analytics(getApplicationContext()).postEvent("onboard", "start", null, null, false);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        GenerateFragment generateFragment = new GenerateFragment();
-        fragmentTransaction.add(R.id.activity_onboarding, generateFragment).commit();
+
+        OnboardingProgress progress = new OnboardingProgress(getApplicationContext());
+        GenerateFragment generateFragment;
+        GeneratingFragment generatingFragment;
+        EnterEmailFragment enterEmailFragment;
+        FirstPairFragment firstPairFragment;
+        TestSSHFragment testSSHFragment;
+        switch (progress.currentStage()) {
+            case NONE:
+                generateFragment = new GenerateFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, generateFragment).commit();
+                break;
+            case GENERATE:
+                generateFragment = new GenerateFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, generateFragment).commit();
+                break;
+            case GENERATING:
+                generatingFragment = new GeneratingFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, generatingFragment).commit();
+                break;
+            case ENTER_EMAIL:
+                enterEmailFragment = new EnterEmailFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, enterEmailFragment).commit();
+                break;
+            case FIRST_PAIR:
+                firstPairFragment = new FirstPairFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, firstPairFragment).commit();
+                break;
+            case TEST_SSH:
+                testSSHFragment = new TestSSHFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, testSSHFragment).commit();
+                break;
+        }
     }
 
     @Override

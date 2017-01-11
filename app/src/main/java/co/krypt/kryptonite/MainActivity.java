@@ -30,6 +30,7 @@ import co.krypt.kryptonite.help.HelpFragment;
 import co.krypt.kryptonite.me.MeFragment;
 import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.onboarding.OnboardingActivity;
+import co.krypt.kryptonite.onboarding.OnboardingProgress;
 import co.krypt.kryptonite.pairing.PairFragment;
 import co.krypt.kryptonite.policy.LocalAuthentication;
 import co.krypt.kryptonite.settings.SettingsFragment;
@@ -74,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
 
         silo = Silo.shared(getApplicationContext());
         startService(new Intent(this, BluetoothService.class));
-        if (new MeStorage(getApplicationContext()).load() == null) {
+        OnboardingProgress progress = new OnboardingProgress(getApplicationContext());
+        if (new MeStorage(getApplicationContext()).load() == null || progress.inProgress()) {
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
             return;

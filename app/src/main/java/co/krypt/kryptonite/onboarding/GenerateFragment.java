@@ -45,6 +45,8 @@ public class GenerateFragment extends Fragment {
 
     private void next() {
         final FragmentActivity context = getActivity();
+        final OnboardingProgress progress = new OnboardingProgress(getContext());
+        progress.setStage(OnboardingStage.GENERATING);
         new Analytics(context).postEvent("onboard", "generate tapped", null, null, false);
         final long startMillis = System.currentTimeMillis();
         final GeneratingFragment generatingFragment = new GeneratingFragment();
@@ -82,6 +84,7 @@ public class GenerateFragment extends Fragment {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    progress.setStage(OnboardingStage.ENTER_EMAIL);
                     EnterEmailFragment enterEmailFragment = new EnterEmailFragment();
                     context.getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
@@ -91,6 +94,7 @@ public class GenerateFragment extends Fragment {
                             .commit();
                 } catch (InvalidKeyException | IOException | CryptoException e) {
                     e.printStackTrace();
+                    progress.reset();
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
                             .replace(R.id.activity_onboarding, new GenerateFragment()).commit();

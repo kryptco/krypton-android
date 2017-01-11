@@ -109,6 +109,8 @@ public class EnterEmailFragment extends Fragment {
         analytics.publishEmailToTeamsIfNeeded(email);
 
         new MeStorage(getContext()).setEmail(email);
+        final OnboardingProgress progress = new OnboardingProgress(getContext());
+        progress.setStage(OnboardingStage.FIRST_PAIR);
         FirstPairFragment firstPairFragment = new FirstPairFragment();
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         fragmentTransaction

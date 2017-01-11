@@ -113,6 +113,8 @@ public class TestSSHFragment extends Fragment {
     }
 
     private void next() {
+        final OnboardingProgress progress = new OnboardingProgress(getContext());
+        progress.reset();
         startActivity(new Intent(getContext(), MainActivity.class));
         getActivity().finish();
     }

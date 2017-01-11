@@ -113,6 +113,7 @@ public class FirstPairFragment extends Fragment {
     }
 
     private void next(String deviceName) {
+        new OnboardingProgress(getContext()).setStage(OnboardingStage.TEST_SSH);
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         TestSSHFragment testSSHFragment = TestSSHFragment.newInstance(deviceName);
         fragmentTransaction
@@ -121,6 +122,7 @@ public class FirstPairFragment extends Fragment {
     }
 
     private void skip() {
+        new OnboardingProgress(getContext()).reset();
         startActivity(new Intent(getActivity(), MainActivity.class));
         getActivity().finish();
     }
