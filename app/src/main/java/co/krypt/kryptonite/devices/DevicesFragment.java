@@ -1,5 +1,6 @@
 package co.krypt.kryptonite.devices;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,10 +12,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Session;
@@ -22,10 +25,10 @@ import co.krypt.kryptonite.silo.Silo;
 
 public class DevicesFragment extends Fragment implements OnDeviceListInteractionListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
     private int mColumnCount = 1;
+
+    private View noPairedDevicesContainer = null;
 
     private DevicesRecyclerViewAdapter devicesAdapter;
 
@@ -61,6 +64,7 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_devices_list, container, false);
+
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
         // Set the adapter
         Context context = recyclerView.getContext();
@@ -70,6 +74,20 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
             recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
         recyclerView.setAdapter(devicesAdapter);
+
+        noPairedDevicesContainer = view.findViewById(R.id.devicesEmptyContainer);
+        Button pairNewDeviceButton = (Button) view.findViewById(R.id.pairNewDeviceButton);
+        pairNewDeviceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Activity activity = getActivity();
+                if (activity instanceof MainActivity) {
+                    ((MainActivity) activity).setActiveTab(MainActivity.PAIR_FRAGMENT_POSITION);
+                }
+            }
+        });
+
+        populateDevices();
         return view;
     }
 
@@ -96,7 +114,17 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        populateDevices();
+    }
+
+    private void populateDevices() {
         List<Session> sessions = new ArrayList<>(Silo.shared(getContext()).pairings().loadAllSessions());
         devicesAdapter.setPairings(sessions);
+        if (sessions != null && sessions.size() > 0) {
+            noPairedDevicesContainer.setVisibility(View.GONE);
+        } else {
+            noPairedDevicesContainer.setVisibility(View.VISIBLE);
+        }
     }
+
 }

@@ -58,9 +58,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/temporaryApprovalButton"
-            tools:layout_editor_absoluteY="0dp"
-            tools:layout_editor_absoluteX="0dp"
-            />
+            tools:layout_editor_absoluteY="25dp" />
 
         <RadioButton
             android:text="Don't ask for 1 hour"
@@ -72,7 +70,7 @@
             app:layout_constraintLeft_toRightOf="@+id/manualApprovalButton"
             app:layout_constraintRight_toLeftOf="@+id/automaticApprovalButton"
             android:id="@+id/temporaryApprovalButton"
-            />
+            tools:layout_editor_absoluteY="25dp" />
 
         <RadioButton
             android:text="Never ask"
@@ -84,7 +82,7 @@
             app:layout_constraintLeft_toRightOf="@+id/temporaryApprovalButton"
             app:layout_constraintRight_toRightOf="parent"
             android:id="@+id/automaticApprovalButton"
-            />
+            tools:layout_editor_absoluteY="25dp" />
     </android.support.constraint.ConstraintLayout>
 
     <android.support.v7.widget.RecyclerView
