@@ -108,6 +108,7 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction
                 .addToBackStack(null)
+                .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
                 .add(R.id.deviceDetail, DeviceDetailFragment.newInstance(1, device.getUUIDString()))
                 .commit();
     }
