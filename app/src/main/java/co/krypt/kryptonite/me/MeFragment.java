@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TabHost;
+import android.widget.TabWidget;
 import android.widget.TextView;
 
 import com.docuverse.identicon.NineBlockIdenticonRenderer;
@@ -110,6 +111,15 @@ public class MeFragment extends Fragment {
                 new Analytics(getContext()).postEvent("add key", tabId, null, null, false);
             }
         });
+
+        final TabWidget tw = (TabWidget)host.findViewById(android.R.id.tabs);
+        for (int i = 0; i < tw.getChildCount(); ++i)
+        {
+            final View tabView = tw.getChildTabViewAt(i);
+            tabView.getLayoutParams().height = (int) (40 * getResources().getDisplayMetrics().density);
+            final TextView tv = (TextView)tabView.findViewById(android.R.id.title);
+            tv.setTextSize(12);
+        }
 
         return v;
     }
