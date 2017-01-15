@@ -1,5 +1,6 @@
 package co.krypt.kryptonite.protocol;
 
+import com.amazonaws.util.Base64;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -18,5 +19,16 @@ public class Profile {
     public Profile(String email, byte[] sshWirePublicKey) {
         this.email = email;
         this.sshWirePublicKey = sshWirePublicKey;
+    }
+
+    public String authorizedKeysFormat() {
+        if (sshWirePublicKey == null) {
+            return "";
+        }
+        return "ssh-rsa " + Base64.encodeAsString(sshWirePublicKey) + " " + email;
+    }
+
+    public String shareText() {
+        return "This is my SSH public key:\n\n" + authorizedKeysFormat() + "\n\nStore your SSH key with Kryptonite! https://krypt.co";
     }
 }

@@ -1,6 +1,7 @@
 package co.krypt.kryptonite.me;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
@@ -22,7 +24,9 @@ import java.math.BigInteger;
 
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
+import co.krypt.kryptonite.crypto.KeyManager;
 import co.krypt.kryptonite.crypto.SHA256;
+import co.krypt.kryptonite.crypto.SSHKeyPair;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.protocol.Profile;
 import co.krypt.kryptonite.silo.Silo;
@@ -31,6 +35,7 @@ import co.krypt.kryptonite.uiutils.MLRoundedImageView;
 public class MeFragment extends Fragment {
     private static final String TAG = "MeFragment";
     private EditText profileEmail;
+    private ImageButton shareButton;
 
     public MeFragment() { }
 
@@ -64,7 +69,7 @@ public class MeFragment extends Fragment {
             }
         });
 
-        Profile me = Silo.shared(getContext()).meStorage().load();
+        final Profile me = Silo.shared(getContext()).meStorage().load();
         if (me != null) {
             profileEmail.setText(me.email);
             try {
@@ -96,7 +101,7 @@ public class MeFragment extends Fragment {
         //Tab 2
         spec = host.newTabSpec("DigitalOcean");
         spec.setContent(R.id.tab2);
-        spec.setIndicator("Digital Ocean");
+        spec.setIndicator("DigitalOcean");
         host.addTab(spec);
 
         //Tab 3
@@ -120,6 +125,20 @@ public class MeFragment extends Fragment {
             final TextView tv = (TextView)tabView.findViewById(android.R.id.title);
             tv.setTextSize(12);
         }
+
+        shareButton = (ImageButton) v.findViewById(R.id.shareButton);
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (me != null) {
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, me.shareText());
+                    sendIntent.setType("text/plain");
+                    startActivity(Intent.createChooser(sendIntent, "Share your Kryptonite SSH Public Key"));
+                }
+            }
+        });
 
         return v;
     }

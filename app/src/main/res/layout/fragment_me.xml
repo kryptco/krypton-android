@@ -6,7 +6,8 @@
     android:focusable="true"
     android:clickable="true"
     android:focusableInTouchMode="true"
-    tools:context="co.krypt.kryptonite.me.MeFragment">
+    tools:context="co.krypt.kryptonite.me.MeFragment"
+    android:background="@color/appWhite">
 
     <co.krypt.kryptonite.uiutils.MLRoundedImageView
         android:layout_width="wrap_content"
@@ -104,7 +105,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/shareButton"
         android:id="@+id/content">
 
         <TabHost
@@ -271,7 +272,24 @@
                     </LinearLayout>
                 </FrameLayout>
             </LinearLayout>
-        </TabHost>S
+        </TabHost>
         </android.support.constraint.ConstraintLayout>
+
+    <ImageButton
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:srcCompat="?attr/actionModeShareDrawable"
+        tools:layout_editor_absoluteY="452dp"
+        tools:layout_editor_absoluteX="151dp"
+        android:id="@+id/shareButton"
+        android:background="@drawable/flat_button"
+        android:scaleType="fitCenter"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:tint="@color/appGreen"
+        android:backgroundTint="@color/appGreen"
+        android:padding="3dp"/>
 
 </android.support.constraint.ConstraintLayout>
