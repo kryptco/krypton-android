@@ -11,6 +11,7 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Pairings;
@@ -34,6 +36,8 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     private RadioButton manualButton;
     private RadioButton temporaryButton;
     private RadioButton automaticButton;
+
+    private Button unpairButton;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -69,7 +73,7 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_device_detail, container, false);
-        Pairing pairing = Silo.shared(getContext()).pairings().getPairing(pairingUUID);
+        final Pairing pairing = Silo.shared(getContext()).pairings().getPairing(pairingUUID);
         if (pairing == null) {
             return view;
         }
@@ -91,6 +95,16 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
             recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
         recyclerView.setAdapter(signatureLogAdapter);
+
+        unpairButton = (Button) view.findViewById(R.id.unpairButton);
+        unpairButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Silo.shared(v.getContext()).unpair(pairing, true);
+                new Analytics(getContext()).postEvent("device", "unpair", null, null, false);
+                getFragmentManager().popBackStackImmediate();
+            }
+        });
 
         return view;
     }

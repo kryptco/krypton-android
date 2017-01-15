@@ -12,78 +12,119 @@
     tools:context="co.krypt.kryptonite.devices.DevicesFragment"
     android:background="@android:color/white">
 
-    <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/deviceName"
-        android:textSize="22sp"
-        android:textAlignment="center"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/approvalLabel"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:ellipsize="end"
-        android:maxLines="1" />
-
-    <TextView
-        android:text="When should Kryptonite ask for your approval?"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/approvalSettingsLayout"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/deviceName"
-        android:id="@+id/approvalLabel" />
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/approvalSettingsLayout"
+    <android.support.v7.widget.CardView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:id="@+id/deviceCard"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/list"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/approvalLabel">
-        <RadioButton
-            android:text="Always ask"
-            android:id="@+id/manualApprovalButton"
-            android:button="@android:color/transparent"
-            android:background="@android:color/transparent"
-            android:drawableTop="?android:attr/listChoiceIndicatorSingle"
-            android:layout_width="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/temporaryApprovalButton"
-            tools:layout_editor_absoluteY="25dp" />
-
-        <RadioButton
-            android:text="Don't ask for 1 hour"
-            android:button="@android:color/transparent"
-            android:background="@android:color/transparent"
-            android:drawableTop="?android:attr/listChoiceIndicatorSingle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintLeft_toRightOf="@+id/manualApprovalButton"
-            app:layout_constraintRight_toLeftOf="@+id/automaticApprovalButton"
-            android:id="@+id/temporaryApprovalButton"
-            tools:layout_editor_absoluteY="25dp" />
-
-        <RadioButton
-            android:text="Never ask"
-            android:button="@android:color/transparent"
-            android:background="@android:color/transparent"
-            android:drawableTop="?android:attr/listChoiceIndicatorSingle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintLeft_toRightOf="@+id/temporaryApprovalButton"
             app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/automaticApprovalButton"
-            tools:layout_editor_absoluteY="25dp" />
-    </android.support.constraint.ConstraintLayout>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:paddingBottom="20dp"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:paddingTop="20dp">
+
+            <TextView
+                android:text="TextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/deviceName"
+                android:textSize="22sp"
+                android:textAlignment="center"
+                tools:layout_constraintTop_creator="1"
+                tools:layout_constraintLeft_creator="1"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/appBlack" />
+
+            <TextView
+                android:text="When should Kryptonite ask for your approval?"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/deviceName"
+                android:id="@+id/approvalLabel"
+                android:textAlignment="center"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/appBlack" />
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/approvalSettingsLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/approvalLabel">
+                <RadioButton
+                    android:text="Always ask"
+                    android:id="@+id/manualApprovalButton"
+                    android:button="@android:color/transparent"
+                    android:background="@android:color/transparent"
+                    android:drawableTop="?android:attr/listChoiceIndicatorSingle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/temporaryApprovalButton"
+                    tools:layout_editor_absoluteY="50dp" />
+
+                <RadioButton
+                    android:text="Don't ask for 1 hour"
+                    android:button="@android:color/transparent"
+                    android:background="@android:color/transparent"
+                    android:drawableTop="?android:attr/listChoiceIndicatorSingle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintLeft_toRightOf="@+id/manualApprovalButton"
+                    app:layout_constraintRight_toLeftOf="@+id/automaticApprovalButton"
+                    android:id="@+id/temporaryApprovalButton"
+                    tools:layout_editor_absoluteY="50dp" />
+
+                <RadioButton
+                    android:text="Never ask"
+                    android:button="@android:color/transparent"
+                    android:background="@android:color/transparent"
+                    android:drawableTop="?android:attr/listChoiceIndicatorSingle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintLeft_toRightOf="@+id/temporaryApprovalButton"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:id="@+id/automaticApprovalButton"
+                    tools:layout_editor_absoluteY="50dp" />
+            </android.support.constraint.ConstraintLayout>
+
+            <Button
+                android:text="Unpair"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/unpairButton"
+                app:layout_constraintTop_toBottomOf="@+id/approvalSettingsLayout"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:textColor="@android:color/holo_red_light"
+                android:background="@drawable/flat_button"
+                android:backgroundTint="@android:color/holo_red_light"
+                android:minHeight="36dip"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list"
@@ -97,13 +138,14 @@
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/approvalSettingsLayout"
+        app:layout_constraintTop_toBottomOf="@+id/deviceCard"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintVertical_bias="1.0"
+        android:layout_marginTop="8dp">
 
     </android.support.v7.widget.RecyclerView>
 </android.support.constraint.ConstraintLayout>
