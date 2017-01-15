@@ -42,7 +42,6 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/deviceName"
-            android:minHeight="100dp"
             app:layout_constraintHorizontal_bias="0.0">
 
             <TextView
@@ -57,7 +56,6 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 android:layout_width="0dp"
                 android:textStyle="normal|bold"
-                app:layout_constraintBottom_toTopOf="@+id/unpairButton"
                 app:layout_constraintTop_toBottomOf="@+id/lastCommandTimeText"
                 android:maxLines="2"
                 android:ellipsize="end"
@@ -65,15 +63,6 @@
                 android:background="@drawable/terminal_bg_bottom"
                 app:layout_constraintRight_toRightOf="parent"
                 android:textColor="@color/appWhite" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/lastCommandTimeText"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:padding="5dp"
-                android:textSize="12sp" />
 
             <TextView
                 android:text="Last SSH Command"
@@ -84,7 +73,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:textAllCaps="true"
                 android:paddingLeft="10dp"
-                android:paddingTop="4dp"
+                android:paddingTop="5dp"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toTopOf="@+id/lastCommandText"
                 app:layout_constraintRight_toRightOf="@+id/lastCommandTimeText"
@@ -94,37 +83,18 @@
                 app:layout_constraintVertical_bias="0.0"
                 android:paddingBottom="0dp" />
 
-            <Button
+            <TextView
                 android:layout_width="wrap_content"
-                android:id="@+id/unpairButton"
-                android:text="Unpair"
-                android:textColor="@color/colorDestructive"
-                app:layout_constraintTop_toBottomOf="@+id/lastCommandText"
+                android:layout_height="wrap_content"
+                android:id="@+id/lastCommandTimeText"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:textSize="14sp"
-                android:backgroundTint="@color/colorDestructive"
-                android:background="@drawable/flat_button"
-                android:layout_marginBottom="5dp"
-                android:layout_marginTop="10dp"
-                android:layout_height="48dp"
-                app:layout_constraintVertical_bias="0.75" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:textSize="12sp"
+                android:textColor="@color/appWhite"
+                android:text="5m ago"
+                android:paddingRight="5dp"
+                android:paddingTop="3dp" />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:id="@+id/moreButton"
-                android:text="More"
-                android:textColor="@color/colorPrimary"
-                app:layout_constraintTop_toBottomOf="@+id/lastCommandText"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:textSize="14sp"
-                android:backgroundTint="@color/colorPrimary"
-                android:background="@drawable/flat_button"
-                android:layout_marginBottom="5dp"
-                app:layout_constraintVertical_bias="0.0"
-                android:layout_marginTop="10dp"
-                android:layout_height="48dp" />
         </android.support.constraint.ConstraintLayout>
 
     </android.support.constraint.ConstraintLayout>

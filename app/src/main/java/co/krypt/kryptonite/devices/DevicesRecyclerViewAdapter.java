@@ -53,20 +53,10 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
             holder.lastCommandTime.setText(DateUtils.getRelativeTimeSpanString(holder.lastLog.unixSeconds * 1000, System.currentTimeMillis(), 1000));
         }
 
-        holder.unpairButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Silo.shared(v.getContext()).unpair(holder.device, true);
-                new Analytics(holder.unpairButton.getContext()).postEvent("device", "unpair", null, null, false);
-            }
-        });
-
-       holder.moreButton.setOnClickListener(new View.OnClickListener() {
+       holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
                     mListener.onListFragmentInteraction(holder.device);
                 }
             }
@@ -83,8 +73,6 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         public final TextView deviceName;
         public final TextView lastCommand;
         public final TextView lastCommandTime;
-        public final Button unpairButton;
-        public final Button moreButton;
         public Pairing device;
         public SignatureLog lastLog;
 
@@ -94,8 +82,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
             deviceName = (TextView) view.findViewById(R.id.deviceName);
             lastCommand = (TextView) view.findViewById(R.id.lastCommandText);
             lastCommandTime = (TextView) view.findViewById(R.id.lastCommandTimeText);
-            unpairButton = (Button) view.findViewById(R.id.unpairButton);
-            moreButton = (Button) view.findViewById(R.id.moreButton);
+            lastCommandTime.setText("");
         }
 
         @Override
