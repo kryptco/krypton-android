@@ -27,6 +27,7 @@ import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.TransportException;
+import co.krypt.kryptonite.onboarding.OnboardingActivity;
 import co.krypt.kryptonite.protocol.PairingQR;
 import co.krypt.kryptonite.silo.Silo;
 
@@ -53,6 +54,8 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
     private ConstraintLayout locationPermissionLayout;
 
     private ConstraintLayout cameraPermissionInfoLayout;
+    private TextView cameraPermissionHeader;
+    private TextView cameraPermissionText;
     private Button requestCameraPermissionButton;
     private final BroadcastReceiver permissionReceiver = new BroadcastReceiver() {
         @Override
@@ -219,6 +222,14 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
 
         refreshCameraPermissionInfoVisibility();
         refreshLocationPermissionInfoVisibility();
+
+        cameraPermissionHeader = (TextView) rootView.findViewById(R.id.cameraPermissionTitle);
+        cameraPermissionText = (TextView) rootView.findViewById(R.id.cameraPermissionExplanation);
+
+        if (getActivity() instanceof OnboardingActivity) {
+            cameraPermissionHeader.setTextSize(16);
+            cameraPermissionText.setTextSize(14);
+        }
 
         return rootView;
     }

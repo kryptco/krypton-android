@@ -60,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/locationPermissionText"
-            tools:layout_editor_absoluteY="100dp"
+            tools:layout_editor_absoluteY="125dp"
             tools:layout_editor_absoluteX="0dp"
             android:background="@drawable/mr_dialog_material_background_dark"
             android:padding="15dp"
@@ -147,9 +147,9 @@
                 app:layout_constraintBottom_toTopOf="@+id/requestCameraPermissionButton"
                 app:layout_constraintRight_toRightOf="@+id/cameraPermissionTitle"
 
-                android:paddingTop="20dp"
-                android:paddingBottom="40dp"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp" />
 
             <Button
                 android:text="Enable Camera"

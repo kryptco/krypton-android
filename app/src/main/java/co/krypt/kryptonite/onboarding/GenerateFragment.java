@@ -1,6 +1,7 @@
 package co.krypt.kryptonite.onboarding;
 
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -86,18 +87,24 @@ public class GenerateFragment extends Fragment {
                     }
                     progress.setStage(OnboardingStage.ENTER_EMAIL);
                     EnterEmailFragment enterEmailFragment = new EnterEmailFragment();
-                    context.getSupportFragmentManager().beginTransaction()
-                            .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
-                            .hide(generatingFragment)
-                            .add(R.id.activity_onboarding, enterEmailFragment)
-                            .show(enterEmailFragment)
-                            .commit();
+                    final Activity activity = context;
+                    if (activity != null && !activity.isDestroyed()) {
+                        context.getSupportFragmentManager().beginTransaction()
+                                .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
+                                .hide(generatingFragment)
+                                .add(R.id.activity_onboarding, enterEmailFragment)
+                                .show(enterEmailFragment)
+                                .commit();
+                    }
                 } catch (InvalidKeyException | IOException | CryptoException e) {
                     e.printStackTrace();
                     progress.reset();
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
-                            .replace(R.id.activity_onboarding, new GenerateFragment()).commit();
+                    final Activity activity = context;
+                    if (activity != null && !activity.isDestroyed()) {
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
+                                .replace(R.id.activity_onboarding, new GenerateFragment()).commitAllowingStateLoss();
+                    }
                 }
 
             }
