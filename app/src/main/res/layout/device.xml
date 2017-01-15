@@ -7,10 +7,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/appWhite"
-    android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="7dp"
-    android:clickable="false">
+    android:clickable="false"
+    android:layout_marginBottom="20dp"
+    android:layout_marginTop="20dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="fill_parent"
