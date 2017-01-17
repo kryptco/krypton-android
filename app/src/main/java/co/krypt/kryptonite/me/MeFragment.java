@@ -162,4 +162,11 @@ public class MeFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        profileEmail.setOnEditorActionListener(null);
+    }
+
 }

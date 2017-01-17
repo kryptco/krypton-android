@@ -33,7 +33,11 @@ public class MeStorage {
 
     public Profile load() {
         synchronized (lock) {
-            String meJSON = preferences.getString("ME", "");
+            String meJSON = preferences.getString("ME", null);
+            if (meJSON == null) {
+                Log.i(TAG, "no profile found");
+                return null;
+            }
             Profile me = JSON.fromJson(meJSON, Profile.class);
             if (me == null) {
                 Log.i(TAG, "no profile found");
