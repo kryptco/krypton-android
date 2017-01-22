@@ -25,6 +25,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import co.krypt.kryptonite.analytics.Analytics;
+import co.krypt.kryptonite.crypto.KeyManager;
 import co.krypt.kryptonite.devices.DevicesFragment;
 import co.krypt.kryptonite.help.HelpFragment;
 import co.krypt.kryptonite.me.MeFragment;
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         silo = Silo.shared(getApplicationContext());
         startService(new Intent(this, BluetoothService.class));
         OnboardingProgress progress = new OnboardingProgress(getApplicationContext());
-        if (new MeStorage(getApplicationContext()).load() == null || progress.inProgress()) {
+        if (!new KeyManager(getApplicationContext()).keyExists(KeyManager.MY_ED25519_KEY_TAG) || new MeStorage(getApplicationContext()).load() == null || progress.inProgress()) {
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
             return;

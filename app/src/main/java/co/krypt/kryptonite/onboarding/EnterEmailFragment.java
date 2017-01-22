@@ -81,7 +81,7 @@ public class EnterEmailFragment extends Fragment {
 
         MLRoundedImageView identiconImage = (MLRoundedImageView) root.findViewById(R.id.identicon);
         try {
-            SSHKeyPair keyPair = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
+            SSHKeyPair keyPair = new KeyManager(getContext()).loadOrGenerateKeyPair(KeyManager.MY_ED25519_KEY_TAG);
             BigInteger hash = new BigInteger(keyPair.publicKeyFingerprint());
 
             NineBlockIdenticonRenderer renderer = new NineBlockIdenticonRenderer();

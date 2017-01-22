@@ -56,6 +56,8 @@ public class GenerateFragment extends Fragment {
                 .replace(R.id.activity_onboarding, generatingFragment).commit();
         final Fragment self = this;
 
+        final KeyManager keyManager = new KeyManager(getContext());
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -66,7 +68,7 @@ public class GenerateFragment extends Fragment {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    SSHKeyPair pair = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
+                    SSHKeyPair pair = keyManager.loadOrGenerateKeyPair(KeyManager.MY_ED25519_KEY_TAG);
                     new MeStorage(context).set(new Profile("enter email", pair.publicKeySSHWireFormat()));
 
                     final long genTime = System.currentTimeMillis() - start;

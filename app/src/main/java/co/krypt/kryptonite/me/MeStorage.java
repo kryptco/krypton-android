@@ -26,9 +26,13 @@ public class MeStorage {
     private static final String TAG = "MeStorage";
     private static Object lock = new Object();
     private SharedPreferences preferences;
+    private final Context context;
+    private final KeyManager keyManager;
 
     public MeStorage(Context context) {
         preferences = context.getSharedPreferences("ME_MANAGER_PREFERENCES", Context.MODE_PRIVATE);
+        this.context = context;
+        keyManager = new KeyManager(context);
     }
 
     public Profile load() {
@@ -44,7 +48,7 @@ public class MeStorage {
                 return null;
             }
             try {
-                me.sshWirePublicKey = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG).publicKeySSHWireFormat();
+                me.sshWirePublicKey = keyManager.loadOrGenerateKeyPair(KeyManager.MY_ED25519_KEY_TAG).publicKeySSHWireFormat();
             } catch (InvalidKeyException | IOException | CryptoException e) {
                 e.printStackTrace();
             }

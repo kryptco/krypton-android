@@ -1,9 +1,15 @@
 package co.krypt.kryptonite.crypto;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyInfo;
 import android.security.keystore.KeyProperties;
 import android.util.Log;
+
+import com.amazonaws.util.Base64;
+
+import org.libsodium.jni.Sodium;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -15,6 +21,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.SecureRandom;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
@@ -27,85 +34,51 @@ import co.krypt.kryptonite.exception.CryptoException;
  */
 
 public class KeyManager {
+    private static final Object lock = new Object();
+    private static final String SSH_KEYPAIR_KEY = "SSH_KEY";
+    private final SharedPreferences preferences;
 
     public static String LOG_TAG = "kryptonite";
 
-    public static String MY_RSA_KEY_TAG = "RSA.me";
+    public static String MY_ED25519_KEY_TAG = "ED25519.me";
 
-    public static synchronized SSHKeyPair loadOrGenerateKeyPair(String tag) throws CryptoException {
-        try {
-            KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
-            keyStore.load(null);
-            KeyStore.Entry privateKeyEntry = keyStore.getEntry(tag, null);
-            if (privateKeyEntry instanceof KeyStore.PrivateKeyEntry) {
-                return new SSHKeyPair(new KeyPair(((KeyStore.PrivateKeyEntry) privateKeyEntry).getCertificate().getPublicKey(), ((KeyStore.PrivateKeyEntry) privateKeyEntry).getPrivateKey()));
-            } else {
-                Log.w(LOG_TAG, "Not an instance of a PrivateKeyEntry");
+    public KeyManager(Context context) {
+        preferences = context.getSharedPreferences("KEY_MANAGER_PREFERENCES", Context.MODE_PRIVATE);
+    }
+
+    public SSHKeyPair loadOrGenerateKeyPair(String tag) throws CryptoException {
+        synchronized (lock) {
+            String skB64 = preferences.getString(SSH_KEYPAIR_KEY + "." + tag, null);
+            if (skB64 == null) {
+                byte[] pk = new byte[Sodium.crypto_sign_ed25519_publickeybytes()];
+                byte[] sk = new byte[Sodium.crypto_sign_ed25519_secretkeybytes()];
+                int result = Sodium.crypto_sign_ed25519_seed_keypair(pk, sk, SecureRandom.getSeed(Sodium.crypto_sign_ed25519_seedbytes()));
+                if (result != 0) {
+                    throw new CryptoException("non-zero sodium result: " + result);
+                }
+                preferences.edit().putString(SSH_KEYPAIR_KEY + "." + tag, Base64.encodeAsString(sk)).commit();
+                return new SSHKeyPair(pk, sk);
             }
-
-
-            KeyPair keyPair = null;
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(
-                    KeyProperties.KEY_ALGORITHM_RSA, "AndroidKeyStore");
-            keyPairGenerator.initialize(
-                    new KeyGenParameterSpec.Builder(
-                            tag, KeyProperties.PURPOSE_SIGN)
-                            .setDigests(KeyProperties.DIGEST_NONE, KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
-                            .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
-                            .setKeySize(4096)
-                            .setUserAuthenticationRequired(true)
-                            .setUserAuthenticationValidityDurationSeconds(60 * 60 * 3)
-                            .build());
-            long genStart = System.currentTimeMillis();
-            keyPair = keyPairGenerator.generateKeyPair();
-            long genStop = System.currentTimeMillis();
-            Log.i(LOG_TAG, "KeyGen took " + String.valueOf((genStop - genStart)));
-            return new SSHKeyPair(keyPair);
-        } catch (IOException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (CertificateException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (NoSuchAlgorithmException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (UnrecoverableEntryException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (InvalidAlgorithmParameterException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (NoSuchProviderException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (KeyStoreException e) {
-            throw new CryptoException(e.getMessage());
+            byte[] sk = Base64.decode(skB64);
+            byte[] pk = new byte[Sodium.crypto_sign_ed25519_publickeybytes()];
+            int result = Sodium.crypto_sign_ed25519_sk_to_pk(pk, sk);
+            if (result != 0) {
+                throw new CryptoException("non-zero sodium result: " + result);
+            }
+            return new SSHKeyPair(pk, sk);
         }
     }
 
-    public static synchronized boolean keyExists(String tag) throws CryptoException {
-
-        try {
-            KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
-            keyStore.load(null);
-            KeyStore.Entry privateKeyEntry = keyStore.getEntry(tag, null);
-            if (privateKeyEntry instanceof KeyStore.PrivateKeyEntry) {
-                return true;
-            }
-        } catch (IOException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (CertificateException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (NoSuchAlgorithmException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (UnrecoverableEntryException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (KeyStoreException e) {
-            throw new CryptoException(e.getMessage());
+    public boolean keyExists(String tag) {
+        synchronized (lock) {
+            return preferences.contains(SSH_KEYPAIR_KEY + "." + tag);
         }
-        return false;
     }
 
-    public static synchronized void deleteKeyPair(String tag) throws Exception {
-        // The key pair can also be obtained from the Android Keystore any time as follows:
-        KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
-        keyStore.load(null);
-        keyStore.deleteEntry(tag);
+    public void deleteKeyPair(String tag) throws Exception {
+        synchronized (lock) {
+            preferences.edit().putString(SSH_KEYPAIR_KEY + "." + tag, null).commit();
+        }
     }
 
     public static void logKeyInfo(PrivateKey sk) {
@@ -124,6 +97,11 @@ public class KeyManager {
         } catch (NoSuchProviderException e) {
             e.printStackTrace();
         }
+    }
+
+    // Used to load the 'native-lib' library on application startup.
+    static {
+        System.loadLibrary("sodiumjni");
     }
 
 }
