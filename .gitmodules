@@ -7,3 +7,12 @@
 [submodule "identicon"]
 	path = identicon
 	url = https://github.com/KryptCo/identicon
+[submodule "openssl"]
+	path = openssl
+	url = https://github.com/openssl/openssl
+[submodule "openssh-portable"]
+	path = openssh-portable
+	url = https://github.com/openssh/openssh-portable
+[submodule "openssh-google"]
+	path = openssh-google
+	url = https://android.googlesource.com/platform/external/openssh
