@@ -16,6 +16,9 @@ android {
             }
         }
         multiDexEnabled true
+        ndk {
+            moduleName "libsshwire"
+        }
     }
     buildTypes {
         release {

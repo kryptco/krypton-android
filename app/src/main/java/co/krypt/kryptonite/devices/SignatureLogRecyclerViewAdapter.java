@@ -30,7 +30,7 @@ public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<Signat
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.signatureLog = mValues.get(position);
-        holder.commandText.setText(mValues.get(position).command);
+        holder.commandText.setText(holder.signatureLog.userHostText());
         holder.commandTime.setText(
                 DateUtils.getRelativeTimeSpanString(holder.signatureLog.unixSeconds * 1000, System.currentTimeMillis(), 1000));
     }

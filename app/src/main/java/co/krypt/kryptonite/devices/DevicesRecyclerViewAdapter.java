@@ -49,7 +49,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
 
         holder.deviceName.setText(sessions.get(position).pairing.workstationName);
         if (holder.lastLog != null) {
-            holder.lastCommand.setText(holder.lastLog.command);
+            holder.lastCommand.setText(holder.lastLog.userHostText());
             holder.lastCommandTime.setText(DateUtils.getRelativeTimeSpanString(holder.lastLog.unixSeconds * 1000, System.currentTimeMillis(), 1000));
         }
 

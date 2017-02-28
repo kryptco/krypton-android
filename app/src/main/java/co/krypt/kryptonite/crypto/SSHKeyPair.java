@@ -7,7 +7,9 @@ import android.util.Log;
 
 import org.libsodium.jni.Sodium;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -18,6 +20,8 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
+import java.util.List;
 
 import co.krypt.kryptonite.exception.CryptoException;
 
@@ -53,8 +57,9 @@ public class SSHKeyPair {
         return SHA256.digest(publicKeySSHWireFormat());
     }
 
-    public byte[] signDigest(byte[] data) throws SignatureException {
+    public byte[] signDigest(byte[] data) throws SignatureException, IOException, InvalidKeyException {
         long start = System.currentTimeMillis();
+
         byte[] signature = new byte[Sodium.crypto_sign_ed25519_bytes()];
         int[] signatureLengthPointer = new int[1];
         int result = Sodium.crypto_sign_ed25519_detached(signature, signatureLengthPointer, data, data.length, sk);
@@ -64,6 +69,16 @@ public class SSHKeyPair {
         long stop = System.currentTimeMillis();
         Log.d(TAG, "signature took " + String.valueOf((stop - start) / 1000.0) + " seconds");
         return signature;
+    }
+
+    public byte[] signDigestAppendingPubkey(byte[] data) throws SignatureException, IOException, InvalidKeyException {
+        ByteArrayOutputStream dataWithPubkey = new ByteArrayOutputStream();
+        dataWithPubkey.write(data);
+        dataWithPubkey.write(SSHWire.encode(publicKeySSHWireFormat()));
+
+        byte[] signaturePayload = dataWithPubkey.toByteArray();
+
+        return signDigest(signaturePayload);
     }
 
     public boolean verifyDigest(byte[] signature, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {

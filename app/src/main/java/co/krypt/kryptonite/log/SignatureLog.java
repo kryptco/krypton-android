@@ -23,13 +23,27 @@ public class SignatureLog {
     @Nullable
     public final String command;
 
+    @SerializedName("user")
+    @Nullable
+    public final String user;
+
+    @SerializedName("host_name")
+    @Nullable
+    public final String hostName;
+
     @SerializedName("unix_seconds")
     public final long unixSeconds;
 
-    public SignatureLog(byte[] digest, String command, long unixSeconds) {
+    @SerializedName("host_name_verified")
+    public final boolean hostNameVerified;
+
+    public SignatureLog(byte[] digest, String command, String user, String hostName, long unixSeconds, boolean hostNameVerified) {
         this.digest = digest;
         this.command = command;
+        this.user = user;
+        this.hostName = hostName;
         this.unixSeconds = unixSeconds;
+        this.hostNameVerified = hostNameVerified;
     }
 
     @Override
@@ -40,8 +54,11 @@ public class SignatureLog {
         SignatureLog that = (SignatureLog) o;
 
         if (unixSeconds != that.unixSeconds) return false;
+        if (hostNameVerified != that.hostNameVerified) return false;
         if (!Arrays.equals(digest, that.digest)) return false;
-        return command != null ? command.equals(that.command) : that.command == null;
+        if (command != null ? !command.equals(that.command) : that.command != null) return false;
+        if (user != null ? !user.equals(that.user) : that.user != null) return false;
+        return hostName != null ? hostName.equals(that.hostName) : that.hostName == null;
 
     }
 
@@ -49,8 +66,16 @@ public class SignatureLog {
     public int hashCode() {
         int result = Arrays.hashCode(digest);
         result = 31 * result + (command != null ? command.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (hostName != null ? hostName.hashCode() : 0);
         result = 31 * result + (int) (unixSeconds ^ (unixSeconds >>> 32));
+        result = 31 * result + (hostNameVerified ? 1 : 0);
         return result;
+    }
+
+    public String userHostText() {
+        return (user != null ? user + "@" : "") +
+                (hostNameVerified ? hostName : "unknown host");
     }
 
     public static List<SignatureLog> sortByTimeDescending(Set<SignatureLog> logs) {

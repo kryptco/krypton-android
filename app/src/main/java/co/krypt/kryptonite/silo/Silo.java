@@ -32,12 +32,14 @@ import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.policy.Policy;
 import co.krypt.kryptonite.protocol.AckResponse;
+import co.krypt.kryptonite.protocol.HostAuth;
 import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.protocol.MeResponse;
 import co.krypt.kryptonite.protocol.NetworkMessage;
 import co.krypt.kryptonite.protocol.PairingQR;
 import co.krypt.kryptonite.protocol.Request;
 import co.krypt.kryptonite.protocol.Response;
+import co.krypt.kryptonite.protocol.SignRequest;
 import co.krypt.kryptonite.protocol.SignResponse;
 import co.krypt.kryptonite.protocol.UnpairResponse;
 import co.krypt.kryptonite.transport.BluetoothTransport;
@@ -307,15 +309,22 @@ public class Silo {
         }
 
         if (request.signRequest != null) {
+            SignRequest signRequest = request.signRequest;
             response.signResponse = new SignResponse();
             if (signatureAllowed) {
                 try {
                     SSHKeyPair key = new KeyManager(context).loadOrGenerateKeyPair(KeyManager.MY_ED25519_KEY_TAG);
                     if (MessageDigest.isEqual(request.signRequest.publicKeyFingerprint, key.publicKeyFingerprint())) {
-                        response.signResponse.signature = key.signDigest(request.signRequest.digest);
-                        pairings().appendToLog(pairing, new SignatureLog(request.signRequest.digest, request.signRequest.command, System.currentTimeMillis() / 1000));
+                        response.signResponse.signature = key.signDigestAppendingPubkey(request.signRequest.digest);
+                        pairings().appendToLog(pairing, new SignatureLog(
+                                request.signRequest.digest,
+                                request.signRequest.command,
+                                request.signRequest.user(),
+                                request.signRequest.firstHostnameIfExists(),
+                                System.currentTimeMillis() / 1000,
+                                request.signRequest.verifyHostName()));
                         Notifications.notifySuccess(context, pairing, request);
-                        if (request.signRequest.command != null && request.signRequest.command.equals("ssh me.krypt.co")) {
+                        if (request.signRequest.verifiedHostNameOrDefault("unknown host").equals("me.krypt.co")) {
                             Intent sshMeIntent = new Intent(TestSSHFragment.SSH_ME_ACTION);
                             context.sendBroadcast(sshMeIntent);
                         }
