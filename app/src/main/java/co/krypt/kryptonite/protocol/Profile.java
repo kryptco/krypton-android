@@ -11,7 +11,7 @@ import com.google.gson.annotations.SerializedName;
 public class Profile {
     @SerializedName("email")
     public String email;
-    @SerializedName("rsa_public_key_wire")
+    @SerializedName("public_key_wire")
     public byte[] sshWirePublicKey;
 
     public Profile() { }
