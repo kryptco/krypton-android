@@ -5,11 +5,7 @@ import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 
-import org.libsodium.jni.Sodium;
-
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -20,8 +16,6 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Arrays;
-import java.util.List;
 
 import co.krypt.kryptonite.exception.CryptoException;
 
@@ -31,24 +25,28 @@ import co.krypt.kryptonite.exception.CryptoException;
  */
 
 public class SSHKeyPair {
-    private final @NonNull byte[] pk;
-    private final @NonNull byte[] sk;
+    private final @NonNull KeyPair keyPair;
     private static final String TAG = "SSHKeyPair";
 
-    SSHKeyPair(@NonNull byte[] pk, @NonNull byte[] sk) {
-        this.pk = pk;
-        this.sk = sk;
+    SSHKeyPair(@NonNull KeyPair keyPair) {
+        this.keyPair = keyPair;
     }
 
     public String publicKeyDERBase64() {
-        return Base64.encodeToString(pk, Base64.DEFAULT);
+        return Base64.encodeToString(keyPair.getPublic().getEncoded(), Base64.DEFAULT);
     }
 
     public byte[] publicKeySSHWireFormat() throws InvalidKeyException, IOException {
+        if (!(keyPair.getPublic() instanceof RSAPublicKey)) {
+            throw new InvalidKeyException("Only RSA Supported");
+        }
+        RSAPublicKey rsaPub = (RSAPublicKey) keyPair.getPublic();
+
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        out.write(SSHWire.encode("ssh-ed25519".getBytes()));
-        out.write(SSHWire.encode(pk));
+        out.write(SSHWire.encode("ssh-rsa".getBytes()));
+        out.write(SSHWire.encode(rsaPub.getPublicExponent().toByteArray()));
+        out.write(SSHWire.encode(rsaPub.getModulus().toByteArray()));
 
         return out.toByteArray();
     }
@@ -57,21 +55,18 @@ public class SSHKeyPair {
         return SHA256.digest(publicKeySSHWireFormat());
     }
 
-    public byte[] signDigest(byte[] data) throws SignatureException, IOException, InvalidKeyException {
+    public byte[] signDigest(byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         long start = System.currentTimeMillis();
-
-        byte[] signature = new byte[Sodium.crypto_sign_ed25519_bytes()];
-        int[] signatureLengthPointer = new int[1];
-        int result = Sodium.crypto_sign_ed25519_detached(signature, signatureLengthPointer, data, data.length, sk);
-        if (result != 0) {
-            throw new SignatureException("non-zero sodium return: " + result);
-        }
+        Signature s = Signature.getInstance("NONEwithRSA");
+        s.initSign(keyPair.getPrivate());
+        s.update(data);
+        byte[] signature = s.sign();
         long stop = System.currentTimeMillis();
         Log.d(TAG, "signature took " + String.valueOf((stop - start) / 1000.0) + " seconds");
         return signature;
     }
 
-    public byte[] signDigestAppendingPubkey(byte[] data) throws SignatureException, IOException, InvalidKeyException {
+    public byte[] signDigestAppendingPubkey(byte[] data) throws SignatureException, IOException, InvalidKeyException, NoSuchAlgorithmException {
         ByteArrayOutputStream dataWithPubkey = new ByteArrayOutputStream();
         dataWithPubkey.write(data);
         dataWithPubkey.write(SSHWire.encode(publicKeySSHWireFormat()));
@@ -82,7 +77,10 @@ public class SSHKeyPair {
     }
 
     public boolean verifyDigest(byte[] signature, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        return 0 == Sodium.crypto_sign_ed25519_verify_detached(signature, data, data.length, pk);
+        Signature s = Signature.getInstance("NONEwithRSA");
+        s.initVerify(keyPair.getPublic());
+        s.update(data);
+        return s.verify(signature);
     }
 
     @Override
@@ -93,5 +91,22 @@ public class SSHKeyPair {
         SSHKeyPair that = (SSHKeyPair) o;
 
         return publicKeyDERBase64().equals(that.publicKeyDERBase64());
+    }
+
+    public boolean isKeyStoredInSecureHardware() {
+        try {
+            KeyInfo keyInfo;
+            KeyFactory factory = KeyFactory.getInstance(keyPair.getPrivate().getAlgorithm(), "AndroidKeyStore");
+            keyInfo = factory.getKeySpec(keyPair.getPrivate(), KeyInfo.class);
+            return keyInfo.isInsideSecureHardware();
+        } catch (InvalidKeySpecException e) {
+            // Not an Android KeyStore key.
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

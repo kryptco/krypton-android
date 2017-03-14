@@ -1,7 +1,5 @@
 package co.krypt.kryptonite;
 
-import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
@@ -26,34 +24,30 @@ import static org.junit.Assert.assertTrue;
 public class KeyManagerInstrumentedTest {
     @Test
     public void keyGenerationAndDeletion_succeed() throws Exception {
-        KeyManager keyManager = new KeyManager(InstrumentationRegistry.getTargetContext());
-        keyManager.deleteKeyPair("test");
-        SSHKeyPair kp1 = keyManager.loadOrGenerateKeyPair("test");
+        KeyManager.deleteKeyPair("test");
+        SSHKeyPair kp1 = KeyManager.loadOrGenerateKeyPair("test");
         Log.i("TEST", kp1.publicKeyDERBase64());
-        keyManager.deleteKeyPair("test");
+        KeyManager.deleteKeyPair("test");
     }
 
     @Test
     public void keyGeneration_isIdempotent() throws Exception {
-        KeyManager keyManager = new KeyManager(InstrumentationRegistry.getTargetContext());
-        SSHKeyPair key1 = keyManager.loadOrGenerateKeyPair("test");
-        SSHKeyPair key2 = keyManager.loadOrGenerateKeyPair("test");
+        SSHKeyPair key1 = KeyManager.loadOrGenerateKeyPair("test");
+        SSHKeyPair key2 = KeyManager.loadOrGenerateKeyPair("test");
 
         assertEquals(key1, key2);
     }
 
     @Test
     public void sign_succeeds() throws Exception {
-        KeyManager keyManager = new KeyManager(InstrumentationRegistry.getTargetContext());
-        SSHKeyPair key = keyManager.loadOrGenerateKeyPair("test");
+        SSHKeyPair key = KeyManager.loadOrGenerateKeyPair("test");
         byte[] data = SecureRandom.getSeed(32);
         key.signDigest(SHA256.digest(data));
     }
 
     @Test
     public void signAndVerify_succeed() throws Exception {
-        KeyManager keyManager = new KeyManager(InstrumentationRegistry.getTargetContext());
-        SSHKeyPair key = keyManager.loadOrGenerateKeyPair("test");
+        SSHKeyPair key = KeyManager.loadOrGenerateKeyPair("test");
         byte[] data = SecureRandom.getSeed(32);
         byte[] digest = SHA256.digest(data);
         byte[] signature = key.signDigest(digest);
@@ -62,8 +56,7 @@ public class KeyManagerInstrumentedTest {
 
     @Test
     public void signTamperAndVerify_fails() throws Exception {
-        KeyManager keyManager = new KeyManager(InstrumentationRegistry.getTargetContext());
-        SSHKeyPair key = keyManager.loadOrGenerateKeyPair("test");
+        SSHKeyPair key = KeyManager.loadOrGenerateKeyPair("test");
         byte[] data = SecureRandom.getSeed(32);
         byte[] digest = SHA256.digest(data);
         byte[] signature = key.signDigest(digest);

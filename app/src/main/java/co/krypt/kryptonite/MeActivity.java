@@ -24,7 +24,8 @@ public class MeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_me);
         sshKeyTextView = (TextView) findViewById(R.id.sshKeyTextView);
         try {
-            SSHKeyPair sk = new KeyManager(getApplicationContext()).loadOrGenerateKeyPair(KeyManager.MY_ED25519_KEY_TAG);
+            SSHKeyPair sk = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
+            Log.i(LOG_TAG, String.valueOf(sk.isKeyStoredInSecureHardware()));
             sshKeyTextView.setText(Base64.encodeToString(sk.publicKeySSHWireFormat(), Base64.DEFAULT));
         } catch (IOException e) {
             e.printStackTrace();

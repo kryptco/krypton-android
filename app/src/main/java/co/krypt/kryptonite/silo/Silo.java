@@ -313,7 +313,7 @@ public class Silo {
             response.signResponse = new SignResponse();
             if (signatureAllowed) {
                 try {
-                    SSHKeyPair key = new KeyManager(context).loadOrGenerateKeyPair(KeyManager.MY_ED25519_KEY_TAG);
+                    SSHKeyPair key = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
                     if (MessageDigest.isEqual(request.signRequest.publicKeyFingerprint, key.publicKeyFingerprint())) {
                         response.signResponse.signature = key.signDigestAppendingPubkey(request.signRequest.digest);
                         pairings().appendToLog(pairing, new SignatureLog(
@@ -332,7 +332,7 @@ public class Silo {
                         Log.e(TAG, Base64.encodeAsString(request.signRequest.publicKeyFingerprint) + " != " + Base64.encodeAsString(key.publicKeyFingerprint()));
                         response.signResponse.error = "unknown key fingerprint";
                     }
-                } catch (SignatureException e) {
+                } catch (NoSuchAlgorithmException | SignatureException e) {
                     response.signResponse.error = "unknown error";
                     e.printStackTrace();
                 }

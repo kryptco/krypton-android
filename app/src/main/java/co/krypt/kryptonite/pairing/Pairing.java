@@ -168,7 +168,7 @@ public class Pairing {
     }
 
 
-    // Used to load the 'native-lib' library on application startup.
+        // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("sodiumjni");
     }
