@@ -19,7 +19,8 @@ import co.krypt.kryptonite.protocol.JSON;
  */
 
 public class Pairings {
-    public static final String PAIRINGS_KEY = "PAIRINGS";
+    public static final String OLD_PAIRINGS_KEY = "PAIRINGS";
+    public static final String PAIRINGS_KEY = "PAIRINGS_2";
     private static Object lock = new Object();
     private final SharedPreferences preferences;
     private final Context context;
@@ -59,6 +60,17 @@ public class Pairings {
         Set<String> jsonPairings = new HashSet<>(preferences.getStringSet(PAIRINGS_KEY, new ArraySet<String>()));
         for (String jsonPairing : jsonPairings) {
             pairings.add(JSON.fromJson(jsonPairing, Pairing.class));
+        }
+        return pairings;
+    }
+
+    private HashSet<Pairing> loadAllOldPairings() {
+        HashSet<Pairing> pairings = new HashSet<>();
+        synchronized (lock) {
+            Set<String> jsonPairings = new HashSet<>(preferences.getStringSet(OLD_PAIRINGS_KEY, new ArraySet<String>()));
+            for (String jsonPairing : jsonPairings) {
+                pairings.add(JSON.fromJson(jsonPairing, Pairing.class));
+            }
         }
         return pairings;
     }

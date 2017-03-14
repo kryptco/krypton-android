@@ -52,7 +52,7 @@ public class KeyManager {
                             tag, KeyProperties.PURPOSE_SIGN)
                             .setDigests(KeyProperties.DIGEST_NONE, KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
                             .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
-                            .setKeySize(4096)
+                            .setKeySize(3072)
                             .setUserAuthenticationRequired(true)
                             .setUserAuthenticationValidityDurationSeconds(60 * 60 * 3)
                             .build());

@@ -55,18 +55,18 @@ public class SSHKeyPair {
         return SHA256.digest(publicKeySSHWireFormat());
     }
 
-    public byte[] signDigest(byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    public byte[] signDigest(byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, CryptoException {
         long start = System.currentTimeMillis();
         Signature s = Signature.getInstance("NONEwithRSA");
         s.initSign(keyPair.getPrivate());
-        s.update(data);
+        s.update(SHA1.digestPrependingOID(data));
         byte[] signature = s.sign();
         long stop = System.currentTimeMillis();
         Log.d(TAG, "signature took " + String.valueOf((stop - start) / 1000.0) + " seconds");
         return signature;
     }
 
-    public byte[] signDigestAppendingPubkey(byte[] data) throws SignatureException, IOException, InvalidKeyException, NoSuchAlgorithmException {
+    public byte[] signDigestAppendingPubkey(byte[] data) throws SignatureException, IOException, InvalidKeyException, NoSuchAlgorithmException, CryptoException {
         ByteArrayOutputStream dataWithPubkey = new ByteArrayOutputStream();
         dataWithPubkey.write(data);
         dataWithPubkey.write(SSHWire.encode(publicKeySSHWireFormat()));
@@ -76,10 +76,10 @@ public class SSHKeyPair {
         return signDigest(signaturePayload);
     }
 
-    public boolean verifyDigest(byte[] signature, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    public boolean verifyDigest(byte[] signature, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, CryptoException {
         Signature s = Signature.getInstance("NONEwithRSA");
         s.initVerify(keyPair.getPublic());
-        s.update(data);
+        s.update(SHA1.digestPrependingOID(data));
         return s.verify(signature);
     }
 

@@ -13,21 +13,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.UUID;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.Mac;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 import co.krypt.kryptonite.crypto.SHA256;
 import co.krypt.kryptonite.exception.CryptoException;
@@ -36,24 +24,18 @@ import co.krypt.kryptonite.protocol.PairingQR;
 
 public class Pairing {
     public final byte[] workstationPublicKey;
-    final byte[] symmetricSecretKey;
+    final byte[] enclaveSecretKey;
+    final byte[] enclavePublicKey;
     public final String workstationName;
     public final UUID uuid;
 
-    private static final int AES_256_KEY_LENGTH = 32;
-    private static final int AES_256_IV_LENGTH = 16;
-    private static final int AES_256_BLOCK_SIZE = 16;
-
-
-    public Pairing(@NonNull byte[] workstationPublicKey, @NonNull byte[] symmetricSecretKey, String workstationName) throws CryptoException {
+    public Pairing(@NonNull byte[] workstationPublicKey, @NonNull byte[] enclaveSecretKey, @NonNull byte[] enclavePublicKey, String workstationName) throws CryptoException {
         if (workstationPublicKey.length != Sodium.crypto_box_publickeybytes()) {
             throw new SodiumException("workstation public key invalid");
         }
         this.workstationPublicKey = workstationPublicKey;
-        if (symmetricSecretKey.length != AES_256_KEY_LENGTH) {
-            throw new CryptoException("wrong AES key length");
-        }
-        this.symmetricSecretKey = symmetricSecretKey;
+        this.enclaveSecretKey = enclaveSecretKey;
+        this.enclavePublicKey = enclavePublicKey;
         this.workstationName = workstationName;
 
         byte[] hash = SHA256.digest(workstationPublicKey);
@@ -70,8 +52,13 @@ public class Pairing {
     }
 
     public static Pairing generate(@NonNull byte[] workstationPublicKey, String workstationName) throws CryptoException {
-        byte[] symmetricKey = SecureRandom.getSeed(AES_256_KEY_LENGTH);
-        return new Pairing(workstationPublicKey, symmetricKey, workstationName);
+        byte[] enclavePublicKey = new byte[Sodium.crypto_box_publickeybytes()];
+        byte[] enclaveSecretKey = new byte[Sodium.crypto_box_secretkeybytes()];
+        if (0 != Sodium.crypto_box_keypair(enclavePublicKey, enclaveSecretKey)) {
+            throw new SodiumException("keypair generate failed");
+        }
+
+        return new Pairing(workstationPublicKey, enclaveSecretKey, enclavePublicKey, workstationName);
     }
 
     public static Pairing generate(PairingQR pairingQR) throws CryptoException {
@@ -79,88 +66,40 @@ public class Pairing {
     }
 
     public byte[] wrapKey() throws CryptoException {
-        byte[] ciphertext = new byte[symmetricSecretKey.length + Sodium.crypto_box_sealbytes()];
-        if (0 != Sodium.crypto_box_seal(ciphertext, symmetricSecretKey, symmetricSecretKey.length, workstationPublicKey)) {
+        byte[] ciphertext = new byte[enclavePublicKey.length + Sodium.crypto_box_sealbytes()];
+        if (0 != Sodium.crypto_box_seal(ciphertext, enclavePublicKey, enclavePublicKey.length, workstationPublicKey)) {
             throw new SodiumException("crypto_box_seal failed");
         }
         return ciphertext;
     }
 
     public byte[] seal(byte[] message) throws CryptoException {
+        byte[] nonce = SecureRandom.getSeed(Sodium.crypto_box_noncebytes());
+        byte[] sealed = new byte[message.length + Sodium.crypto_box_macbytes()];
+        if (0 != Sodium.crypto_box_easy(sealed, message, message.length, nonce, workstationPublicKey, enclaveSecretKey)) {
+            throw new SodiumException("crypto_box_easy failed");
+        }
+        ByteArrayOutputStream nonceAndSealed = new ByteArrayOutputStream();
         try {
-            Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            SecretKeySpec key = new SecretKeySpec(symmetricSecretKey, "AES");
-            IvParameterSpec iv = new IvParameterSpec(SecureRandom.getSeed(AES_256_IV_LENGTH));
-            c.init(Cipher.ENCRYPT_MODE, key, iv);
-            byte[] ciphertext = c.doFinal(message);
-
-
-            Mac mac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec macKey = new SecretKeySpec(symmetricSecretKey, "HmacSHA256");
-            mac.init(macKey);
-            mac.update(iv.getIV());
-            mac.update(ciphertext);
-
-            ByteArrayOutputStream ivCiphertextMac = new ByteArrayOutputStream();
-            ivCiphertextMac.write(iv.getIV());
-            ivCiphertextMac.write(ciphertext);
-            ivCiphertextMac.write(mac.doFinal());
-
-            return ivCiphertextMac.toByteArray();
-        } catch (NoSuchAlgorithmException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (NoSuchPaddingException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (InvalidAlgorithmParameterException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (InvalidKeyException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (BadPaddingException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (IllegalBlockSizeException e) {
-            throw new CryptoException(e.getMessage());
+            nonceAndSealed.write(nonce);
+            nonceAndSealed.write(sealed);
         } catch (IOException e) {
             throw new CryptoException(e.getMessage());
         }
+        return nonceAndSealed.toByteArray();
     }
 
-    public byte[] unseal(byte[] ivCiphertextMac) throws CryptoException {
-        try {
-            Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            SecretKeySpec key = new SecretKeySpec(symmetricSecretKey, "AES");
-            Mac mac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec macKey = new SecretKeySpec(symmetricSecretKey, "HmacSHA256");
-
-            if (ivCiphertextMac.length < AES_256_IV_LENGTH + AES_256_BLOCK_SIZE + mac.getMacLength()) {
-                throw new CryptoException("ivCiphertextMac shorter than IV");
-            }
-            IvParameterSpec iv = new IvParameterSpec(Arrays.copyOfRange(ivCiphertextMac, 0, AES_256_IV_LENGTH));
-            byte[] ivCiphertext = Arrays.copyOfRange(ivCiphertextMac, 0, ivCiphertextMac.length - mac.getMacLength());
-            byte[] expectedMac = Arrays.copyOfRange(ivCiphertextMac, ivCiphertextMac.length - mac.getMacLength(), ivCiphertextMac.length);
-
-            mac.init(macKey);
-            byte[] computedMac = mac.doFinal(ivCiphertext);
-            if (!MessageDigest.isEqual(expectedMac, computedMac)) {
-                throw new CryptoException("invalid MAC");
-            }
-
-            byte[] ciphertext = Arrays.copyOfRange(ivCiphertextMac, AES_256_IV_LENGTH, ivCiphertextMac.length - mac.getMacLength());
-            c.init(Cipher.DECRYPT_MODE, key, iv);
-            return c.doFinal(ciphertext);
-        } catch (NoSuchAlgorithmException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (NoSuchPaddingException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (InvalidAlgorithmParameterException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (InvalidKeyException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (BadPaddingException e) {
-            throw new CryptoException(e.getMessage());
-        } catch (IllegalBlockSizeException e) {
-            throw new CryptoException(e.getMessage());
+    public byte[] unseal(byte[] sealed) throws CryptoException {
+        if (sealed.length < Sodium.crypto_box_noncebytes() + Sodium.crypto_box_macbytes()) {
+            throw new SodiumException("ciphertext shorter than nonce and mac");
         }
-
+        byte[] nonce = Arrays.copyOfRange(sealed, 0, Sodium.crypto_box_noncebytes());
+        byte[] ciphertext = Arrays.copyOfRange(sealed, Sodium.crypto_box_noncebytes(), sealed.length);
+        byte[] unsealed = new byte[ciphertext.length - Sodium.crypto_box_macbytes()];
+        if (0 != Sodium.crypto_box_open_easy(unsealed, ciphertext, ciphertext.length, nonce, workstationPublicKey, enclaveSecretKey)) {
+            throw new SodiumException("crypto_box_open_easy failed");
+        }
+        return unsealed;
     }
 
     public String getUUIDString(){
@@ -180,12 +119,17 @@ public class Pairing {
 
         Pairing pairing = (Pairing) o;
 
-        if (!MessageDigest.isEqual(workstationPublicKey, pairing.workstationPublicKey)) return false;
+        if (!Arrays.equals(workstationPublicKey, pairing.workstationPublicKey)) return false;
+        if (!Arrays.equals(enclavePublicKey, pairing.enclavePublicKey)) return false;
         return workstationName.equals(pairing.workstationName);
+
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(workstationPublicKey);
+        int result = Arrays.hashCode(workstationPublicKey);
+        result = 31 * result + Arrays.hashCode(enclavePublicKey);
+        result = 31 * result + workstationName.hashCode();
+        return result;
     }
 }

@@ -17,7 +17,8 @@ public class NetworkMessage {
 
     public enum Header {
         CIPHERTEXT((byte) 0),
-        WRAPPED_KEY((byte) 1);
+        WRAPPED_KEY((byte) 1),
+        WRAPPED_PUBLIC_KEY((byte) 2);
 
         private final byte value;
 

@@ -32,7 +32,6 @@ import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.policy.Policy;
 import co.krypt.kryptonite.protocol.AckResponse;
-import co.krypt.kryptonite.protocol.HostAuth;
 import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.protocol.MeResponse;
 import co.krypt.kryptonite.protocol.NetworkMessage;
@@ -141,7 +140,7 @@ public class Silo {
             return activePairingsByUUID.get(pairing.uuid);
         }
         byte[] wrappedKey = pairing.wrapKey();
-        NetworkMessage wrappedKeyMessage = new NetworkMessage(NetworkMessage.Header.WRAPPED_KEY, wrappedKey);
+        NetworkMessage wrappedKeyMessage = new NetworkMessage(NetworkMessage.Header.WRAPPED_PUBLIC_KEY, wrappedKey);
         send(pairing, wrappedKeyMessage);
 
         pairingStorage.pair(pairing);
@@ -196,6 +195,8 @@ public class Silo {
                     handle(pairing, request, communicationMedium);
                     break;
                 case WRAPPED_KEY:
+                    break;
+                case WRAPPED_PUBLIC_KEY:
                     break;
             }
         } catch (TransportException | IOException | InvalidKeyException | ProtocolException | CryptoException e) {
@@ -315,9 +316,9 @@ public class Silo {
                 try {
                     SSHKeyPair key = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
                     if (MessageDigest.isEqual(request.signRequest.publicKeyFingerprint, key.publicKeyFingerprint())) {
-                        response.signResponse.signature = key.signDigestAppendingPubkey(request.signRequest.digest);
+                        response.signResponse.signature = key.signDigestAppendingPubkey(request.signRequest.data);
                         pairings().appendToLog(pairing, new SignatureLog(
-                                request.signRequest.digest,
+                                request.signRequest.data,
                                 request.signRequest.command,
                                 request.signRequest.user(),
                                 request.signRequest.firstHostnameIfExists(),

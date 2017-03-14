@@ -13,6 +13,8 @@ public class PairingQR {
     public byte[] workstationPublicKey;
     @SerializedName("n")
     public String workstationName;
+    @SerializedName("v")
+    public String version;
 
     private PairingQR() {
     }

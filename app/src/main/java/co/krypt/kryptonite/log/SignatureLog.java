@@ -16,7 +16,7 @@ import java.util.Set;
  */
 
 public class SignatureLog {
-    @SerializedName("digest")
+    @SerializedName("data")
     public final byte[] digest;
 
     @SerializedName("command")

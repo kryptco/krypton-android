@@ -16,8 +16,8 @@ import java.util.Arrays;
  */
 
 public class SignRequest {
-    @SerializedName("digest")
-    public byte[] digest;
+    @SerializedName("data")
+    public byte[] data;
 
     @SerializedName("public_key_fingerprint")
     public byte[] publicKeyFingerprint;
@@ -38,27 +38,27 @@ public class SignRequest {
     }
 
     public byte[] sessionID() {
-        if (digest.length < 36) {
+        if (data.length < 36) {
             return null;
         }
-        return Arrays.copyOfRange(digest, 4, 36);
+        return Arrays.copyOfRange(data, 4, 36);
     }
 
     public String user() {
-        if (digest.length < 38) {
+        if (data.length < 38) {
             return null;
         }
-        byte[] bigEndianUserLen = Arrays.copyOfRange(digest, 37, 41);
+        byte[] bigEndianUserLen = Arrays.copyOfRange(data, 37, 41);
         DataInputStream readLen = new DataInputStream(new ByteArrayInputStream(bigEndianUserLen));
         try {
             int userLen = readLen.readInt();
             if (userLen == 0) {
                 return "";
             }
-            if (digest.length < 41 + userLen) {
+            if (data.length < 41 + userLen) {
                 return null;
             }
-            byte[] userBytes = Arrays.copyOfRange(digest, 41, 41 + userLen);
+            byte[] userBytes = Arrays.copyOfRange(data, 41, 41 + userLen);
             return new String(userBytes, StandardCharsets.UTF_8);
         } catch (IOException e) {
             return null;
