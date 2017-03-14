@@ -253,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         for (Fragment fragment: getSupportFragmentManager().getFragments()) {
-            if (fragment.isVisible()) {
+            if (fragment != null && fragment.isVisible()) {
                 if (fragment.getChildFragmentManager().getBackStackEntryCount() > 0) {
                     fragment.getChildFragmentManager().popBackStack();
                     return;

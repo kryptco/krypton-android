@@ -32,7 +32,29 @@ public class PairDialogFragment extends DialogFragment {
             Log.e(TAG, "pendingPairingQR null");
             return null;
         }
+        if (pendingPairingQR.version == null) {
+            return createOutdatedPairingDialog(pairFragment);
+        }
+        // Create the AlertDialog object and return it
+        return createPairingDialog(pairFragment);
+    }
 
+    private Dialog createOutdatedPairingDialog(final PairFragment pairFragment) {
+        final Analytics analytics = new Analytics(getActivity());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getTargetFragment().getContext());
+        builder.setMessage(pairFragment.getPendingPairingQR().workstationName + " is running an old version of kr. Please update kr by running \"curl https://krypt.co/kr-beta | sh\" and pair again.")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        if (getTargetFragment() instanceof PairListener) {
+                            final PairListener listener = (PairListener) getTargetFragment();
+                            listener.cancel();
+                        }
+                    }
+                });
+        return builder.create();
+    }
+    private Dialog createPairingDialog(final PairFragment pairFragment) {
         final Analytics analytics = new Analytics(getActivity());
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getTargetFragment().getContext());
@@ -82,9 +104,9 @@ public class PairDialogFragment extends DialogFragment {
                         }
                     }
                 });
-        // Create the AlertDialog object and return it
         return builder.create();
     }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
