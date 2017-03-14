@@ -1,0 +1,107 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/mr_dialog_material_background_light"
+    android:padding="6dp">
+
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Welcome to 2.0!"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="normal|bold"
+        app:layout_constraintHorizontal_bias="0.33"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1" />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Kryponite has been updated. Please update kr on your workstation(s) and re-pair."
+        android:textAlignment="center"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header" />
+
+    <TextView
+        android:id="@+id/upgrade"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/terminal_bg"
+        android:fontFamily="monospace"
+        android:paddingBottom="6dp"
+        android:paddingLeft="6dp"
+
+        android:paddingRight="6dp"
+        android:paddingTop="6dp"
+        android:shadowColor="@color/appBlack"
+        android:shadowRadius="4"
+        android:text="$ curl https://krypt.co/kr-beta | sh"
+        android:textColor="@color/appWhite"
+        android:textSize="14sp"
+        android:textStyle="normal|bold"
+        android:typeface="monospace"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/description" />
+
+    <TextView
+        android:id="@+id/pair"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/terminal_bg"
+        android:fontFamily="monospace"
+        android:paddingBottom="6dp"
+        android:paddingLeft="6dp"
+
+        android:paddingRight="6dp"
+        android:paddingTop="6dp"
+        android:shadowColor="@color/appBlack"
+        android:shadowRadius="4"
+        android:text="$ kr pair"
+        android:textColor="@color/appWhite"
+        android:textSize="14sp"
+        android:textStyle="normal|bold"
+        android:typeface="monospace"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/upgrade" />
+
+    <Button
+        android:id="@+id/doneButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/flat_button"
+        android:backgroundTint="@color/appGreen"
+        android:text="OK"
+        android:textColor="@color/appGreen"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pair" />
+
+</android.support.constraint.ConstraintLayout>

@@ -64,7 +64,7 @@ public class Pairings {
         return pairings;
     }
 
-    private HashSet<Pairing> loadAllOldPairings() {
+    public HashSet<Pairing> loadAllOldPairings() {
         HashSet<Pairing> pairings = new HashSet<>();
         synchronized (lock) {
             Set<String> jsonPairings = new HashSet<>(preferences.getStringSet(OLD_PAIRINGS_KEY, new ArraySet<String>()));
@@ -73,6 +73,16 @@ public class Pairings {
             }
         }
         return pairings;
+    }
+
+    public boolean hasOldPairings() {
+        return !loadAllOldPairings().isEmpty();
+    }
+
+    public void clearOldPairings() {
+        synchronized (lock) {
+            preferences.edit().remove(OLD_PAIRINGS_KEY).commit();
+        }
     }
 
     private HashSet<Pairing> setAllLocked(HashSet<Pairing> pairings) {
