@@ -203,6 +203,12 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
 //        preview.addView(mPreview);
 
         cameraPermissionInfoLayout = (ConstraintLayout) rootView.findViewById(R.id.cameraPermissionInfo);
+        cameraPermissionInfoLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickRequestCameraPermission(getActivity());
+            }
+        });
 
         requestCameraPermissionButton = (Button) rootView.findViewById(R.id.requestCameraPermissionButton);
         requestCameraPermissionButton.setOnClickListener(new View.OnClickListener() {
