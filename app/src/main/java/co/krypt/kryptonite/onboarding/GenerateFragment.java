@@ -67,7 +67,7 @@ public class GenerateFragment extends Fragment {
                         e.printStackTrace();
                     }
                     SSHKeyPair pair = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
-                    new MeStorage(context).set(new Profile("enter email", pair.publicKeySSHWireFormat()));
+                    new MeStorage(context).set(new Profile("", pair.publicKeySSHWireFormat()));
 
                     final long genTime = System.currentTimeMillis() - start;
                     new Analytics(context).postEvent("keypair", "generate", null, (int) (genTime / 1000), false);

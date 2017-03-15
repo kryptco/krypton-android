@@ -28,6 +28,7 @@ import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.crypto.KeyManager;
 import co.krypt.kryptonite.crypto.SSHKeyPair;
 import co.krypt.kryptonite.me.MeStorage;
+import co.krypt.kryptonite.protocol.Profile;
 import co.krypt.kryptonite.uiutils.MLRoundedImageView;
 
 /**
@@ -78,6 +79,10 @@ public class EnterEmailFragment extends Fragment {
                 onEmailChanged();
             }
         });
+        Profile me = new MeStorage(getContext()).load();
+        if (me != null && me.email != null) {
+            profileEmail.setText(me.email);
+        }
 
         MLRoundedImageView identiconImage = (MLRoundedImageView) root.findViewById(R.id.identicon);
         try {

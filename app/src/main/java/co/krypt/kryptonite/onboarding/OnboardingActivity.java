@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -108,6 +109,36 @@ public class OnboardingActivity extends FragmentActivity {
             if (resultCode == RESULT_OK) {
                 LocalAuthentication.onSuccess();
             }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right);
+        OnboardingProgress progress = new OnboardingProgress(getApplicationContext());
+
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.activity_onboarding);
+        if (currentFragment != null) {
+            fragmentTransaction.remove(currentFragment);
+        }
+
+        switch (progress.currentStage()) {
+            case NONE:
+                break;
+            case GENERATE:
+                break;
+            case GENERATING:
+                break;
+            case ENTER_EMAIL:
+                break;
+            case FIRST_PAIR:
+                progress.setStage(OnboardingStage.ENTER_EMAIL);
+                EnterEmailFragment enterEmailFragment = new EnterEmailFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, enterEmailFragment).commit();
+                break;
+            case TEST_SSH:
+                break;
         }
     }
 }
