@@ -24,6 +24,7 @@ import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.onboarding.OnboardingActivity;
 import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.policy.LocalAuthentication;
+import co.krypt.kryptonite.silo.Silo;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -70,7 +71,7 @@ public class SettingsFragment extends Fragment {
                             public void run() {
                                 try {
                                     new Analytics(getContext()).postEvent("keypair", "destroy", null, null, false);
-                                    new Pairings(getContext()).unpairAll();
+                                    Silo.shared(getContext()).unpairAll();
                                     KeyManager.deleteKeyPair(KeyManager.MY_RSA_KEY_TAG);
                                     new MeStorage(getContext()).delete();
                                     startActivity(new Intent(getContext(), OnboardingActivity.class));
