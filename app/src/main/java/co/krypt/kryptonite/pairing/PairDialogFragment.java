@@ -52,7 +52,10 @@ public class PairDialogFragment extends DialogFragment {
                         }
                     }
                 });
-        return builder.create();
+        Dialog dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        return dialog;
     }
     private Dialog createPairingDialog(final PairFragment pairFragment) {
         final Analytics analytics = new Analytics(getActivity());
@@ -104,7 +107,10 @@ public class PairDialogFragment extends DialogFragment {
                         }
                     }
                 });
-        return builder.create();
+        Dialog dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        return dialog;
     }
 
     @Override

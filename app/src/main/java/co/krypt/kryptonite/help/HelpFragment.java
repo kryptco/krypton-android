@@ -45,9 +45,9 @@ public class HelpFragment extends Fragment {
         host.setup();
 
         //Tab 1
-        TabHost.TabSpec spec = host.newTabSpec("brew");
+        TabHost.TabSpec spec = host.newTabSpec("curl");
         spec.setContent(R.id.tab1);
-        spec.setIndicator("brew");
+        spec.setIndicator("curl");
         host.addTab(spec);
 
         //Tab 2
@@ -57,9 +57,9 @@ public class HelpFragment extends Fragment {
         host.addTab(spec);
 
         //Tab 3
-        spec = host.newTabSpec("curl");
+        spec = host.newTabSpec("brew");
         spec.setContent(R.id.tab3);
-        spec.setIndicator("curl");
+        spec.setIndicator("brew");
         host.addTab(spec);
 
         host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {

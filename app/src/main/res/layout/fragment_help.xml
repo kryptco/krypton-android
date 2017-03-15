@@ -90,7 +90,7 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:text="$ brew install kryptco/tap/kr\n$ kr pair"
+                            android:text="$ curl https://krypt.co/kr-beta | sh\n$ kr pair"
                             android:layout_height="wrap_content"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintRight_toRightOf="parent"
@@ -108,6 +108,8 @@
                             android:shadowRadius="4"
                             android:shadowColor="@color/appBlack"
                             app:layout_constraintHorizontal_bias="0.56" />
+
+
                     </LinearLayout>
 
                     <LinearLayout
@@ -142,9 +144,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical">
-
                         <TextView
-                            android:text="$ curl https://krypt.co/kr | sh\n$ kr pair"
+                            android:text="$ brew install kryptco/tap/kr\n$ kr pair"
                             android:layout_height="wrap_content"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintRight_toRightOf="parent"
@@ -162,7 +163,6 @@
                             android:shadowRadius="4"
                             android:shadowColor="@color/appBlack"
                             app:layout_constraintHorizontal_bias="0.56" />
-
                     </LinearLayout>
                 </FrameLayout>
             </LinearLayout>
