@@ -30,7 +30,13 @@ public class Analytics {
     private static Object lock = new Object();
     private SharedPreferences preferences;
 
-    private static final String TRACKING_ID = "UA-86173430-2";
+    private static final String TRACKING_ID() {
+        if (BuildConfig.DEBUG) {
+            return "UA-86173430-1";
+        } else {
+            return "UA-86173430-2";
+        }
+    }
 
     public String getClientID() {
         synchronized (lock) {
@@ -84,7 +90,7 @@ public class Analytics {
         }
         HashMap<String, String> defaultParams = new HashMap<String, String>();
         defaultParams.put("v", "1");
-        defaultParams.put("tid", TRACKING_ID);
+        defaultParams.put("tid", TRACKING_ID());
         defaultParams.put("cid", clientID);
         String userAgentString = System.getProperty("http.agent") + " Version/" + BuildConfig.VERSION_NAME + " kr/" + BuildConfig.VERSION_NAME;
         defaultParams.put("ua", userAgentString);
