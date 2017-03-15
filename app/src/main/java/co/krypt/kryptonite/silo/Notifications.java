@@ -96,7 +96,6 @@ public class Notifications {
                         .setColor(context.getColor(R.color.colorPrimary))
                         .setContentTitle("Allow Request?")
                         .setContentText(pairing.workstationName + ": " + request.signRequest.display())
-                        .setAutoCancel(true)
                         .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
