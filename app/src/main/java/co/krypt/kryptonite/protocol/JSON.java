@@ -1,7 +1,6 @@
 package co.krypt.kryptonite.protocol;
 
-import android.util.Base64;
-
+import com.amazonaws.util.Base64;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -12,6 +11,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.ElementType;
@@ -51,18 +51,21 @@ public class JSON {
             .registerTypeAdapter(MeRequest.class, new AnnotatedDeserializer<>())
             .registerTypeAdapter(SignRequest.class, new AnnotatedDeserializer<>())
             .registerTypeAdapter(UnpairRequest.class, new AnnotatedDeserializer<>())
-            .registerTypeAdapter(Profile.class, new AnnotatedDeserializer<>())
             .registerTypeAdapter(HostAuth.class, new AnnotatedDeserializer<>())
+            .create();
+
+    private static final Gson gsonWithoutRequiredFields = new GsonBuilder()
+            .registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter())
             .create();
 
     // Using Android's base64 libraries. This can be replaced with any base64 library.
     private static class ByteArrayToBase64TypeAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
         public byte[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            return Base64.decode(json.getAsString(), Base64.NO_WRAP);
+            return Base64.decode(json.getAsString());
         }
 
         public JsonElement serialize(byte[] src, Type typeOfSrc, JsonSerializationContext context) {
-            return new JsonPrimitive(Base64.encodeToString(src, Base64.NO_WRAP));
+            return new JsonPrimitive(Base64.encodeAsString(src));
         }
     }
 
@@ -72,11 +75,16 @@ public class JSON {
 
         public T deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException
         {
-            T pojo = new Gson().fromJson(je, type);
+            T pojo = gsonWithoutRequiredFields.fromJson(je, type);
+            checkPojoRecursively(pojo);
+            return pojo;
+        }
 
+        private void checkPojoRecursively(Object pojo) {
             Field[] fields = pojo.getClass().getDeclaredFields();
             for (Field f : fields)
             {
+                Logger.getLogger(AnnotatedDeserializer.class.getName()).log(Level.INFO, f.getName());
                 if (f.getAnnotation(JsonRequired.class) != null)
                 {
                     try
@@ -96,9 +104,15 @@ public class JSON {
                         Logger.getLogger(AnnotatedDeserializer.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
+                try {
+                    f.setAccessible(true);
+                    if (f.get(pojo) != null && f.getAnnotation(SerializedName.class) != null) {
+                        checkPojoRecursively(f.get(pojo));
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
-            return pojo;
-
         }
     }
 
