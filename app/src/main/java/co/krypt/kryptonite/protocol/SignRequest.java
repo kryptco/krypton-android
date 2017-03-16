@@ -17,9 +17,11 @@ import java.util.Arrays;
 
 public class SignRequest {
     @SerializedName("data")
+    @JSON.JsonRequired
     public byte[] data;
 
     @SerializedName("public_key_fingerprint")
+    @JSON.JsonRequired
     public byte[] publicKeyFingerprint;
 
     @SerializedName("command")

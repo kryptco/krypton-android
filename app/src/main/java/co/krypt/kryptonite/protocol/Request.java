@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class Request {
     @SerializedName("request_id")
+    @JSON.JsonRequired
     public String requestID;
 
     public String requestIDCacheKey() {
@@ -18,6 +19,7 @@ public class Request {
     }
 
     @SerializedName("unix_seconds")
+    @JSON.JsonRequired
     public Long unixSeconds;
 
     @SerializedName("me_request")

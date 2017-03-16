@@ -10,8 +10,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class Profile {
     @SerializedName("email")
+    @JSON.JsonRequired
     public String email;
     @SerializedName("public_key_wire")
+    @JSON.JsonRequired
     public byte[] sshWirePublicKey;
 
     public Profile() { }

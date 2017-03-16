@@ -14,7 +14,14 @@ import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Kevin King on 12/2/16.
@@ -38,8 +45,15 @@ public class JSON {
         return gson.toJson(object);
     }
 
-    private static final Gson gson = new GsonBuilder().registerTypeHierarchyAdapter(byte[].class,
-            new ByteArrayToBase64TypeAdapter()).create();
+    private static final Gson gson = new GsonBuilder()
+            .registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter())
+            .registerTypeAdapter(Request.class, new AnnotatedDeserializer<>())
+            .registerTypeAdapter(MeRequest.class, new AnnotatedDeserializer<>())
+            .registerTypeAdapter(SignRequest.class, new AnnotatedDeserializer<>())
+            .registerTypeAdapter(UnpairRequest.class, new AnnotatedDeserializer<>())
+            .registerTypeAdapter(Profile.class, new AnnotatedDeserializer<>())
+            .registerTypeAdapter(HostAuth.class, new AnnotatedDeserializer<>())
+            .create();
 
     // Using Android's base64 libraries. This can be replaced with any base64 library.
     private static class ByteArrayToBase64TypeAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
@@ -50,5 +64,47 @@ public class JSON {
         public JsonElement serialize(byte[] src, Type typeOfSrc, JsonSerializationContext context) {
             return new JsonPrimitive(Base64.encodeToString(src, Base64.NO_WRAP));
         }
+    }
+
+    //  from https://stackoverflow.com/questions/21626690/gson-optional-and-required-fields
+    private static class AnnotatedDeserializer<T> implements JsonDeserializer<T>
+    {
+
+        public T deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException
+        {
+            T pojo = new Gson().fromJson(je, type);
+
+            Field[] fields = pojo.getClass().getDeclaredFields();
+            for (Field f : fields)
+            {
+                if (f.getAnnotation(JsonRequired.class) != null)
+                {
+                    try
+                    {
+                        f.setAccessible(true);
+                        if (f.get(pojo) == null)
+                        {
+                            throw new JsonParseException("Missing field in JSON: " + f.getName());
+                        }
+                    }
+                    catch (IllegalArgumentException ex)
+                    {
+                        Logger.getLogger(AnnotatedDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    catch (IllegalAccessException ex)
+                    {
+                        Logger.getLogger(AnnotatedDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+            return pojo;
+
+        }
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    @interface JsonRequired
+    {
     }
 }
