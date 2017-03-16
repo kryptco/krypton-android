@@ -6,6 +6,7 @@ import android.support.v4.util.LruCache;
 import android.util.Log;
 
 import com.amazonaws.util.Base64;
+import com.google.gson.JsonParseException;
 import com.jakewharton.disklrucache.DiskLruCache;
 
 import java.io.IOException;
@@ -199,7 +200,7 @@ public class Silo {
                 case WRAPPED_PUBLIC_KEY:
                     break;
             }
-        } catch (TransportException | IOException | InvalidKeyException | ProtocolException | CryptoException e) {
+        } catch (JsonParseException | TransportException | IOException | InvalidKeyException | ProtocolException | CryptoException e) {
             e.printStackTrace();
         }
     }
