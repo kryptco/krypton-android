@@ -7,9 +7,6 @@
 [submodule "identicon"]
 	path = identicon
 	url = https://github.com/KryptCo/identicon
-[submodule "openssl"]
-	path = openssl
-	url = https://github.com/openssl/openssl
 [submodule "ssh-wire"]
 	path = ssh-wire
 	url = git@github.com:kryptco/ssh-wire
