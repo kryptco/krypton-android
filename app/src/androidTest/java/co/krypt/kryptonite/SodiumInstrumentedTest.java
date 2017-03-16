@@ -21,13 +21,15 @@ public class SodiumInstrumentedTest {
         byte[] pubKey = new byte[Sodium.crypto_box_publickeybytes()];
         byte[] privKey = new byte[Sodium.crypto_box_secretkeybytes()];
         assertTrue(0 == Sodium.crypto_box_seed_keypair(pubKey, privKey, SecureRandom.getSeed(Sodium.crypto_box_seedbytes())));
-        byte[] symmetricKey = SecureRandom.getSeed(32);
-        Pairing pairing = new Pairing(pubKey, symmetricKey, "workstation");
+        byte[] enclavePubKey = new byte[Sodium.crypto_box_publickeybytes()];
+        byte[] enclavePrivKey = new byte[Sodium.crypto_box_secretkeybytes()];
+        assertTrue(0 == Sodium.crypto_box_seed_keypair(pubKey, privKey, SecureRandom.getSeed(Sodium.crypto_box_seedbytes())));
+        Pairing pairing = new Pairing(pubKey, enclavePrivKey, enclavePubKey, "workstation");
         byte[] ciphertext = pairing.wrapKey();
 
         byte[] unwrapped = new byte[ciphertext.length - Sodium.crypto_box_sealbytes()];
         assertTrue(0 == Sodium.crypto_box_seal_open(unwrapped, ciphertext, ciphertext.length, pubKey, privKey));
-        assertTrue(Arrays.equals(unwrapped, symmetricKey));
+        assertTrue(Arrays.equals(unwrapped, enclavePrivKey));
     }
     static {
         System.loadLibrary("sodiumjni");
