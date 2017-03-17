@@ -40,27 +40,44 @@ public class SignRequest {
     }
 
     public byte[] sessionID() {
-        if (data.length < 36) {
+        if (data.length < 4) {
             return null;
         }
-        return Arrays.copyOfRange(data, 4, 36);
+
+        byte[] bigEndianSessionIDLen = Arrays.copyOfRange(data, 0, 4);
+        DataInputStream readSessionIDLen = new DataInputStream(new ByteArrayInputStream(bigEndianSessionIDLen));
+        try {
+            int sessionIDLen = readSessionIDLen.readInt();
+            if (data.length < 4 + sessionIDLen) {
+                return null;
+            }
+            return Arrays.copyOfRange(data, 4, 4 + sessionIDLen);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public String user() {
-        if (data.length < 38) {
+        byte[] sessionID = this.sessionID();
+        if (sessionID == null) {
             return null;
         }
-        byte[] bigEndianUserLen = Arrays.copyOfRange(data, 37, 41);
+        int sessionIDLen = sessionID.length;
+        if (data.length < 4 + sessionIDLen + 1 + 4) {
+            return null;
+        }
+        byte[] bigEndianUserLen = Arrays.copyOfRange(data, 4 + sessionIDLen + 1, 4 + sessionIDLen + 1 + 4);
         DataInputStream readLen = new DataInputStream(new ByteArrayInputStream(bigEndianUserLen));
         try {
             int userLen = readLen.readInt();
             if (userLen == 0) {
                 return "";
             }
-            if (data.length < 41 + userLen) {
+            if (data.length < 4 + sessionIDLen + 1 + 4 + userLen) {
                 return null;
             }
-            byte[] userBytes = Arrays.copyOfRange(data, 41, 41 + userLen);
+            byte[] userBytes = Arrays.copyOfRange(data, 4 + sessionIDLen + 1 + 4, 4 + sessionIDLen + 1 + 4 + userLen);
             return new String(userBytes, StandardCharsets.UTF_8);
         } catch (IOException e) {
             return null;
