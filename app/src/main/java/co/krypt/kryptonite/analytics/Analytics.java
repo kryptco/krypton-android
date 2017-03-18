@@ -118,9 +118,6 @@ public class Analytics {
                 }
             }
         }).start();
-
-//        defaultParams.put("cd1", BuildConfig.VERSION_NAME);
-//        defaultParams.put("cd2", Build.VERSION.RELEASE);
     }
 
     public void postPageView(String page) {

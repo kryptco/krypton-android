@@ -99,7 +99,6 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
             //Otherwise allow natural fragment lifecycle to call onResume
             onResume();
         }
-        Log.i(TAG, "visible: " + String.valueOf(visible));
         synchronized (this) {
             this.visible = visible;
         }

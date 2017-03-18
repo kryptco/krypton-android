@@ -39,10 +39,6 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
 
     private Button unpairButton;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public DeviceDetailFragment() {
     }
 

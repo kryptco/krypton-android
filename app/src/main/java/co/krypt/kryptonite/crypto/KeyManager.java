@@ -78,7 +78,6 @@ public class KeyManager {
     }
 
     public static synchronized boolean keyExists(String tag) throws CryptoException {
-
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
@@ -101,7 +100,6 @@ public class KeyManager {
     }
 
     public static synchronized void deleteKeyPair(String tag) throws Exception {
-        // The key pair can also be obtained from the Android Keystore any time as follows:
         KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
         keyStore.deleteEntry(tag);

@@ -41,7 +41,6 @@ public class EnterEmailFragment extends Fragment {
     private Button nextButton;
 
     public EnterEmailFragment() {
-        // Required empty public constructor
     }
 
 

@@ -33,7 +33,6 @@ public class SettingsFragment extends Fragment {
 
 
     public SettingsFragment() {
-        // Required empty public constructor
     }
 
 
