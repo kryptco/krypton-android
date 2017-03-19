@@ -14,6 +14,13 @@ information, check out [krypt.co](https://krypt.co).
 # Have an iPhone?
 The iOS implementation is located [here](https://github.com/kryptco/kryptonite-ios).
 
+# Workstation SSH Integration
+To use an SSH key stored in Kryptonite, install __kr__
+```sh
+curl https://krypt.co/kr | sh
+```
+or build it [from source](https://github.com/kryptco/kr).
+
 # Security Disclosure Policy
 __Kryptonite__ follows a 7-day disclosure policy. If you find a security flaw,
 please send it to `disclose@krypt.co` encrypted to the PGP key with fingerprint
