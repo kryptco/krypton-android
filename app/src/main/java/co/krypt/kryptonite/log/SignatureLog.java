@@ -10,6 +10,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import co.krypt.kryptonite.protocol.HostAuth;
+
 /**
  * Created by Kevin King on 12/15/16.
  * Copyright 2016. KryptCo, Inc.
@@ -17,7 +19,7 @@ import java.util.Set;
 
 public class SignatureLog {
     @SerializedName("data")
-    public final byte[] digest;
+    public final byte[] data;
 
     @SerializedName("command")
     @Nullable
@@ -37,13 +39,21 @@ public class SignatureLog {
     @SerializedName("host_name_verified")
     public final boolean hostNameVerified;
 
-    public SignatureLog(byte[] digest, String command, String user, String hostName, long unixSeconds, boolean hostNameVerified) {
-        this.digest = digest;
+    @SerializedName("host_auth")
+    public final HostAuth hostAuth;
+
+    @SerializedName("workstation_name")
+    public final String workstationName;
+
+    public SignatureLog(byte[] data, String command, String user, String hostName, long unixSeconds, boolean hostNameVerified, HostAuth hostAuth, String workstationName) {
+        this.data = data;
         this.command = command;
         this.user = user;
         this.hostName = hostName;
         this.unixSeconds = unixSeconds;
         this.hostNameVerified = hostNameVerified;
+        this.hostAuth = hostAuth;
+        this.workstationName = workstationName;
     }
 
     @Override
@@ -55,21 +65,24 @@ public class SignatureLog {
 
         if (unixSeconds != that.unixSeconds) return false;
         if (hostNameVerified != that.hostNameVerified) return false;
-        if (!Arrays.equals(digest, that.digest)) return false;
+        if (!Arrays.equals(data, that.data)) return false;
         if (command != null ? !command.equals(that.command) : that.command != null) return false;
         if (user != null ? !user.equals(that.user) : that.user != null) return false;
-        return hostName != null ? hostName.equals(that.hostName) : that.hostName == null;
+        if (hostName != null ? !hostName.equals(that.hostName) : that.hostName != null)
+            return false;
+        return hostAuth != null ? hostAuth.equals(that.hostAuth) : that.hostAuth == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = Arrays.hashCode(digest);
+        int result = Arrays.hashCode(data);
         result = 31 * result + (command != null ? command.hashCode() : 0);
         result = 31 * result + (user != null ? user.hashCode() : 0);
         result = 31 * result + (hostName != null ? hostName.hashCode() : 0);
         result = 31 * result + (int) (unixSeconds ^ (unixSeconds >>> 32));
         result = 31 * result + (hostNameVerified ? 1 : 0);
+        result = 31 * result + (hostAuth != null ? hostAuth.hashCode() : 0);
         return result;
     }
 
@@ -87,5 +100,9 @@ public class SignatureLog {
             }
         });
         return sortedLogs;
+    }
+
+    public SignatureLog withDataRedacted() {
+        return new SignatureLog(null, this.command, this.user, this.hostName, this.unixSeconds, this.hostNameVerified, this.hostAuth, this.workstationName);
     }
 }

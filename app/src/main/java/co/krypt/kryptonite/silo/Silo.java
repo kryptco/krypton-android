@@ -319,14 +319,16 @@ public class Silo {
                     if (MessageDigest.isEqual(request.signRequest.publicKeyFingerprint, key.publicKeyFingerprint())) {
                         response.signResponse.signature = key.signDigestAppendingPubkey(request.signRequest.data);
                         pairings().appendToLog(pairing, new SignatureLog(
-                                request.signRequest.data,
-                                request.signRequest.command,
-                                request.signRequest.user(),
-                                request.signRequest.firstHostnameIfExists(),
+                                signRequest.data,
+                                signRequest.command,
+                                signRequest.user(),
+                                signRequest.firstHostnameIfExists(),
                                 System.currentTimeMillis() / 1000,
-                                request.signRequest.verifyHostName()));
+                                signRequest.verifyHostName(),
+                                signRequest.hostAuth,
+                                pairing.workstationName));
                         Notifications.notifySuccess(context, pairing, request);
-                        if (request.signRequest.verifiedHostNameOrDefault("unknown host").equals("me.krypt.co")) {
+                        if (signRequest.verifiedHostNameOrDefault("unknown host").equals("me.krypt.co")) {
                             Intent sshMeIntent = new Intent(TestSSHFragment.SSH_ME_ACTION);
                             context.sendBroadcast(sshMeIntent);
                         }

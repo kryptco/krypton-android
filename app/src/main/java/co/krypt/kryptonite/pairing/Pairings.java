@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.support.v4.util.Pair;
 import android.util.ArraySet;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,8 +20,9 @@ import co.krypt.kryptonite.protocol.JSON;
  */
 
 public class Pairings {
-    public static final String OLD_PAIRINGS_KEY = "PAIRINGS";
-    public static final String PAIRINGS_KEY = "PAIRINGS_2";
+    private static final String OLD_PAIRINGS_KEY = "PAIRINGS";
+    private static final String PAIRINGS_KEY = "PAIRINGS_2";
+    private static final String SIGNATURE_LOGS_SUFFIX = ".SIGNATURE_LOGS";
     private static Object lock = new Object();
     private final SharedPreferences preferences;
     private final Context context;
@@ -33,7 +35,7 @@ public class Pairings {
     }
 
     public static String pairingLogsKey(String pairingUUIDString) {
-        return pairingUUIDString + ".SIGNATURE_LOGS";
+        return pairingUUIDString + SIGNATURE_LOGS_SUFFIX;
     }
 
     public static String pairingApprovedKey(String pairingUUIDString) {
@@ -244,5 +246,23 @@ public class Pairings {
 
     public HashSet<SignatureLog> getLogs(Pairing pairing) {
         return getLogs(pairing.getUUIDString());
+    }
+
+    public HashMap<String, HashSet<SignatureLog>> getAllLogsRedacted() {
+        HashMap<String, HashSet<SignatureLog>> logsByPairingUUID = new HashMap<>();
+        synchronized (lock) {
+            for (String prefKey : preferences.getAll().keySet()) {
+                if (prefKey.endsWith(SIGNATURE_LOGS_SUFFIX)) {
+                    String pairingUUID = prefKey.substring(0, prefKey.length() - SIGNATURE_LOGS_SUFFIX.length());
+                    HashSet<SignatureLog> logs = getLogs(pairingUUID);
+                    HashSet<SignatureLog> redactedLogs = new HashSet<>();
+                    for (SignatureLog log : logs) {
+                        redactedLogs.add(log.withDataRedacted());
+                    }
+                    logsByPairingUUID.put(pairingUUID, redactedLogs);
+                }
+            }
+        }
+        return logsByPairingUUID;
     }
 }

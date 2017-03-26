@@ -76,6 +76,10 @@
             android:name=".onboarding.OnboardingActivity"
             android:screenOrientation="portrait"></activity>
 
+        <provider android:name=".log.AuditLogContentProvider" android:authorities="co.krypt.kryptonite.log.AuditLogContentProvider"
+            android:exported="true"></provider>
+
+
     </application>
 
 </manifest>

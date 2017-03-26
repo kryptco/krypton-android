@@ -1,6 +1,7 @@
 package co.krypt.kryptonite.settings;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -15,15 +16,21 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.crypto.KeyManager;
+import co.krypt.kryptonite.log.AuditLogContentProvider;
 import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.onboarding.OnboardingActivity;
 import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.policy.LocalAuthentication;
+import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.silo.Silo;
 
 /**
@@ -117,6 +124,30 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 new Analytics(getContext()).setAnalyticsDisabled(isChecked);
+            }
+        });
+
+        ImageButton exportLogsButton = (ImageButton) root.findViewById(R.id.exportLogsButton);
+        exportLogsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String json = JSON.toJson(Silo.shared(v.getContext()).pairings().getAllLogsRedacted());
+                try {
+                    String token = AuditLogContentProvider.writeAuditLogReturningToken(v.getContext(), json);
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_SUBJECT, "SSH Audit Log");
+                    sendIntent.setType("text/plain");
+                    Uri auditLogUriWithToken = AuditLogContentProvider.getAuditLogURIWithToken();
+                    if (auditLogUriWithToken == null) {
+                        return;
+                    }
+                    sendIntent.putExtra(Intent.EXTRA_STREAM, auditLogUriWithToken);
+                    startActivity(sendIntent);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(v.getContext(), "Error exporting audit log: " + e.getMessage(), Toast.LENGTH_LONG);
+                }
             }
         });
 
