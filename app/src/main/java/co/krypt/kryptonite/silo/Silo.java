@@ -236,7 +236,7 @@ public class Silo {
 
     private synchronized boolean sendCachedResponseIfPresent(Pairing pairing, Request request) throws CryptoException, TransportException, IOException {
         if (responseDiskCacheByRequestID != null) {
-            DiskLruCache.Snapshot cacheEntry = responseDiskCacheByRequestID.get(request.requestIDCacheKey());
+            DiskLruCache.Snapshot cacheEntry = responseDiskCacheByRequestID.get(request.requestIDCacheKey(pairing));
             if (cacheEntry != null) {
                 String cachedJSON = cacheEntry.getString(0);
                 if (cachedJSON != null) {
@@ -250,7 +250,7 @@ public class Silo {
                 Log.v(TAG, "no cache entry");
             }
         }
-        Response cachedResponse = responseMemCacheByRequestID.get(request.requestID);
+        Response cachedResponse = responseMemCacheByRequestID.get(request.requestIDCacheKey(pairing));
         if (cachedResponse != null) {
             send(pairing, cachedResponse);
             Log.i(TAG, "sent memory cached response to " + request.requestID);
@@ -348,12 +348,12 @@ public class Silo {
         response.snsEndpointARN = SNSTransport.getInstance(context).getEndpointARN();
 
         if (responseDiskCacheByRequestID != null) {
-            DiskLruCache.Editor cacheEditor = responseDiskCacheByRequestID.edit(request.requestIDCacheKey());
+            DiskLruCache.Editor cacheEditor = responseDiskCacheByRequestID.edit(request.requestIDCacheKey(pairing));
             cacheEditor.set(0, JSON.toJson(response));
             cacheEditor.commit();
             responseDiskCacheByRequestID.flush();
         }
-        responseMemCacheByRequestID.put(request.requestID, response);
+        responseMemCacheByRequestID.put(request.requestIDCacheKey(pairing), response);
         send(pairing, response);
     }
 
