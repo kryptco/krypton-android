@@ -320,6 +320,7 @@ public class Silo {
                         response.signResponse.signature = key.signDigestAppendingPubkey(request.signRequest.data);
                         pairings().appendToLog(pairing, new SignatureLog(
                                 signRequest.data,
+                                true,
                                 signRequest.command,
                                 signRequest.user(),
                                 signRequest.firstHostnameIfExists(),
@@ -342,6 +343,16 @@ public class Silo {
                 }
             } else {
                 response.signResponse.error = "rejected";
+                pairings().appendToLog(pairing, new SignatureLog(
+                        signRequest.data,
+                        false,
+                        signRequest.command,
+                        signRequest.user(),
+                        signRequest.firstHostnameIfExists(),
+                        System.currentTimeMillis() / 1000,
+                        signRequest.verifyHostName(),
+                        signRequest.hostAuth,
+                        pairing.workstationName));
             }
         }
 

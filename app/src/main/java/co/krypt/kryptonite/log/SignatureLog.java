@@ -21,6 +21,10 @@ public class SignatureLog {
     @SerializedName("data")
     public final byte[] data;
 
+    //  default true
+    @SerializedName("allowed")
+    public final Boolean allowed;
+
     @SerializedName("command")
     @Nullable
     public final String command;
@@ -45,8 +49,9 @@ public class SignatureLog {
     @SerializedName("workstation_name")
     public final String workstationName;
 
-    public SignatureLog(byte[] data, String command, String user, String hostName, long unixSeconds, boolean hostNameVerified, HostAuth hostAuth, String workstationName) {
+    public SignatureLog(byte[] data, Boolean allowed, String command, String user, String hostName, long unixSeconds, boolean hostNameVerified, HostAuth hostAuth, String workstationName) {
         this.data = data;
+        this.allowed = allowed;
         this.command = command;
         this.user = user;
         this.hostName = hostName;
@@ -86,8 +91,12 @@ public class SignatureLog {
         return result;
     }
 
+    public boolean isAllowed() {
+        return allowed == null || allowed;
+    }
+
     public String userHostText() {
-        return (user != null ? user + "@" : "") +
+        return (isAllowed() ? "" : "rejected: ") + (user != null ? user + "@" : "") +
                 (hostNameVerified ? hostName : "unknown host");
     }
 
@@ -103,6 +112,6 @@ public class SignatureLog {
     }
 
     public SignatureLog withDataRedacted() {
-        return new SignatureLog(null, this.command, this.user, this.hostName, this.unixSeconds, this.hostNameVerified, this.hostAuth, this.workstationName);
+        return new SignatureLog(null, this.allowed, this.command, this.user, this.hostName, this.unixSeconds, this.hostNameVerified, this.hostAuth, this.workstationName);
     }
 }
