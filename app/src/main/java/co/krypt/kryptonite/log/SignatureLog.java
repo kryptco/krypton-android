@@ -3,6 +3,9 @@ package co.krypt.kryptonite.log;
 import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,45 +14,62 @@ import java.util.List;
 import java.util.Set;
 
 import co.krypt.kryptonite.protocol.HostAuth;
+import co.krypt.kryptonite.protocol.JSON;
 
 /**
  * Created by Kevin King on 12/15/16.
  * Copyright 2016. KryptCo, Inc.
  */
-
+@DatabaseTable(tableName = "signature_log")
 public class SignatureLog {
+    @DatabaseField(generatedId = true)
+    private Long id;
+
     @SerializedName("data")
-    public final byte[] data;
+    public byte[] data;
 
     //  default true
     @SerializedName("allowed")
-    public final Boolean allowed;
+    @DatabaseField(columnName = "allowed")
+    public Boolean allowed;
 
     @SerializedName("command")
     @Nullable
-    public final String command;
+    public String command;
 
     @SerializedName("user")
     @Nullable
-    public final String user;
+    @DatabaseField(columnName = "user")
+    public String user;
 
     @SerializedName("host_name")
     @Nullable
-    public final String hostName;
+    @DatabaseField(columnName = "host_name")
+    public String hostName;
 
     @SerializedName("unix_seconds")
-    public final long unixSeconds;
+    @DatabaseField(columnName = "unix_seconds")
+    public long unixSeconds;
 
     @SerializedName("host_name_verified")
-    public final boolean hostNameVerified;
+    @DatabaseField(columnName = "host_name_verified")
+    public boolean hostNameVerified;
 
     @SerializedName("host_auth")
-    public final HostAuth hostAuth;
+    @DatabaseField(columnName = "host_auth")
+    public String hostAuthJSON;
+
+    @SerializedName("pairing_uuid")
+    @DatabaseField(columnName = "pairing_uuid")
+    public String pairingUUID;
 
     @SerializedName("workstation_name")
-    public final String workstationName;
+    @DatabaseField(columnName = "workstation_name")
+    public String workstationName;
 
-    public SignatureLog(byte[] data, Boolean allowed, String command, String user, String hostName, long unixSeconds, boolean hostNameVerified, HostAuth hostAuth, String workstationName) {
+    protected SignatureLog() {}
+
+    public SignatureLog(byte[] data, Boolean allowed, String command, String user, String hostName, long unixSeconds, boolean hostNameVerified, String hostAuthJSON, String pairingUUID, String workstationName) {
         this.data = data;
         this.allowed = allowed;
         this.command = command;
@@ -57,7 +77,8 @@ public class SignatureLog {
         this.hostName = hostName;
         this.unixSeconds = unixSeconds;
         this.hostNameVerified = hostNameVerified;
-        this.hostAuth = hostAuth;
+        this.hostAuthJSON = hostAuthJSON;
+        this.pairingUUID = pairingUUID;
         this.workstationName = workstationName;
     }
 
@@ -70,24 +91,34 @@ public class SignatureLog {
 
         if (unixSeconds != that.unixSeconds) return false;
         if (hostNameVerified != that.hostNameVerified) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (!Arrays.equals(data, that.data)) return false;
+        if (allowed != null ? !allowed.equals(that.allowed) : that.allowed != null) return false;
         if (command != null ? !command.equals(that.command) : that.command != null) return false;
         if (user != null ? !user.equals(that.user) : that.user != null) return false;
         if (hostName != null ? !hostName.equals(that.hostName) : that.hostName != null)
             return false;
-        return hostAuth != null ? hostAuth.equals(that.hostAuth) : that.hostAuth == null;
+        if (hostAuthJSON != null ? !hostAuthJSON.equals(that.hostAuthJSON) : that.hostAuthJSON != null)
+            return false;
+        if (pairingUUID != null ? !pairingUUID.equals(that.pairingUUID) : that.pairingUUID != null)
+            return false;
+        return workstationName != null ? workstationName.equals(that.workstationName) : that.workstationName == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = Arrays.hashCode(data);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + Arrays.hashCode(data);
+        result = 31 * result + (allowed != null ? allowed.hashCode() : 0);
         result = 31 * result + (command != null ? command.hashCode() : 0);
         result = 31 * result + (user != null ? user.hashCode() : 0);
         result = 31 * result + (hostName != null ? hostName.hashCode() : 0);
         result = 31 * result + (int) (unixSeconds ^ (unixSeconds >>> 32));
         result = 31 * result + (hostNameVerified ? 1 : 0);
-        result = 31 * result + (hostAuth != null ? hostAuth.hashCode() : 0);
+        result = 31 * result + (hostAuthJSON != null ? hostAuthJSON.hashCode() : 0);
+        result = 31 * result + (pairingUUID != null ? pairingUUID.hashCode() : 0);
+        result = 31 * result + (workstationName != null ? workstationName.hashCode() : 0);
         return result;
     }
 
@@ -112,6 +143,6 @@ public class SignatureLog {
     }
 
     public SignatureLog withDataRedacted() {
-        return new SignatureLog(null, this.allowed, this.command, this.user, this.hostName, this.unixSeconds, this.hostNameVerified, this.hostAuth, this.workstationName);
+        return new SignatureLog(null, this.allowed, this.command, this.user, this.hostName, this.unixSeconds, this.hostNameVerified, this.hostAuthJSON, this.pairingUUID, this.workstationName);
     }
 }

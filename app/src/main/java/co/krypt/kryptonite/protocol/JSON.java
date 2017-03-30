@@ -84,7 +84,6 @@ public class JSON {
             Field[] fields = pojo.getClass().getDeclaredFields();
             for (Field f : fields)
             {
-                Logger.getLogger(AnnotatedDeserializer.class.getName()).log(Level.INFO, f.getName());
                 if (f.getAnnotation(JsonRequired.class) != null)
                 {
                     try

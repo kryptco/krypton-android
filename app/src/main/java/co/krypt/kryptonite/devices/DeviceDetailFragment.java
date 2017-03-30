@@ -1,6 +1,9 @@
 package co.krypt.kryptonite.devices;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -38,6 +41,9 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     private RadioButton automaticButton;
 
     private Button unpairButton;
+
+    private BroadcastReceiver onDeviceLogReceiver;
+    private Context attachedContext;
 
     public DeviceDetailFragment() {
     }
@@ -140,12 +146,29 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        attachedContext = context;
+        onDeviceLogReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                List<SignatureLog> signatureLogs = SignatureLog.sortByTimeDescending(
+                        Silo.shared(getContext()).pairings().getLogs(pairingUUID));
+                signatureLogAdapter.setLogs(signatureLogs);
+            }
+        };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Pairings.ON_DEVICE_LOG_ACTION);
+        context.registerReceiver(onDeviceLogReceiver, filter);
         Silo.shared(getContext()).pairings().registerOnSharedPreferenceChangedListener(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        if (attachedContext != null && onDeviceLogReceiver != null) {
+            attachedContext.unregisterReceiver(onDeviceLogReceiver);
+        }
+        attachedContext = null;
+        onDeviceLogReceiver = null;
         Silo.shared(getContext()).pairings().unregisterOnSharedPreferenceChangedListener(this);
     }
 

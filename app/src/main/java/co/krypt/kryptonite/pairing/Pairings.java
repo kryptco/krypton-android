@@ -1,16 +1,22 @@
 package co.krypt.kryptonite.pairing;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.util.Pair;
 import android.util.ArraySet;
 
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import co.krypt.kryptonite.analytics.Analytics;
+import co.krypt.kryptonite.log.OpenDatabaseHelper;
 import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.protocol.JSON;
 
@@ -28,10 +34,15 @@ public class Pairings {
     private final Context context;
     private final Analytics analytics;
 
+    public static final String ON_DEVICE_LOG_ACTION = "co.krypt.kryptonite.action.ON_DEVICE_LOG";
+
+    private final OpenDatabaseHelper dbHelper;
+
     public Pairings(Context context) {
         this.context = context;
         this.analytics = new Analytics(context);
         preferences = context.getSharedPreferences("PAIRING_MANAGER_PREFERENCES", Context.MODE_PRIVATE);
+        dbHelper = OpenHelperManager.getHelper(context, OpenDatabaseHelper.class);
     }
 
     public static String pairingLogsKey(String pairingUUIDString) {
@@ -216,17 +227,16 @@ public class Pairings {
         }
     }
 
-    private Set<String> getLogsJSONLocked(String pairingUUID) {
-        return new HashSet<>(
-                preferences.getStringSet(pairingLogsKey(pairingUUID), new ArraySet<String>()));
-    }
-
     public void appendToLog(String pairingUUID, SignatureLog log) {
         synchronized (lock) {
-            Set<String> logsSetJSON = getLogsJSONLocked(pairingUUID);
-            logsSetJSON.add(JSON.toJson(log));
-            preferences.edit().putStringSet(pairingLogsKey(pairingUUID), logsSetJSON).commit();
+            try {
+                dbHelper.getDao().create(log);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+        Intent onLog = new Intent(ON_DEVICE_LOG_ACTION);
+        context.sendBroadcast(onLog);
     }
 
     public void appendToLog(Pairing pairing, SignatureLog log) {
@@ -235,12 +245,13 @@ public class Pairings {
 
     public HashSet<SignatureLog> getLogs(String pairingUUID) {
         synchronized (lock) {
-            HashSet<SignatureLog> logs = new HashSet<>();
-            Set<String> logsSetJSON = getLogsJSONLocked(pairingUUID);
-            for (String jsonLog : logsSetJSON) {
-                logs.add(JSON.fromJson(jsonLog, SignatureLog.class));
+            try {
+                List<SignatureLog> logs = dbHelper.getDao().queryForEq("pairing_uuid", pairingUUID);
+                return new HashSet<>(logs);
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-            return logs;
+            return new HashSet<>();
         }
     }
 
@@ -248,21 +259,15 @@ public class Pairings {
         return getLogs(pairing.getUUIDString());
     }
 
-    public HashMap<String, HashSet<SignatureLog>> getAllLogsRedacted() {
-        HashMap<String, HashSet<SignatureLog>> logsByPairingUUID = new HashMap<>();
+    public List<SignatureLog> getAllLogsRedacted() {
         synchronized (lock) {
-            for (String prefKey : preferences.getAll().keySet()) {
-                if (prefKey.endsWith(SIGNATURE_LOGS_SUFFIX)) {
-                    String pairingUUID = prefKey.substring(0, prefKey.length() - SIGNATURE_LOGS_SUFFIX.length());
-                    HashSet<SignatureLog> logs = getLogs(pairingUUID);
-                    HashSet<SignatureLog> redactedLogs = new HashSet<>();
-                    for (SignatureLog log : logs) {
-                        redactedLogs.add(log.withDataRedacted());
-                    }
-                    logsByPairingUUID.put(pairingUUID, redactedLogs);
-                }
+            try {
+                List<SignatureLog> logs = dbHelper.getDao().queryForAll();
+                return SignatureLog.sortByTimeDescending(new HashSet<SignatureLog>(logs));
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
+            return new ArrayList<>();
         }
-        return logsByPairingUUID;
     }
 }

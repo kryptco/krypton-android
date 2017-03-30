@@ -1,7 +1,10 @@
 package co.krypt.kryptonite.devices;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,6 +23,7 @@ import java.util.List;
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.pairing.Pairing;
+import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.pairing.Session;
 import co.krypt.kryptonite.silo.Silo;
 
@@ -31,6 +35,9 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
     private View noPairedDevicesContainer = null;
 
     private DevicesRecyclerViewAdapter devicesAdapter;
+
+    private BroadcastReceiver onDeviceLogReceiver;
+    private Context attachedContext;
 
     public DevicesFragment() {
     }
@@ -90,12 +97,27 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        attachedContext = context;
+        onDeviceLogReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                populateDevices();
+            }
+        };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Pairings.ON_DEVICE_LOG_ACTION);
+        context.registerReceiver(onDeviceLogReceiver, filter);
         Silo.shared(getContext()).pairings().registerOnSharedPreferenceChangedListener(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        if (attachedContext != null && onDeviceLogReceiver != null) {
+            attachedContext.unregisterReceiver(onDeviceLogReceiver);
+        }
+        attachedContext = null;
+        onDeviceLogReceiver = null;
         Silo.shared(getContext()).pairings().unregisterOnSharedPreferenceChangedListener(this);
     }
 

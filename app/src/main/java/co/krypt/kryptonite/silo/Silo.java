@@ -326,7 +326,8 @@ public class Silo {
                                 signRequest.firstHostnameIfExists(),
                                 System.currentTimeMillis() / 1000,
                                 signRequest.verifyHostName(),
-                                signRequest.hostAuth,
+                                JSON.toJson(signRequest.hostAuth),
+                                pairing.getUUIDString(),
                                 pairing.workstationName));
                         Notifications.notifySuccess(context, pairing, request);
                         if (signRequest.verifiedHostNameOrDefault("unknown host").equals("me.krypt.co")) {
@@ -351,7 +352,8 @@ public class Silo {
                         signRequest.firstHostnameIfExists(),
                         System.currentTimeMillis() / 1000,
                         signRequest.verifyHostName(),
-                        signRequest.hostAuth,
+                        JSON.toJson(signRequest.hostAuth),
+                        pairing.getUUIDString(),
                         pairing.workstationName));
             }
         }
