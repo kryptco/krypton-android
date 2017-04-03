@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import com.amazonaws.util.Base64;
+import com.jaredrummler.android.device.DeviceName;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -94,6 +95,9 @@ public class Analytics {
         defaultParams.put("cid", clientID);
         String userAgentString = System.getProperty("http.agent") + " Version/" + BuildConfig.VERSION_NAME + " kr/" + BuildConfig.VERSION_NAME;
         defaultParams.put("ua", userAgentString);
+        defaultParams.put("cd4", "android");
+        defaultParams.put("cd5", "android " + String.valueOf(android.os.Build.VERSION.SDK_INT));
+        defaultParams.put("cd6", DeviceName.getDeviceName());
 
         defaultParams.putAll(params);
 
