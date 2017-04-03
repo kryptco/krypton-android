@@ -85,18 +85,6 @@ public class FirstPairFragment extends Fragment {
         spec.setIndicator("curl");
         host.addTab(spec);
 
-        //Tab 2
-        spec = host.newTabSpec("npm");
-        spec.setContent(R.id.tab2);
-        spec.setIndicator("npm");
-        host.addTab(spec);
-
-        //Tab 3
-        spec = host.newTabSpec("brew");
-        spec.setContent(R.id.tab3);
-        spec.setIndicator("brew");
-        host.addTab(spec);
-
         host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
