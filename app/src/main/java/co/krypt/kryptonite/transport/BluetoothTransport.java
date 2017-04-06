@@ -538,7 +538,7 @@ public class BluetoothTransport extends BroadcastReceiver {
         outgoingMessagesByCharacteristic.put(characteristic, queue);
     }
 
-    private synchronized List<byte[]> splitMessage(final byte[] message, final int mtu) {
+    private static synchronized List<byte[]> splitMessage(final byte[] message, final int mtu) {
         List<byte[]> splits = new ArrayList<>();
         if (message.length == 0 || message.length > (mtu - 1) * 255) {
             Log.e(TAG, "invalid message length for Bluetooth: " + String.valueOf(message.length));
