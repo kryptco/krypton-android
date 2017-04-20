@@ -104,10 +104,10 @@ public class EnterEmailFragment extends Fragment {
         Analytics analytics = new Analytics(getContext());
         String email = profileEmail.getText().toString();
         if (email == null || email.trim().equals("")) {
-            analytics.postEvent("email", "typed", null, null, false);
+            analytics.postEvent("email", "skipped", null, null, false);
             email = Build.MODEL;
         } else {
-            analytics.postEvent("email", "skipped", null, null, false);
+            analytics.postEvent("email", "typed", null, null, false);
             email = email.trim();
         }
         analytics.publishEmailToTeamsIfNeeded(email);
