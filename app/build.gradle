@@ -7,7 +7,7 @@ android {
         applicationId "co.krypt.kryptonite"
         minSdkVersion 23
         targetSdkVersion 23
-        versionCode 10
+        versionCode 11
         versionName "2.0.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
