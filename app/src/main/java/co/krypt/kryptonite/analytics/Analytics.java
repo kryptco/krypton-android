@@ -98,6 +98,8 @@ public class Analytics {
         defaultParams.put("cd4", "android");
         defaultParams.put("cd5", "android " + String.valueOf(android.os.Build.VERSION.SDK_INT));
         defaultParams.put("cd6", DeviceName.getDeviceName());
+        defaultParams.put("cd7", clientID);
+        defaultParams.put("cd9", BuildConfig.VERSION_NAME);
 
         defaultParams.putAll(params);
 
