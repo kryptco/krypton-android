@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Signature;
@@ -57,11 +58,21 @@ public class SSHKeyPair {
 
     public byte[] signDigest(byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, CryptoException {
         long start = System.currentTimeMillis();
-        Signature s = Signature.getInstance("NONEwithRSA");
-        s.initSign(keyPair.getPrivate());
-        s.update(SHA1.digestPrependingOID(data));
-        byte[] signature = s.sign();
+        byte[] signature;
+        try {
+            Signature s = Signature.getInstance("SHA1withRSA");
+            s.initSign(keyPair.getPrivate());
+            s.update(data);
+            signature = s.sign();
+        } catch (InvalidKeyException e){
+            //  fall back to NONEwithRSA for backwards compatibility
+            Signature s = Signature.getInstance("NONEwithRSA");
+            s.initSign(keyPair.getPrivate());
+            s.update(SHA1.digestPrependingOID(data));
+            signature = s.sign();
+        }
         long stop = System.currentTimeMillis();
+
         Log.d(TAG, "signature took " + String.valueOf((stop - start) / 1000.0) + " seconds");
         return signature;
     }

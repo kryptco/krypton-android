@@ -50,7 +50,7 @@ public class KeyManager {
             keyPairGenerator.initialize(
                     new KeyGenParameterSpec.Builder(
                             tag, KeyProperties.PURPOSE_SIGN)
-                            .setDigests(KeyProperties.DIGEST_NONE, KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
+                            .setDigests(KeyProperties.DIGEST_SHA1, KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
                             .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
                             .setKeySize(3072)
                             .setUserAuthenticationRequired(false)
