@@ -16,6 +16,7 @@ import co.krypt.kryptonite.policy.NoAuthReceiver;
 import co.krypt.kryptonite.policy.Policy;
 import co.krypt.kryptonite.policy.UnlockScreenDummyActivity;
 import co.krypt.kryptonite.protocol.Request;
+import co.krypt.kryptonite.settings.Settings;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -26,6 +27,9 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class Notifications {
     public static void notifySuccess(Context context, Pairing pairing, Request request) {
+        if (!new Settings(context).approvedNotificationsEnabled()) {
+            return;
+        }
         Intent resultIntent = new Intent(context, MainActivity.class);
         Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mBuilder =

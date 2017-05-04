@@ -127,6 +127,15 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        Switch enableApprovedNotifications = (Switch) root.findViewById(R.id.enableAutoApproveNotificationsSwitch);
+        enableApprovedNotifications.setChecked(new Settings(getContext()).approvedNotificationsEnabled());
+        enableApprovedNotifications.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                new Settings(getContext()).setApprovedNotificationsEnabled(isChecked);
+            }
+        });
+
         ImageButton exportLogsButton = (ImageButton) root.findViewById(R.id.exportLogsButton);
         exportLogsButton.setOnClickListener(new View.OnClickListener() {
             @Override

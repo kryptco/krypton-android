@@ -63,107 +63,177 @@
         android:textSize="18sp"
         android:textColor="@color/appWhite" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/disableAnalyticsContainer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/infoContainer"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView6"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:background="@color/appWhite">
+        app:layout_constraintVertical_bias="0.5">
 
-        <Switch
-            android:text=""
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/disableAnalyticsSwitch"
-            android:layout_marginEnd="8dp" />
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/scrollableSettingsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:text="Disable Google Analytics"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/disableAnalyticsHeader"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/disableAnalyticsSwitch"
-            android:textStyle="normal|bold"
-            android:layout_marginTop="4dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintHorizontal_bias="0.0" />
-        <TextView
-            android:text="Analytics data is used to improve the quality of our technology."
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/disableAnalyticsText"
-            app:layout_constraintTop_toBottomOf="@+id/disableAnalyticsHeader"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/disableAnalyticsSwitch"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="4dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintHorizontal_bias="0.0" />
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/disableAnalyticsContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:background="@color/appWhite"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-    </android.support.constraint.ConstraintLayout>
+                <Switch
+                    android:id="@+id/disableAnalyticsSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text=""
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/exportLogsContainer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        app:layout_constraintTop_toBottomOf="@+id/disableAnalyticsContainer"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:background="@color/appWhite">
+                <TextView
+                    android:id="@+id/disableAnalyticsHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Disable Google Analytics"
+                    android:textStyle="normal|bold"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/disableAnalyticsSwitch"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:text="Export"
-            app:srcCompat="?attr/actionModeShareDrawable"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/exportLogsButton"
-            android:background="@drawable/flat_button"
-            android:scaleType="fitCenter"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:tint="@color/appGreen"
-            android:backgroundTint="@color/appGreen"
-            android:padding="3dp"
-            android:layout_marginEnd="8dp" />
+                <TextView
+                    android:id="@+id/disableAnalyticsText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="2dp"
+                    android:text="Analytics data is used to improve the quality of our technology."
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/disableAnalyticsSwitch"
+                    app:layout_constraintTop_toBottomOf="@+id/disableAnalyticsHeader" />
 
-        <TextView
-            android:text="Export Audit Log"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/exportLogsHeader"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/exportLogsButton"
-            android:textStyle="normal|bold"
-            android:layout_marginTop="4dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintHorizontal_bias="0.0" />
-        <TextView
-            android:text="Export entire SSH authentication history."
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/exportLogsText"
-            app:layout_constraintTop_toBottomOf="@+id/exportLogsHeader"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/exportLogsButton"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="4dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintHorizontal_bias="0.0" />
+            </android.support.constraint.ConstraintLayout>
 
-    </android.support.constraint.ConstraintLayout>
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/enableAutoApproveNotificationsContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:background="@color/appWhite"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/disableAnalyticsContainer">
+
+                <Switch
+                    android:id="@+id/enableAutoApproveNotificationsSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text=""
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/enableAutoApproveNotificationsHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Enable Approved Login Notifications"
+                    android:textStyle="normal|bold"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/enableAutoApproveNotificationsSwitch"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/enableAutoApproveNotificationsText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="2dp"
+                    android:text="Push a local notification for requests that don't require approval."
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/enableAutoApproveNotificationsSwitch"
+                    app:layout_constraintTop_toBottomOf="@+id/enableAutoApproveNotificationsHeader" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/exportLogsContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:background="@color/appWhite"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/enableAutoApproveNotificationsContainer">
+
+                <ImageButton
+                    android:id="@+id/exportLogsButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/flat_button"
+                    android:backgroundTint="@color/appGreen"
+                    android:padding="3dp"
+                    android:scaleType="fitCenter"
+                    android:text="Export"
+                    android:tint="@color/appGreen"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="?attr/actionModeShareDrawable" />
+
+                <TextView
+                    android:id="@+id/exportLogsHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Export Audit Log"
+                    android:textStyle="normal|bold"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/exportLogsButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/exportLogsText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="2dp"
+                    android:text="Export entire SSH authentication history."
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/exportLogsButton"
+                    app:layout_constraintTop_toBottomOf="@+id/exportLogsHeader" />
+
+            </android.support.constraint.ConstraintLayout>
+        </android.support.constraint.ConstraintLayout>
+
+    </ScrollView>
+
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/infoContainer"
