@@ -38,6 +38,10 @@ public class Policy {
         return true;
     }
 
+    public static synchronized Pair<Pairing, Request> getPendingRequestAndPairing(String requestID) {
+        return pendingRequestCache.get(requestID);
+    }
+
     public static synchronized void onAction(final Context context, final String requestID, final String action) {
         Log.i(TAG, action + " requestID " + requestID);
         final Pair<Pairing, Request> pairingAndRequest = pendingRequestCache.remove(requestID);

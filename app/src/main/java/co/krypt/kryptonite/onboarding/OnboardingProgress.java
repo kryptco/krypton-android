@@ -1,5 +1,6 @@
 package co.krypt.kryptonite.onboarding;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -49,4 +50,5 @@ public class OnboardingProgress {
             preferences.edit().putString(CURRENT_STAGE_KEY, stage.toString()).commit();
         }
     }
+
 }

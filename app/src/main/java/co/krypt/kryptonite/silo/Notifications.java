@@ -11,6 +11,9 @@ import android.support.v4.app.TaskStackBuilder;
 
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.me.MeStorage;
+import co.krypt.kryptonite.onboarding.OnboardingActivity;
+import co.krypt.kryptonite.onboarding.OnboardingProgress;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.policy.NoAuthReceiver;
 import co.krypt.kryptonite.policy.Policy;
@@ -92,7 +95,17 @@ public class Notifications {
         rejectIntent.putExtra("requestID", request.requestID);
         PendingIntent rejectPendingIntent = PendingIntent.getBroadcast(context, (Policy.REJECT + "-" + request.requestID).hashCode(), rejectIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Intent resultIntent = new Intent(context, MainActivity.class);
+
+
+        Intent clickIntent = new Intent(context, MainActivity.class);
+        if (new OnboardingProgress(context).inProgress()) {
+            clickIntent.setClass(context, OnboardingActivity.class);
+        }
+        clickIntent.setAction("CLICK-" + request.requestID);
+        clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        clickIntent.putExtra("requestID", request.requestID);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(context, ("CLICK-" + request.requestID).hashCode(), clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
@@ -108,23 +121,9 @@ public class Notifications {
                         .addAction(approveOnceBuilder.build())
                         .addAction(approveTemporarilyBuilder.build())
                         .setDeleteIntent(rejectPendingIntent)
+                        .setContentIntent(clickPendingIntent)
+                        .setAutoCancel(true)
                 ;
-
-        // The stack builder object will contain an artificial back stack for the
-        // started Activity.
-        // This ensures that navigating backward from the Activity leads out of
-        // your application to the Home screen.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        // Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(MainActivity.class);
-        // Adds the Intent that starts the Activity to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        request.requestID.hashCode(),
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-        mBuilder.setContentIntent(resultPendingIntent);
 
         NotificationManager mNotifyMgr =
                 (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);

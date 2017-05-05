@@ -1,6 +1,7 @@
 package co.krypt.kryptonite;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
@@ -11,7 +12,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -25,6 +28,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import co.krypt.kryptonite.analytics.Analytics;
+import co.krypt.kryptonite.approval.ApprovalDialog;
 import co.krypt.kryptonite.devices.DevicesFragment;
 import co.krypt.kryptonite.help.HelpFragment;
 import co.krypt.kryptonite.me.MeFragment;
@@ -32,8 +36,11 @@ import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.onboarding.OnboardingActivity;
 import co.krypt.kryptonite.onboarding.OnboardingProgress;
 import co.krypt.kryptonite.pairing.PairFragment;
+import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.RePairDialogFragment;
 import co.krypt.kryptonite.policy.LocalAuthentication;
+import co.krypt.kryptonite.policy.Policy;
+import co.krypt.kryptonite.protocol.Request;
 import co.krypt.kryptonite.settings.SettingsFragment;
 import co.krypt.kryptonite.silo.Silo;
 import co.krypt.kryptonite.transport.BluetoothService;
@@ -130,6 +137,10 @@ public class MainActivity extends AppCompatActivity {
                 new Analytics(getApplicationContext()).postPageView("Help");
             }
         });
+
+        if (getIntent() != null) {
+            onNewIntent(getIntent());
+        }
     }
 
     @Override
@@ -286,6 +297,16 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 LocalAuthentication.onSuccess();
             }
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if (intent.getStringExtra("requestID") != null) {
+            final String requestID = intent.getStringExtra("requestID");
+            ApprovalDialog.showApprovalDialog(this, requestID);
+        } else {
+            Log.d(TAG, "empty intent");
         }
     }
 }

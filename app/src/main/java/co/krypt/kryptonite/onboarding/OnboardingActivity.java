@@ -17,6 +17,7 @@ import android.widget.EditText;
 
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
+import co.krypt.kryptonite.approval.ApprovalDialog;
 import co.krypt.kryptonite.policy.LocalAuthentication;
 
 import static co.krypt.kryptonite.MainActivity.CAMERA_PERMISSION_GRANTED_ACTION;
@@ -26,6 +27,8 @@ import static co.krypt.kryptonite.MainActivity.LOCATION_PERMISSION_REQUEST;
 import static co.krypt.kryptonite.MainActivity.USER_AUTHENTICATION_REQUEST;
 
 public class OnboardingActivity extends FragmentActivity {
+
+    private static final String TAG = "Onboarding";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,10 @@ public class OnboardingActivity extends FragmentActivity {
                 testSSHFragment = new TestSSHFragment();
                 fragmentTransaction.add(R.id.activity_onboarding, testSSHFragment).commit();
                 break;
+        }
+
+        if (getIntent() != null) {
+            onNewIntent(getIntent());
         }
     }
 
@@ -139,6 +146,16 @@ public class OnboardingActivity extends FragmentActivity {
                 break;
             case TEST_SSH:
                 break;
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if (intent.getStringExtra("requestID") != null) {
+            final String requestID = intent.getStringExtra("requestID");
+            ApprovalDialog.showApprovalDialog(this, requestID);
+        } else {
+            Log.d(TAG, "empty intent");
         }
     }
 }
