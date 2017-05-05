@@ -1,6 +1,7 @@
 package co.krypt.kryptonite.crypto;
 
 import android.security.keystore.KeyInfo;
+import android.security.keystore.KeyProperties;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
@@ -10,13 +11,13 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
-import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 
 import co.krypt.kryptonite.exception.CryptoException;
 
@@ -56,15 +57,19 @@ public class SSHKeyPair {
         return SHA256.digest(publicKeySSHWireFormat());
     }
 
-    public byte[] signDigest(byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, CryptoException {
+    public byte[] signDigest(byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, CryptoException, NoSuchProviderException, InvalidKeySpecException {
         long start = System.currentTimeMillis();
         byte[] signature;
-        try {
+
+        KeyFactory factory = KeyFactory.getInstance(keyPair.getPrivate().getAlgorithm(), "AndroidKeyStore");
+        KeyInfo keyInfo;
+        keyInfo = factory.getKeySpec(keyPair.getPrivate(), KeyInfo.class);
+        if (Arrays.asList(keyInfo.getDigests()).contains(KeyProperties.DIGEST_SHA1)) {
             Signature s = Signature.getInstance("SHA1withRSA");
             s.initSign(keyPair.getPrivate());
             s.update(data);
             signature = s.sign();
-        } catch (InvalidKeyException e){
+        } else {
             //  fall back to NONEwithRSA for backwards compatibility
             Signature s = Signature.getInstance("NONEwithRSA");
             s.initSign(keyPair.getPrivate());
@@ -77,7 +82,7 @@ public class SSHKeyPair {
         return signature;
     }
 
-    public byte[] signDigestAppendingPubkey(byte[] data) throws SignatureException, IOException, InvalidKeyException, NoSuchAlgorithmException, CryptoException {
+    public byte[] signDigestAppendingPubkey(byte[] data) throws SignatureException, IOException, InvalidKeyException, NoSuchAlgorithmException, CryptoException, NoSuchProviderException, InvalidKeySpecException {
         ByteArrayOutputStream dataWithPubkey = new ByteArrayOutputStream();
         dataWithPubkey.write(data);
         dataWithPubkey.write(SSHWire.encode(publicKeySSHWireFormat()));

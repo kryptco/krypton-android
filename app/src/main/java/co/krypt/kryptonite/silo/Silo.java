@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -200,7 +202,7 @@ public class Silo {
                 case WRAPPED_PUBLIC_KEY:
                     break;
             }
-        } catch (JsonParseException | TransportException | IOException | InvalidKeyException | ProtocolException | CryptoException e) {
+        } catch (JsonParseException | TransportException | IOException | InvalidKeyException | ProtocolException | CryptoException | InvalidKeySpecException | NoSuchProviderException e) {
             e.printStackTrace();
         }
     }
@@ -260,7 +262,7 @@ public class Silo {
     }
 
 
-    public synchronized void handle(Pairing pairing, Request request, String communicationMedium) throws CryptoException, TransportException, IOException, InvalidKeyException, ProtocolException {
+    public synchronized void handle(Pairing pairing, Request request, String communicationMedium) throws CryptoException, TransportException, IOException, InvalidKeyException, ProtocolException, NoSuchProviderException, InvalidKeySpecException {
         if (Math.abs(request.unixSeconds - (System.currentTimeMillis() / 1000)) > 120) {
             throw new ProtocolException("invalid request time");
         }
@@ -293,7 +295,7 @@ public class Silo {
         }
     }
 
-    public synchronized void respondToRequest(Pairing pairing, Request request, boolean signatureAllowed) throws CryptoException, InvalidKeyException, IOException, TransportException {
+    public synchronized void respondToRequest(Pairing pairing, Request request, boolean signatureAllowed) throws CryptoException, InvalidKeyException, IOException, TransportException, NoSuchProviderException, InvalidKeySpecException {
         if (sendCachedResponseIfPresent(pairing, request)) {
             return;
         }
