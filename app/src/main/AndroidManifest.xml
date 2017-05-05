@@ -12,7 +12,6 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <!-- required for bluetooth scan results -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
 
     <uses-feature
@@ -70,15 +69,16 @@
         <service
             android:name=".transport.BluetoothService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <activity
             android:name=".onboarding.OnboardingActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
 
-        <provider android:name=".log.AuditLogContentProvider" android:authorities="co.krypt.kryptonite.log.AuditLogContentProvider"
-            android:exported="true"></provider>
-
+        <provider
+            android:name=".log.AuditLogContentProvider"
+            android:authorities="co.krypt.kryptonite.log.AuditLogContentProvider"
+            android:exported="true" />
 
     </application>
 
