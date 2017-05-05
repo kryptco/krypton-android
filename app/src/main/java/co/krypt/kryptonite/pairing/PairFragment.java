@@ -367,7 +367,6 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         getContext().sendBroadcast(successIntent);
         new Analytics(getContext()).postEvent("device", "pair", "success", null, false);
 
-        pendingPairingQR = null;
         new Handler(Looper.getMainLooper()).post(
                 new Runnable() {
                     @Override
@@ -378,6 +377,9 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
                             public void run() {
                                 try {
                                     Thread.sleep(2000);
+                                    synchronized (PairFragment.this) {
+                                        pendingPairingQR = null;
+                                    }
                                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                                         @Override
                                         public void run() {
