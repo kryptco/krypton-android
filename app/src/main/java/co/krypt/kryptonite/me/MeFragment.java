@@ -24,9 +24,7 @@ import java.math.BigInteger;
 
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
-import co.krypt.kryptonite.crypto.KeyManager;
 import co.krypt.kryptonite.crypto.SHA256;
-import co.krypt.kryptonite.crypto.SSHKeyPair;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.protocol.Profile;
 import co.krypt.kryptonite.silo.Silo;

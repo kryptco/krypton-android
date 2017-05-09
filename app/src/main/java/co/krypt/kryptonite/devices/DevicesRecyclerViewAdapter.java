@@ -5,17 +5,14 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.List;
 
 import co.krypt.kryptonite.R;
-import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Session;
-import co.krypt.kryptonite.silo.Silo;
 
 public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecyclerViewAdapter.ViewHolder> {
 

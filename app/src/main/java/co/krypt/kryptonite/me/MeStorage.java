@@ -2,18 +2,13 @@ package co.krypt.kryptonite.me;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.ArraySet;
 import android.util.Log;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
-import java.util.HashSet;
-import java.util.Set;
 
 import co.krypt.kryptonite.crypto.KeyManager;
 import co.krypt.kryptonite.exception.CryptoException;
-import co.krypt.kryptonite.log.SignatureLog;
-import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.protocol.Profile;
 

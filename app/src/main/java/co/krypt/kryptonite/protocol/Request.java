@@ -1,6 +1,7 @@
 package co.krypt.kryptonite.protocol;
 
 import com.amazonaws.util.Base32;
+import com.github.zafarkhaja.semver.Version;
 import com.google.gson.annotations.SerializedName;
 
 import co.krypt.kryptonite.crypto.SHA256;
@@ -21,6 +22,10 @@ public class Request {
         return Base32.encodeAsString(SHA256.digest((pairing.getUUIDString().toLowerCase() + requestID).getBytes())).toLowerCase().replace("=", "-");
     }
 
+    @SerializedName("v")
+    @JSON.JsonRequired
+    public String version;
+
     @SerializedName("unix_seconds")
     @JSON.JsonRequired
     public Long unixSeconds;
@@ -36,4 +41,14 @@ public class Request {
 
     @SerializedName("a")
     public Boolean sendACK;
+
+    public Version semVer() {
+        try {
+            return Version.valueOf(version);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+        return Version.valueOf("0.0.0");
+    }
+
 }

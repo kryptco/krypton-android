@@ -1,6 +1,5 @@
 package co.krypt.kryptonite.onboarding;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
