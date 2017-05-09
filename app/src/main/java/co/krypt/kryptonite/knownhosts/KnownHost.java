@@ -1,7 +1,15 @@
 package co.krypt.kryptonite.knownhosts;
 
+import com.amazonaws.util.Base64;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import co.krypt.kryptonite.crypto.SHA256;
+import co.krypt.kryptonite.exception.CryptoException;
 
 /**
  * Created by Kevin King on 5/8/17.
@@ -13,7 +21,7 @@ public class KnownHost {
     @DatabaseField(generatedId = true)
     private Long id;
 
-    @DatabaseField(columnName = "host_name")
+    @DatabaseField(columnName = "host_name", uniqueIndex = true)
     public String hostName;
 
     @DatabaseField(columnName = "public_key")
@@ -28,5 +36,25 @@ public class KnownHost {
         this.addedUnixSeconds = addedUnixSeconds;
     }
 
+    public String fingerprint() {
+        try {
+            return Base64.encodeAsString(SHA256.digest(Base64.decode(publicKey)));
+        } catch (CryptoException | IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     protected KnownHost() {}
+
+    public static List<KnownHost> sortByTimeDescending(List<KnownHost> knownHosts) {
+        List<KnownHost> sortedHosts = new ArrayList<>(knownHosts);
+        java.util.Collections.sort(sortedHosts, new Comparator<KnownHost>() {
+            @Override
+            public int compare(KnownHost lhs, KnownHost rhs) {
+                return Long.compare(rhs.addedUnixSeconds, lhs.addedUnixSeconds);
+            }
+        });
+        return sortedHosts;
+    }
 }

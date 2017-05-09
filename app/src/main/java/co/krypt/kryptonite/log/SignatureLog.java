@@ -4,7 +4,6 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.ArrayList;
@@ -12,9 +11,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-
-import co.krypt.kryptonite.protocol.HostAuth;
-import co.krypt.kryptonite.protocol.JSON;
 
 /**
  * Created by Kevin King on 12/15/16.
@@ -60,7 +56,7 @@ public class SignatureLog {
     public String hostAuthJSON;
 
     @SerializedName("pairing_uuid")
-    @DatabaseField(columnName = "pairing_uuid")
+    @DatabaseField(columnName = "pairing_uuid", index = true)
     public String pairingUUID;
 
     @SerializedName("workstation_name")

@@ -62,6 +62,8 @@ import co.krypt.kryptonite.transport.SQSTransport;
 public class Silo {
     private static final String TAG = "Silo";
 
+    public static final String KNOWN_HOSTS_CHANGED_ACTION = "co.krypt.kryptonite.action.KNOWN_HOSTS_CHANGED";
+
     private static Silo singleton;
 
     private final Pairings pairingStorage;
@@ -332,6 +334,7 @@ public class Silo {
                             List<KnownHost> matchingKnownHosts =  dbHelper.getKnownHostDao().queryForEq("host_name", hostName);
                             if (matchingKnownHosts.size() == 0) {
                                 dbHelper.getKnownHostDao().create(new KnownHost(hostName, hostKey, System.currentTimeMillis()/1000));
+                                broadcastKnownHostsChanged();
                             } else {
                                 KnownHost pinnedHost = matchingKnownHosts.get(0);
                                 if (!pinnedHost.publicKey.equals(hostKey)) {
@@ -393,6 +396,26 @@ public class Silo {
         }
         responseMemCacheByRequestID.put(request.requestIDCacheKey(pairing), response);
         send(pairing, response);
+    }
+
+    public synchronized List<KnownHost> getKnownHosts() throws SQLException {
+        return dbHelper.getKnownHostDao().queryForAll();
+    }
+
+
+    public synchronized void deleteKnownHost(String hostName) throws SQLException {
+        List<KnownHost> matchingHosts = dbHelper.getKnownHostDao().queryForEq("host_name", hostName);
+        if (matchingHosts.size() == 0) {
+            Log.e(TAG, "host to delete not found");
+            return;
+        }
+        dbHelper.getKnownHostDao().delete(matchingHosts.get(0));
+        broadcastKnownHostsChanged();
+    }
+
+    private synchronized void broadcastKnownHostsChanged() {
+        Intent intent = new Intent(KNOWN_HOSTS_CHANGED_ACTION);
+        context.sendBroadcast(intent);
     }
 
 }

@@ -64,14 +64,13 @@
         android:textColor="@color/appWhite" />
 
     <ScrollView
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/infoContainer"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6"
-        app:layout_constraintVertical_bias="0.5">
+        app:layout_constraintTop_toBottomOf="@+id/textView6">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/scrollableSettingsContainer"
@@ -131,7 +130,7 @@
                 android:id="@+id/enableAutoApproveNotificationsContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="0dp"
                 android:background="@color/appWhite"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -180,7 +179,7 @@
                 android:id="@+id/exportLogsContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="0dp"
                 android:background="@color/appWhite"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -230,6 +229,62 @@
                     app:layout_constraintTop_toBottomOf="@+id/exportLogsHeader" />
 
             </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/knownHostsContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:background="@color/appWhite"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/exportLogsContainer">
+
+                <Button
+                    android:id="@+id/editKnownHostsButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/flat_button"
+                    android:backgroundTint="@color/appGreen"
+                    android:textColor="@color/appGreen"
+                    android:padding="3dp"
+                    android:scaleType="fitCenter"
+                    android:text="Edit"
+                    android:tint="@color/appGreen"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/knownHostsHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Known Hosts"
+                    android:textStyle="normal|bold"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/editKnownHostsButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/editKnownHostsText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="2dp"
+                    android:text="Remove pinned host public keys if a server key was purposefully changed."
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/editKnownHostsButton"
+                    app:layout_constraintTop_toBottomOf="@+id/knownHostsHeader" />
+
+            </android.support.constraint.ConstraintLayout>
         </android.support.constraint.ConstraintLayout>
 
     </ScrollView>
@@ -248,7 +303,7 @@
             android:text="Privacy"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:layout_editor_absoluteY="428dp"
+            tools:layout_editor_absoluteY="453dp"
             android:id="@+id/privacyButton"
             android:background="@drawable/flat_button"
             android:backgroundTint="#AAFFFFFF"
@@ -266,7 +321,7 @@
             android:text="Software"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:layout_editor_absoluteY="428dp"
+            tools:layout_editor_absoluteY="453dp"
             android:id="@+id/softwareButton"
             android:background="@drawable/flat_button"
             android:textSize="14sp"
@@ -284,7 +339,7 @@
             android:text="Contact Us"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:layout_editor_absoluteY="428dp"
+            tools:layout_editor_absoluteY="453dp"
             android:id="@+id/contactUsButton"
             android:background="@drawable/flat_button"
             android:backgroundTint="#AAFFFFFF"

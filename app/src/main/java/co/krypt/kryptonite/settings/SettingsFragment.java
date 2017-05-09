@@ -1,13 +1,13 @@
 package co.krypt.kryptonite.settings;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,17 +18,16 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.crypto.KeyManager;
+import co.krypt.kryptonite.knownhosts.KnownHostsFragment;
 import co.krypt.kryptonite.log.AuditLogContentProvider;
 import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.onboarding.OnboardingActivity;
-import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.policy.LocalAuthentication;
 import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.silo.Silo;
@@ -157,6 +156,19 @@ public class SettingsFragment extends Fragment {
                     e.printStackTrace();
                     Toast.makeText(v.getContext(), "Error exporting audit log: " + e.getMessage(), Toast.LENGTH_LONG);
                 }
+            }
+        });
+
+        Button editKnownHostsButton = (Button) root.findViewById(R.id.editKnownHostsButton);
+        editKnownHostsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getView().setTranslationZ(0);
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                KnownHostsFragment knownHostsFragment = new KnownHostsFragment();
+                transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.delayed)
+                        .replace(R.id.fragmentOverlay, knownHostsFragment).commit();
+                new Analytics(getActivity().getApplicationContext()).postPageView("KnownHosts");
             }
         });
 

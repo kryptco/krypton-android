@@ -142,7 +142,7 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
     private void populateDevices() {
         List<Session> sessions = new ArrayList<>(Silo.shared(getContext()).pairings().loadAllSessions());
         devicesAdapter.setPairings(sessions);
-        if (sessions != null && sessions.size() > 0) {
+        if (sessions.size() > 0) {
             noPairedDevicesContainer.setVisibility(View.GONE);
         } else {
             noPairedDevicesContainer.setVisibility(View.VISIBLE);
