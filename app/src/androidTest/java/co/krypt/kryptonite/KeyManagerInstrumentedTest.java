@@ -1,5 +1,6 @@
 package co.krypt.kryptonite;
 
+import android.security.keystore.KeyProperties;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
@@ -22,6 +23,8 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(AndroidJUnit4.class)
 public class KeyManagerInstrumentedTest {
+    private static final String[] SUPPORTED_DIGESTS = new String[]{KeyProperties.DIGEST_SHA1, KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512};
+
     @Test
     public void keyGenerationAndDeletion_succeed() throws Exception {
         KeyManager.deleteKeyPair("test");
@@ -40,27 +43,34 @@ public class KeyManagerInstrumentedTest {
 
     @Test
     public void sign_succeeds() throws Exception {
-        SSHKeyPair key = KeyManager.loadOrGenerateKeyPair("test");
-        byte[] data = SecureRandom.getSeed(32);
-        key.signDigest(SHA256.digest(data));
+        for (SSHKeyPair key : new SSHKeyPair[]{KeyManager.loadOrGenerateKeyPair("test"), KeyManager.loadOrGenerateNoDigestKeyPair("testnodigest")}) {
+            byte[] data = SecureRandom.getSeed(32);
+            for (String digest : SUPPORTED_DIGESTS) {
+                key.signDigest(digest, data);
+            }
+        }
     }
 
     @Test
     public void signAndVerify_succeed() throws Exception {
-        SSHKeyPair key = KeyManager.loadOrGenerateKeyPair("test");
-        byte[] data = SecureRandom.getSeed(32);
-        byte[] digest = SHA256.digest(data);
-        byte[] signature = key.signDigest(digest);
-        assertTrue(key.verifyDigest(signature, digest));
+        for (SSHKeyPair key : new SSHKeyPair[]{KeyManager.loadOrGenerateKeyPair("test"), KeyManager.loadOrGenerateNoDigestKeyPair("testnodigest")}) {
+            byte[] data = SecureRandom.getSeed(32);
+            for (String digest : SUPPORTED_DIGESTS) {
+                byte[] signature = key.signDigest(digest, data);
+                assertTrue(key.verifyDigest(digest, signature, data));
+            }
+        }
     }
 
     @Test
     public void signTamperAndVerify_fails() throws Exception {
-        SSHKeyPair key = KeyManager.loadOrGenerateKeyPair("test");
-        byte[] data = SecureRandom.getSeed(32);
-        byte[] digest = SHA256.digest(data);
-        byte[] signature = key.signDigest(digest);
-        signature[signature.length - 1] ^= 0x01;
-        assertTrue(!key.verifyDigest(signature, digest));
+        for (SSHKeyPair key : new SSHKeyPair[]{KeyManager.loadOrGenerateKeyPair("test"), KeyManager.loadOrGenerateNoDigestKeyPair("testnodigest")}) {
+            byte[] data = SecureRandom.getSeed(32);
+            for (String digest : SUPPORTED_DIGESTS) {
+                byte[] signature = key.signDigest(digest, data);
+                signature[signature.length - 1] ^= 0x01;
+                assertTrue(!key.verifyDigest(digest, signature, data));
+            }
+        }
     }
 }

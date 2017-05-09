@@ -3,6 +3,7 @@ package co.krypt.kryptonite.crypto;
 import android.security.keystore.KeyInfo;
 import android.security.keystore.KeyProperties;
 import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
 import android.util.Base64;
 import android.util.Log;
 
@@ -57,15 +58,52 @@ public class SSHKeyPair {
         return SHA256.digest(publicKeySSHWireFormat());
     }
 
-    public byte[] signDigest(byte[] data, String digest) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, CryptoException, NoSuchProviderException, InvalidKeySpecException {
+    public byte[] signDigest(String digest, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, CryptoException, NoSuchProviderException, InvalidKeySpecException {
         long start = System.currentTimeMillis();
         byte[] signature;
-        Signature signer = null;
+        Pair<Signature, byte[]> signerAndData = getSignerAndPrepareData(digest, data);
+        Signature signer = signerAndData.first;
+        data = signerAndData.second;
 
+        signer.initSign(keyPair.getPrivate());
+        signer.update(data);
+        signature = signer.sign();
+        long stop = System.currentTimeMillis();
+
+        Log.d(TAG, "signature took " + String.valueOf((stop - start) / 1000.0) + " seconds");
+        return signature;
+    }
+
+    public byte[] signDigestAppendingPubkey(byte[] data, String algo) throws SignatureException, IOException, InvalidKeyException, NoSuchAlgorithmException, CryptoException, NoSuchProviderException, InvalidKeySpecException {
+        ByteArrayOutputStream dataWithPubkey = new ByteArrayOutputStream();
+        dataWithPubkey.write(data);
+        dataWithPubkey.write(SSHWire.encode(publicKeySSHWireFormat()));
+
+        byte[] signaturePayload = dataWithPubkey.toByteArray();
+
+        String digest = getDigestForAlgo(algo);
+        return signDigest(digest, signaturePayload);
+    }
+
+    private String getDigestForAlgo(String algo) throws CryptoException {
+        switch (algo) {
+            case "ssh-rsa":
+                return KeyProperties.DIGEST_SHA1;
+            case "rsa-sha2-256":
+                return KeyProperties.DIGEST_SHA256;
+            case "rsa-sha2-512":
+                return KeyProperties.DIGEST_SHA512;
+            default:
+                throw new CryptoException("unsuported algo: " + algo);
+        }
+    }
+
+    public Pair<Signature, byte[]> getSignerAndPrepareData(String digest, byte[] data) throws CryptoException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
         KeyFactory factory = KeyFactory.getInstance(keyPair.getPrivate().getAlgorithm(), "AndroidKeyStore");
         KeyInfo keyInfo;
         keyInfo = factory.getKeySpec(keyPair.getPrivate(), KeyInfo.class);
 
+        Signature signer;
         if (Arrays.asList(keyInfo.getDigests()).contains(digest)) {
             switch (digest) {
                 case KeyProperties.DIGEST_SHA1:
@@ -97,44 +135,15 @@ public class SSHKeyPair {
                     throw new CryptoException("Unsupported digest: " + digest);
             }
         }
-        signer.initSign(keyPair.getPrivate());
-        signer.update(data);
-        signature = signer.sign();
-        long stop = System.currentTimeMillis();
-
-        Log.d(TAG, "signature took " + String.valueOf((stop - start) / 1000.0) + " seconds");
-        return signature;
+        return new Pair<>(signer, data);
     }
 
-    public byte[] signDigestAppendingPubkey(byte[] data, String algo) throws SignatureException, IOException, InvalidKeyException, NoSuchAlgorithmException, CryptoException, NoSuchProviderException, InvalidKeySpecException {
-        ByteArrayOutputStream dataWithPubkey = new ByteArrayOutputStream();
-        dataWithPubkey.write(data);
-        dataWithPubkey.write(SSHWire.encode(publicKeySSHWireFormat()));
-
-        byte[] signaturePayload = dataWithPubkey.toByteArray();
-
-        String digest = null;
-        switch (algo) {
-            case "ssh-rsa":
-                digest = KeyProperties.DIGEST_SHA1;
-                break;
-            case "rsa-sha2-256":
-                digest = KeyProperties.DIGEST_SHA256;
-                break;
-            case "rsa-sha2-512":
-                digest = KeyProperties.DIGEST_SHA512;
-                break;
-            default:
-                throw new CryptoException("unsuported algo: " + algo);
-        }
-
-        return signDigest(signaturePayload, digest);
-    }
-
-    public boolean verifyDigest(byte[] signature, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, CryptoException {
-        Signature s = Signature.getInstance("NONEwithRSA");
+    public boolean verifyDigest(String digest, byte[] signature, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, CryptoException, InvalidKeySpecException, NoSuchProviderException {
+        Pair<Signature, byte[]> signerAndData = getSignerAndPrepareData(digest, data);
+        Signature s = signerAndData.first;
+        data = signerAndData.second;
         s.initVerify(keyPair.getPublic());
-        s.update(SHA1.digestPrependingOID(data));
+        s.update(data);
         return s.verify(signature);
     }
 
