@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.amazonaws.util.Base64;
 import com.google.gson.JsonParseException;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.jakewharton.disklrucache.DiskLruCache;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +27,12 @@ import java.util.UUID;
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.crypto.KeyManager;
 import co.krypt.kryptonite.crypto.SSHKeyPair;
+import co.krypt.kryptonite.db.OpenDatabaseHelper;
 import co.krypt.kryptonite.exception.CryptoException;
+import co.krypt.kryptonite.exception.MismatchedHostKeyException;
 import co.krypt.kryptonite.exception.ProtocolException;
 import co.krypt.kryptonite.exception.TransportException;
+import co.krypt.kryptonite.knownhosts.KnownHost;
 import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.onboarding.TestSSHFragment;
@@ -68,6 +73,7 @@ public class Silo {
     private final HashMap<Pairing, Long> lastRequestTimeSeconds = new HashMap<>();
     private final LruCache<String, Response> responseMemCacheByRequestID = new LruCache<>(8192);
     private DiskLruCache responseDiskCacheByRequestID;
+    private final OpenDatabaseHelper dbHelper;
 
     private Silo(Context context) {
         this.context = context;
@@ -89,6 +95,7 @@ public class Silo {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        dbHelper = OpenHelperManager.getHelper(context, OpenDatabaseHelper.class);
     }
 
     public static synchronized Silo shared(Context context) {
@@ -319,6 +326,19 @@ public class Silo {
                 try {
                     SSHKeyPair key = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
                     if (MessageDigest.isEqual(request.signRequest.publicKeyFingerprint, key.publicKeyFingerprint())) {
+                        if (signRequest.verifyHostName()) {
+                            String hostName = signRequest.hostAuth.hostNames[0];
+                            String hostKey = Base64.encodeAsString(signRequest.hostAuth.hostKey);
+                            List<KnownHost> matchingKnownHosts =  dbHelper.getKnownHostDao().queryForEq("host_name", hostName);
+                            if (matchingKnownHosts.size() == 0) {
+                                dbHelper.getKnownHostDao().create(new KnownHost(hostName, hostKey, System.currentTimeMillis()/1000));
+                            } else {
+                                KnownHost pinnedHost = matchingKnownHosts.get(0);
+                                if (!pinnedHost.publicKey.equals(hostKey)) {
+                                    throw new MismatchedHostKeyException("Expected " + pinnedHost.publicKey + " received " + hostKey);
+                                }
+                            }
+                        }
                         response.signResponse.signature = key.signDigestAppendingPubkey(request.signRequest.data);
                         pairings().appendToLog(pairing, new SignatureLog(
                                 signRequest.data,
@@ -340,8 +360,11 @@ public class Silo {
                         Log.e(TAG, Base64.encodeAsString(request.signRequest.publicKeyFingerprint) + " != " + Base64.encodeAsString(key.publicKeyFingerprint()));
                         response.signResponse.error = "unknown key fingerprint";
                     }
-                } catch (NoSuchAlgorithmException | SignatureException e) {
+                } catch (NoSuchAlgorithmException | SignatureException | SQLException e) {
                     response.signResponse.error = "unknown error";
+                    e.printStackTrace();
+                } catch (MismatchedHostKeyException e) {
+                    response.signResponse.error = "Host public key mismatched";
                     e.printStackTrace();
                 }
             } else {

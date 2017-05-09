@@ -10,13 +10,12 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import co.krypt.kryptonite.analytics.Analytics;
-import co.krypt.kryptonite.log.OpenDatabaseHelper;
+import co.krypt.kryptonite.db.OpenDatabaseHelper;
 import co.krypt.kryptonite.log.SignatureLog;
 import co.krypt.kryptonite.protocol.JSON;
 
@@ -36,7 +35,7 @@ public class Pairings {
 
     public static final String ON_DEVICE_LOG_ACTION = "co.krypt.kryptonite.action.ON_DEVICE_LOG";
 
-    private final OpenDatabaseHelper dbHelper;
+    public final OpenDatabaseHelper dbHelper;
 
     public Pairings(Context context) {
         this.context = context;
@@ -230,7 +229,7 @@ public class Pairings {
     public void appendToLog(String pairingUUID, SignatureLog log) {
         synchronized (lock) {
             try {
-                dbHelper.getDao().create(log);
+                dbHelper.getSignatureLogDao().create(log);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -246,7 +245,7 @@ public class Pairings {
     public HashSet<SignatureLog> getLogs(String pairingUUID) {
         synchronized (lock) {
             try {
-                List<SignatureLog> logs = dbHelper.getDao().queryForEq("pairing_uuid", pairingUUID);
+                List<SignatureLog> logs = dbHelper.getSignatureLogDao().queryForEq("pairing_uuid", pairingUUID);
                 return new HashSet<>(logs);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -262,7 +261,7 @@ public class Pairings {
     public List<SignatureLog> getAllLogsRedacted() {
         synchronized (lock) {
             try {
-                List<SignatureLog> logs = dbHelper.getDao().queryForAll();
+                List<SignatureLog> logs = dbHelper.getSignatureLogDao().queryForAll();
                 return SignatureLog.sortByTimeDescending(new HashSet<SignatureLog>(logs));
             } catch (SQLException e) {
                 e.printStackTrace();
