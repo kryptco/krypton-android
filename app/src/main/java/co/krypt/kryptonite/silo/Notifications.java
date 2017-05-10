@@ -44,9 +44,11 @@ public class Notifications {
                         .setAutoCancel(true)
                         .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                        .setSound(notificationSound)
-                        .setVibrate(new long[]{0, 100});
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        if (!new Settings(context).silenceNotifications()) {
+            mBuilder.setSound(notificationSound)
+                    .setVibrate(new long[]{0, 100});
+        }
 
         // The stack builder object will contain an artificial back stack for the
         // started Activity.
@@ -84,9 +86,11 @@ public class Notifications {
                         .setAutoCancel(true)
                         .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                        .setSound(notificationSound)
-                        .setVibrate(new long[]{0, 100, 100, 100});
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        if (!new Settings(context).silenceNotifications()) {
+            mBuilder.setSound(notificationSound)
+                    .setVibrate(new long[]{0, 100, 100, 100});
+        }
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(MainActivity.class);
@@ -150,14 +154,16 @@ public class Notifications {
                         .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                        .setSound(notificationSound)
-                        .setVibrate(new long[]{0, 100, 100, 100})
                         .addAction(approveOnceBuilder.build())
                         .addAction(approveTemporarilyBuilder.build())
                         .setDeleteIntent(rejectPendingIntent)
                         .setContentIntent(clickPendingIntent)
                         .setAutoCancel(true)
                 ;
+        if (!new Settings(context).silenceNotifications()) {
+            mBuilder.setSound(notificationSound)
+                    .setVibrate(new long[]{0, 100, 100, 100});
+        }
 
         NotificationManager mNotifyMgr =
                 (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);

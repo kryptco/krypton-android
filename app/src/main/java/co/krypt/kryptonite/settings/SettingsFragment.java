@@ -135,6 +135,15 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        Switch silenceNotifications = (Switch) root.findViewById(R.id.silenceNotificationsSwitch);
+        silenceNotifications.setChecked(new Settings(getContext()).silenceNotifications());
+        silenceNotifications.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                new Settings(getContext()).setSilenceNotifications(isChecked);
+            }
+        });
+
         ImageButton exportLogsButton = (ImageButton) root.findViewById(R.id.exportLogsButton);
         exportLogsButton.setOnClickListener(new View.OnClickListener() {
             @Override
