@@ -22,7 +22,7 @@ import co.krypt.kryptonite.log.SignatureLog;
 public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME = "kryptonite";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     /**
      * The data access object used to interact with the Sqlite database to do C.R.U.D operations.
