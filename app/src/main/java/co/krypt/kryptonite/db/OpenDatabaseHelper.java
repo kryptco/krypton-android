@@ -55,7 +55,6 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
              */
             if (oldVersion == 1 && newVersion == 2) {
                 TableUtils.createTable(connectionSource, KnownHost.class);
-                onCreate(database, connectionSource);
             }
 
         } catch (SQLException e) {
