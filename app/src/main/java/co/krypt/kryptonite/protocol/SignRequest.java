@@ -4,11 +4,9 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+
+import co.krypt.kryptonite.crypto.SSHWireDataParser;
 
 /**
  * Created by Kevin King on 12/3/16.
@@ -39,50 +37,67 @@ public class SignRequest {
         return defaultString;
     }
 
-    public byte[] sessionID() {
-        if (data.length < 4) {
-            return null;
-        }
+    private boolean parsed;
+    private byte[] parsedSessionID;
+    private String parsedUser;
+    private String parsedAlgo;
 
-        byte[] bigEndianSessionIDLen = Arrays.copyOfRange(data, 0, 4);
-        DataInputStream readSessionIDLen = new DataInputStream(new ByteArrayInputStream(bigEndianSessionIDLen));
+    private synchronized void parseClientAuth() throws IOException {
+        if (parsed) {
+            return;
+        }
+        parsed = true;
+
+        //  https://tools.ietf.org/html/rfc4252 section 7
+        //
+        //    string    session identifier
+        //    byte      SSH_MSG_USERAUTH_REQUEST
+        //    string    user name
+        //    string    service name
+        //    string    "publickey"
+        //    boolean   TRUE
+        //    string    public key algorithm name
+        //
+        //    OMITTED since it is redundant:
+        //    string    public key to be used for authentication
+        //
+        SSHWireDataParser parser = new SSHWireDataParser(data);
+        parsedSessionID = parser.popByteArray();
+        parser.popByte();
+        parsedUser = parser.popString();
+        parser.popString();
+        parser.popString();
+        parser.popBoolean();
+        parsedAlgo = parser.popString();
+    }
+
+    public byte[] sessionID() {
         try {
-            int sessionIDLen = readSessionIDLen.readInt();
-            if (data.length < 4 + sessionIDLen) {
-                return null;
-            }
-            return Arrays.copyOfRange(data, 4, 4 + sessionIDLen);
+            parseClientAuth();
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
         }
+        return parsedSessionID;
     }
 
     public String user() {
-        byte[] sessionID = this.sessionID();
-        if (sessionID == null) {
-            return null;
-        }
-        int sessionIDLen = sessionID.length;
-        if (data.length < 4 + sessionIDLen + 1 + 4) {
-            return null;
-        }
-        byte[] bigEndianUserLen = Arrays.copyOfRange(data, 4 + sessionIDLen + 1, 4 + sessionIDLen + 1 + 4);
-        DataInputStream readLen = new DataInputStream(new ByteArrayInputStream(bigEndianUserLen));
         try {
-            int userLen = readLen.readInt();
-            if (userLen == 0) {
-                return "";
-            }
-            if (data.length < 4 + sessionIDLen + 1 + 4 + userLen) {
-                return null;
-            }
-            byte[] userBytes = Arrays.copyOfRange(data, 4 + sessionIDLen + 1 + 4, 4 + sessionIDLen + 1 + 4 + userLen);
-            return new String(userBytes, StandardCharsets.UTF_8);
+            parseClientAuth();
         } catch (IOException e) {
-            return null;
+            e.printStackTrace();
         }
+        return parsedUser;
     }
+
+    public String algo() {
+        try {
+            parseClientAuth();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return parsedAlgo;
+    }
+
 
     @Nullable
     public String firstHostnameIfExists() {

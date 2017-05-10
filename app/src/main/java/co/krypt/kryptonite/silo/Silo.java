@@ -49,6 +49,7 @@ import co.krypt.kryptonite.protocol.Response;
 import co.krypt.kryptonite.protocol.SignRequest;
 import co.krypt.kryptonite.protocol.SignResponse;
 import co.krypt.kryptonite.protocol.UnpairResponse;
+import co.krypt.kryptonite.protocol.Versions;
 import co.krypt.kryptonite.transport.BluetoothTransport;
 import co.krypt.kryptonite.transport.SNSTransport;
 import co.krypt.kryptonite.transport.SQSPoller;
@@ -342,7 +343,11 @@ public class Silo {
                                 }
                             }
                         }
-                        response.signResponse.signature = key.signDigestAppendingPubkey(request.signRequest.data);
+                        String algo = signRequest.algo();
+                        if (algo == null || request.semVer().lessThan(Versions.KR_SUPPORTS_RSA_SHA256_512)) {
+                            algo = "ssh-rsa";
+                        }
+                        response.signResponse.signature = key.signDigestAppendingPubkey(request.signRequest.data, algo);
                         pairings().appendToLog(pairing, new SignatureLog(
                                 signRequest.data,
                                 true,

@@ -12,14 +12,14 @@ import co.krypt.kryptonite.exception.CryptoException;
  * Copyright 2016. KryptCo, Inc.
  */
 
-public class SHA1 {
+public class SHA512 {
     //  https://golang.org/src/crypto/rsa/pkcs1v15.go
-    private static final byte[] PKCS1_PADDING = new byte[]{0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b, 0x0e, 0x03, 0x02, 0x1a, 0x05, 0x00, 0x04, 0x14};
+    private static final byte[] PKCS1_PADDING = new byte[]{0x30, 0x51, 0x30, 0x0d, 0x06, 0x09, 0x60, (byte)/* XXX fails to compile without this cast */ 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x03, 0x05, 0x00, 0x04, 0x40};
 
     public static byte[] digestPrependingOID(byte[] data) throws CryptoException {
-        MessageDigest sha1 = null;
+        MessageDigest sha512 = null;
         try {
-            sha1 = MessageDigest.getInstance("SHA-1");
+            sha512 = MessageDigest.getInstance("SHA-512");
         } catch (NoSuchAlgorithmException e) {
             throw new CryptoException(e.getMessage());
         }
@@ -27,7 +27,7 @@ public class SHA1 {
         ByteArrayOutputStream oidWithDigest = new ByteArrayOutputStream();
         try {
             oidWithDigest.write(PKCS1_PADDING);
-            oidWithDigest.write(sha1.digest(data));
+            oidWithDigest.write(sha512.digest(data));
         } catch (IOException e) {
             e.printStackTrace();
         }

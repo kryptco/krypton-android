@@ -77,6 +77,55 @@ public class KeyManager {
         }
     }
 
+    /*
+    For backwards compatibility testing
+     */
+    @Deprecated
+    public static synchronized SSHKeyPair loadOrGenerateNoDigestKeyPair(String tag) throws CryptoException {
+        try {
+            KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            keyStore.load(null);
+            KeyStore.Entry privateKeyEntry = keyStore.getEntry(tag, null);
+            if (privateKeyEntry instanceof KeyStore.PrivateKeyEntry) {
+                return new SSHKeyPair(new KeyPair(((KeyStore.PrivateKeyEntry) privateKeyEntry).getCertificate().getPublicKey(), ((KeyStore.PrivateKeyEntry) privateKeyEntry).getPrivateKey()));
+            } else {
+                Log.w(LOG_TAG, "Not an instance of a PrivateKeyEntry");
+            }
+
+
+            KeyPair keyPair = null;
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(
+                    KeyProperties.KEY_ALGORITHM_RSA, "AndroidKeyStore");
+            keyPairGenerator.initialize(
+                    new KeyGenParameterSpec.Builder(
+                            tag, KeyProperties.PURPOSE_SIGN)
+                            .setDigests(KeyProperties.DIGEST_NONE)
+                            .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
+                            .setKeySize(3072)
+                            .setUserAuthenticationRequired(false)
+                            .build());
+            long genStart = System.currentTimeMillis();
+            keyPair = keyPairGenerator.generateKeyPair();
+            long genStop = System.currentTimeMillis();
+            Log.i(LOG_TAG, "KeyGen took " + String.valueOf((genStop - genStart)));
+            return new SSHKeyPair(keyPair);
+        } catch (IOException e) {
+            throw new CryptoException(e.getMessage());
+        } catch (CertificateException e) {
+            throw new CryptoException(e.getMessage());
+        } catch (NoSuchAlgorithmException e) {
+            throw new CryptoException(e.getMessage());
+        } catch (UnrecoverableEntryException e) {
+            throw new CryptoException(e.getMessage());
+        } catch (InvalidAlgorithmParameterException e) {
+            throw new CryptoException(e.getMessage());
+        } catch (NoSuchProviderException e) {
+            throw new CryptoException(e.getMessage());
+        } catch (KeyStoreException e) {
+            throw new CryptoException(e.getMessage());
+        }
+    }
+
     public static synchronized boolean keyExists(String tag) throws CryptoException {
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");

@@ -8,7 +8,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 23
         versionCode 13
-        versionName "2.0.5"
+        versionName "2.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
@@ -66,6 +66,7 @@ dependencies {
     compile 'com.jakewharton:disklrucache:2.0.2'
     compile 'com.j256.ormlite:ormlite-android:4.48'
     compile 'com.jaredrummler:android-device-names:1.1.2'
+    compile 'com.github.zafarkhaja:java-semver:0.9.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.powermock:powermock-module-junit4:1.6.4'

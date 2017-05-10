@@ -12,7 +12,6 @@ import android.support.v4.app.TaskStackBuilder;
 
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
-import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.onboarding.OnboardingActivity;
 import co.krypt.kryptonite.onboarding.OnboardingProgress;
 import co.krypt.kryptonite.pairing.Pairing;

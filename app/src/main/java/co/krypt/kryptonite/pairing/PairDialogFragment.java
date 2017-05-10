@@ -2,16 +2,13 @@ package co.krypt.kryptonite.pairing;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
-import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.onboarding.OnboardingActivity;
 import co.krypt.kryptonite.policy.LocalAuthentication;

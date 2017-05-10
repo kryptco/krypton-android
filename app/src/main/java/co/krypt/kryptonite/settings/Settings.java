@@ -2,22 +2,6 @@ package co.krypt.kryptonite.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
-import android.support.annotation.Nullable;
-
-import com.amazonaws.util.Base64;
-import com.jaredrummler.android.device.DeviceName;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.security.SecureRandom;
-import java.util.HashMap;
-import java.util.Map;
-
-import co.krypt.kryptonite.BuildConfig;
 
 /**
  * Created by Kevin King on 1/9/17.
