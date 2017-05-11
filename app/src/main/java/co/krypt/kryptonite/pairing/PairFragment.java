@@ -90,6 +90,8 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         }
     }
 
+    private boolean resumed;
+
     @Override
     public void setUserVisibleHint(boolean visible) {
         super.setUserVisibleHint(visible);
@@ -101,6 +103,14 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         }
         synchronized (this) {
             this.visible = visible;
+            Log.d(TAG, "visible: " + visible);
+            if (visible) {
+                if (resumed) {
+                    startCamera(getContext());
+                }
+            } else {
+                stopCamera();
+            }
         }
         refreshCameraPermissionInfoVisibility();
     }
@@ -299,8 +309,15 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
                             previewWidth = camera.getParameters().getPreviewSize().width;
                             previewHeight = camera.getParameters().getPreviewSize().height;
                             mPreview.setCamera(mCamera);
-                            camera.setPreviewCallback(self);
-                            pairScanner = new PairScanner(context, self, previewHeight, previewWidth);
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    synchronized (self) {
+                                        camera.setPreviewCallback(self);
+                                        pairScanner = new PairScanner(context, self, previewHeight, previewWidth);
+                                    }
+                                }
+                            }).start();
 
                             preview.requestLayout();
                         }
@@ -319,6 +336,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
                     if (mCamera != null) {
                         mCamera.stopPreview();
                         mCamera.setPreviewCallback(null);
+                        mCamera.unlock();
                         mCamera.release();
                         mCamera = null;
                     }
@@ -334,13 +352,21 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
     @Override
     public void onResume() {
         super.onResume();
+        synchronized (this) {
+            this.resumed = true;
+            if (visible) {
+                startCamera(getContext());
+            }
+        }
         Log.i(TAG, "resume");
-        startCamera(getContext());
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        synchronized (this) {
+            this.resumed = false;
+        }
         Log.i(TAG, "pause");
         stopCamera();
     }
