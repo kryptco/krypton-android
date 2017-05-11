@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,13 @@ public class KnownHostsRecyclerViewAdapter extends RecyclerView.Adapter<KnownHos
 
         holder.hostName.setText(holder.knownHost.hostName);
         holder.hostKeyFingerprint.setText(holder.knownHost.fingerprint());
+        CharSequence relativeDateTime = DateUtils.getRelativeDateTimeString(
+                activity.getApplicationContext(),
+                holder.knownHost.addedUnixSeconds * 1000,
+                DateUtils.SECOND_IN_MILLIS,
+                DateUtils.WEEK_IN_MILLIS,
+                0);
+        holder.addedTime.setText(relativeDateTime);
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
