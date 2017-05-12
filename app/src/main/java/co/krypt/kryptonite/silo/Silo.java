@@ -288,7 +288,7 @@ public class Silo {
 
         lastRequestTimeSeconds.put(pairing, System.currentTimeMillis() / 1000);
 
-        if (request.signRequest != null && !pairings().isApprovedNow(pairing)) {
+        if (request.signRequest != null && !Policy.isApprovedNow(context, pairing, request.signRequest)) {
             if (Policy.requestApproval(context, pairing, request)) {
                 new Analytics(context).postEvent("signature", "requires approval", communicationMedium, null, false);
             }
@@ -364,6 +364,11 @@ public class Silo {
                             Intent sshMeIntent = new Intent(TestSSHFragment.SSH_ME_ACTION);
                             context.sendBroadcast(sshMeIntent);
                         }
+                        if (request.signRequest.hostAuth == null) {
+                            new Analytics(context).postEvent("host", "unknown", null, null, false);
+                        } else if (!request.signRequest.verifyHostName()) {
+                            new Analytics(context).postEvent("host", "unverified", null, null, false);
+                        }
                     } else {
                         Log.e(TAG, Base64.encodeAsString(request.signRequest.publicKeyFingerprint) + " != " + Base64.encodeAsString(key.publicKeyFingerprint()));
                         response.signResponse.error = "unknown key fingerprint";
@@ -408,7 +413,6 @@ public class Silo {
         return dbHelper.getKnownHostDao().queryForAll();
     }
 
-
     public synchronized void deleteKnownHost(String hostName) throws SQLException {
         List<KnownHost> matchingHosts = dbHelper.getKnownHostDao().queryForEq("host_name", hostName);
         if (matchingHosts.size() == 0) {
@@ -417,6 +421,17 @@ public class Silo {
         }
         dbHelper.getKnownHostDao().delete(matchingHosts.get(0));
         broadcastKnownHostsChanged();
+    }
+
+    public synchronized boolean hasKnownHost(String hostName) {
+        List<KnownHost> matchingHosts = null;
+        try {
+            matchingHosts = dbHelper.getKnownHostDao().queryForEq("host_name", hostName);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return matchingHosts.size() > 0;
     }
 
     private synchronized void broadcastKnownHostsChanged() {

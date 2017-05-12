@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 public class Settings {
     public static final String ENABLE_APPROVED_NOTIFICATIONS_KEY = "ENABLE_APPROVED_NOTIFICATIONS";
     public static final String SILENCE_NOTIFICATIONS_KEY = "SILENCE_NOTIFICATIONS";
+
     private static Object lock = new Object();
     private SharedPreferences preferences;
 
@@ -41,4 +42,5 @@ public class Settings {
             preferences.edit().putBoolean(SILENCE_NOTIFICATIONS_KEY, b).commit();
         }
     }
+
 }

@@ -36,12 +36,12 @@
             android:paddingRight="20dp">
 
             <ImageView
-                android:layout_width="75dp"
-                app:srcCompat="@drawable/imac"
                 android:id="@+id/imacImage"
-                android:layout_height="75dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent" />
+                app:srcCompat="@drawable/imac" />
 
             <TextView
                 android:text="TextView"
@@ -53,8 +53,8 @@
                 tools:layout_constraintTop_creator="1"
                 tools:layout_constraintLeft_creator="1"
                 app:layout_constraintLeft_toRightOf="@+id/imacImage"
-                app:layout_constraintTop_toTopOf="@id/imacImage"
-                app:layout_constraintBottom_toBottomOf="@id/imacImage"
+                app:layout_constraintTop_toTopOf="@+id/imacImage"
+                app:layout_constraintBottom_toBottomOf="@+id/imacImage"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@color/appBlack"
@@ -113,7 +113,53 @@
                     app:layout_constraintLeft_toRightOf="@+id/temporaryApprovalButton"
                     app:layout_constraintRight_toRightOf="parent"
                     android:id="@+id/automaticApprovalButton"
-                    tools:layout_editor_absoluteY="50dp" />
+                    tools:layout_editor_absoluteY="50dp"
+                    android:layout_marginTop="4dp" />
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/requireUnknownHostApprovalContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/appWhite"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/approvalSettingsLayout"
+                android:layout_marginTop="6dp">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/appGray"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Switch
+                    android:id="@+id/requireUnknownHostApprovalSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text=""
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginTop="6dp" />
+
+                <TextView
+                    android:id="@+id/requireUnknownHostApprovalHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="6dp"
+                    android:text="Always ask for unknown hosts"
+                    android:textStyle="normal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/requireUnknownHostApprovalSwitch"
+                    app:layout_constraintTop_toTopOf="parent" />
+
             </android.support.constraint.ConstraintLayout>
 
             <Button
@@ -121,7 +167,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/unpairButton"
-                app:layout_constraintTop_toBottomOf="@+id/approvalSettingsLayout"
+                app:layout_constraintTop_toBottomOf="@+id/requireUnknownHostApprovalContainer"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 android:textColor="@android:color/holo_red_light"
