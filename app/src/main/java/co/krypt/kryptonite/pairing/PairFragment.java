@@ -22,6 +22,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
@@ -90,7 +92,6 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         }
     }
 
-    private boolean resumed;
 
     @Override
     public void setUserVisibleHint(boolean visible) {
@@ -109,7 +110,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
                     startCamera(getContext());
                 }
             } else {
-                stopCamera();
+                delayedStopCamera();
             }
         }
         refreshCameraPermissionInfoVisibility();
@@ -209,7 +210,6 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         pairingStatusText = (TextView) rootView.findViewById(R.id.pairingStatusText);
         mPreview = new CameraPreview(getContext());
         preview.setPreview(mPreview);
-//        preview.addView(mPreview);
 
         cameraPermissionInfoLayout = (ConstraintLayout) rootView.findViewById(R.id.cameraPermissionInfo);
         cameraPermissionInfoLayout.setOnClickListener(new View.OnClickListener() {
@@ -290,6 +290,7 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
     }
 
     synchronized private void startCamera(final Context context) {
+        stopCameraEpoch.incrementAndGet();
         final PairFragment self = this;
         if (mCamera != null) {
             return;
@@ -328,27 +329,42 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         }).start();
     }
 
-    synchronized private void stopCamera() {
-        final PairFragment self = this;
+    //  Stop camera after 10 seconds unless started again (epoch has changed)
+    private AtomicLong stopCameraEpoch = new AtomicLong(0);
+    synchronized private void delayedStopCamera() {
+        final long epoch = stopCameraEpoch.get();
         new Thread(new Runnable() {
+            @Override
             public void run() {
-                synchronized (self) {
-                    if (mCamera != null) {
-                        mCamera.stopPreview();
-                        mCamera.setPreviewCallback(null);
-                        mCamera.unlock();
-                        mCamera.release();
-                        mCamera = null;
-                    }
-                    if (pairScanner != null) {
-                        pairScanner.stop();
-                        pairScanner = null;
+                try {
+                    Thread.sleep(10*1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                synchronized (PairFragment.this) {
+                    if (stopCameraEpoch.get() == epoch) {
+                        stopCamera();
                     }
                 }
             }
         }).start();
     }
 
+    synchronized private void stopCamera() {
+        if (mCamera != null) {
+            mCamera.stopPreview();
+            mCamera.setPreviewCallback(null);
+            mCamera.unlock();
+            mCamera.release();
+            mCamera = null;
+        }
+        if (pairScanner != null) {
+            pairScanner.stop();
+            pairScanner = null;
+        }
+    }
+
+    private boolean resumed;
     @Override
     public void onResume() {
         super.onResume();
