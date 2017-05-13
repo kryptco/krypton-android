@@ -177,7 +177,7 @@ public class SettingsFragment extends Fragment {
                 KnownHostsFragment knownHostsFragment = new KnownHostsFragment();
                 transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.delayed)
                         .replace(R.id.fragmentOverlay, knownHostsFragment).commit();
-                new Analytics(getActivity().getApplicationContext()).postPageView("KnownHosts");
+                new Analytics(getActivity().getApplicationContext()).postPageView("KnownHostsEdit");
             }
         });
 
