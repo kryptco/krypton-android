@@ -2,6 +2,7 @@ package co.krypt.kryptonite.pairing;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.hardware.Camera;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
@@ -26,7 +27,7 @@ import co.krypt.kryptonite.protocol.PairingQR;
  * Copyright 2016. KryptCo, Inc.
  */
 
-public class PairScanner {
+public class PairScanner implements Camera.PreviewCallback {
     private LinkedBlockingQueue<byte[]> frames;
     private AtomicBoolean stopped;
     private final Context context;
@@ -48,6 +49,7 @@ public class PairScanner {
         detector = new BarcodeDetector.Builder(context)
                 .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
+
         if(!detector.isOperational()){
             Log.e(TAG, "Could not set up the detector");
             return;
@@ -93,12 +95,14 @@ public class PairScanner {
         }).start();
     }
 
-    public void stop() {
-        stopped.set(true);
+
+    @Override
+    public void onPreviewFrame(byte[] data, Camera camera) {
+        frames.offer(data);
     }
 
-    public void pushFrame(byte[] frame) {
-        frames.offer(frame);
+    public void stop() {
+        stopped.set(true);
     }
 
     private static Allocation renderScriptNV21ToRGBA888(Context context, int width, int height, byte[] nv21) {
