@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.silo.Silo;
 
 
@@ -69,6 +70,7 @@ public class KnownHostsRecyclerViewAdapter extends RecyclerView.Adapter<KnownHos
                             public void onClick(DialogInterface dialog, int id) {
                                 try {
                                     Silo.shared(activity.getApplicationContext()).deleteKnownHost(holder.knownHost.hostName);
+                                    new Analytics(activity.getApplicationContext()).postEvent("known_host", "delete", null, null, false);
                                 } catch (SQLException e) {
                                     e.printStackTrace();
                                 }
