@@ -54,6 +54,7 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
     private Camera mCamera;
     private CameraPreview mPreview;
     private CroppedCameraPreview preview;
+    private Boolean fragmentVisible = false;
 
     private View pairingStatusView;
     private TextView pairingStatusText;
@@ -96,18 +97,6 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
             PairDialogFragment pairDialog = new PairDialogFragment();
             pairDialog.setTargetFragment(this, 0);
             pairDialog.show(getFragmentManager(), "PAIR_NEW_DEVICE");
-        }
-    }
-
-
-    @Override
-    public void setUserVisibleHint(boolean visible) {
-        super.setUserVisibleHint(visible);
-        if (visible && isResumed()) {
-            startCamera(getContext());
-            refreshCameraPermissionInfoVisibility();
-        } else {
-            stopCamera();
         }
     }
 
@@ -180,10 +169,10 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
             return;
         }
         if ((ContextCompat.checkSelfPermission(context,
-                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-            &&
-        (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+                &&
+                (ContextCompat.checkSelfPermission(context,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             locationPermissionLayout.setVisibility(View.VISIBLE);
         } else {
             locationPermissionLayout.setVisibility(View.GONE);
@@ -264,70 +253,114 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
     }
 
     private void startCamera(final Context context) {
+        if (mCamera != null) {
+            return;
+        }
+
+        Log.v(TAG, "starting camera");
+
+        try {
+            mCamera = Camera.open();
+            if (mCamera == null) {
+                return;
+            }
+
+            // Configure camera
+            mCamera.setDisplayOrientation(90);
+            List<String> focusModes = mCamera.getParameters().getSupportedFocusModes();
+            if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+                Camera.Parameters params = mCamera.getParameters();
+                params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+                mCamera.setParameters(params);
+            }
+
+            // Setup PairScanner
+            int previewWidth = mCamera.getParameters().getPreviewSize().width;
+            int previewHeight = mCamera.getParameters().getPreviewSize().height;
+
+            pairScanner = new PairScanner(context, this, previewHeight, previewWidth);
+            mCamera.setPreviewCallback(pairScanner);
+
+            // Start preview
+            mPreview.setup(mCamera);
+            mCamera.startPreview();
+
+        } catch (Exception e) {
+            Log.d(TAG, "Error setting up camera: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void stopCamera(boolean clear) {
+        if (mCamera != null) {
+            Log.v(TAG, "stopping camera");
+            mCamera.stopPreview();
+            mCamera.setPreviewCallback(null);
+            mCamera.unlock();
+            mCamera.release();
+            mCamera = null;
+        }
+        if (pairScanner != null) {
+            pairScanner.stop();
+            pairScanner = null;
+        }
+        if (clear && mPreview != null) {
+            mPreview.clear();
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean visible) {
+        super.setUserVisibleHint(visible);
         final PairFragment self = this;
 
-        // Execute on threadPool to guarantee start/stop request ordering.
+        // The code below executes on the threadPool to guarantee start/stop request ordering.
+        if (visible && isResumed()) {
+            threadPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    fragmentVisible = true;
+                    self.startCamera(getContext());
+                    self.refreshCameraPermissionInfoVisibility();
+                }
+            });
+        } else {
+            threadPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    fragmentVisible = false;
+                    self.stopCamera(true);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // The code below executes on the threadPool to guarantee start/stop request ordering.
         threadPool.execute(new Runnable() {
             @Override
             public void run() {
-                if (mCamera != null) {
-                    return;
+                if (fragmentVisible) {
+                    startCamera(getContext());
                 }
-
-                try {
-                    mCamera = Camera.open();
-                    if (mCamera == null) {
-                        return;
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return;
-                }
-
-                // Configure camera
-                mCamera.setDisplayOrientation(90);
-                List<String> focusModes = mCamera.getParameters().getSupportedFocusModes();
-                if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
-                    Camera.Parameters params = mCamera.getParameters();
-                    params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-                    mCamera.setParameters(params);
-                }
-
-                // Setup PairScanner
-                int previewWidth = mCamera.getParameters().getPreviewSize().width;
-                int previewHeight = mCamera.getParameters().getPreviewSize().height;
-
-                pairScanner = new PairScanner(context, self, previewHeight, previewWidth);
-                mCamera.setPreviewCallback(pairScanner);
-
-                // Start preview
-                mPreview.setup(mCamera);
-                mCamera.startPreview();
             }
         });
     }
 
-   private void stopCamera() {
-       // Execute on threadPool to guarantee start/stop request ordering.
-       threadPool.execute(new Runnable() {
-           @Override
-           public void run() {
-               if (mCamera != null) {
-                   mCamera.stopPreview();
-                   mCamera.setPreviewCallback(null);
-                   mCamera.unlock();
-                   mCamera.release();
-                   mCamera = null;
-               }
-               if (pairScanner != null) {
-                   pairScanner.stop();
-                   pairScanner = null;
-               }
-               if (mPreview != null) {
-                   mPreview.clear();
-               }
-           }
-       });
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // The code below executes on the threadPool to guarantee start/stop request ordering.
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                stopCamera(false);
+            }
+        });
     }
 
     private synchronized void onPairingSuccess(final Pairing pairing) {
