@@ -15,6 +15,7 @@ import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.protocol.Request;
+import co.krypt.kryptonite.protocol.SignRequest;
 import co.krypt.kryptonite.silo.Notifications;
 import co.krypt.kryptonite.silo.Silo;
 
@@ -40,6 +41,21 @@ public class Policy {
         return true;
     }
 
+    public static synchronized boolean isApprovedNow(Context context, Pairing pairing, SignRequest request) {
+        Silo silo = Silo.shared(context);
+        if (!silo.pairings().isApprovedNow(pairing)) {
+            return false;
+        }
+        String hostname = request.verifiedHostNameOrDefault(null);
+        if (hostname == null) {
+            return !Silo.shared(context).pairings().requireUnknownHostManualApproval(pairing);
+        }
+        if (!Silo.shared(context).hasKnownHost(hostname)) {
+            return false;
+        }
+        return true;
+    }
+
     public static synchronized Pair<Pairing, Request> getPendingRequestAndPairing(String requestID) {
         return pendingRequestCache.get(requestID);
     }
@@ -59,6 +75,7 @@ public class Policy {
                 switch (action) {
                     case APPROVE_ONCE:
                         try {
+                            Silo.shared(context).pairings().setApproved(pairingAndRequest.first.getUUIDString(), false);
                             Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
                             new Analytics(context).postEvent("signature", "background approve", "once", null, false);
                         } catch (CryptoException | InvalidKeyException | IOException | TransportException | InvalidKeySpecException | NoSuchProviderException e) {

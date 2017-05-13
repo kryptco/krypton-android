@@ -3,7 +3,6 @@ package co.krypt.kryptonite.pairing;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v4.util.Pair;
 import android.util.ArraySet;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -27,13 +26,16 @@ import co.krypt.kryptonite.protocol.JSON;
 public class Pairings {
     private static final String OLD_PAIRINGS_KEY = "PAIRINGS";
     private static final String PAIRINGS_KEY = "PAIRINGS_2";
-    private static final String SIGNATURE_LOGS_SUFFIX = ".SIGNATURE_LOGS";
     private static Object lock = new Object();
     private final SharedPreferences preferences;
     private final Context context;
     private final Analytics analytics;
 
     public static final String ON_DEVICE_LOG_ACTION = "co.krypt.kryptonite.action.ON_DEVICE_LOG";
+
+    //  per-pairing settings
+    private static final String REQUIRE_UNKNOWN_HOST_MANUAL_APPROVAL = ".REQUIRE_UNKNOWN_HOST_MANUAL_APPROVAL";
+
 
     public final OpenDatabaseHelper dbHelper;
 
@@ -42,10 +44,6 @@ public class Pairings {
         this.analytics = new Analytics(context);
         preferences = context.getSharedPreferences("PAIRING_MANAGER_PREFERENCES", Context.MODE_PRIVATE);
         dbHelper = OpenHelperManager.getHelper(context, OpenDatabaseHelper.class);
-    }
-
-    public static String pairingLogsKey(String pairingUUIDString) {
-        return pairingUUIDString + SIGNATURE_LOGS_SUFFIX;
     }
 
     public static String pairingApprovedKey(String pairingUUIDString) {
@@ -124,7 +122,6 @@ public class Pairings {
 
     public void setApproved(String pairingUUID, boolean approved) {
         synchronized (lock) {
-            analytics.postEvent("manual approval", String.valueOf(!approved), null, null, false);
             SharedPreferences.Editor editor = preferences.edit().putBoolean(pairingApprovedKey(pairingUUID), approved);
             if (!approved) {
                 editor.putLong(pairingApprovedUntilKey(pairingUUID), -1);
@@ -149,7 +146,6 @@ public class Pairings {
 
     public void setApprovedUntil(String pairingUUID, Long time) {
         synchronized (lock) {
-            analytics.postEvent("manual approval", "time", null, 3600, false);
             preferences.edit()
                     .putLong(pairingApprovedUntilKey(pairingUUID), time)
                     .putBoolean(pairingApprovedKey(pairingUUID), false)
@@ -180,7 +176,6 @@ public class Pairings {
             HashSet<Pairing> pairings = loadAllLocked();
             HashSet<Session> sessions = new HashSet<>();
             for (Pairing pairing: pairings) {
-                Pair<Pairing, SignatureLog> pair = new Pair<>(pairing, null);
                 List<SignatureLog> sortedLogs = SignatureLog.sortByTimeDescending(getLogs(pairing));
                 if (sortedLogs.size() > 0) {
                     sessions.add(new Session(pairing, sortedLogs.get(0), getApproved(pairing), getApprovedUntil(pairing)));
@@ -209,6 +204,11 @@ public class Pairings {
             HashSet<Pairing> currentPairings = loadAllLocked();
             currentPairings.remove(pairing);
             setAllLocked(currentPairings);
+            SharedPreferences.Editor prefs = preferences.edit();
+            prefs.remove(getSettingsKey(pairing, REQUIRE_UNKNOWN_HOST_MANUAL_APPROVAL))
+                    .remove(pairingApprovedKey(pairing.getUUIDString()))
+                    .remove(pairingApprovedUntilKey(pairing.getUUIDString()))
+                    .commit();
         }
     }
 
@@ -222,7 +222,9 @@ public class Pairings {
 
     public void unpairAll() {
         synchronized (lock) {
-            setAllLocked(new HashSet<Pairing>());
+            for (Pairing pairing: loadAllLocked()) {
+                unpair(pairing);
+            }
         }
     }
 
@@ -267,6 +269,22 @@ public class Pairings {
                 e.printStackTrace();
             }
             return new ArrayList<>();
+        }
+    }
+
+    private static String getSettingsKey(Pairing pairing, String settingsKey) {
+        return pairing.getUUIDString() + "." + settingsKey;
+    }
+
+    public boolean requireUnknownHostManualApproval(Pairing pairing) {
+        synchronized (lock) {
+            return preferences.getBoolean(getSettingsKey(pairing, REQUIRE_UNKNOWN_HOST_MANUAL_APPROVAL), true);
+        }
+    }
+
+    public void setRequireUnknownHostManualApproval(Pairing pairing, boolean requireApproval) {
+        synchronized (lock) {
+            preferences.edit().putBoolean(getSettingsKey(pairing, REQUIRE_UNKNOWN_HOST_MANUAL_APPROVAL), requireApproval).commit();
         }
     }
 }

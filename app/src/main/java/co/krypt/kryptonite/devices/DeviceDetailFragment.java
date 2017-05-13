@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.List;
@@ -108,6 +109,15 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
             }
         });
 
+        final Switch askUnknownHostsSwitch = (Switch) view.findViewById(R.id.requireUnknownHostApprovalSwitch);
+        askUnknownHostsSwitch.setChecked(new Pairings(getContext()).requireUnknownHostManualApproval(pairing));
+        askUnknownHostsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                new Pairings(getContext()).setRequireUnknownHostManualApproval(pairing, isChecked);
+            }
+        });
+
         return view;
     }
 
@@ -131,6 +141,7 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
                 temporaryButton.setChecked(true);
                 automaticButton.setChecked(false);
                 manualButton.setChecked(false);
+
                 String temporaryApprovalText = "Ask " +
                         DateUtils.getRelativeTimeSpanString(approvedUntil * 1000, System.currentTimeMillis(), 1000)
                                 .toString().toLowerCase();
@@ -174,11 +185,6 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(Pairings.pairingLogsKey(pairingUUID))) {
-            List<SignatureLog> signatureLogs = SignatureLog.sortByTimeDescending(
-                    Silo.shared(getContext()).pairings().getLogs(pairingUUID));
-            signatureLogAdapter.setLogs(signatureLogs);
-        }
         if (key.equals(Pairings.pairingApprovedKey(pairingUUID)) || key.equals(Pairings.pairingApprovedUntilKey(pairingUUID))) {
             updateApprovalButtons();
         }
@@ -188,14 +194,18 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
             Pairings pairings = Silo.shared(getContext()).pairings();
+            Analytics analytics = new Analytics(getContext());
             if (buttonView == manualButton) {
                 pairings.setApproved(pairingUUID, false);
+                analytics.postEvent("manual approval", String.valueOf(true), null, null, false);
             }
             if (buttonView == temporaryButton) {
                 pairings.setApprovedUntil(pairingUUID, (System.currentTimeMillis() / 1000) + 3600);
+                analytics.postEvent("manual approval", "time", null, 3600, false);
             }
             if (buttonView == automaticButton) {
                 pairings.setApproved(pairingUUID, true);
+                analytics.postEvent("manual approval", String.valueOf(false), null, null, false);
             }
             updateApprovalButtons();
         }
