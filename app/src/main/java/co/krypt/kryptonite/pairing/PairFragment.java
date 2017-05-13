@@ -27,6 +27,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
@@ -54,7 +55,7 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
     private Camera mCamera;
     private CameraPreview mPreview;
     private CroppedCameraPreview preview;
-    private Boolean fragmentVisible = false;
+    private AtomicBoolean fragmentVisible = new AtomicBoolean();
 
     private View pairingStatusView;
     private TextView pairingStatusText;
@@ -309,43 +310,35 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
         }
     }
 
+    private void updateCamera(Context context) {
+        if (fragmentVisible.get() && mCamera == null) {
+            startCamera(context);
+            refreshCameraPermissionInfoVisibility();
+        } else if (!fragmentVisible.get() && mCamera != null) {
+            stopCamera(true);
+        }
+    }
+
     @Override
     public void setUserVisibleHint(boolean visible) {
         super.setUserVisibleHint(visible);
-        final PairFragment self = this;
 
-        // The code below executes on the threadPool to guarantee start/stop request ordering.
-        if (visible && isResumed()) {
-            threadPool.execute(new Runnable() {
-                @Override
-                public void run() {
-                    fragmentVisible = true;
-                    self.startCamera(getContext());
-                    self.refreshCameraPermissionInfoVisibility();
-                }
-            });
-        } else {
-            threadPool.execute(new Runnable() {
-                @Override
-                public void run() {
-                    fragmentVisible = false;
-                    self.stopCamera(true);
-                }
-            });
-        }
+        fragmentVisible.set(visible);
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                updateCamera(getContext());
+            }
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        // The code below executes on the threadPool to guarantee start/stop request ordering.
         threadPool.execute(new Runnable() {
             @Override
             public void run() {
-                if (fragmentVisible) {
-                    startCamera(getContext());
-                }
+                updateCamera(getContext());
             }
         });
     }
@@ -353,11 +346,10 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
     @Override
     public void onPause() {
         super.onPause();
-
-        // The code below executes on the threadPool to guarantee start/stop request ordering.
         threadPool.execute(new Runnable() {
             @Override
             public void run() {
+                // We need to let go of the camera when pausing, regardless of visibility.
                 stopCamera(false);
             }
         });
