@@ -79,16 +79,30 @@ public class FirstPairFragment extends Fragment {
         TabHost host = (TabHost) root.findViewById(R.id.installInstructions);
         host.setup();
 
-        //Tab 1
         TabHost.TabSpec spec = host.newTabSpec("curl");
         spec.setContent(R.id.tab1);
         spec.setIndicator("curl");
         host.addTab(spec);
 
+        TabHost.TabSpec specBrew = host.newTabSpec("brew");
+        specBrew.setContent(R.id.tab2);
+        specBrew.setIndicator("brew");
+        host.addTab(specBrew);
+
+        TabHost.TabSpec specNPM = host.newTabSpec("npm");
+        specNPM.setContent(R.id.tab3);
+        specNPM.setIndicator("npm");
+        host.addTab(specNPM);
+
+        TabHost.TabSpec specMore = host.newTabSpec("more");
+        specMore.setContent(R.id.tab4);
+        specMore.setIndicator("more");
+        host.addTab(specMore);
+
         host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
-                new Analytics(getContext()).postEvent("install", tabId, null, null, false);
+                new Analytics(getContext()).postEvent("onboard_install", tabId, null, null, false);
             }
         });
 
