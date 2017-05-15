@@ -297,7 +297,6 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
             Log.v(TAG, "stopping camera");
             mCamera.stopPreview();
             mCamera.setPreviewCallback(null);
-            mCamera.unlock();
             mCamera.release();
             mCamera = null;
         }
