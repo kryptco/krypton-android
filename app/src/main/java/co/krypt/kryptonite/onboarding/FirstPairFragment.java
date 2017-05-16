@@ -62,10 +62,22 @@ public class FirstPairFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        pairFragment.setUserVisibleHint(true);
+        pairFragment.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        pairFragment.onPause();
+        super.onPause();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         getChildFragmentManager().beginTransaction().add(R.id.pairLayout, pairFragment).commit();
-        pairFragment.setUserVisibleHint(true);
 
         View root = inflater.inflate(R.layout.fragment_first_pair, container, false);
         Button nextButton = (Button) root.findViewById(R.id.nextButton);
