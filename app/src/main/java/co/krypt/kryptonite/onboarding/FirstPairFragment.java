@@ -65,12 +65,11 @@ public class FirstPairFragment extends Fragment {
     public void onResume() {
         super.onResume();
         pairFragment.setUserVisibleHint(true);
-        pairFragment.onResume();
     }
 
     @Override
     public void onPause() {
-        pairFragment.onPause();
+        pairFragment.setUserVisibleHint(false);
         super.onPause();
     }
 
