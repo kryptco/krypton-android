@@ -22,7 +22,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
@@ -39,16 +44,18 @@ import co.krypt.kryptonite.silo.Silo;
  * Use the {@link PairFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PairFragment extends Fragment implements Camera.PreviewCallback, PairDialogFragment.PairListener {
+public class PairFragment extends Fragment implements PairDialogFragment.PairListener {
     private static final String TAG = "PairFragment";
     public static final String PAIRING_SUCCESS_ACTION = "co.krypt.android.action.PAIRING_SUCCESS";
 
+    // This threadpool should only contain one thread. It is used to perform background tasks
+    // synchronized amongst each other.
+    private ThreadPoolExecutor threadPool;
+
     private Camera mCamera;
-    private int previewWidth;
-    private int previewHeight;
     private CameraPreview mPreview;
     private CroppedCameraPreview preview;
-    private boolean visible;
+    private AtomicBoolean fragmentVisible = new AtomicBoolean();
 
     private View pairingStatusView;
     private TextView pairingStatusText;
@@ -81,6 +88,8 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
     }
 
     public PairFragment() {
+        // 1 core thread, 1 max thread, 60 second timeout.
+        threadPool = new ThreadPoolExecutor(1, 1, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
     }
 
     public synchronized void onPairingScanned(PairingQR pairingQR) {
@@ -90,30 +99,6 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
             pairDialog.setTargetFragment(this, 0);
             pairDialog.show(getFragmentManager(), "PAIR_NEW_DEVICE");
         }
-    }
-
-
-    @Override
-    public void setUserVisibleHint(boolean visible) {
-        super.setUserVisibleHint(visible);
-        if (visible && isResumed())
-        {
-            //Only manually call onResume if fragment is already visible
-            //Otherwise allow natural fragment lifecycle to call onResume
-            onResume();
-        }
-        synchronized (this) {
-            this.visible = visible;
-            Log.d(TAG, "visible: " + visible);
-            if (visible) {
-                if (resumed) {
-                    startCamera(getContext());
-                }
-            } else {
-                delayedStopCamera();
-            }
-        }
-        refreshCameraPermissionInfoVisibility();
     }
 
     /**
@@ -185,19 +170,14 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
             return;
         }
         if ((ContextCompat.checkSelfPermission(context,
-                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-            &&
-        (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+                &&
+                (ContextCompat.checkSelfPermission(context,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             locationPermissionLayout.setVisibility(View.VISIBLE);
         } else {
             locationPermissionLayout.setVisibility(View.GONE);
         }
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -249,22 +229,6 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         return rootView;
     }
 
-    /** A safe way to get an instance of the Camera object. */
-    public static Camera getCameraInstance(){
-        Camera c = null;
-        try {
-            c = Camera.open(); // attempt to get a Camera instance
-            if (c != null) {
-                c.setDisplayOrientation(90);
-            }
-        }
-        catch (Exception e){
-            // Camera is not available (in use or does not exist)
-            e.printStackTrace();
-        }
-        return c; // returns null if camera is unavailable
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -289,72 +253,50 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
         getContext().unregisterReceiver(permissionReceiver);
     }
 
-    synchronized private void startCamera(final Context context) {
-        stopCameraEpoch.incrementAndGet();
-        final PairFragment self = this;
+    private void startCamera(final Context context) {
         if (mCamera != null) {
             return;
         }
-        new Thread(new Runnable() {
-            public void run() {
-                final Camera camera = getCameraInstance();
-                if (camera == null) {
-                    return;
-                }
 
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        synchronized (self) {
-                            mCamera = camera;
-                            previewWidth = camera.getParameters().getPreviewSize().width;
-                            previewHeight = camera.getParameters().getPreviewSize().height;
-                            mPreview.setCamera(mCamera);
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    synchronized (self) {
-                                        camera.setPreviewCallback(self);
-                                        pairScanner = new PairScanner(context, self, previewHeight, previewWidth);
-                                    }
-                                }
-                            }).start();
+        Log.v(TAG, "starting camera");
 
-                            preview.requestLayout();
-                        }
-                    }
-                });
-
+        try {
+            mCamera = Camera.open();
+            if (mCamera == null) {
+                return;
             }
-        }).start();
+
+            // Configure camera
+            mCamera.setDisplayOrientation(90);
+            List<String> focusModes = mCamera.getParameters().getSupportedFocusModes();
+            if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+                Camera.Parameters params = mCamera.getParameters();
+                params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+                mCamera.setParameters(params);
+            }
+
+            // Setup PairScanner
+            int previewWidth = mCamera.getParameters().getPreviewSize().width;
+            int previewHeight = mCamera.getParameters().getPreviewSize().height;
+
+            pairScanner = new PairScanner(context, this, previewHeight, previewWidth);
+            mCamera.setPreviewCallback(pairScanner);
+
+            // Start preview
+            mPreview.setup(mCamera);
+            mCamera.startPreview();
+
+        } catch (Exception e) {
+            Log.d(TAG, "Error setting up camera: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    //  Stop camera after 10 seconds unless started again (epoch has changed)
-    private AtomicLong stopCameraEpoch = new AtomicLong(0);
-    synchronized private void delayedStopCamera() {
-        final long epoch = stopCameraEpoch.get();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(10*1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                synchronized (PairFragment.this) {
-                    if (stopCameraEpoch.get() == epoch) {
-                        stopCamera();
-                    }
-                }
-            }
-        }).start();
-    }
-
-    synchronized private void stopCamera() {
+    private void stopCamera(boolean clear) {
         if (mCamera != null) {
+            Log.v(TAG, "stopping camera");
             mCamera.stopPreview();
             mCamera.setPreviewCallback(null);
-            mCamera.unlock();
             mCamera.release();
             mCamera = null;
         }
@@ -362,45 +304,54 @@ public class PairFragment extends Fragment implements Camera.PreviewCallback, Pa
             pairScanner.stop();
             pairScanner = null;
         }
+        if (clear && mPreview != null) {
+            mPreview.clear();
+        }
     }
 
-    private boolean resumed;
+    private void updateCamera(Context context) {
+        if (fragmentVisible.get() && mCamera == null) {
+            startCamera(context);
+            refreshCameraPermissionInfoVisibility();
+        } else if (!fragmentVisible.get() && mCamera != null) {
+            stopCamera(true);
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean visible) {
+        super.setUserVisibleHint(visible);
+
+        fragmentVisible.set(visible);
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                updateCamera(getContext());
+            }
+        });
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        synchronized (this) {
-            this.resumed = true;
-            if (visible) {
-                startCamera(getContext());
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                updateCamera(getContext());
             }
-        }
-        Log.i(TAG, "resume");
+        });
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        synchronized (this) {
-            this.resumed = false;
-        }
-        Log.i(TAG, "pause");
-        stopCamera();
-    }
-
-    @Override
-    public void onPreviewFrame(byte[] data, Camera camera) {
-        boolean visible;
-        synchronized (this) {
-            visible = this.visible;
-            if (!visible) {
-                return;
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                // We need to let go of the camera when pausing, regardless of visibility.
+                stopCamera(false);
             }
-            if (pairScanner != null) {
-                pairScanner.pushFrame(data);
-            } else {
-                Log.e(TAG, "pairScanner null");
-            }
-        }
+        });
     }
 
     private synchronized void onPairingSuccess(final Pairing pairing) {
