@@ -48,7 +48,7 @@
             app:layout_constraintHorizontal_bias="0.0">
 
             <TextView
-                android:text="Command history empty"
+                android:text="Login history empty"
                 android:layout_height="wrap_content"
                 android:id="@+id/lastCommandText"
                 android:paddingLeft="10dp"
