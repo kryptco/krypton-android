@@ -377,8 +377,8 @@ public class Silo {
                     response.signResponse.error = "unknown error";
                     e.printStackTrace();
                 } catch (MismatchedHostKeyException e) {
-                    response.signResponse.error = "Host public key mismatched";
-                    Notifications.notifyReject(context, pairing, request, "host public key mismatched.");
+                    response.signResponse.error = "host public key mismatched";
+                    Notifications.notifyReject(context, pairing, request, "Host public key mismatched.");
                     e.printStackTrace();
                 }
             } else {
