@@ -282,7 +282,20 @@ public class BluetoothTransport extends BroadcastReceiver {
         scanningServiceUUIDS.clear();
         BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
         if (scanner != null) {
-            scanner.stopScan(scanCallback);
+            try {
+                scanner.stopScan(scanCallback);
+            } catch (NullPointerException e) {
+                //  XXX: internal android bluetooth bug caused by
+                //  android.os.Parcel.readException (Parcel.java:1626)
+                //  android.os.Parcel.readException (Parcel.java:1573)
+                //  android.bluetooth.IBluetoothGatt$Stub$Proxy.unregisterClient (IBluetoothGatt.java:1010)
+                //  android.bluetooth.le.BluetoothLeScanner$BleScanCallbackWrapper.stopLeScan (BluetoothLeScanner.java:338)
+                //  android.bluetooth.le.BluetoothLeScanner.stopScan (BluetoothLeScanner.java:193)
+                //  co.krypt.kryptonite.transport.BluetoothTransport.scanLogic (BluetoothTransport.java:285)
+                //  co.krypt.kryptonite.transport.BluetoothTransport$4.run (BluetoothTransport.java:351)
+                //  java.lang.Thread.run (Thread.java:818)
+                e.printStackTrace();
+            }
             if (serviceUUIDSToScan.size() > 0) {
                 scanner.startScan(scanFilters, scanSettings, scanCallback);
                 scanningServiceUUIDS.addAll(serviceUUIDSToScan);
