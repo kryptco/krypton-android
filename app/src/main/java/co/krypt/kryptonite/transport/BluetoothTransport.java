@@ -281,7 +281,7 @@ public class BluetoothTransport extends BroadcastReceiver {
 
         scanningServiceUUIDS.clear();
         BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
-        if (scanner != null) {
+        if (scanner != null && adapter.isEnabled()) {
             try {
                 scanner.stopScan(scanCallback);
             } catch (NullPointerException e) {
