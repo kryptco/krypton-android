@@ -22,6 +22,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.crash.FirebaseCrash;
+
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -286,9 +288,10 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
             mPreview.setup(mCamera);
             mCamera.startPreview();
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Log.d(TAG, "Error setting up camera: " + e.getMessage());
             e.printStackTrace();
+            FirebaseCrash.report(e);
         }
     }
 
