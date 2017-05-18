@@ -88,7 +88,7 @@ public class GenerateFragment extends Fragment {
                     progress.setStage(OnboardingStage.ENTER_EMAIL);
                     EnterEmailFragment enterEmailFragment = new EnterEmailFragment();
                     final Activity activity = context;
-                    if (activity != null && !activity.isDestroyed()) {
+                    if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
                         context.getSupportFragmentManager().beginTransaction()
                                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
                                 .hide(generatingFragment)
@@ -100,7 +100,7 @@ public class GenerateFragment extends Fragment {
                     e.printStackTrace();
                     progress.reset();
                     final Activity activity = context;
-                    if (activity != null && !activity.isDestroyed()) {
+                    if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
                         getActivity().getSupportFragmentManager().beginTransaction()
                                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
                                 .replace(R.id.activity_onboarding, new GenerateFragment()).commitAllowingStateLoss();
