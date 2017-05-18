@@ -87,9 +87,9 @@ public class GenerateFragment extends Fragment {
                     }
                     progress.setStage(OnboardingStage.ENTER_EMAIL);
                     EnterEmailFragment enterEmailFragment = new EnterEmailFragment();
-                    final Activity activity = context;
+                    final FragmentActivity activity = context;
                     if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
-                        context.getSupportFragmentManager().beginTransaction()
+                        activity.getSupportFragmentManager().beginTransaction()
                                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
                                 .hide(generatingFragment)
                                 .add(R.id.activity_onboarding, enterEmailFragment)
@@ -99,9 +99,9 @@ public class GenerateFragment extends Fragment {
                 } catch (InvalidKeyException | IOException | CryptoException e) {
                     e.printStackTrace();
                     progress.reset();
-                    final Activity activity = context;
+                    final FragmentActivity activity = context;
                     if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
-                        getActivity().getSupportFragmentManager().beginTransaction()
+                        activity.getSupportFragmentManager().beginTransaction()
                                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
                                 .replace(R.id.activity_onboarding, new GenerateFragment()).commitAllowingStateLoss();
                     }
