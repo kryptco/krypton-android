@@ -391,9 +391,13 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
     }
 
     private synchronized void onPairingFailure(final Pairing pairing) {
-        Silo.shared(getContext()).unpair(pairing, false);
+        Silo silo = Silo.shared(getContext());
+        silo.unpair(pairing, false);
+        
         pendingPairingQR = null;
-        new Analytics(getContext()).postEvent("device", "pair", "failed", null, false);
+
+        new Analytics(silo.context).postEvent("device", "pair", "failed", null, false);
+
         new Handler(Looper.getMainLooper()).post(
                 new Runnable() {
                     @Override

@@ -72,7 +72,7 @@ public class Silo {
     private HashMap<UUID, Pairing> activePairingsByUUID;
     private HashMap<Pairing, SQSPoller> pollers;
     private final BluetoothTransport bluetoothTransport;
-    private final Context context;
+    public final Context context;
     private final HashMap<Pairing, Long> lastRequestTimeSeconds = new HashMap<>();
     private final LruCache<String, Response> responseMemCacheByRequestID = new LruCache<>(8192);
     private DiskLruCache responseDiskCacheByRequestID;
