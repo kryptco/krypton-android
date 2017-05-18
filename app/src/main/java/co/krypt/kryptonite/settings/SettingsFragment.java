@@ -24,6 +24,7 @@ import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.crypto.KeyManager;
+import co.krypt.kryptonite.crypto.KeyType;
 import co.krypt.kryptonite.knownhosts.KnownHostsFragment;
 import co.krypt.kryptonite.log.AuditLogContentProvider;
 import co.krypt.kryptonite.me.MeStorage;
@@ -77,7 +78,7 @@ public class SettingsFragment extends Fragment {
                                 try {
                                     new Analytics(getContext()).postEvent("keypair", "destroy", null, null, false);
                                     Silo.shared(getContext()).unpairAll();
-                                    KeyManager.deleteKeyPair(KeyManager.MY_RSA_KEY_TAG);
+                                    KeyManager.deleteAllMeKeyPairs(getContext());
                                     new MeStorage(getContext()).delete();
                                     startActivity(new Intent(getContext(), OnboardingActivity.class));
                                 } catch (Exception e) {

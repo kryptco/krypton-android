@@ -4,6 +4,8 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="curl_install">$ curl https://krypt.co/kr | sh\n$ kr pair</string>
+    <string name="rsa_key_type">rsa</string>
+    <string name="ed25519_key_type">ed25519</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

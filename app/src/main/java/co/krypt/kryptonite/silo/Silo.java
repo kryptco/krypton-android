@@ -26,7 +26,8 @@ import java.util.UUID;
 
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.crypto.KeyManager;
-import co.krypt.kryptonite.crypto.SSHKeyPair;
+import co.krypt.kryptonite.crypto.KeyType;
+import co.krypt.kryptonite.crypto.SSHKeyPairI;
 import co.krypt.kryptonite.db.OpenDatabaseHelper;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.MismatchedHostKeyException;
@@ -327,7 +328,7 @@ public class Silo {
             response.signResponse = new SignResponse();
             if (signatureAllowed) {
                 try {
-                    SSHKeyPair key = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
+                    SSHKeyPairI key = KeyManager.loadMeRSAOrEdKeyPair(context);
                     if (MessageDigest.isEqual(request.signRequest.publicKeyFingerprint, key.publicKeyFingerprint())) {
                         if (signRequest.verifyHostName()) {
                             String hostName = signRequest.hostAuth.hostNames[0];

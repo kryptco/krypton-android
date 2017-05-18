@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 
 import co.krypt.kryptonite.crypto.KeyManager;
+import co.krypt.kryptonite.crypto.KeyType;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.protocol.Profile;
@@ -21,9 +22,11 @@ public class MeStorage {
     private static final String TAG = "MeStorage";
     private static Object lock = new Object();
     private SharedPreferences preferences;
+    private final Context context;
 
     public MeStorage(Context context) {
         preferences = context.getSharedPreferences("ME_MANAGER_PREFERENCES", Context.MODE_PRIVATE);
+        this.context = context;
     }
 
     public Profile load() {
@@ -39,7 +42,7 @@ public class MeStorage {
                 return null;
             }
             try {
-                me.sshWirePublicKey = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG).publicKeySSHWireFormat();
+                me.sshWirePublicKey = KeyManager.loadMeRSAOrEdKeyPair(context).publicKeySSHWireFormat();
             } catch (InvalidKeyException | IOException | CryptoException e) {
                 e.printStackTrace();
             }

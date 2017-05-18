@@ -55,8 +55,9 @@ public class OnboardingActivity extends FragmentActivity {
                 fragmentTransaction.add(R.id.activity_onboarding, generateFragment).commit();
                 break;
             case GENERATING:
-                generatingFragment = new GeneratingFragment();
-                fragmentTransaction.add(R.id.activity_onboarding, generatingFragment).commit();
+                //  generation must have failed, start from beginning
+                generateFragment = new GenerateFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, generateFragment).commit();
                 break;
             case ENTER_EMAIL:
                 enterEmailFragment = new EnterEmailFragment();

@@ -1,7 +1,6 @@
 package co.krypt.kryptonite.onboarding;
 
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -16,7 +15,8 @@ import java.security.InvalidKeyException;
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.crypto.KeyManager;
-import co.krypt.kryptonite.crypto.SSHKeyPair;
+import co.krypt.kryptonite.crypto.KeyType;
+import co.krypt.kryptonite.crypto.SSHKeyPairI;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.protocol.Profile;
@@ -26,6 +26,7 @@ import co.krypt.kryptonite.protocol.Profile;
  */
 public class GenerateFragment extends Fragment {
     private static final String TAG = "GenerateFragment";
+    private Button keyTypeButton;
 
     public GenerateFragment() {
     }
@@ -41,10 +42,32 @@ public class GenerateFragment extends Fragment {
                 next();
             }
         });
+
+        keyTypeButton = (Button) root.findViewById(R.id.keyTypeButton);
+        keyTypeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (keyTypeButton.getText().equals(getString(R.string.rsa_key_type))) {
+                    keyTypeButton.setText(R.string.ed25519_key_type);
+                } else {
+                    keyTypeButton.setText(R.string.rsa_key_type);
+                }
+            }
+        });
         return root;
     }
 
     private void next() {
+        KeyType keyType = null;
+        if (keyTypeButton.getText().equals(getString(R.string.ed25519_key_type))) {
+            keyType = KeyType.Ed25519;
+        } else if (keyTypeButton.getText().equals(getString(R.string.rsa_key_type))) {
+            keyType = KeyType.RSA;
+        } else {
+            keyType = KeyType.RSA;
+        }
+        final KeyType finalKeyType = keyType;
+
         final FragmentActivity context = getActivity();
         final OnboardingProgress progress = new OnboardingProgress(getContext());
         progress.setStage(OnboardingStage.GENERATING);
@@ -66,7 +89,8 @@ public class GenerateFragment extends Fragment {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    SSHKeyPair pair = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
+
+                    SSHKeyPairI pair = KeyManager.loadOrGenerateKeyPair(context, finalKeyType, KeyManager.ME_TAG);
                     new MeStorage(context).set(new Profile("", pair.publicKeySSHWireFormat()));
 
                     final long genTime = System.currentTimeMillis() - start;

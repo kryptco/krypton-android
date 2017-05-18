@@ -26,7 +26,7 @@ import java.math.BigInteger;
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.crypto.KeyManager;
-import co.krypt.kryptonite.crypto.SSHKeyPair;
+import co.krypt.kryptonite.crypto.SSHKeyPairI;
 import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.protocol.Profile;
 import co.krypt.kryptonite.uiutils.MLRoundedImageView;
@@ -85,7 +85,7 @@ public class EnterEmailFragment extends Fragment {
 
         MLRoundedImageView identiconImage = (MLRoundedImageView) root.findViewById(R.id.identicon);
         try {
-            SSHKeyPair keyPair = KeyManager.loadOrGenerateKeyPair(KeyManager.MY_RSA_KEY_TAG);
+            SSHKeyPairI keyPair = KeyManager.loadMeRSAOrEdKeyPair(getContext());
             BigInteger hash = new BigInteger(keyPair.publicKeyFingerprint());
 
             NineBlockIdenticonRenderer renderer = new NineBlockIdenticonRenderer();

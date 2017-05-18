@@ -27,11 +27,11 @@ import co.krypt.kryptonite.exception.CryptoException;
  * Copyright 2016. KryptCo, Inc.
  */
 
-public class SSHKeyPair {
+public class RSASSHKeyPair implements SSHKeyPairI {
     private final @NonNull KeyPair keyPair;
     private static final String TAG = "SSHKeyPair";
 
-    SSHKeyPair(@NonNull KeyPair keyPair) {
+    RSASSHKeyPair(@NonNull KeyPair keyPair) {
         this.keyPair = keyPair;
     }
 
@@ -152,7 +152,7 @@ public class SSHKeyPair {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SSHKeyPair that = (SSHKeyPair) o;
+        RSASSHKeyPair that = (RSASSHKeyPair) o;
 
         return publicKeyDERBase64().equals(that.publicKeyDERBase64());
     }
