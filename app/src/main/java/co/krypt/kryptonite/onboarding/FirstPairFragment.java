@@ -125,7 +125,13 @@ public class FirstPairFragment extends Fragment {
         super.onDestroyView();
     }
 
-    private void next(String deviceName) {
+    private boolean proceeding = false;
+
+    private synchronized void next(String deviceName) {
+        if (proceeding) {
+            return;
+        }
+        proceeding = true;
         new OnboardingProgress(getContext()).setStage(OnboardingStage.TEST_SSH);
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         TestSSHFragment testSSHFragment = TestSSHFragment.newInstance(deviceName);
@@ -134,7 +140,11 @@ public class FirstPairFragment extends Fragment {
                 .hide(this).add(R.id.activity_onboarding, testSSHFragment).show(testSSHFragment).commit();
     }
 
-    private void skip() {
+    private synchronized void skip() {
+        if (proceeding) {
+            return;
+        }
+        proceeding = true;
         new OnboardingProgress(getContext()).reset();
         startActivity(new Intent(getActivity(), MainActivity.class));
         getActivity().finish();
