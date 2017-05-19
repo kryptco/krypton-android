@@ -24,7 +24,6 @@ import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.crypto.KeyManager;
-import co.krypt.kryptonite.crypto.KeyType;
 import co.krypt.kryptonite.knownhosts.KnownHostsFragment;
 import co.krypt.kryptonite.log.AuditLogContentProvider;
 import co.krypt.kryptonite.me.MeStorage;

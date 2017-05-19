@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 
 import co.krypt.kryptonite.crypto.KeyManager;
-import co.krypt.kryptonite.crypto.KeyType;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.protocol.Profile;

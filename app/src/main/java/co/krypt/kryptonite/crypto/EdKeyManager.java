@@ -2,19 +2,12 @@ package co.krypt.kryptonite.crypto;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.security.keystore.KeyInfo;
-import android.util.Log;
 
 import com.amazonaws.util.Base64;
 
 import org.libsodium.jni.Sodium;
 
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
 
 import co.krypt.kryptonite.exception.CryptoException;
 

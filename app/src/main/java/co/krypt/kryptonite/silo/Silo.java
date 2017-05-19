@@ -26,7 +26,6 @@ import java.util.UUID;
 
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.crypto.KeyManager;
-import co.krypt.kryptonite.crypto.KeyType;
 import co.krypt.kryptonite.crypto.SSHKeyPairI;
 import co.krypt.kryptonite.db.OpenDatabaseHelper;
 import co.krypt.kryptonite.exception.CryptoException;
