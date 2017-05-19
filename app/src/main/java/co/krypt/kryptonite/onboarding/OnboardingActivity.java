@@ -19,6 +19,7 @@ import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.approval.ApprovalDialog;
 import co.krypt.kryptonite.policy.LocalAuthentication;
+import co.krypt.kryptonite.silo.Silo;
 
 import static co.krypt.kryptonite.MainActivity.CAMERA_PERMISSION_GRANTED_ACTION;
 import static co.krypt.kryptonite.MainActivity.CAMERA_PERMISSION_REQUEST;
@@ -41,7 +42,6 @@ public class OnboardingActivity extends FragmentActivity {
 
         OnboardingProgress progress = new OnboardingProgress(getApplicationContext());
         GenerateFragment generateFragment;
-        GeneratingFragment generatingFragment;
         EnterEmailFragment enterEmailFragment;
         FirstPairFragment firstPairFragment;
         TestSSHFragment testSSHFragment;
@@ -148,6 +148,18 @@ public class OnboardingActivity extends FragmentActivity {
             case TEST_SSH:
                 break;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Silo.shared(getApplicationContext()).start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Silo.shared(getApplicationContext()).stop();
     }
 
     @Override
