@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -26,9 +27,17 @@ import co.krypt.kryptonite.protocol.Profile;
  */
 public class GenerateFragment extends Fragment {
     private static final String TAG = "GenerateFragment";
+    private static final String DEFAULT_KEY_TYPE_KEY = "default_key_type";
     private Button keyTypeButton;
+    private String defaultKeyType = null;
 
     public GenerateFragment() {
+    }
+
+    @Override
+    public void setArguments(Bundle args) {
+        super.setArguments(args);
+        defaultKeyType = args.getString(DEFAULT_KEY_TYPE_KEY);
     }
 
     @Override
@@ -54,6 +63,9 @@ public class GenerateFragment extends Fragment {
                 }
             }
         });
+        if (defaultKeyType != null) {
+            keyTypeButton.setText(defaultKeyType);
+        }
         return root;
     }
 
@@ -125,9 +137,21 @@ public class GenerateFragment extends Fragment {
                     progress.reset();
                     final FragmentActivity activity = context;
                     if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
+                        GenerateFragment generateFragment = new GenerateFragment();
+                        if (finalKeyType == KeyType.RSA) {
+                            Bundle args = new Bundle();
+                            args.putString(DEFAULT_KEY_TYPE_KEY, activity.getString(R.string.ed25519_key_type));
+                            generateFragment.setArguments(args);
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(activity, "Error generating rsa key, try again to generate an ed25519 key.", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
                         activity.getSupportFragmentManager().beginTransaction()
                                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
-                                .replace(R.id.activity_onboarding, new GenerateFragment()).commitAllowingStateLoss();
+                                .replace(R.id.activity_onboarding, generateFragment).commitAllowingStateLoss();
                     }
                 }
 

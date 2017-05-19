@@ -61,19 +61,7 @@ public class RSAKeyManager implements KeyManagerI {
                 long genStop = System.currentTimeMillis();
                 Log.i(LOG_TAG, "KeyGen took " + String.valueOf((genStop - genStart)));
                 return new RSASSHKeyPair(keyPair);
-            } catch (IOException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (CertificateException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (NoSuchAlgorithmException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (UnrecoverableEntryException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (InvalidAlgorithmParameterException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (NoSuchProviderException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (KeyStoreException e) {
+            } catch (IOException | KeyStoreException | NoSuchProviderException | InvalidAlgorithmParameterException | UnrecoverableEntryException | NoSuchAlgorithmException | CertificateException e) {
                 throw new CryptoException(e.getMessage());
             }
         }
