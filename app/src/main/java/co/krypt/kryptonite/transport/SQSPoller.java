@@ -27,6 +27,7 @@ public class SQSPoller {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG, "starting polling " + pairing.workstationName);
                 while (true) {
                     if (stopped.get()) {
                         Log.d(TAG, "stopped polling " + pairing.workstationName);
