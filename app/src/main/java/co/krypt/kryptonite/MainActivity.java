@@ -240,9 +240,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        super.onPause();
-        Log.i(TAG, "pause");
         silo.stop();
+        Log.i(TAG, "pause");
+        super.onPause();
     }
 
     @Override

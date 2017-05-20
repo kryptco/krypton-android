@@ -158,8 +158,8 @@ public class OnboardingActivity extends FragmentActivity {
 
     @Override
     protected void onPause() {
-        super.onPause();
         Silo.shared(getApplicationContext()).stop();
+        super.onPause();
     }
 
     @Override
