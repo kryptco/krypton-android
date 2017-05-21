@@ -46,7 +46,7 @@ public class OnboardingProgress {
 
     public void setStage(OnboardingStage stage) {
         synchronized (lock) {
-            preferences.edit().putString(CURRENT_STAGE_KEY, stage.toString()).commit();
+            preferences.edit().putString(CURRENT_STAGE_KEY, stage.toString()).apply();
         }
     }
 

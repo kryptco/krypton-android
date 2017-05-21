@@ -91,7 +91,7 @@ public class Pairings {
 
     public void clearOldPairings() {
         synchronized (lock) {
-            preferences.edit().remove(OLD_PAIRINGS_KEY).commit();
+            preferences.edit().remove(OLD_PAIRINGS_KEY).apply();
         }
     }
 
@@ -100,7 +100,7 @@ public class Pairings {
         for (Pairing pairing : pairings) {
             jsonPairings.add(JSON.toJson(pairing));
         }
-        preferences.edit().putStringSet(PAIRINGS_KEY, jsonPairings).commit();
+        preferences.edit().putStringSet(PAIRINGS_KEY, jsonPairings).apply();
         return pairings;
     }
 
@@ -126,7 +126,7 @@ public class Pairings {
             if (!approved) {
                 editor.putLong(pairingApprovedUntilKey(pairingUUID), -1);
             }
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -149,7 +149,7 @@ public class Pairings {
             preferences.edit()
                     .putLong(pairingApprovedUntilKey(pairingUUID), time)
                     .putBoolean(pairingApprovedKey(pairingUUID), false)
-                    .commit();
+                    .apply();
         }
     }
 
@@ -208,7 +208,7 @@ public class Pairings {
             prefs.remove(getSettingsKey(pairing, REQUIRE_UNKNOWN_HOST_MANUAL_APPROVAL))
                     .remove(pairingApprovedKey(pairing.getUUIDString()))
                     .remove(pairingApprovedUntilKey(pairing.getUUIDString()))
-                    .commit();
+                    .apply();
         }
     }
 
@@ -284,7 +284,7 @@ public class Pairings {
 
     public void setRequireUnknownHostManualApproval(Pairing pairing, boolean requireApproval) {
         synchronized (lock) {
-            preferences.edit().putBoolean(getSettingsKey(pairing, REQUIRE_UNKNOWN_HOST_MANUAL_APPROVAL), requireApproval).commit();
+            preferences.edit().putBoolean(getSettingsKey(pairing, REQUIRE_UNKNOWN_HOST_MANUAL_APPROVAL), requireApproval).apply();
         }
     }
 }

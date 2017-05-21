@@ -27,7 +27,7 @@ public class Settings {
 
     public void setApprovedNotificationsEnabled(boolean b) {
         synchronized (lock) {
-            preferences.edit().putBoolean(ENABLE_APPROVED_NOTIFICATIONS_KEY, b).commit();
+            preferences.edit().putBoolean(ENABLE_APPROVED_NOTIFICATIONS_KEY, b).apply();
         }
     }
 
@@ -39,7 +39,7 @@ public class Settings {
 
     public void setSilenceNotifications(boolean b) {
         synchronized (lock) {
-            preferences.edit().putBoolean(SILENCE_NOTIFICATIONS_KEY, b).commit();
+            preferences.edit().putBoolean(SILENCE_NOTIFICATIONS_KEY, b).apply();
         }
     }
 

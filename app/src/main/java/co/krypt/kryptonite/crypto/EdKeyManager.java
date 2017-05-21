@@ -37,7 +37,7 @@ public class EdKeyManager implements KeyManagerI {
                 if (result != 0) {
                     throw new CryptoException("non-zero sodium result: " + result);
                 }
-                preferences.edit().putString(SSH_KEYPAIR_KEY + "." + tag, Base64.encodeAsString(sk)).commit();
+                preferences.edit().putString(SSH_KEYPAIR_KEY + "." + tag, Base64.encodeAsString(sk)).apply();
                 return new EdSSHKeyPair(pk, sk);
             }
             byte[] sk = Base64.decode(skB64);
@@ -58,7 +58,7 @@ public class EdKeyManager implements KeyManagerI {
 
     public void deleteKeyPair(String tag) throws Exception {
         synchronized (lock) {
-            preferences.edit().putString(SSH_KEYPAIR_KEY + "." + tag, null).commit();
+            preferences.edit().putString(SSH_KEYPAIR_KEY + "." + tag, null).apply();
         }
     }
 
