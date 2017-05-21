@@ -168,7 +168,7 @@ public class SettingsFragment extends Fragment {
                     startActivity(sendIntent);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Toast.makeText(v.getContext(), "Error exporting audit log: " + e.getMessage(), Toast.LENGTH_LONG);
+                    Toast.makeText(v.getContext(), "Error exporting audit log: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         });
