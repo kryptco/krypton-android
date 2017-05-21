@@ -29,6 +29,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
@@ -82,10 +83,10 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
     };
 
     private PairScanner pairScanner;
-    private PairingQR pendingPairingQR;
+    private AtomicReference<PairingQR> pendingPairingQR = new AtomicReference<>();
 
     public PairingQR getPendingPairingQR() {
-        return pendingPairingQR;
+        return pendingPairingQR.get();
     }
 
     public PairFragment() {
@@ -93,9 +94,8 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
         threadPool = new ThreadPoolExecutor(1, 1, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
     }
 
-    public synchronized void onPairingScanned(PairingQR pairingQR) {
-        if (pendingPairingQR == null) {
-            pendingPairingQR = pairingQR;
+    public void onPairingScanned(PairingQR pairingQR) {
+        if (pendingPairingQR.compareAndSet(null, pairingQR)) {
             PairDialogFragment pairDialog = new PairDialogFragment();
             pairDialog.setTargetFragment(this, 0);
             pairDialog.show(getFragmentManager(), "PAIR_NEW_DEVICE");
@@ -356,121 +356,100 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
         });
     }
 
-    private synchronized void onPairingSuccess(final Pairing pairing) {
+    private void onPairingSuccess(final Pairing pairing) {
         Intent successIntent = new Intent(PAIRING_SUCCESS_ACTION);
         successIntent.putExtra("deviceName", pairing.workstationName);
         getContext().sendBroadcast(successIntent);
         new Analytics(getContext()).postEvent("device", "pair", "success", null, false);
 
-        new Handler(Looper.getMainLooper()).post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        pairingStatusText.setText("Paired with\n" + pairing.workstationName);
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Thread.sleep(2000);
-                                    synchronized (PairFragment.this) {
-                                        pendingPairingQR = null;
-                                    }
-                                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            pairingStatusView.setVisibility(View.INVISIBLE);
-                                        }
-                                    });
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }).start();
-                        pairingStatusView.setVisibility(View.VISIBLE);
-                    }
-                }
-        );
+        pairingStatusText.setText("Paired with\n" + pairing.workstationName);
+        pairingStatusView.setVisibility(View.VISIBLE);
+
+        pairingStatusView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                pendingPairingQR.set(null);
+                pairingStatusView.setVisibility(View.INVISIBLE);
+            }
+        }, 2000);
     }
 
-    private synchronized void onPairingFailure(final Pairing pairing) {
+    private void onPairingFailure(final Pairing pairing) {
         Silo silo = Silo.shared(getContext());
         silo.unpair(pairing, false);
-        
-        pendingPairingQR = null;
+
+        pendingPairingQR.set(null);
 
         new Analytics(silo.context).postEvent("device", "pair", "failed", null, false);
 
-        new Handler(Looper.getMainLooper()).post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        pairingStatusText.setText("Failed to pair with\n" + pairing.workstationName);
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Thread.sleep(2000);
-                                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            pairingStatusView.setVisibility(View.INVISIBLE);
-                                        }
-                                    });
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }).start();
-                        pairingStatusView.setVisibility(View.VISIBLE);
-                    }
-                }
-        );
-    }
+        pairingStatusText.setText("Failed to pair with\n" + pairing.workstationName);
+        pairingStatusView.setVisibility(View.VISIBLE);
 
-    @Override
-    public synchronized void pair() {
-        Log.i(TAG, "pair");
-        if (pendingPairingQR != null) {
-            final PairingQR qr = pendingPairingQR;
-            try {
-                final Pairing pairing = Silo.shared(getContext()).pair(qr);
-                final long pairTime = System.currentTimeMillis();
-                new Handler(Looper.getMainLooper()).post(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                pairingStatusText.setText("Pairing with\n" + qr.workstationName);
-                                pairingStatusView.setVisibility(View.VISIBLE);
-                            }
-                        });
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while((System.currentTimeMillis() - pairTime) < 20000) {
-                            if (Silo.shared(getContext()).hasActivity(pairing)) {
-                                onPairingSuccess(pairing);
-                                return;
-                            }
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                                return;
-                            }
-                        }
-                        onPairingFailure(pairing);
-                    }
-                }).start();
-            } catch (CryptoException | TransportException e) {
-                e.printStackTrace();
+        pairingStatusView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                pairingStatusView.setVisibility(View.INVISIBLE);
             }
-        } else {
-            Log.e(TAG, "pendingQR null");
-        }
+        }, 2000);
+    }
+
+    public void pairingReady(final Pairing pairing) {
+        final long pairTime = System.currentTimeMillis();
+        pairingStatusText.setText("Pairing with\n" + pairing.workstationName);
+        pairingStatusView.setVisibility(View.VISIBLE);
+
+        final Runnable checker = new Runnable() {
+            @Override
+            public void run() {
+                if (Silo.shared(getContext()).hasActivity(pairing)) {
+                    onPairingSuccess(pairing);
+                } else if ((System.currentTimeMillis() - pairTime) >= 20000) {
+                    onPairingFailure(pairing);
+                } else {
+                    // Wait a second to check again.
+                    pairingStatusView.postDelayed(this, 1000);
+                }
+            }
+        };
+
+        checker.run();
     }
 
     @Override
-    public synchronized void cancel() {
-        pendingPairingQR = null;
+    public void pair() {
+        Log.i(TAG, "pair");
+        final PairingQR qr = pendingPairingQR.get();
+        if (qr == null) {
+            Log.e(TAG, "pendingQR null");
+            return;
+        }
+
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // This part contains crypto, so we run on a background thread. If the crypto
+                    // is proven to be fast enough for the UI thread on slower devices, then this
+                    // thread should be removed to greatly simplify the code.
+                    final Pairing pairing = Pairing.generate(qr);
+                    Silo.shared(getContext()).pair(pairing);
+
+                    pairingStatusView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            pairingReady(pairing);
+                        }
+                    });
+                } catch (CryptoException | TransportException e) {
+                    pendingPairingQR.set(null);
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void cancel() {
+        pendingPairingQR.set(null);
     }
 }
