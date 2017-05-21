@@ -74,15 +74,20 @@ public class SettingsFragment extends Fragment {
                         new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    new Analytics(getContext()).postEvent("keypair", "destroy", null, null, false);
-                                    Silo.shared(getContext()).unpairAll();
-                                    KeyManager.deleteAllMeKeyPairs(getContext());
-                                    new MeStorage(getContext()).delete();
-                                    startActivity(new Intent(getContext(), OnboardingActivity.class));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            new Analytics(getContext()).postEvent("keypair", "destroy", null, null, false);
+                                            Silo.shared(getContext()).unpairAll();
+                                            KeyManager.deleteAllMeKeyPairs(getContext());
+                                            new MeStorage(getContext()).delete();
+                                            startActivity(new Intent(getContext(), OnboardingActivity.class));
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }).start();
                             }
                         });
             }

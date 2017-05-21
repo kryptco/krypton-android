@@ -62,21 +62,14 @@ public class PairDialogFragment extends DialogFragment {
                 .setPositiveButton("Pair", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         if (getTargetFragment() instanceof PairListener) {
-                            Runnable onPair =
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            final PairListener listener = (PairListener) getTargetFragment();
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    //TODO: detect existing pairings
-                                                    analytics.postEvent("device", "pair", "new", null, false);
-                                                    listener.pair();
-                                                }
-                                            }).start();
-                                        }
-                                    };
+                            Runnable onPair = new Runnable() {
+                                @Override
+                                public void run() {
+                                    final PairListener listener = (PairListener) getTargetFragment();
+                                    analytics.postEvent("device", "pair", "new", null, false);
+                                    listener.pair();
+                                }
+                            };
                             Activity activity = getActivity();
                             if (activity instanceof OnboardingActivity) {
                                 onPair.run();
@@ -94,13 +87,8 @@ public class PairDialogFragment extends DialogFragment {
                     public void onClick(DialogInterface dialog, int id) {
                         if (getTargetFragment() instanceof PairListener) {
                             final PairListener listener = (PairListener) getTargetFragment();
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    analytics.postEvent("device", "pair", "reject", null, false);
-                                    listener.cancel();
-                                }
-                            }).start();
+                            analytics.postEvent("device", "pair", "reject", null, false);
+                            listener.cancel();
                         }
                     }
                 });

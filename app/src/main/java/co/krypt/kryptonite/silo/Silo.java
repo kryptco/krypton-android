@@ -158,8 +158,7 @@ public class Silo {
         }
     }
 
-    public Pairing pair(PairingQR pairingQR) throws CryptoException, TransportException {
-        Pairing pairing = Pairing.generate(pairingQR);
+    public Pairing pair(Pairing pairing) throws CryptoException, TransportException {
         synchronized (pairingsLock) {
             Pairing oldPairing = activePairingsByUUID.get(pairing.uuid);
             if (oldPairing != null) {

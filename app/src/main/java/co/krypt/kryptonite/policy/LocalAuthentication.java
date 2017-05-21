@@ -29,7 +29,7 @@ public class LocalAuthentication {
     public static synchronized void onSuccess() {
         final Runnable successCallback = lastSuccessCallback;
         if (successCallback != null) {
-            new Thread(successCallback).start();
+            successCallback.run();
         }
         lastSuccessCallback = null;
     }
