@@ -72,7 +72,7 @@ public class Analytics {
                             connection.setRequestMethod("PUT");
                             try {
                                 InputStream in = new BufferedInputStream(connection.getInputStream());
-                                preferences.edit().putString(PUBLISHED_EMAIL_KEY, email);
+                                preferences.edit().putString(PUBLISHED_EMAIL_KEY, email).apply();
                             } finally {
                                 connection.disconnect();
                             }
