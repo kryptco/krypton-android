@@ -42,7 +42,7 @@ public class Analytics {
     public String getClientID() {
         synchronized (lock) {
             if (!preferences.contains(CLIENT_ID_KEY)) {
-                preferences.edit().putString(CLIENT_ID_KEY, Base64.encodeAsString(SecureRandom.getSeed(16))).commit();
+                preferences.edit().putString(CLIENT_ID_KEY, Base64.encodeAsString(SecureRandom.getSeed(16))).apply();
             }
             return preferences.getString(CLIENT_ID_KEY, "");
         }
@@ -164,7 +164,7 @@ public class Analytics {
     public void setAnalyticsDisabled(boolean disabled) {
         synchronized (lock) {
             postEvent("analytics", disabled ? "disabled" : "enabled", null, null, true);
-            preferences.edit().putBoolean(ANALYTICS_DISABLED_KEY, disabled).commit();
+            preferences.edit().putBoolean(ANALYTICS_DISABLED_KEY, disabled).apply();
         }
     }
 }

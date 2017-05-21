@@ -51,13 +51,13 @@ public class MeStorage {
 
     public void delete() {
         synchronized (lock) {
-            preferences.edit().putString("ME", "").commit();
+            preferences.edit().putString("ME", "").apply();
         }
     }
 
     public void set(Profile profile) {
         synchronized (lock) {
-            preferences.edit().putString("ME", JSON.toJson(profile)).commit();
+            preferences.edit().putString("ME", JSON.toJson(profile)).apply();
         }
     }
 
