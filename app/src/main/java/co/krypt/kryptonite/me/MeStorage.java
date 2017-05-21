@@ -19,7 +19,7 @@ import co.krypt.kryptonite.protocol.Profile;
 
 public class MeStorage {
     private static final String TAG = "MeStorage";
-    private static Object lock = new Object();
+    private static final Object lock = new Object();
     private SharedPreferences preferences;
     private final Context context;
 

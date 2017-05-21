@@ -28,7 +28,7 @@ public class Analytics {
     public static final String ANALYTICS_DISABLED_KEY = "ANALYTICS_DISABLED";
     public static final String CLIENT_ID_KEY = "CLIENT_ID";
     public static final String PUBLISHED_EMAIL_KEY = "PUBLISHED_EMAIL";
-    private static Object lock = new Object();
+    private static final Object lock = new Object();
     private SharedPreferences preferences;
 
     private static final String TRACKING_ID() {
