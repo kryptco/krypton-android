@@ -26,7 +26,7 @@ import co.krypt.kryptonite.protocol.JSON;
 public class Pairings {
     private static final String OLD_PAIRINGS_KEY = "PAIRINGS";
     private static final String PAIRINGS_KEY = "PAIRINGS_2";
-    private static Object lock = new Object();
+    private static final Object lock = new Object();
     private final SharedPreferences preferences;
     private final Context context;
     private final Analytics analytics;
