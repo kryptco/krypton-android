@@ -65,6 +65,7 @@ public class PairDialogFragment extends DialogFragment {
                             Runnable onPair = new Runnable() {
                                 @Override
                                 public void run() {
+                                    //TODO: detect existing pairings
                                     final PairListener listener = (PairListener) getTargetFragment();
                                     analytics.postEvent("device", "pair", "new", null, false);
                                     listener.pair();
