@@ -118,7 +118,30 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
             }
         });
 
+        onDeviceLogReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                List<SignatureLog> signatureLogs = SignatureLog.sortByTimeDescending(
+                        Silo.shared(getContext()).pairings().getLogs(pairingUUID));
+                signatureLogAdapter.setLogs(signatureLogs);
+            }
+        };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Pairings.ON_DEVICE_LOG_ACTION);
+        context.registerReceiver(onDeviceLogReceiver, filter);
+        Silo.shared(getContext()).pairings().registerOnSharedPreferenceChangedListener(this);
+
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        Silo.shared(getContext()).pairings().unregisterOnSharedPreferenceChangedListener(this);
+        if (attachedContext != null && onDeviceLogReceiver != null) {
+            attachedContext.unregisterReceiver(onDeviceLogReceiver);
+        }
+        onDeviceLogReceiver = null;
+        super.onDestroyView();
     }
 
     private synchronized void updateApprovalButtons() {
@@ -158,29 +181,12 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     public void onAttach(Context context) {
         super.onAttach(context);
         attachedContext = context;
-        onDeviceLogReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                List<SignatureLog> signatureLogs = SignatureLog.sortByTimeDescending(
-                        Silo.shared(getContext()).pairings().getLogs(pairingUUID));
-                signatureLogAdapter.setLogs(signatureLogs);
-            }
-        };
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Pairings.ON_DEVICE_LOG_ACTION);
-        context.registerReceiver(onDeviceLogReceiver, filter);
-        Silo.shared(getContext()).pairings().registerOnSharedPreferenceChangedListener(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        if (attachedContext != null && onDeviceLogReceiver != null) {
-            attachedContext.unregisterReceiver(onDeviceLogReceiver);
-        }
         attachedContext = null;
-        onDeviceLogReceiver = null;
-        Silo.shared(getContext()).pairings().unregisterOnSharedPreferenceChangedListener(this);
     }
 
     @Override

@@ -90,14 +90,6 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
             }
         });
 
-        populateDevices();
-        return view;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        attachedContext = context;
         onDeviceLogReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -108,17 +100,27 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
         filter.addAction(Pairings.ON_DEVICE_LOG_ACTION);
         context.registerReceiver(onDeviceLogReceiver, filter);
         Silo.shared(getContext()).pairings().registerOnSharedPreferenceChangedListener(this);
+
+        populateDevices();
+
+        return view;
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        attachedContext = context;
+    }
+
+    @Override
+    public void onDestroyView() {
+        Silo.shared(getContext()).pairings().unregisterOnSharedPreferenceChangedListener(this);
         if (attachedContext != null && onDeviceLogReceiver != null) {
             attachedContext.unregisterReceiver(onDeviceLogReceiver);
         }
         attachedContext = null;
         onDeviceLogReceiver = null;
-        Silo.shared(getContext()).pairings().unregisterOnSharedPreferenceChangedListener(this);
+        super.onDestroyView();
     }
 
     @Override
