@@ -296,7 +296,8 @@ public class Silo {
 
 
     public void handle(Pairing pairing, Request request, String communicationMedium) throws CryptoException, TransportException, IOException, InvalidKeyException, ProtocolException, NoSuchProviderException, InvalidKeySpecException {
-        if (Math.abs(request.unixSeconds - (System.currentTimeMillis() / 1000)) > 120) {
+        //  Allow 15 minutes of clock skew
+        if (Math.abs(request.unixSeconds - (System.currentTimeMillis() / 1000)) > 15 * 60) {
             throw new ProtocolException("invalid request time");
         }
 
