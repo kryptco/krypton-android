@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.sns.AmazonSNSClient;
@@ -12,6 +13,8 @@ import com.amazonaws.services.sns.model.CreatePlatformEndpointResult;
 import com.amazonaws.services.sns.model.SetEndpointAttributesRequest;
 
 import java.util.HashMap;
+
+import co.krypt.kryptonite.exception.TransportException;
 
 /**
  * Created by Kevin King on 12/5/16.
@@ -69,25 +72,29 @@ public class SNSTransport {
         this.endpointARN = arn;
     }
 
-    public synchronized void setDeviceToken(String token) {
+    public synchronized void setDeviceToken(String token) throws TransportException {
         Log.i(TAG, "refreshed device token: " + token);
         setToken(token);
         registerWithAWS();
     }
 
-    public synchronized void registerWithAWS() {
-        AmazonSNSClient client = getClient();
-        CreatePlatformEndpointRequest request = new CreatePlatformEndpointRequest()
-                .withPlatformApplicationArn(PLATFORM_APPLICATION_ARN)
-                .withToken(token);
-        CreatePlatformEndpointResult result = client.createPlatformEndpoint(request);
-        setEndpointARN(result.getEndpointArn());
+    public synchronized void registerWithAWS() throws TransportException {
+        try {
+            AmazonSNSClient client = getClient();
+            CreatePlatformEndpointRequest request = new CreatePlatformEndpointRequest()
+                    .withPlatformApplicationArn(PLATFORM_APPLICATION_ARN)
+                    .withToken(token);
+            CreatePlatformEndpointResult result = client.createPlatformEndpoint(request);
+            setEndpointARN(result.getEndpointArn());
 
-        HashMap<String, String> enabledAttribute = new HashMap<>();
-        enabledAttribute.put("Enabled", "true");
-        SetEndpointAttributesRequest enableRequest = new SetEndpointAttributesRequest()
-                .withEndpointArn(endpointARN)
-                .withAttributes(enabledAttribute);
-        client.setEndpointAttributes(enableRequest);
+            HashMap<String, String> enabledAttribute = new HashMap<>();
+            enabledAttribute.put("Enabled", "true");
+            SetEndpointAttributesRequest enableRequest = new SetEndpointAttributesRequest()
+                    .withEndpointArn(endpointARN)
+                    .withAttributes(enabledAttribute);
+            client.setEndpointAttributes(enableRequest);
+        } catch (AmazonClientException e) {
+            throw new TransportException(e.getMessage());
+        }
     }
 }
