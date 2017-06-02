@@ -316,7 +316,7 @@ public class BluetoothTransport extends BroadcastReceiver {
 
         scanningServiceUUIDS.clear();
         BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
-        if (scanner != null && adapter.isEnabled()) {
+        if (scanner != null && adapter.isEnabled() && BluetoothAdapter.STATE_ON == adapter.getState()) {
             try {
                 scanner.stopScan(scanCallback);
             } catch (NullPointerException e) {
@@ -331,7 +331,7 @@ public class BluetoothTransport extends BroadcastReceiver {
                 //  java.lang.Thread.run (Thread.java:818)
                 e.printStackTrace();
             }
-            if (BluetoothAdapter.STATE_ON == adapter.getState() && serviceUUIDSToScan.size() > 0) {
+            if (serviceUUIDSToScan.size() > 0) {
                 scanner.startScan(scanFilters, scanSettings, scanCallback);
                 scanningServiceUUIDS.addAll(serviceUUIDSToScan);
                 Log.v(TAG, "scanning for " + scanningServiceUUIDS.toString());
