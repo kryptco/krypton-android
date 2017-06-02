@@ -11,6 +11,7 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.UiThread;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -144,40 +145,48 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
     }
 
     private void refreshCameraPermissionInfoVisibility() {
-        Context context;
-        if (getParentFragment() != null) {
-            context = getParentFragment().getContext();
-        } else if (getActivity() != null) {
-            context = getActivity();
+        Log.v(TAG, "updating camera permission layout");
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                if (ContextCompat.checkSelfPermission(cameraPermissionInfoLayout.getContext(),
+                        android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    cameraPermissionInfoLayout.setVisibility(View.VISIBLE);
+                } else {
+                    cameraPermissionInfoLayout.setVisibility(View.GONE);
+                }
+            }
+        };
+        if (Looper.getMainLooper().equals(Looper.myLooper())) {
+            r.run();
         } else {
-            return;
-        }
-        if (ContextCompat.checkSelfPermission(context,
-                android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            cameraPermissionInfoLayout.setVisibility(View.VISIBLE);
-        } else {
-            cameraPermissionInfoLayout.setVisibility(View.GONE);
+            if (!cameraPermissionInfoLayout.post(r)) {
+                Log.e(TAG, "could not post to cameraPermissionInfoLayout");
+            }
         }
         refreshLocationPermissionInfoVisibility();
     }
 
     private void refreshLocationPermissionInfoVisibility() {
-        Context context;
-        if (getParentFragment() != null) {
-            context = getParentFragment().getContext();
-        } else if (getActivity() != null) {
-            context = getActivity();
+        Log.v(TAG, "updating location permission layout");
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                if ((ContextCompat.checkSelfPermission(locationPermissionLayout.getContext(),
+                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+                        &&
+                        (ContextCompat.checkSelfPermission(locationPermissionLayout.getContext(),
+                                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+                    locationPermissionLayout.setVisibility(View.VISIBLE);
+                } else {
+                    locationPermissionLayout.setVisibility(View.GONE);
+                }
+            }
+        };
+        if (Looper.getMainLooper().equals(Looper.myLooper())) {
+            r.run();
         } else {
-            return;
-        }
-        if ((ContextCompat.checkSelfPermission(context,
-                Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-                &&
-                (ContextCompat.checkSelfPermission(context,
-                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-            locationPermissionLayout.setVisibility(View.VISIBLE);
-        } else {
-            locationPermissionLayout.setVisibility(View.GONE);
+            locationPermissionLayout.post(r);
         }
     }
 
