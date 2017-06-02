@@ -1,6 +1,7 @@
 package co.krypt.kryptonite.protocol;
 
 import com.amazonaws.util.Base64;
+import com.google.firebase.crash.FirebaseCrash;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -18,9 +19,13 @@ public class HostAuth {
     @SerializedName("host_names")
     public String[] hostNames;
 
+    private static volatile boolean hasSSHWire = false;
     public static native boolean verifySessionID(final String pubkey, final String signature, final String sessionID);
 
     public boolean verifySessionID(final byte[] sessionID) {
+        if (!hasSSHWire) {
+            return false;
+        }
         if (hostKey == null || signature == null || hostNames == null) {
             return false;
         }
@@ -31,6 +36,11 @@ public class HostAuth {
     }
 
     static {
-        System.loadLibrary("sshwire");
+        try {
+            System.loadLibrary("sshwire");
+            hasSSHWire = true;
+        } catch (UnsatisfiedLinkError e) {
+            FirebaseCrash.report(e);
+        }
     }
 }
