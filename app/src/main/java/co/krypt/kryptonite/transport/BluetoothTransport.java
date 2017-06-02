@@ -59,6 +59,7 @@ public class BluetoothTransport extends BroadcastReceiver {
     private final Set<UUID> scanningServiceUUIDS = new HashSet<>();
 
     private final Set<BluetoothDevice> connectedDevices = new HashSet<>();
+    private final Set<BluetoothGatt> connectedGatts = new HashSet<>();
     private final Set<BluetoothDevice> connectingDevices = new HashSet<>();
     private final Set<BluetoothGatt> refreshedServiceCaches = new HashSet<>();
     private final Map<BluetoothDevice, Set<UUID>> discoveredServiceUUIDSByDevice = new HashMap<>();
@@ -80,6 +81,7 @@ public class BluetoothTransport extends BroadcastReceiver {
         this.manager = manager;
         this.adapter = adapter;
         final BluetoothTransport self = this;
+
         scanCallback = new ScanCallback() {
             @Override
             public void onBatchScanResults(List<ScanResult> results) {
@@ -89,6 +91,11 @@ public class BluetoothTransport extends BroadcastReceiver {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
                 self.onScanResult(callbackType, result);
+            }
+
+            @Override
+            public void onScanFailed(int errorCode) {
+                Log.e(TAG, "scan failed with error code: " + String.valueOf(errorCode));
             }
         };
 
@@ -158,15 +165,22 @@ public class BluetoothTransport extends BroadcastReceiver {
             switch (intent.getAction()) {
                 case BluetoothAdapter.ACTION_STATE_CHANGED:
                     int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
-                    switch (state) {
-                        case BluetoothAdapter.STATE_ON:
-                            connectingDevices.clear();
-                            scanLogic();
-                            break;
-                        case BluetoothAdapter.STATE_OFF:
-                            connectingDevices.clear();
-                            scanLogic();
-                            break;
+                    int previousState = intent.getIntExtra(BluetoothAdapter.EXTRA_PREVIOUS_STATE, -1);
+                    if (state != previousState) {
+                        switch (state) {
+                            case BluetoothAdapter.STATE_ON:
+                                connectingDevices.clear();
+                                scanLogic();
+                                break;
+                            case BluetoothAdapter.STATE_OFF:
+                                connectingDevices.clear();
+                                connectedDevices.clear();
+                                connectedGatts.clear();
+                                scanLogic();
+                                break;
+                        }
+                    } else {
+                        Log.v(TAG, "ignoring BluetoothAdapter state change; previous == current");
                     }
                     break;
                 case MainActivity.LOCATION_PERMISSION_GRANTED_ACTION:
@@ -212,6 +226,10 @@ public class BluetoothTransport extends BroadcastReceiver {
     }
 
     public synchronized void add(Pairing pairing) {
+        for (BluetoothGatt connectedGatt: connectedGatts) {
+            refreshDeviceCache(connectedGatt);
+            connectedGatt.discoverServices();
+        }
         allServiceUUIDS.add(pairing.uuid);
         scanLogic();
     }
@@ -257,10 +275,19 @@ public class BluetoothTransport extends BroadcastReceiver {
         }
 
         for (BluetoothDevice device: adapter.getBondedDevices()) {
-            Log.v(TAG, "found bonded device: " + device.getName());
-            if (!connectingDevices.contains(device) && !connectedDevices.contains(device)) {
-                device.connectGatt(context, true, gattCallback);
-                connectingDevices.add(device);
+            if (device.getName().equals("krsshagent") && BluetoothDevice.BOND_BONDED == device.getBondState()) {
+                Log.v(TAG, "found bonded device: " + device.getName());
+                if (!connectingDevices.contains(device) && !connectedDevices.contains(device)) {
+                    if (!device.createBond()) {
+                        Log.e(TAG, "error creating bond to " + device.getName() + ", not connecting");
+                    } else {
+                        Log.v(TAG, "connecting bonded device: " + device.getName());
+                        connectingDevices.add(device);
+                        device.connectGatt(context, true, gattCallback);
+                    }
+                }
+            } else {
+                Log.v(TAG, "ignoring bonded device: " + device.getName());
             }
         }
 
@@ -322,6 +349,8 @@ public class BluetoothTransport extends BroadcastReceiver {
             case ScanSettings.CALLBACK_TYPE_FIRST_MATCH:
                 handleScanResult(result);
                 break;
+            case ScanSettings.CALLBACK_TYPE_MATCH_LOST:
+                Log.d(TAG, "scan result lost: " + result.getDevice().getName());
             default:
                 break;
         }
@@ -329,9 +358,10 @@ public class BluetoothTransport extends BroadcastReceiver {
 
     private synchronized void handleScanResult(ScanResult result) {
         if (connectingDevices.contains(result.getDevice()) || connectedDevices.contains(result.getDevice())) {
-            Log.v(TAG, "already connecting to " + result.getDevice().getAddress());
+            Log.v(TAG, "already connecting to " + result.getDevice().getName());
             return;
         }
+
         connectingDevices.add(result.getDevice());
         refreshDeviceCache(result.getDevice().connectGatt(context, true, gattCallback));
         Log.v(TAG, "scan result: " + result.getDevice().getName());
@@ -340,17 +370,19 @@ public class BluetoothTransport extends BroadcastReceiver {
     private synchronized void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
         switch (newState) {
             case BluetoothGatt.STATE_CONNECTED:
-                Log.v(TAG, gatt.getDevice().getAddress() + " connected");
+                Log.v(TAG, gatt.getDevice().getName() + " connected");
                 gatt.discoverServices();
                 connectingDevices.remove(gatt.getDevice());
                 connectedDevices.add(gatt.getDevice());
+                connectedGatts.add(gatt);
                 if (!gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)) {
                     Log.e(TAG, "initial connection priority request failed");
                 }
                 break;
             case BluetoothGatt.STATE_DISCONNECTED:
-                Log.v(TAG, gatt.getDevice().getAddress() + " disconnected");
+                Log.v(TAG, gatt.getDevice().getName() + " disconnected");
                 connectedDevices.remove(gatt.getDevice());
+                connectedGatts.remove(gatt);
                 connectingDevices.remove(gatt.getDevice());
                 discoveredServiceUUIDSByDevice.remove(gatt.getDevice());
                 new Thread(new Runnable() {
@@ -433,6 +465,7 @@ public class BluetoothTransport extends BroadcastReceiver {
         gatt.setCharacteristicNotification(characteristic, false);
         gatt.disconnect();
         connectedDevices.remove(gatt.getDevice());
+        connectedGatts.remove(gatt);
         new Thread(new Runnable() {
             @Override
             public void run() {
