@@ -15,6 +15,7 @@ import android.util.SparseArray;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.gson.JsonParseException;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -81,9 +82,13 @@ public class PairScanner implements Camera.PreviewCallback {
                                     continue;
                                 }
                                 if (barcode.rawValue != null) {
-                                    PairingQR pairingQR = PairingQR.parseJson(barcode.rawValue);
-                                    Log.i(TAG, "found pairingQR: " + Base64.encodeToString(pairingQR.workstationPublicKey, Base64.DEFAULT));
-                                    fragment.onPairingScanned(pairingQR);
+                                    try {
+                                        PairingQR pairingQR = PairingQR.parseJson(barcode.rawValue);
+                                        Log.i(TAG, "found pairingQR: " + Base64.encodeToString(pairingQR.workstationPublicKey, Base64.DEFAULT));
+                                        fragment.onPairingScanned(pairingQR);
+                                    } catch (JsonParseException e) {
+                                        Log.e(TAG, "could not parse QR code", e);
+                                    }
                                 }
                             }
                         }
