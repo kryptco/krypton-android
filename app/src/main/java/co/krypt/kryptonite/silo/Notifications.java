@@ -9,6 +9,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.ContextCompat;
 
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
@@ -38,7 +39,7 @@ public class Notifications {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_notification_white)
-                        .setColor(context.getColor(R.color.colorPrimary))
+                        .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                         .setContentTitle("Request Approved")
                         .setContentText(pairing.workstationName + ": " + request.signRequest.display())
                         .setAutoCancel(true)
@@ -148,7 +149,7 @@ public class Notifications {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_notification_white)
-                        .setColor(context.getColor(R.color.colorPrimary))
+                        .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                         .setContentTitle("Allow Request?")
                         .setContentText(pairing.workstationName + ": " + request.signRequest.display())
                         .setPriority(NotificationCompat.PRIORITY_MAX)
