@@ -23,6 +23,8 @@ import android.os.ParcelUuid;
 import android.support.v4.util.Pair;
 import android.util.Log;
 
+import com.google.firebase.crash.FirebaseCrash;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -297,14 +299,20 @@ public class BluetoothTransport extends BroadcastReceiver {
             scanFilter.setServiceUuid(new ParcelUuid(serviceUUID));
             scanFilters.add(scanFilter.build());
         }
-
-        ScanSettings scanSettings = new ScanSettings.Builder()
-                .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
-                .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
-                .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
-                .setNumOfMatches(ScanSettings.MATCH_NUM_MAX_ADVERTISEMENT)
-                .setReportDelay(0)
-                .build();
+        ScanSettings scanSettings;
+        try {
+             scanSettings = new ScanSettings.Builder()
+                    .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
+                    .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
+                    .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+                    .setNumOfMatches(ScanSettings.MATCH_NUM_MAX_ADVERTISEMENT)
+                    .setReportDelay(0)
+                    .build();
+        } catch (NoSuchMethodError e) {
+            //  some phones do not have the ScanSettings.Builder() method
+            FirebaseCrash.report(e);
+            return;
+        }
 
         scanningServiceUUIDS.clear();
         BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
