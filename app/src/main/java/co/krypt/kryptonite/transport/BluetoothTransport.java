@@ -331,7 +331,7 @@ public class BluetoothTransport extends BroadcastReceiver {
                 //  java.lang.Thread.run (Thread.java:818)
                 e.printStackTrace();
             }
-            if (serviceUUIDSToScan.size() > 0) {
+            if (BluetoothAdapter.STATE_ON == adapter.getState() && serviceUUIDSToScan.size() > 0) {
                 scanner.startScan(scanFilters, scanSettings, scanCallback);
                 scanningServiceUUIDS.addAll(serviceUUIDSToScan);
                 Log.v(TAG, "scanning for " + scanningServiceUUIDS.toString());
