@@ -132,7 +132,7 @@ public class GenerateFragment extends Fragment {
                                 .show(enterEmailFragment)
                                 .commit();
                     }
-                } catch (InvalidKeyException | IOException | CryptoException | UnsupportedOperationException e) {
+                } catch (InvalidKeyException | IOException | CryptoException | UnsupportedOperationException | IllegalArgumentException e) {
                     e.printStackTrace();
                     progress.reset();
                     final FragmentActivity activity = context;
