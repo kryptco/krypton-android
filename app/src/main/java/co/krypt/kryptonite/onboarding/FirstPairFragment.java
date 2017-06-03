@@ -137,7 +137,7 @@ public class FirstPairFragment extends Fragment {
         TestSSHFragment testSSHFragment = TestSSHFragment.newInstance(deviceName);
         fragmentTransaction
                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
-                .hide(this).add(R.id.activity_onboarding, testSSHFragment).show(testSSHFragment).commit();
+                .hide(this).add(R.id.activity_onboarding, testSSHFragment).show(testSSHFragment).commitAllowingStateLoss();
     }
 
     private synchronized void skip() {
