@@ -78,7 +78,7 @@ public class PairDialogFragment extends DialogFragment {
                                 LocalAuthentication.requestAuthentication(
                                         getActivity(),
                                         "Pair Device Confirmation",
-                                        "Pair with " + pairFragment.getPendingPairingQR().workstationName + "?\nThis device will be able to request SSH operations.",
+                                        "Pair with " + pairFragment.getPendingPairingQR().workstationName + "?\nThis device will be able to request SSH operations. Enter your device password or pattern to confirm.",
                                         onPair);
                             }
                         }

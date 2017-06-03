@@ -70,7 +70,7 @@ public class SettingsFragment extends Fragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LocalAuthentication.requestAuthentication(getActivity(), "Destroy key pair permanently?", "You will have to generate a new key pair and re-add it to services like GitHub.",
+                LocalAuthentication.requestAuthentication(getActivity(), "Destroy key pair permanently?", "You will have to generate a new key pair and re-add it to services like GitHub. Enter your device password or pattern to confirm.",
                         new Runnable() {
                             @Override
                             public void run() {
