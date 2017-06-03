@@ -130,7 +130,7 @@ public class GenerateFragment extends Fragment {
                                 .hide(generatingFragment)
                                 .add(R.id.activity_onboarding, enterEmailFragment)
                                 .show(enterEmailFragment)
-                                .commit();
+                                .commitAllowingStateLoss();
                     }
                 } catch (InvalidKeyException | IOException | CryptoException | UnsupportedOperationException | IllegalArgumentException e) {
                     e.printStackTrace();
