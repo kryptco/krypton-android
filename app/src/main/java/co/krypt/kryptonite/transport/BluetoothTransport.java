@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.exception.TransportException;
@@ -77,6 +79,8 @@ public class BluetoothTransport extends BroadcastReceiver {
     private final ScanCallback scanCallback;
     private final BluetoothGattCallback gattCallback;
     private final Context context;
+
+    private final ScheduledThreadPoolExecutor scanLogicPool = new ScheduledThreadPoolExecutor(1);
 
     private BluetoothTransport(Context context, BluetoothManager manager, BluetoothAdapter adapter) {
         this.context = context;
@@ -172,13 +176,13 @@ public class BluetoothTransport extends BroadcastReceiver {
                         switch (state) {
                             case BluetoothAdapter.STATE_ON:
                                 connectingDevices.clear();
-                                scanLogic();
+                                scanLogicPool.execute(scanLogic);
                                 break;
                             case BluetoothAdapter.STATE_OFF:
                                 connectingDevices.clear();
                                 connectedDevices.clear();
                                 connectedGatts.clear();
-                                scanLogic();
+                                scanLogicPool.execute(scanLogic);
                                 break;
                         }
                     } else {
@@ -186,7 +190,7 @@ public class BluetoothTransport extends BroadcastReceiver {
                     }
                     break;
                 case MainActivity.LOCATION_PERMISSION_GRANTED_ACTION:
-                    scanLogic();
+                    scanLogicPool.execute(scanLogic);
                     break;
             }
 
@@ -210,8 +214,8 @@ public class BluetoothTransport extends BroadcastReceiver {
 
     public synchronized void stop() {
         for (Pair<BluetoothGatt, BluetoothGattCharacteristic> pair : characteristicsAndDevicesByServiceUUID.values()) {
-            pair.first.close();
             pair.first.disconnect();
+            pair.first.close();
         }
         adapter.cancelDiscovery();
         context.unregisterReceiver(bluetoothStateReceiver);
@@ -233,7 +237,7 @@ public class BluetoothTransport extends BroadcastReceiver {
             connectedGatt.discoverServices();
         }
         allServiceUUIDS.add(pairing.uuid);
-        scanLogic();
+        scanLogicPool.execute(scanLogic);
     }
 
     public synchronized void remove(Pairing pairing) {
@@ -245,7 +249,7 @@ public class BluetoothTransport extends BroadcastReceiver {
             mtuByBluetoothGatt.remove(characteristicAndDevice.first);
             outgoingMessagesByCharacteristic.remove(characteristicAndDevice.second);
         }
-        scanLogic();
+        scanLogicPool.execute(scanLogic);
     }
 
     public synchronized void setPairingUUIDs(List<String> uuidStrings) {
@@ -267,81 +271,80 @@ public class BluetoothTransport extends BroadcastReceiver {
                 removed.first.disconnect();
             }
         }
-        scanLogic();
+        scanLogicPool.execute(scanLogic);
     }
 
-    public synchronized void scanLogic() {
-        Set<UUID> serviceUUIDSToScan = new HashSet<>(allServiceUUIDS);
-        for (Set<UUID> discoveredServices: discoveredServiceUUIDSByDevice.values()) {
-            serviceUUIDSToScan.removeAll(discoveredServices);
-        }
+    private Runnable scanLogic = new Runnable() {
+        @Override
+        public void run() {
+            Set<UUID> serviceUUIDSToScan = new HashSet<>(allServiceUUIDS);
+            for (Set<UUID> discoveredServices: discoveredServiceUUIDSByDevice.values()) {
+                serviceUUIDSToScan.removeAll(discoveredServices);
+            }
 
-        for (BluetoothDevice device: adapter.getBondedDevices()) {
-            if (device.getName().equals("krsshagent") && BluetoothDevice.BOND_BONDED == device.getBondState()) {
-                Log.v(TAG, "found bonded device: " + device.getName());
-                if (!connectingDevices.contains(device) && !connectedDevices.contains(device)) {
-                    if (!device.createBond()) {
-                        Log.e(TAG, "error creating bond to " + device.getName() + ", not connecting");
-                    } else {
+            for (BluetoothDevice device: adapter.getBondedDevices()) {
+                if (device.getName().equals("krsshagent") && BluetoothDevice.BOND_BONDED == device.getBondState()) {
+                    Log.v(TAG, "found bonded device: " + device.getName());
+                    if (!connectingDevices.contains(device) && !connectedDevices.contains(device)) {
                         Log.v(TAG, "connecting bonded device: " + device.getName());
                         connectingDevices.add(device);
                         device.connectGatt(context, true, gattCallback);
                     }
+                } else {
+                    Log.v(TAG, "ignoring bonded device: " + device.getName());
+                }
+            }
+
+            List<ScanFilter> scanFilters = new ArrayList<>();
+            for (UUID serviceUUID : serviceUUIDSToScan) {
+                ScanFilter.Builder scanFilter = new ScanFilter.Builder();
+                scanFilter.setServiceUuid(new ParcelUuid(serviceUUID));
+                scanFilters.add(scanFilter.build());
+            }
+            ScanSettings scanSettings;
+            try {
+                scanSettings = new ScanSettings.Builder()
+                        .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
+                        .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
+                        .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+                        .setNumOfMatches(ScanSettings.MATCH_NUM_MAX_ADVERTISEMENT)
+                        .setReportDelay(0)
+                        .build();
+            } catch (NoSuchMethodError e) {
+                //  some phones do not have the ScanSettings.Builder() method
+                FirebaseCrash.report(e);
+                return;
+            }
+
+            scanningServiceUUIDS.clear();
+            BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
+            if (scanner != null && adapter.isEnabled() && BluetoothAdapter.STATE_ON == adapter.getState()) {
+                try {
+                    scanner.stopScan(scanCallback);
+                } catch (NullPointerException e) {
+                    //  XXX: internal android bluetooth bug caused by
+                    //  android.os.Parcel.readException (Parcel.java:1626)
+                    //  android.os.Parcel.readException (Parcel.java:1573)
+                    //  android.bluetooth.IBluetoothGatt$Stub$Proxy.unregisterClient (IBluetoothGatt.java:1010)
+                    //  android.bluetooth.le.BluetoothLeScanner$BleScanCallbackWrapper.stopLeScan (BluetoothLeScanner.java:338)
+                    //  android.bluetooth.le.BluetoothLeScanner.stopScan (BluetoothLeScanner.java:193)
+                    //  co.krypt.kryptonite.transport.BluetoothTransport.scanLogic (BluetoothTransport.java:285)
+                    //  co.krypt.kryptonite.transport.BluetoothTransport$4.run (BluetoothTransport.java:351)
+                    //  java.lang.Thread.run (Thread.java:818)
+                    e.printStackTrace();
+                }
+                if (serviceUUIDSToScan.size() > 0) {
+                    scanner.startScan(scanFilters, scanSettings, scanCallback);
+                    scanningServiceUUIDS.addAll(serviceUUIDSToScan);
+                    Log.v(TAG, "scanning for " + scanningServiceUUIDS.toString());
+                } else {
+                    Log.v(TAG, "stopped scanning");
                 }
             } else {
-                Log.v(TAG, "ignoring bonded device: " + device.getName());
+                Log.e(TAG, "bluetooth disabled, not scanning");
             }
         }
-
-        List<ScanFilter> scanFilters = new ArrayList<>();
-        for (UUID serviceUUID : serviceUUIDSToScan) {
-            ScanFilter.Builder scanFilter = new ScanFilter.Builder();
-            scanFilter.setServiceUuid(new ParcelUuid(serviceUUID));
-            scanFilters.add(scanFilter.build());
-        }
-        ScanSettings scanSettings;
-        try {
-             scanSettings = new ScanSettings.Builder()
-                    .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
-                    .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
-                    .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
-                    .setNumOfMatches(ScanSettings.MATCH_NUM_MAX_ADVERTISEMENT)
-                    .setReportDelay(0)
-                    .build();
-        } catch (NoSuchMethodError e) {
-            //  some phones do not have the ScanSettings.Builder() method
-            FirebaseCrash.report(e);
-            return;
-        }
-
-        scanningServiceUUIDS.clear();
-        BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
-        if (scanner != null && adapter.isEnabled() && BluetoothAdapter.STATE_ON == adapter.getState()) {
-            try {
-                scanner.stopScan(scanCallback);
-            } catch (NullPointerException e) {
-                //  XXX: internal android bluetooth bug caused by
-                //  android.os.Parcel.readException (Parcel.java:1626)
-                //  android.os.Parcel.readException (Parcel.java:1573)
-                //  android.bluetooth.IBluetoothGatt$Stub$Proxy.unregisterClient (IBluetoothGatt.java:1010)
-                //  android.bluetooth.le.BluetoothLeScanner$BleScanCallbackWrapper.stopLeScan (BluetoothLeScanner.java:338)
-                //  android.bluetooth.le.BluetoothLeScanner.stopScan (BluetoothLeScanner.java:193)
-                //  co.krypt.kryptonite.transport.BluetoothTransport.scanLogic (BluetoothTransport.java:285)
-                //  co.krypt.kryptonite.transport.BluetoothTransport$4.run (BluetoothTransport.java:351)
-                //  java.lang.Thread.run (Thread.java:818)
-                e.printStackTrace();
-            }
-            if (serviceUUIDSToScan.size() > 0) {
-                scanner.startScan(scanFilters, scanSettings, scanCallback);
-                scanningServiceUUIDS.addAll(serviceUUIDSToScan);
-                Log.v(TAG, "scanning for " + scanningServiceUUIDS.toString());
-            } else {
-                Log.v(TAG, "stopped scanning");
-            }
-        } else {
-            Log.e(TAG, "bluetooth disabled, not scanning");
-        }
-    }
+    };
 
     private synchronized void onBatchScanResults(List<ScanResult> results) {
         for (ScanResult result: results) {
@@ -370,6 +373,7 @@ public class BluetoothTransport extends BroadcastReceiver {
             return;
         }
 
+        adapter.cancelDiscovery();
         connectingDevices.add(result.getDevice());
         refreshDeviceCache(result.getDevice().connectGatt(context, true, gattCallback));
         Log.v(TAG, "scan result: " + result.getDevice().getName());
@@ -389,21 +393,27 @@ public class BluetoothTransport extends BroadcastReceiver {
                 break;
             case BluetoothGatt.STATE_DISCONNECTED:
                 Log.v(TAG, gatt.getDevice().getName() + " disconnected");
+                if (connectedDevices.contains(gatt.getDevice())) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            scanLogicPool.execute(scanLogic);
+                        }
+                    }).start();
+                }
+                if (connectingDevices.contains(gatt.getDevice())) {
+                    Log.e(TAG, "disconnected while connecting: " + gatt.getDevice().getName());
+                }
                 connectedDevices.remove(gatt.getDevice());
                 connectedGatts.remove(gatt);
                 connectingDevices.remove(gatt.getDevice());
                 discoveredServiceUUIDSByDevice.remove(gatt.getDevice());
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        scanLogic();
-                    }
-                }).start();
+                gatt.close();
                 break;
         }
     }
@@ -446,7 +456,7 @@ public class BluetoothTransport extends BroadcastReceiver {
         if (serviceUUIDS.size() > 0) {
             refreshedServiceCaches.remove(gatt);
             discoveredServiceUUIDSByDevice.put(gatt.getDevice(), serviceUUIDS);
-            scanLogic();
+            scanLogicPool.execute(scanLogic);
         } else {
             Log.e(TAG, "failed to find paired service");
             if (refreshedServiceCaches.contains(gatt)) {
@@ -474,17 +484,8 @@ public class BluetoothTransport extends BroadcastReceiver {
         gatt.disconnect();
         connectedDevices.remove(gatt.getDevice());
         connectedGatts.remove(gatt);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(5000);
-                    scanLogic();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+
+        scanLogicPool.schedule(scanLogic, 5000, TimeUnit.SECONDS);
     }
 
     private synchronized void onCharacteristicChanged(final BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
