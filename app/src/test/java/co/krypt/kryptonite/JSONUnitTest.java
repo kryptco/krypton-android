@@ -3,7 +3,6 @@ package co.krypt.kryptonite;
 import com.google.gson.JsonParseException;
 
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.protocol.Request;

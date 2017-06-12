@@ -33,4 +33,14 @@ public class SHA1 {
         }
         return oidWithDigest.toByteArray();
     }
+
+    public static byte[] digest(byte[] data) throws CryptoException {
+        MessageDigest sha1 = null;
+        try {
+            sha1 = MessageDigest.getInstance("SHA-1");
+        } catch (NoSuchAlgorithmException e) {
+            throw new CryptoException(e.getMessage());
+        }
+        return sha1.digest(data);
+    }
 }
