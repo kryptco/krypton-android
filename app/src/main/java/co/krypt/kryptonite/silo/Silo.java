@@ -346,7 +346,8 @@ public class Silo {
         }
 
         if (request.meRequest != null) {
-            response.meResponse = new MeResponse(meStorage.load());
+            SSHKeyPairI key = KeyManager.loadMeRSAOrEdKeyPair(context);
+            response.meResponse = new MeResponse(meStorage.load(key, request.meRequest.userID()));
         }
 
         if (request.signRequest != null) {

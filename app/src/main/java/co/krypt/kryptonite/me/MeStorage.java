@@ -6,9 +6,17 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
+import java.util.Arrays;
+import java.util.Collections;
+
+import javax.annotation.Nullable;
 
 import co.krypt.kryptonite.crypto.KeyManager;
+import co.krypt.kryptonite.crypto.SSHKeyPairI;
 import co.krypt.kryptonite.exception.CryptoException;
+import co.krypt.kryptonite.pgp.PGPException;
+import co.krypt.kryptonite.pgp.PGPManager;
+import co.krypt.kryptonite.pgp.UserID;
 import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.protocol.Profile;
 
@@ -28,7 +36,8 @@ public class MeStorage {
         this.context = context;
     }
 
-    public Profile load() {
+    public Profile load(@Nullable SSHKeyPairI kp, @Nullable UserID userID) {
+        //TODO: store signed userIDs
         synchronized (lock) {
             String meJSON = preferences.getString("ME", null);
             if (meJSON == null) {
@@ -44,6 +53,13 @@ public class MeStorage {
                 me.sshWirePublicKey = KeyManager.loadMeRSAOrEdKeyPair(context).publicKeySSHWireFormat();
             } catch (InvalidKeyException | IOException | CryptoException e) {
                 e.printStackTrace();
+            }
+            if (kp != null && userID != null) {
+                try {
+                    me.pgpPublicKey = PGPManager.publicKeyWithIdentities(kp, Collections.singletonList(userID));
+                } catch (PGPException | IOException e) {
+                    e.printStackTrace();
+                }
             }
             return me;
         }
@@ -63,7 +79,7 @@ public class MeStorage {
 
     public void setEmail(String email) {
         synchronized (lock) {
-            Profile me = load();
+            Profile me = load(null, null);
             if (me == null) {
                 me = new Profile();
             }

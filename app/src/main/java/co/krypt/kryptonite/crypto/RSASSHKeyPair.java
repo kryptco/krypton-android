@@ -187,11 +187,9 @@ public class RSASSHKeyPair implements SSHKeyPairI {
         byte[] e = rsaPub.getPublicExponent().toByteArray();
         return new RSAPublicKeyData(
                 new MPInt(
-                        n.length * 8,
                         n
                 ),
                 new MPInt(
-                        e.length * 8,
                         e
                 )
         );
@@ -210,7 +208,6 @@ public class RSASSHKeyPair implements SSHKeyPairI {
         byte[] signatureBytes = signDigest(getDigestForPGPHashAlgorithm(hash), data);
         return new RSASignature(
                 new MPInt(
-                        signatureBytes.length * 8,
                         signatureBytes
                 )
         );

@@ -67,7 +67,7 @@ public class MeFragment extends Fragment {
             }
         });
 
-        final Profile me = Silo.shared(getContext()).meStorage().load();
+        final Profile me = Silo.shared(getContext()).meStorage().load(null, null);
         if (me != null) {
             profileEmail.setText(me.email);
             try {
@@ -142,9 +142,9 @@ public class MeFragment extends Fragment {
     }
 
     private void onEmailChanged(String email) {
-        Profile me = Silo.shared(getContext()).meStorage().load();
+        Profile me = Silo.shared(getContext()).meStorage().load(null, null);
         if (me == null) {
-            me = new Profile(email, null);
+            me = new Profile(email, null, null);
         }
         me.email = email;
         Silo.shared(getContext()).meStorage().set(me);

@@ -103,7 +103,7 @@ public class GenerateFragment extends Fragment {
                     }
 
                     SSHKeyPairI pair = KeyManager.loadOrGenerateKeyPair(context, finalKeyType, KeyManager.ME_TAG);
-                    new MeStorage(context).set(new Profile("", pair.publicKeySSHWireFormat()));
+                    new MeStorage(context).set(new Profile("", pair.publicKeySSHWireFormat(), null));
 
                     final long genTime = System.currentTimeMillis() - start;
                     new Analytics(context).postEvent("keypair", "generate", null, (int) (genTime / 1000), false);
