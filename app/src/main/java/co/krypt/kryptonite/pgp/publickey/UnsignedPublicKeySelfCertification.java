@@ -10,6 +10,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import co.krypt.kryptonite.exception.CryptoException;
+import co.krypt.kryptonite.pgp.UserID;
 import co.krypt.kryptonite.pgp.packet.HashAlgorithm;
 import co.krypt.kryptonite.pgp.packet.Signable;
 import co.krypt.kryptonite.pgp.packet.SignableUtils;
@@ -18,7 +19,6 @@ import co.krypt.kryptonite.pgp.packet.SignatureAttributes;
 import co.krypt.kryptonite.pgp.packet.SignatureAttributesWithoutHashPrefix;
 import co.krypt.kryptonite.pgp.packet.SignatureType;
 import co.krypt.kryptonite.pgp.packet.SignedSignatureAttributes;
-import co.krypt.kryptonite.pgp.UserID;
 import co.krypt.kryptonite.pgp.packet.UserIDPacket;
 import co.krypt.kryptonite.pgp.subpacket.DuplicateSubpacketException;
 import co.krypt.kryptonite.pgp.subpacket.InvalidSubpacketLengthException;
@@ -38,13 +38,13 @@ import co.krypt.kryptonite.pgp.subpacket.SubpacketList;
     Certify that a public key corresponds to a specific user id.
  */
 public class UnsignedPublicKeySelfCertification implements Signable {
-    final PublicKeyPacket publicKeyPacket;
-    final UserIDPacket userIDPacket;
-    final SignatureCreationTimeSubpacket createdSubpacket;
+    public final PublicKeyPacket publicKeyPacket;
+    public final UserIDPacket userIDPacket;
+    public final SignatureCreationTimeSubpacket createdSubpacket;
     @Nullable
-    final KeyFlagsSubpacket keyFlagsSubpacket;
-    final IssuerSubpacket issuerSubpacket;
-    final SignatureAttributesWithoutHashPrefix signatureAttributesWithoutHashPrefix;
+    public final KeyFlagsSubpacket keyFlagsSubpacket;
+    public final IssuerSubpacket issuerSubpacket;
+    public final SignatureAttributesWithoutHashPrefix signatureAttributesWithoutHashPrefix;
 
     public UnsignedPublicKeySelfCertification(PublicKeyPacket publicKeyPacket, UserID userID, HashAlgorithm hashAlgorithm, long created, @Nullable KeyFlagsSubpacket.Flag[] keyFlags) throws IOException, CryptoException, SubpacketDataTooLongException, NoSuchAlgorithmException, DuplicateSubpacketException, InvalidSubpacketLengthException {
         this.publicKeyPacket = publicKeyPacket;

@@ -12,8 +12,8 @@ import co.krypt.kryptonite.pgp.packet.SignedSignatureAttributes;
  */
 
 public class SignedPublicKeySelfCertification extends Serializable {
-    final UnsignedPublicKeySelfCertification certification;
-    final SignedSignatureAttributes signature;
+    public final UnsignedPublicKeySelfCertification certification;
+    public final SignedSignatureAttributes signature;
 
     public SignedPublicKeySelfCertification(UnsignedPublicKeySelfCertification certification, SignedSignatureAttributes signature) {
         this.certification = certification;

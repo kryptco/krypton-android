@@ -24,7 +24,7 @@ public enum KeyType {
     public KeyManagerI keyManager(Context context) {
         switch (this) {
             case RSA:
-                return new RSAKeyManager();
+                return new RSAKeyManager(context);
             case Ed25519:
                 return new EdKeyManager(context);
         }

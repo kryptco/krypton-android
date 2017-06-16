@@ -7,8 +7,6 @@ import org.junit.Test;
 import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.protocol.Request;
 
-import static org.junit.Assert.assertEquals;
-
 /**
  * Example local unit test, which will execute on the development machine (host).
  *

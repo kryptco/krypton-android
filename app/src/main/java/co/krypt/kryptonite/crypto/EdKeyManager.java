@@ -19,6 +19,7 @@ import co.krypt.kryptonite.exception.CryptoException;
 public class EdKeyManager implements KeyManagerI {
     private static final Object lock = new Object();
     private static final String SSH_KEYPAIR_KEY = "SSH_KEY";
+    private static final String SSH_KEYPAIR_CREATED_KEY = "SSH_KEY.created";
     private final SharedPreferences preferences;
 
     public static String LOG_TAG = "EdKeyManager";
@@ -29,6 +30,14 @@ public class EdKeyManager implements KeyManagerI {
 
     public SSHKeyPairI loadOrGenerateKeyPair(String tag) throws CryptoException {
         synchronized (lock) {
+            Long created;
+            if (preferences.contains(SSH_KEYPAIR_CREATED_KEY + "." + tag)) {
+                created = preferences.getLong(SSH_KEYPAIR_CREATED_KEY + "." + tag, 0);
+            } else {
+                created = System.currentTimeMillis() / 1000;
+                preferences.edit().putLong(SSH_KEYPAIR_CREATED_KEY + "." + tag, created).apply();
+            }
+
             String skB64 = preferences.getString(SSH_KEYPAIR_KEY + "." + tag, null);
             if (skB64 == null) {
                 byte[] pk = new byte[Sodium.crypto_sign_ed25519_publickeybytes()];
@@ -38,7 +47,7 @@ public class EdKeyManager implements KeyManagerI {
                     throw new CryptoException("non-zero sodium result: " + result);
                 }
                 preferences.edit().putString(SSH_KEYPAIR_KEY + "." + tag, Base64.encodeAsString(sk)).apply();
-                return new EdSSHKeyPair(pk, sk);
+                return new EdSSHKeyPair(pk, sk, created);
             }
             byte[] sk = Base64.decode(skB64);
             byte[] pk = new byte[Sodium.crypto_sign_ed25519_publickeybytes()];
@@ -46,7 +55,8 @@ public class EdKeyManager implements KeyManagerI {
             if (result != 0) {
                 throw new CryptoException("non-zero sodium result: " + result);
             }
-            return new EdSSHKeyPair(pk, sk);
+
+            return new EdSSHKeyPair(pk, sk, created);
         }
     }
 
@@ -58,7 +68,10 @@ public class EdKeyManager implements KeyManagerI {
 
     public void deleteKeyPair(String tag) throws Exception {
         synchronized (lock) {
-            preferences.edit().putString(SSH_KEYPAIR_KEY + "." + tag, null).apply();
+            preferences.edit()
+                    .putString(SSH_KEYPAIR_KEY + "." + tag, null)
+                    .remove(SSH_KEYPAIR_CREATED_KEY + "." + tag)
+                    .apply();
         }
     }
 

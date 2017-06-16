@@ -1,7 +1,6 @@
 package co.krypt.kryptonite;
 
 import com.amazonaws.util.Base64;
-import com.google.gson.JsonParseException;
 
 import junit.framework.Assert;
 
@@ -9,8 +8,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import co.krypt.kryptonite.protocol.JSON;
-import co.krypt.kryptonite.protocol.Request;
 import co.krypt.kryptonite.protocol.SignRequest;
 
 /**

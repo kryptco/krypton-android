@@ -21,6 +21,15 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 
 import co.krypt.kryptonite.exception.CryptoException;
+import co.krypt.kryptonite.pgp.PGPException;
+import co.krypt.kryptonite.pgp.packet.HashAlgorithm;
+import co.krypt.kryptonite.pgp.packet.MPInt;
+import co.krypt.kryptonite.pgp.packet.RSASignature;
+import co.krypt.kryptonite.pgp.packet.UnsupportedHashAlgorithmException;
+import co.krypt.kryptonite.pgp.publickey.PublicKeyAlgorithm;
+import co.krypt.kryptonite.pgp.publickey.PublicKeyData;
+import co.krypt.kryptonite.pgp.publickey.PublicKeyPacketAttributes;
+import co.krypt.kryptonite.pgp.publickey.RSAPublicKeyData;
 
 /**
  * Created by Kevin King on 11/30/16.
@@ -28,11 +37,15 @@ import co.krypt.kryptonite.exception.CryptoException;
  */
 
 public class RSASSHKeyPair implements SSHKeyPairI {
+    private static final String TAG = "RSASSHKeyPair";
     private final @NonNull KeyPair keyPair;
-    private static final String TAG = "SSHKeyPair";
 
-    RSASSHKeyPair(@NonNull KeyPair keyPair) {
+    //  PGP public key attribute
+    public final long created;
+
+    RSASSHKeyPair(@NonNull KeyPair keyPair, long created) {
         this.keyPair = keyPair;
+        this.created = created;
     }
 
     public String publicKeyDERBase64() {
@@ -98,6 +111,26 @@ public class RSASSHKeyPair implements SSHKeyPairI {
         }
     }
 
+    private String getDigestForPGPHashAlgorithm(HashAlgorithm hash) throws UnsupportedHashAlgorithmException {
+        switch (hash) {
+            case MD5:
+                throw new UnsupportedHashAlgorithmException();
+            case RIPE_MD160:
+                throw new UnsupportedHashAlgorithmException();
+            case SHA1:
+                return KeyProperties.DIGEST_SHA1;
+            case SHA256:
+                return KeyProperties.DIGEST_SHA256;
+            case SHA384:
+                throw new UnsupportedHashAlgorithmException();
+            case SHA512:
+                return KeyProperties.DIGEST_SHA512;
+            case SHA224:
+                throw new UnsupportedHashAlgorithmException();
+        }
+        throw new UnsupportedHashAlgorithmException();
+    }
+
     public Pair<Signature, byte[]> getSignerAndPrepareData(String digest, byte[] data) throws CryptoException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
         KeyFactory factory = KeyFactory.getInstance(keyPair.getPrivate().getAlgorithm(), "AndroidKeyStore");
         KeyInfo keyInfo;
@@ -145,6 +178,42 @@ public class RSASSHKeyPair implements SSHKeyPairI {
         s.initVerify(keyPair.getPublic());
         s.update(data);
         return s.verify(signature);
+    }
+
+    @Override
+    public PublicKeyData pgpPublicKeyData() {
+        RSAPublicKey rsaPub = (RSAPublicKey) keyPair.getPublic();
+        byte[] n = rsaPub.getModulus().toByteArray();
+        byte[] e = rsaPub.getPublicExponent().toByteArray();
+        return new RSAPublicKeyData(
+                new MPInt(
+                        n.length * 8,
+                        n
+                ),
+                new MPInt(
+                        e.length * 8,
+                        e
+                )
+        );
+    }
+
+    @Override
+    public PublicKeyPacketAttributes pgpPublicKeyPacketAttributes() {
+        return new PublicKeyPacketAttributes(
+                created,
+                PublicKeyAlgorithm.RSA_SIGN_ONLY
+        );
+    }
+
+    @Override
+    public co.krypt.kryptonite.pgp.packet.Signature pgpSign(HashAlgorithm hash, byte[] data) throws PGPException, NoSuchAlgorithmException, CryptoException, SignatureException, NoSuchProviderException, InvalidKeyException, InvalidKeySpecException {
+        byte[] signatureBytes = signDigest(getDigestForPGPHashAlgorithm(hash), data);
+        return new RSASignature(
+                new MPInt(
+                        signatureBytes.length * 8,
+                        signatureBytes
+                )
+        );
     }
 
     @Override

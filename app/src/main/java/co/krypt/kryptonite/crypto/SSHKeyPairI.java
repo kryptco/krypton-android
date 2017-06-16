@@ -8,6 +8,11 @@ import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 
 import co.krypt.kryptonite.exception.CryptoException;
+import co.krypt.kryptonite.pgp.PGPException;
+import co.krypt.kryptonite.pgp.packet.HashAlgorithm;
+import co.krypt.kryptonite.pgp.packet.Signature;
+import co.krypt.kryptonite.pgp.publickey.PublicKeyData;
+import co.krypt.kryptonite.pgp.publickey.PublicKeyPacketAttributes;
 
 /**
  * Created by Kevin King on 5/18/17.
@@ -26,8 +31,12 @@ public interface SSHKeyPairI {
 
     byte[] signDigestAppendingPubkey(byte[] data, String algo) throws SignatureException, IOException, InvalidKeyException, NoSuchAlgorithmException, CryptoException, NoSuchProviderException, InvalidKeySpecException;
 
-//    Pair<Signature, byte[]> getSignerAndPrepareData(String digest, byte[] data) throws CryptoException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException;
-
     boolean verifyDigest(String digest, byte[] signature, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, CryptoException, InvalidKeySpecException, NoSuchProviderException;
+
+    PublicKeyData pgpPublicKeyData();
+
+    PublicKeyPacketAttributes pgpPublicKeyPacketAttributes();
+
+    Signature pgpSign(HashAlgorithm hash, byte[] data) throws PGPException, NoSuchAlgorithmException, CryptoException, SignatureException, NoSuchProviderException, InvalidKeyException, InvalidKeySpecException;
 }
 

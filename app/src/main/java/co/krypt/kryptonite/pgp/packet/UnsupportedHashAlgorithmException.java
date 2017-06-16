@@ -11,7 +11,7 @@ public class UnsupportedHashAlgorithmException extends PGPException {
     UnsupportedHashAlgorithmException(String message) {
         super(message);
     }
-    UnsupportedHashAlgorithmException() {
+    public UnsupportedHashAlgorithmException() {
         super();
     }
 }

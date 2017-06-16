@@ -45,7 +45,6 @@ import co.krypt.kryptonite.protocol.AckResponse;
 import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.protocol.MeResponse;
 import co.krypt.kryptonite.protocol.NetworkMessage;
-import co.krypt.kryptonite.protocol.PairingQR;
 import co.krypt.kryptonite.protocol.Request;
 import co.krypt.kryptonite.protocol.Response;
 import co.krypt.kryptonite.protocol.SignRequest;

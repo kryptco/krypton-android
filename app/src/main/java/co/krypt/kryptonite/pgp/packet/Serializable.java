@@ -13,7 +13,7 @@ import java.util.List;
 public abstract class Serializable {
     public abstract void serialize(DataOutputStream out) throws IOException;
 
-    byte[] serializedBytes() throws IOException {
+    public byte[] serializedBytes() throws IOException {
         ByteArrayOutputStream buf = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(buf);
         serialize(out);

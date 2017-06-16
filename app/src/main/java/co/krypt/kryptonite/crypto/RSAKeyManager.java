@@ -1,5 +1,7 @@
 package co.krypt.kryptonite.crypto;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyInfo;
 import android.security.keystore.KeyProperties;
@@ -31,15 +33,32 @@ public class RSAKeyManager implements KeyManagerI {
     private final Object lock = new Object();
 
     public static String LOG_TAG = "kryptonite";
+    private static final String SSH_KEYPAIR_CREATED_KEY = "SSH_KEY.created";
+    private final SharedPreferences preferences;
+
+    public RSAKeyManager(Context context) {
+        preferences = context.getSharedPreferences("RSA_KEY_MANAGER_PREFERENCES", Context.MODE_PRIVATE);
+    }
 
     public SSHKeyPairI loadOrGenerateKeyPair(String tag) throws CryptoException {
         synchronized (lock) {
             try {
+                Long created;
+                if (preferences.contains(SSH_KEYPAIR_CREATED_KEY + "." + tag)) {
+                    created = preferences.getLong(SSH_KEYPAIR_CREATED_KEY + "." + tag, 0);
+                } else {
+                    created = System.currentTimeMillis() / 1000;
+                    preferences.edit().putLong(SSH_KEYPAIR_CREATED_KEY + "." + tag, created).apply();
+                }
+
                 KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
                 keyStore.load(null);
                 KeyStore.Entry privateKeyEntry = keyStore.getEntry(tag, null);
                 if (privateKeyEntry instanceof KeyStore.PrivateKeyEntry) {
-                    return new RSASSHKeyPair(new KeyPair(((KeyStore.PrivateKeyEntry) privateKeyEntry).getCertificate().getPublicKey(), ((KeyStore.PrivateKeyEntry) privateKeyEntry).getPrivateKey()));
+                    return new RSASSHKeyPair(
+                            new KeyPair(((KeyStore.PrivateKeyEntry) privateKeyEntry).getCertificate().getPublicKey(), ((KeyStore.PrivateKeyEntry) privateKeyEntry).getPrivateKey()),
+                            created
+                    );
                 } else {
                     Log.w(LOG_TAG, "Not an instance of a PrivateKeyEntry");
                 }
@@ -60,7 +79,7 @@ public class RSAKeyManager implements KeyManagerI {
                 keyPair = keyPairGenerator.generateKeyPair();
                 long genStop = System.currentTimeMillis();
                 Log.i(LOG_TAG, "KeyGen took " + String.valueOf((genStop - genStart)));
-                return new RSASSHKeyPair(keyPair);
+                return new RSASSHKeyPair(keyPair, created);
             } catch (IOException | KeyStoreException | NoSuchProviderException | InvalidAlgorithmParameterException | UnrecoverableEntryException | NoSuchAlgorithmException | CertificateException e) {
                 throw new CryptoException(e.getMessage());
             }
@@ -78,7 +97,7 @@ public class RSAKeyManager implements KeyManagerI {
                 keyStore.load(null);
                 KeyStore.Entry privateKeyEntry = keyStore.getEntry(tag, null);
                 if (privateKeyEntry instanceof KeyStore.PrivateKeyEntry) {
-                    return new RSASSHKeyPair(new KeyPair(((KeyStore.PrivateKeyEntry) privateKeyEntry).getCertificate().getPublicKey(), ((KeyStore.PrivateKeyEntry) privateKeyEntry).getPrivateKey()));
+                    return new RSASSHKeyPair(new KeyPair(((KeyStore.PrivateKeyEntry) privateKeyEntry).getCertificate().getPublicKey(), ((KeyStore.PrivateKeyEntry) privateKeyEntry).getPrivateKey()), 0);
                 } else {
                     Log.w(LOG_TAG, "Not an instance of a PrivateKeyEntry");
                 }
@@ -99,7 +118,7 @@ public class RSAKeyManager implements KeyManagerI {
                 keyPair = keyPairGenerator.generateKeyPair();
                 long genStop = System.currentTimeMillis();
                 Log.i(LOG_TAG, "KeyGen took " + String.valueOf((genStop - genStart)));
-                return new RSASSHKeyPair(keyPair);
+                return new RSASSHKeyPair(keyPair, 0);
             } catch (IOException e) {
                 throw new CryptoException(e.getMessage());
             } catch (CertificateException e) {
