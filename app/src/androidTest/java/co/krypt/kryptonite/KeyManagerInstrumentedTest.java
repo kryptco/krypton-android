@@ -55,7 +55,7 @@ public class KeyManagerInstrumentedTest {
     public void sign_succeeds() throws Exception {
         final Context context = InstrumentationRegistry.getTargetContext();
         for (KeyType type: SUPPORTED_KEY_TYPES) {
-            for (SSHKeyPairI key : new SSHKeyPairI[]{KeyManager.loadOrGenerateKeyPair(context, type, "test"), new RSAKeyManager().loadOrGenerateNoDigestKeyPair("testnodigest")}) {
+            for (SSHKeyPairI key : new SSHKeyPairI[]{KeyManager.loadOrGenerateKeyPair(context, type, "test"), new RSAKeyManager(context).loadOrGenerateNoDigestKeyPair("testnodigest")}) {
                 byte[] data = SecureRandom.getSeed(32);
                 for (String digest : SUPPORTED_DIGESTS) {
                     key.signDigest(digest, data);
@@ -68,7 +68,7 @@ public class KeyManagerInstrumentedTest {
     public void signAndVerify_succeed() throws Exception {
         final Context context = InstrumentationRegistry.getTargetContext();
         for (KeyType type: SUPPORTED_KEY_TYPES) {
-            for (SSHKeyPairI key : new SSHKeyPairI[]{KeyManager.loadOrGenerateKeyPair(context, type, "test"), new RSAKeyManager().loadOrGenerateNoDigestKeyPair("testnodigest")}) {
+            for (SSHKeyPairI key : new SSHKeyPairI[]{KeyManager.loadOrGenerateKeyPair(context, type, "test"), new RSAKeyManager(context).loadOrGenerateNoDigestKeyPair("testnodigest")}) {
                 byte[] data = SecureRandom.getSeed(32);
                 for (String digest : SUPPORTED_DIGESTS) {
                     byte[] signature = key.signDigest(digest, data);
@@ -82,7 +82,7 @@ public class KeyManagerInstrumentedTest {
     public void signTamperAndVerify_fails() throws Exception {
         final Context context = InstrumentationRegistry.getTargetContext();
         for (KeyType type: SUPPORTED_KEY_TYPES) {
-            for (SSHKeyPairI key : new SSHKeyPairI[]{KeyManager.loadOrGenerateKeyPair(context, type, "test"), new RSAKeyManager().loadOrGenerateNoDigestKeyPair("testnodigest")}) {
+            for (SSHKeyPairI key : new SSHKeyPairI[]{KeyManager.loadOrGenerateKeyPair(context, type, "test"), new RSAKeyManager(context).loadOrGenerateNoDigestKeyPair("testnodigest")}) {
                 byte[] data = SecureRandom.getSeed(32);
                 for (String digest : SUPPORTED_DIGESTS) {
                     byte[] signature = key.signDigest(digest, data);
