@@ -25,7 +25,7 @@ public class UserIDPacket extends Serializable implements Signable {
     }
 
     public static UserIDPacket parse(PacketHeader header, DataInputStream in) throws IOException, InvalidUTF8Exception {
-        byte[] utf8 = new byte[(int) header.length];
+        byte[] utf8 = new byte[(int) header.length.bodyLength];
         in.readFully(utf8);
         try {
             String userID = Charset.forName("UTF-8").newDecoder()

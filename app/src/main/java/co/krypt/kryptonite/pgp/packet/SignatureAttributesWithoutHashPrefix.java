@@ -20,15 +20,13 @@ import co.krypt.kryptonite.pgp.subpacket.UnsupportedCriticalSubpacketTypeExcepti
 
 public class SignatureAttributesWithoutHashPrefix extends Serializable implements Signable {
     public static final byte VERSION = 4;
-    public final PacketHeader header;
     public final SignatureType type;
     public final PublicKeyAlgorithm pkAlgorithm;
     public final HashAlgorithm hashAlgorithm;
     public final SubpacketList hashedSubpackets;
     public final SubpacketList unhashedSubpackets;
 
-    public SignatureAttributesWithoutHashPrefix(PacketHeader header, SignatureType type, PublicKeyAlgorithm pkAlgorithm, HashAlgorithm hashAlgorithm, SubpacketList hashedSubpackets, SubpacketList unhashedSubpackets) throws IOException, NoSuchAlgorithmException {
-        this.header = header;
+    public SignatureAttributesWithoutHashPrefix(SignatureType type, PublicKeyAlgorithm pkAlgorithm, HashAlgorithm hashAlgorithm, SubpacketList hashedSubpackets, SubpacketList unhashedSubpackets) throws IOException, NoSuchAlgorithmException {
         this.type = type;
         this.pkAlgorithm = pkAlgorithm;
         this.hashAlgorithm = hashAlgorithm;
@@ -36,12 +34,11 @@ public class SignatureAttributesWithoutHashPrefix extends Serializable implement
         this.unhashedSubpackets = unhashedSubpackets;
     }
 
-    public static SignatureAttributesWithoutHashPrefix parse(PacketHeader header, DataInputStream in) throws UnsupportedSignatureVersionException, IOException, UnsupportedPublicKeyAlgorithmException, InvalidSubpacketLengthException, UnsupportedCriticalSubpacketTypeException, UnsupportedHashAlgorithmException, NoSuchAlgorithmException, DuplicateSubpacketException {
+    public static SignatureAttributesWithoutHashPrefix parse(DataInputStream in) throws UnsupportedSignatureVersionException, IOException, UnsupportedPublicKeyAlgorithmException, InvalidSubpacketLengthException, UnsupportedCriticalSubpacketTypeException, UnsupportedHashAlgorithmException, NoSuchAlgorithmException, DuplicateSubpacketException {
         if (in.readByte() != VERSION) {
             throw new UnsupportedSignatureVersionException();
         }
         return new SignatureAttributesWithoutHashPrefix(
-                header,
                 SignatureType.parse(in),
                 PublicKeyAlgorithm.parse(in.readByte()),
                 HashAlgorithm.parse(in.readByte()),
@@ -52,7 +49,6 @@ public class SignatureAttributesWithoutHashPrefix extends Serializable implement
 
     @Override
     public void serialize(DataOutputStream out) throws IOException {
-        header.serialize(out);
         out.writeByte(VERSION);
         type.serialize(out);
         pkAlgorithm.serialize(out);

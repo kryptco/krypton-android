@@ -16,25 +16,37 @@ import co.krypt.kryptonite.pgp.subpacket.UnsupportedCriticalSubpacketTypeExcepti
  */
 
 public class SignedSignatureAttributes extends Serializable {
+    final PacketHeader header;
     public final SignatureAttributes attributes;
     public final Signature signature;
 
-    public SignedSignatureAttributes(SignatureAttributes attributes, Signature signature) {
+    public SignedSignatureAttributes(PacketHeader header, SignatureAttributes attributes, Signature signature) {
+        this.header = header;
         this.attributes = attributes;
         this.signature = signature;
     }
 
+    public SignedSignatureAttributes(SignatureAttributes attributes, Signature signature) throws IOException {
+        this.attributes = attributes;
+        this.signature = signature;
+
+        this.header = PacketHeader.withTypeAndLength(
+                PacketType.SIGNATURE,
+                attributes.serializedByteLength() + signature.serializedByteLength()
+                );
+    }
+
     public static SignedSignatureAttributes parse(PacketHeader header, DataInputStream in) throws IOException, UnsupportedPublicKeyAlgorithmException, UnsupportedCriticalSubpacketTypeException, DuplicateSubpacketException, NoSuchAlgorithmException, UnsupportedHashAlgorithmException, UnsupportedSignatureVersionException, InvalidSubpacketLengthException {
-        SignatureAttributes payload = SignatureAttributes.parse(header, in);
+        SignatureAttributes payload = SignatureAttributes.parse(in);
         switch (payload.attributes.pkAlgorithm) {
             case RSA_ENCRYPT_OR_SIGN:
-                return new SignedSignatureAttributes(payload, RSASignature.parse(in));
+                return new SignedSignatureAttributes(header, payload, RSASignature.parse(in));
             case RSA_ENCRYPT_ONLY:
                 throw new UnsupportedPublicKeyAlgorithmException();
             case RSA_SIGN_ONLY:
-                return new SignedSignatureAttributes(payload, RSASignature.parse(in));
+                return new SignedSignatureAttributes(header, payload, RSASignature.parse(in));
             case ED25519:
-                return new SignedSignatureAttributes(payload, Ed25519Signature.parse(in));
+                return new SignedSignatureAttributes(header, payload, Ed25519Signature.parse(in));
             default:
                 throw new UnsupportedPublicKeyAlgorithmException();
         }
@@ -42,6 +54,7 @@ public class SignedSignatureAttributes extends Serializable {
 
     @Override
     public void serialize(DataOutputStream out) throws IOException {
+        header.serialize(out);
         attributes.serialize(out);
         signature.serialize(out);
     }

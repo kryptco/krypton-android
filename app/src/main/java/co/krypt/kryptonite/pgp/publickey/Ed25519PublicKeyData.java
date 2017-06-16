@@ -30,7 +30,7 @@ public class Ed25519PublicKeyData extends PublicKeyData {
         ByteBuffer prefixedPKBuf = ByteBuffer.allocate(1 + pk.length);
         prefixedPKBuf.put(PUBLIC_KEY_PREFIX_BYTE).put(pk).flip();
         byte[] prefixedPK = prefixedPKBuf.array();
-        this.q = new MPInt(prefixedPK.length * 8, prefixedPK);
+        this.q = new MPInt(prefixedPK);
         this.pk = pk;
     }
 

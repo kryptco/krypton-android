@@ -24,7 +24,7 @@ public class IssuerSubpacket extends Subpacket {
 
     public static IssuerSubpacket fromIssuerKeyID(long issuerKeyID) {
         return new IssuerSubpacket(
-                SubpacketHeader.fromLengthAndTypeCritical(8, SubpacketType.ISSUER),
+                SubpacketHeader.fromLengthAndTypeIgnorable(8, SubpacketType.ISSUER),
                 issuerKeyID
         );
     }

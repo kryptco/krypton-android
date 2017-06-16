@@ -42,4 +42,8 @@ public enum SignatureType {
     public void serialize(DataOutputStream out) throws IOException {
         out.writeByte(v);
     }
+
+    public int serializedByteLength() {
+        return 1;
+    }
 }

@@ -1,5 +1,8 @@
 package co.krypt.kryptonite.pgp.packet;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 /**
  * Created by Kevin King on 6/12/17.
  * Copyright 2016. KryptCo, Inc.
@@ -7,16 +10,31 @@ package co.krypt.kryptonite.pgp.packet;
 
 //  https://tools.ietf.org/html/rfc4880#section-4.2.1
 //  Old format only supported
-public class PacketLength {
+public class PacketLength extends Serializable {
     final OldPacketLengthType lengthType;
-    final int bodyLength;
+    public final long bodyLength;
 
     public int lengthLength() {
         return lengthType.lengthLength();
     }
 
-    public PacketLength(OldPacketLengthType lengthType, int bodyLength) {
+    public PacketLength(OldPacketLengthType lengthType, long bodyLength) {
         this.lengthType = lengthType;
         this.bodyLength = bodyLength;
+    }
+
+    @Override
+    public void serialize(DataOutputStream out) throws IOException {
+        switch (lengthType) {
+            case ONE_OCTET:
+                out.writeByte((byte) bodyLength);
+                break;
+            case TWO_OCTET:
+                out.writeShort((int) bodyLength);
+                break;
+            case FOUR_OCTET:
+                out.writeInt((int) bodyLength);
+                break;
+        }
     }
 }

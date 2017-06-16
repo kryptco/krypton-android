@@ -26,8 +26,8 @@ import co.krypt.kryptonite.pgp.subpacket.KeyFlagsSubpacket;
  */
 
 public class PGPPublicKey extends Serializable {
-    final PublicKeyPacket publicKeyPacket;
-    final List<SignedPublicKeySelfCertification> signedIdentities;
+    public final PublicKeyPacket publicKeyPacket;
+    public final List<SignedPublicKeySelfCertification> signedIdentities;
 
     public PGPPublicKey(SSHKeyPairI kp, List<UserID> userIDs) throws PGPException {
         final HashAlgorithm hash = HashAlgorithm.SHA512;

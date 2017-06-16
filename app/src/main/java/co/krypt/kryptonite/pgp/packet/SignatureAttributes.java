@@ -24,9 +24,9 @@ public class SignatureAttributes extends Serializable implements Signable {
         this.hashPrefix = hashPrefix;
     }
 
-    public static SignatureAttributes parse(PacketHeader header, DataInputStream in) throws UnsupportedSignatureVersionException, IOException, UnsupportedPublicKeyAlgorithmException, InvalidSubpacketLengthException, UnsupportedCriticalSubpacketTypeException, UnsupportedHashAlgorithmException, NoSuchAlgorithmException, DuplicateSubpacketException {
+    public static SignatureAttributes parse(DataInputStream in) throws UnsupportedSignatureVersionException, IOException, UnsupportedPublicKeyAlgorithmException, InvalidSubpacketLengthException, UnsupportedCriticalSubpacketTypeException, UnsupportedHashAlgorithmException, NoSuchAlgorithmException, DuplicateSubpacketException {
         return new SignatureAttributes(
-                SignatureAttributesWithoutHashPrefix.parse(header, in),
+                SignatureAttributesWithoutHashPrefix.parse(in),
                 in.readShort()
         );
     }

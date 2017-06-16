@@ -98,8 +98,8 @@ public class PublicKeyPacket extends Serializable implements Signable {
         long length = attributes.serializedByteLength() + data.serializedByteLength();
         return new PublicKeyPacket(
                 PacketHeader.withTypeAndLength(PacketType.PUBLIC_KEY, length),
-                kp.pgpPublicKeyPacketAttributes(),
-                kp.pgpPublicKeyData()
+                attributes,
+                data
         );
     }
 }

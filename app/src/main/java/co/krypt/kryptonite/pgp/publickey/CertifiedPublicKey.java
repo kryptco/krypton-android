@@ -56,7 +56,7 @@ public class CertifiedPublicKey {
                     case PUBLIC_KEY:
                         if (publicKeyPacket != null) {
                             //  only accept first public key packet
-                            in.skip(header.length);
+                            in.skip(header.length.bodyLength);
                             continue;
                         }
                         publicKeyPacket = PublicKeyPacket.parse(
@@ -67,7 +67,7 @@ public class CertifiedPublicKey {
                         identities.add(new Pair<UserIDPacket, List<SignedSignatureAttributes>>(UserIDPacket.parse(header, in), new LinkedList<SignedSignatureAttributes>()));
                         break;
                     default:
-                        in.skip(header.length);
+                        in.skip(header.length.bodyLength);
                         break;
                 }
                 lastPacketUserIDOrSignature = header.tag.packetType == PacketType.USER_ID || header.tag.packetType == PacketType.SIGNATURE;

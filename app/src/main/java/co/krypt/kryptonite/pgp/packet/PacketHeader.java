@@ -11,11 +11,11 @@ import java.io.IOException;
 
 public class PacketHeader extends Serializable {
     public final PacketTag tag;
-    public final long length;
+    public final PacketLength length;
 
     public PacketHeader(PacketTag tag, long length) {
         this.tag = tag;
-        this.length = length;
+        this.length = new PacketLength(tag.lengthType, length);
     }
 
     public static PacketHeader parse(DataInputStream in) throws IOException, UnsupportedOldPacketLengthTypeException, InvalidPacketTagException, UnsupportedNewFormatException {
@@ -41,6 +41,6 @@ public class PacketHeader extends Serializable {
     @Override
     public void serialize(DataOutputStream out) throws IOException {
         tag.serialize(out);
-        out.writeInt((int) length);
+        length.serialize(out);
     }
 }
