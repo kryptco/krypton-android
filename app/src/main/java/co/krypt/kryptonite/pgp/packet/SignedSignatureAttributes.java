@@ -52,6 +52,23 @@ public class SignedSignatureAttributes extends Serializable {
         }
     }
 
+    public static SignedSignatureAttributes parse(DataInputStream in) throws IOException, UnsupportedPublicKeyAlgorithmException, UnsupportedCriticalSubpacketTypeException, DuplicateSubpacketException, NoSuchAlgorithmException, UnsupportedHashAlgorithmException, UnsupportedSignatureVersionException, InvalidSubpacketLengthException, InvalidPacketTagException, UnsupportedOldPacketLengthTypeException, UnsupportedNewFormatException {
+        PacketHeader header = PacketHeader.parse(in);
+        SignatureAttributes payload = SignatureAttributes.parse(in);
+        switch (payload.attributes.pkAlgorithm) {
+            case RSA_ENCRYPT_OR_SIGN:
+                return new SignedSignatureAttributes(header, payload, RSASignature.parse(in));
+            case RSA_ENCRYPT_ONLY:
+                throw new UnsupportedPublicKeyAlgorithmException();
+            case RSA_SIGN_ONLY:
+                return new SignedSignatureAttributes(header, payload, RSASignature.parse(in));
+            case ED25519:
+                return new SignedSignatureAttributes(header, payload, Ed25519Signature.parse(in));
+            default:
+                throw new UnsupportedPublicKeyAlgorithmException();
+        }
+    }
+
     @Override
     public void serialize(DataOutputStream out) throws IOException {
         header.serialize(out);
