@@ -14,8 +14,8 @@ import co.krypt.kryptonite.pgp.packet.Serializable;
 public class SubpacketTypeWrapper extends Serializable {
     static final byte CRITICAL_BIT = 0b01000000;
 
-    final SubpacketType type;
-    final boolean critical;
+    public final SubpacketType type;
+    public final boolean critical;
 
     public SubpacketTypeWrapper(SubpacketType type, boolean critical) {
         this.type = type;

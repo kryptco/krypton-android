@@ -45,5 +45,7 @@ public class PGPublicKeySelfCertificationTest {
                 new DataInputStream(new ByteArrayInputStream(pubkey.serializedBytes()))
         );
         Assert.assertTrue(pubkey.signedIdentities.size() == parsedPubkey.identities.size());
+
+        Assert.assertFalse(pubkey.signedIdentities.get(0).signature.attributes.attributes.unhashedSubpackets.issuer.header.type.critical);
     }
 }

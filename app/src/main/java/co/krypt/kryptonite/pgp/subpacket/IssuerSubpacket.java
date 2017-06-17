@@ -10,8 +10,8 @@ import java.io.IOException;
  */
 
 public class IssuerSubpacket extends Subpacket {
-    final SubpacketHeader header;
-    final long issuerKeyID;
+    public final SubpacketHeader header;
+    public final long issuerKeyID;
 
     public IssuerSubpacket(SubpacketHeader header, long issuerKeyID) {
         this.header = header;

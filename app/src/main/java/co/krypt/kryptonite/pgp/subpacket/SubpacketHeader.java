@@ -12,8 +12,8 @@ import co.krypt.kryptonite.pgp.packet.Serializable;
  */
 
 public class SubpacketHeader extends Serializable {
-    final SubpacketLength length;
-    final SubpacketTypeWrapper type;
+    public final SubpacketLength length;
+    public final SubpacketTypeWrapper type;
 
     public SubpacketHeader(SubpacketLength length, SubpacketTypeWrapper type) {
         this.length = length;
