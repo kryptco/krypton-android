@@ -14,6 +14,7 @@ import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.pairing.Pairing;
+import co.krypt.kryptonite.protocol.GitSignRequest;
 import co.krypt.kryptonite.protocol.Request;
 import co.krypt.kryptonite.protocol.SignRequest;
 import co.krypt.kryptonite.silo.Notifications;
@@ -54,6 +55,10 @@ public class Policy {
             return false;
         }
         return true;
+    }
+    public static synchronized boolean isApprovedNow(Context context, Pairing pairing, GitSignRequest request) {
+        Silo silo = Silo.shared(context);
+        return silo.pairings().isApprovedNow(pairing);
     }
 
     public static synchronized Pair<Pairing, Request> getPendingRequestAndPairing(String requestID) {

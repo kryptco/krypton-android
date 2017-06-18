@@ -40,8 +40,6 @@ public class Notifications {
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_notification_white)
                         .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
-                        .setContentTitle("Request Approved")
-                        .setContentText(pairing.workstationName + ": " + request.signRequest.display())
                         .setAutoCancel(true)
                         .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
@@ -49,6 +47,24 @@ public class Notifications {
         if (!new Settings(context).silenceNotifications()) {
             mBuilder.setSound(notificationSound)
                     .setVibrate(new long[]{0, 100});
+        }
+        if (request.signRequest != null) {
+            mBuilder
+                    .setContentTitle("SSH Login Approved")
+                    .setContentText(pairing.workstationName + ": " + request.signRequest.display());
+        }
+        if (request.gitSignRequest != null) {
+            String display = request.gitSignRequest.display();
+            mBuilder
+                    .setContentTitle(request.gitSignRequest.title() + " Approved")
+                    .setContentText(pairing.workstationName + ": " + request.gitSignRequest.display());
+            NotificationCompat.InboxStyle inboxStyle =
+                    new NotificationCompat.InboxStyle();
+            inboxStyle.setBigContentTitle(request.gitSignRequest.title() + " Approved");
+            for (String line : display.split("\n")) {
+                inboxStyle.addLine(line);
+            }
+            mBuilder.setStyle(inboxStyle);
         }
 
         // The stack builder object will contain an artificial back stack for the
@@ -83,7 +99,6 @@ public class Notifications {
                         .setSmallIcon(R.drawable.ic_notification_white)
                         .setColor(Color.RED)
                         .setContentTitle(title)
-                        .setContentText(pairing.workstationName + ": " + request.signRequest.display())
                         .setAutoCancel(true)
                         .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
@@ -91,6 +106,23 @@ public class Notifications {
         if (!new Settings(context).silenceNotifications()) {
             mBuilder.setSound(notificationSound)
                     .setVibrate(new long[]{0, 100, 100, 100});
+        }
+        if (request.signRequest != null) {
+            mBuilder
+                    .setContentText(pairing.workstationName + ": " + request.signRequest.display());
+        }
+        if (request.gitSignRequest != null) {
+            String display = request.gitSignRequest.display();
+            mBuilder
+                    .setContentTitle(request.gitSignRequest.title() + " Rejected")
+                    .setContentText(pairing.workstationName + ": " + request.gitSignRequest.display());
+            NotificationCompat.InboxStyle inboxStyle =
+                    new NotificationCompat.InboxStyle();
+            inboxStyle.setBigContentTitle(request.gitSignRequest.title() + " Rejected");
+            for (String line : display.split("\n")) {
+                inboxStyle.addLine(line);
+            }
+            mBuilder.setStyle(inboxStyle);
         }
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
@@ -150,8 +182,6 @@ public class Notifications {
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_notification_white)
                         .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
-                        .setContentTitle("Allow Request?")
-                        .setContentText(pairing.workstationName + ": " + request.signRequest.display())
                         .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -161,6 +191,24 @@ public class Notifications {
                         .setContentIntent(clickPendingIntent)
                         .setAutoCancel(true)
                 ;
+        if (request.signRequest != null) {
+            mBuilder
+                    .setContentTitle("Allow SSH Login?")
+                    .setContentText(pairing.workstationName + ": " + request.signRequest.display());
+        }
+        if (request.gitSignRequest != null) {
+            String display = request.gitSignRequest.display();
+            mBuilder
+                    .setContentTitle("Allow " + request.gitSignRequest.title() + "?")
+                    .setContentText(pairing.workstationName + ": " + request.gitSignRequest.display());
+            NotificationCompat.InboxStyle inboxStyle =
+                    new NotificationCompat.InboxStyle();
+            inboxStyle.setBigContentTitle("Allow " + request.gitSignRequest.title() + "?");
+            for (String line : display.split("\n")) {
+                inboxStyle.addLine(line);
+            }
+            mBuilder.setStyle(inboxStyle);
+        }
         if (!new Settings(context).silenceNotifications()) {
             mBuilder.setSound(notificationSound)
                     .setVibrate(new long[]{0, 100, 100, 100});

@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import javax.annotation.Nullable;
+
 import co.krypt.kryptonite.pgp.packet.BinarySignable;
 import co.krypt.kryptonite.protocol.JSON;
 
@@ -53,5 +55,38 @@ public class TagInfo implements BinarySignable {
         out.write("\n".getBytes("UTF-8"));
 
         out.write(message);
+    }
+
+    public String display() {
+        StringBuilder s = new StringBuilder();
+
+        if (message.length > 0) {
+            s.append(new String(message).trim()).append("\n");
+        }
+
+        s.append("tag ").append(tag).append("\n");
+        s.append("o ").append(object).append("\n");
+
+        String taggerNameAndEmail = taggerNameAndEmail();
+
+        if (taggerNameAndEmail == null) {
+            s.append("c ").append(this.tagger).append("\n");
+        } else {
+            s.append("c ").append(taggerNameAndEmail).append("\n");
+
+            String committerTime = GitUtils.getTimeAfterEmail(this.tagger);
+            if (committerTime != null) {
+                s.append(committerTime);
+            } else {
+                s.append("invalid time");
+            }
+        }
+
+        return s.toString();
+    }
+
+    @Nullable
+    public String taggerNameAndEmail() {
+        return GitUtils.getNameAndEmail(tagger);
     }
 }

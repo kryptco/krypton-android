@@ -31,9 +31,7 @@ public class ApprovalDialog {
         Request request = pendingRequestAndPairing.second;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle("Allow request?");
         builder.setIcon(R.mipmap.ic_launcher);
-        builder.setMessage(pairing.workstationName + ": " + request.signRequest.display());
         builder.setPositiveButton("Once",
                 new DialogInterface.OnClickListener()
                 {
@@ -58,6 +56,14 @@ public class ApprovalDialog {
                     }
                 });
         builder.setCancelable(false);
+        if (request.signRequest != null) {
+            builder.setTitle("Allow SSH Login?");
+            builder.setMessage(pairing.workstationName + ": " + request.signRequest.display());
+        }
+        if (request.gitSignRequest != null) {
+            builder.setTitle("Allow " + request.gitSignRequest.title() + "?");
+            builder.setMessage(pairing.workstationName + "\n" + request.gitSignRequest.display());
+        }
         builder.create().show();
     }
 }
