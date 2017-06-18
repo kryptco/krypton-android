@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import co.krypt.kryptonite.R;
-import co.krypt.kryptonite.log.SignatureLog;
+import co.krypt.kryptonite.log.SSHSignatureLog;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Session;
 
@@ -71,7 +71,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         public final TextView lastCommand;
         public final TextView lastCommandTime;
         public Pairing device;
-        public SignatureLog lastLog;
+        public SSHSignatureLog lastLog;
 
         public ViewHolder(final View view) {
             super(view);

@@ -15,7 +15,7 @@ import java.util.Set;
 
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.db.OpenDatabaseHelper;
-import co.krypt.kryptonite.log.SignatureLog;
+import co.krypt.kryptonite.log.SSHSignatureLog;
 import co.krypt.kryptonite.protocol.JSON;
 
 /**
@@ -176,7 +176,7 @@ public class Pairings {
             HashSet<Pairing> pairings = loadAllLocked();
             HashSet<Session> sessions = new HashSet<>();
             for (Pairing pairing: pairings) {
-                List<SignatureLog> sortedLogs = SignatureLog.sortByTimeDescending(getLogs(pairing));
+                List<SSHSignatureLog> sortedLogs = SSHSignatureLog.sortByTimeDescending(getLogs(pairing));
                 if (sortedLogs.size() > 0) {
                     sessions.add(new Session(pairing, sortedLogs.get(0), getApproved(pairing), getApprovedUntil(pairing)));
                 } else {
@@ -228,7 +228,7 @@ public class Pairings {
         }
     }
 
-    public void appendToLog(String pairingUUID, SignatureLog log) {
+    public void appendToLog(String pairingUUID, SSHSignatureLog log) {
         synchronized (lock) {
             try {
                 dbHelper.getSignatureLogDao().create(log);
@@ -240,14 +240,14 @@ public class Pairings {
         context.sendBroadcast(onLog);
     }
 
-    public void appendToLog(Pairing pairing, SignatureLog log) {
+    public void appendToLog(Pairing pairing, SSHSignatureLog log) {
         appendToLog(pairing.getUUIDString(), log);
     }
 
-    public HashSet<SignatureLog> getLogs(String pairingUUID) {
+    public HashSet<SSHSignatureLog> getLogs(String pairingUUID) {
         synchronized (lock) {
             try {
-                List<SignatureLog> logs = dbHelper.getSignatureLogDao().queryForEq("pairing_uuid", pairingUUID);
+                List<SSHSignatureLog> logs = dbHelper.getSignatureLogDao().queryForEq("pairing_uuid", pairingUUID);
                 return new HashSet<>(logs);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -256,15 +256,15 @@ public class Pairings {
         }
     }
 
-    public HashSet<SignatureLog> getLogs(Pairing pairing) {
+    public HashSet<SSHSignatureLog> getLogs(Pairing pairing) {
         return getLogs(pairing.getUUIDString());
     }
 
-    public List<SignatureLog> getAllLogsRedacted() {
+    public List<SSHSignatureLog> getAllLogsRedacted() {
         synchronized (lock) {
             try {
-                List<SignatureLog> logs = dbHelper.getSignatureLogDao().queryForAll();
-                return SignatureLog.sortByTimeDescending(new HashSet<SignatureLog>(logs));
+                List<SSHSignatureLog> logs = dbHelper.getSignatureLogDao().queryForAll();
+                return SSHSignatureLog.sortByTimeDescending(new HashSet<SSHSignatureLog>(logs));
             } catch (SQLException e) {
                 e.printStackTrace();
             }

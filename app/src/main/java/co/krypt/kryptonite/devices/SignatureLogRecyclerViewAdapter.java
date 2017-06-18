@@ -10,13 +10,13 @@ import android.widget.TextView;
 import java.util.List;
 
 import co.krypt.kryptonite.R;
-import co.krypt.kryptonite.log.SignatureLog;
+import co.krypt.kryptonite.log.SSHSignatureLog;
 
 public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<SignatureLogRecyclerViewAdapter.ViewHolder> {
 
-    private final List<SignatureLog> mValues;
+    private final List<SSHSignatureLog> mValues;
 
-    public SignatureLogRecyclerViewAdapter(List<SignatureLog> items) {
+    public SignatureLogRecyclerViewAdapter(List<SSHSignatureLog> items) {
         mValues = items;
     }
 
@@ -29,10 +29,10 @@ public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<Signat
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.signatureLog = mValues.get(position);
-        holder.commandText.setText(holder.signatureLog.userHostText());
+        holder.sshSignatureLog = mValues.get(position);
+        holder.commandText.setText(holder.sshSignatureLog.userHostText());
         holder.commandTime.setText(
-                DateUtils.getRelativeTimeSpanString(holder.signatureLog.unixSeconds * 1000, System.currentTimeMillis(), 1000));
+                DateUtils.getRelativeTimeSpanString(holder.sshSignatureLog.unixSeconds * 1000, System.currentTimeMillis(), 1000));
     }
 
     @Override
@@ -40,9 +40,9 @@ public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<Signat
         return mValues.size();
     }
 
-    public synchronized void setLogs(List<SignatureLog> newLogs) {
+    public synchronized void setLogs(List<SSHSignatureLog> newLogs) {
         mValues.clear();
-        for (SignatureLog log : newLogs) {
+        for (SSHSignatureLog log : newLogs) {
             mValues.add(log);
         }
         notifyDataSetChanged();
@@ -52,7 +52,7 @@ public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<Signat
         public final View mView;
         public final TextView commandText;
         public final TextView commandTime;
-        public SignatureLog signatureLog;
+        public SSHSignatureLog sshSignatureLog;
 
         public ViewHolder(View view) {
             super(view);

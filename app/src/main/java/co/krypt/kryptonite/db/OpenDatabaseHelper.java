@@ -11,7 +11,7 @@ import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
 
 import co.krypt.kryptonite.knownhosts.KnownHost;
-import co.krypt.kryptonite.log.SignatureLog;
+import co.krypt.kryptonite.log.SSHSignatureLog;
 
 
 /**
@@ -27,7 +27,7 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
     /**
      * The data access object used to interact with the Sqlite database to do C.R.U.D operations.
      */
-    private Dao<SignatureLog, Long> signatureLogDao;
+    private Dao<SSHSignatureLog, Long> signatureLogDao;
 
     private Dao<KnownHost, Long> knownHostDao;
 
@@ -38,7 +38,7 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
         try {
-            TableUtils.createTable(connectionSource, SignatureLog.class);
+            TableUtils.createTable(connectionSource, SSHSignatureLog.class);
             TableUtils.createTable(connectionSource, KnownHost.class);
 
         } catch (SQLException e) {
@@ -67,9 +67,9 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
      * @return
      * @throws SQLException
      */
-    public Dao<SignatureLog, Long> getSignatureLogDao() throws SQLException {
+    public Dao<SSHSignatureLog, Long> getSignatureLogDao() throws SQLException {
         if(signatureLogDao == null) {
-            signatureLogDao = getDao(SignatureLog.class);
+            signatureLogDao = getDao(SSHSignatureLog.class);
         }
         return signatureLogDao;
     }

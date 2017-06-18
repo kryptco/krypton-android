@@ -17,7 +17,7 @@ import java.util.Set;
  * Copyright 2016. KryptCo, Inc.
  */
 @DatabaseTable(tableName = "signature_log")
-public class SignatureLog {
+public class SSHSignatureLog {
     @DatabaseField(generatedId = true)
     private Long id;
 
@@ -63,9 +63,9 @@ public class SignatureLog {
     @DatabaseField(columnName = "workstation_name")
     public String workstationName;
 
-    protected SignatureLog() {}
+    protected SSHSignatureLog() {}
 
-    public SignatureLog(byte[] data, Boolean allowed, String command, String user, String hostName, long unixSeconds, boolean hostNameVerified, String hostAuthJSON, String pairingUUID, String workstationName) {
+    public SSHSignatureLog(byte[] data, Boolean allowed, String command, String user, String hostName, long unixSeconds, boolean hostNameVerified, String hostAuthJSON, String pairingUUID, String workstationName) {
         this.data = data;
         this.allowed = allowed;
         this.command = command;
@@ -83,7 +83,7 @@ public class SignatureLog {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SignatureLog that = (SignatureLog) o;
+        SSHSignatureLog that = (SSHSignatureLog) o;
 
         if (unixSeconds != that.unixSeconds) return false;
         if (hostNameVerified != that.hostNameVerified) return false;
@@ -127,18 +127,18 @@ public class SignatureLog {
                 (hostNameVerified ? hostName : "unknown host");
     }
 
-    public static List<SignatureLog> sortByTimeDescending(Set<SignatureLog> logs) {
-        List<SignatureLog> sortedLogs = new ArrayList<>(logs);
-        java.util.Collections.sort(sortedLogs, new Comparator<SignatureLog>() {
+    public static List<SSHSignatureLog> sortByTimeDescending(Set<SSHSignatureLog> logs) {
+        List<SSHSignatureLog> sortedLogs = new ArrayList<>(logs);
+        java.util.Collections.sort(sortedLogs, new Comparator<SSHSignatureLog>() {
             @Override
-            public int compare(SignatureLog lhs, SignatureLog rhs) {
+            public int compare(SSHSignatureLog lhs, SSHSignatureLog rhs) {
                 return Long.compare(rhs.unixSeconds, lhs.unixSeconds);
             }
         });
         return sortedLogs;
     }
 
-    public SignatureLog withDataRedacted() {
-        return new SignatureLog(null, this.allowed, this.command, this.user, this.hostName, this.unixSeconds, this.hostNameVerified, this.hostAuthJSON, this.pairingUUID, this.workstationName);
+    public SSHSignatureLog withDataRedacted() {
+        return new SSHSignatureLog(null, this.allowed, this.command, this.user, this.hostName, this.unixSeconds, this.hostNameVerified, this.hostAuthJSON, this.pairingUUID, this.workstationName);
     }
 }
