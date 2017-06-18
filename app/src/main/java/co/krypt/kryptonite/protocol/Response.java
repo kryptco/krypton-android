@@ -19,6 +19,9 @@ public class Response {
     @SerializedName("sign_response")
     public SignResponse signResponse;
 
+    @SerializedName("git_sign_response")
+    public GitSignResponse gitSignResponse;
+
     @SerializedName("unpair_response")
     public UnpairResponse unpairResponse;
 

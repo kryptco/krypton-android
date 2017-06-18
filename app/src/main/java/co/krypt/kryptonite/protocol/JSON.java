@@ -117,7 +117,7 @@ public class JSON {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
-    @interface JsonRequired
+    public @interface JsonRequired
     {
     }
 }
