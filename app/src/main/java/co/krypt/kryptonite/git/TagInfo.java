@@ -69,7 +69,7 @@ public class TagInfo implements BinarySignable {
         StringBuilder s = new StringBuilder();
 
         if (message.length > 0) {
-            s.append(new String(message).trim()).append("\n");
+            s.append(validatedMessageStringOrError().trim()).append("\n");
         }
 
         s.append("tag ").append(tag).append("\n");
@@ -94,6 +94,10 @@ public class TagInfo implements BinarySignable {
         }
 
         return s.toString();
+    }
+
+    public String validatedMessageStringOrError() {
+        return GitUtils.validatedStringOrPrefixError(message, "invalid message encoding");
     }
 
     @Nullable

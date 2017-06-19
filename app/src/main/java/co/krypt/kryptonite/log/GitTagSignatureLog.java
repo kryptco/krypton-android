@@ -1,6 +1,7 @@
 package co.krypt.kryptonite.log;
 
 import com.google.gson.annotations.SerializedName;
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -48,8 +49,12 @@ public class GitTagSignatureLog implements Log {
     public String tagger;
 
     @SerializedName("message")
-    @DatabaseField(columnName = "message")
-    public String message;
+    @DatabaseField(columnName = "message", dataType = DataType.BYTE_ARRAY)
+    public byte[] message;
+
+    @SerializedName("message_string")
+    @DatabaseField(columnName = "message_string")
+    public String messageString;
 
     @SerializedName("pairing_uuid")
     @DatabaseField(columnName = "pairing_uuid", index = true)
@@ -73,7 +78,8 @@ public class GitTagSignatureLog implements Log {
         this.type = tag.type;
         this.tag = tag.tag;
         this.tagger = tag.tagger;
-        this.message = new String(tag.message);
+        this.message = tag.message;
+        this.messageString = tag.validatedMessageStringOrError();
 
         this.pairingUUID = pairing.getUUIDString();
         this.workstationName = pairing.workstationName;
@@ -107,7 +113,7 @@ public class GitTagSignatureLog implements Log {
                 type,
                 tag,
                 tagger,
-                message.getBytes()
+                message
         );
     }
 

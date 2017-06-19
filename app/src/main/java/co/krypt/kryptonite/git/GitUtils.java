@@ -2,6 +2,12 @@ package co.krypt.kryptonite.git;
 
 import android.text.format.DateUtils;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.MalformedInputException;
+
 import javax.annotation.Nullable;
 
 /**
@@ -46,5 +52,19 @@ public class GitUtils {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    public static String validatedStringOrPrefixError(byte[] message, String error) {
+        try {
+            return Charset.forName("UTF-8").newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .decode(ByteBuffer.wrap(message)).toString();
+        } catch (MalformedInputException e) {
+            e.printStackTrace();
+        } catch (CharacterCodingException e) {
+            e.printStackTrace();
+        }
+        return error + ": " + new String(message);
     }
 }

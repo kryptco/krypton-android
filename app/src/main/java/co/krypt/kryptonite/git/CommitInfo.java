@@ -75,7 +75,7 @@ public class CommitInfo implements BinarySignable {
     public String display() {
         StringBuilder s = new StringBuilder();
 
-        s.append(new String(message).trim()).append("\n");
+        s.append(validatedMessageStringOrError().trim()).append("\n");
 
         s.append("t ").append(tree).append("\n");
         s.append("p ").append(parent).append("\n");
@@ -105,6 +105,10 @@ public class CommitInfo implements BinarySignable {
         }
 
         return s.toString();
+    }
+
+    public String validatedMessageStringOrError() {
+        return GitUtils.validatedStringOrPrefixError(message, "invalid message encoding");
     }
 
     @Nullable public String authorNameAndEmail() {
