@@ -15,6 +15,8 @@ import java.util.Set;
 
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.db.OpenDatabaseHelper;
+import co.krypt.kryptonite.log.GitCommitSignatureLog;
+import co.krypt.kryptonite.log.GitTagSignatureLog;
 import co.krypt.kryptonite.log.SSHSignatureLog;
 import co.krypt.kryptonite.protocol.JSON;
 
@@ -176,7 +178,7 @@ public class Pairings {
             HashSet<Pairing> pairings = loadAllLocked();
             HashSet<Session> sessions = new HashSet<>();
             for (Pairing pairing: pairings) {
-                List<SSHSignatureLog> sortedLogs = SSHSignatureLog.sortByTimeDescending(getLogs(pairing));
+                List<SSHSignatureLog> sortedLogs = SSHSignatureLog.sortByTimeDescending(getSSHLogs(pairing));
                 if (sortedLogs.size() > 0) {
                     sessions.add(new Session(pairing, sortedLogs.get(0), getApproved(pairing), getApprovedUntil(pairing)));
                 } else {
@@ -228,10 +230,10 @@ public class Pairings {
         }
     }
 
-    public void appendToLog(String pairingUUID, SSHSignatureLog log) {
+    public void appendToSSHLog(SSHSignatureLog log) {
         synchronized (lock) {
             try {
-                dbHelper.getSignatureLogDao().create(log);
+                dbHelper.getSSHSignatureLogDao().create(log);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -240,14 +242,10 @@ public class Pairings {
         context.sendBroadcast(onLog);
     }
 
-    public void appendToLog(Pairing pairing, SSHSignatureLog log) {
-        appendToLog(pairing.getUUIDString(), log);
-    }
-
-    public HashSet<SSHSignatureLog> getLogs(String pairingUUID) {
+    public HashSet<SSHSignatureLog> getSSHLogs(String pairingUUID) {
         synchronized (lock) {
             try {
-                List<SSHSignatureLog> logs = dbHelper.getSignatureLogDao().queryForEq("pairing_uuid", pairingUUID);
+                List<SSHSignatureLog> logs = dbHelper.getSSHSignatureLogDao().queryForEq("pairing_uuid", pairingUUID);
                 return new HashSet<>(logs);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -256,20 +254,76 @@ public class Pairings {
         }
     }
 
-    public HashSet<SSHSignatureLog> getLogs(Pairing pairing) {
-        return getLogs(pairing.getUUIDString());
+    public HashSet<SSHSignatureLog> getSSHLogs(Pairing pairing) {
+        return getSSHLogs(pairing.getUUIDString());
     }
 
-    public List<SSHSignatureLog> getAllLogsRedacted() {
+    public List<SSHSignatureLog> getAllSSHLogsRedacted() {
         synchronized (lock) {
             try {
-                List<SSHSignatureLog> logs = dbHelper.getSignatureLogDao().queryForAll();
+                List<SSHSignatureLog> logs = dbHelper.getSSHSignatureLogDao().queryForAll();
                 return SSHSignatureLog.sortByTimeDescending(new HashSet<SSHSignatureLog>(logs));
             } catch (SQLException e) {
                 e.printStackTrace();
             }
             return new ArrayList<>();
         }
+    }
+
+    public HashSet<GitCommitSignatureLog> getCommitLogs(String pairingUUID) {
+        synchronized (lock) {
+            try {
+                List<GitCommitSignatureLog> logs = dbHelper.getGitCommitSignatureLogDao().queryForEq("pairing_uuid", pairingUUID);
+                return new HashSet<>(logs);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return new HashSet<>();
+        }
+    }
+
+    public HashSet<GitCommitSignatureLog> getCommitLogs(Pairing pairing) {
+        return getCommitLogs(pairing.getUUIDString());
+    }
+
+    public void appendToCommitLogs(GitCommitSignatureLog log) {
+        synchronized (lock) {
+            try {
+                dbHelper.getGitCommitSignatureLogDao().create(log);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        Intent onLog = new Intent(ON_DEVICE_LOG_ACTION);
+        context.sendBroadcast(onLog);
+    }
+
+    public HashSet<GitTagSignatureLog> getTagLogs(String pairingUUID) {
+        synchronized (lock) {
+            try {
+                List<GitTagSignatureLog> logs = dbHelper.getGitTagSignatureLogDao().queryForEq("pairing_uuid", pairingUUID);
+                return new HashSet<>(logs);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return new HashSet<>();
+        }
+    }
+
+    public HashSet<GitTagSignatureLog> getTagLogs(Pairing pairing) {
+        return getTagLogs(pairing.getUUIDString());
+    }
+
+    public void appendToTagLogs(GitTagSignatureLog log) {
+        synchronized (lock) {
+            try {
+                dbHelper.getGitTagSignatureLogDao().create(log);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        Intent onLog = new Intent(ON_DEVICE_LOG_ACTION);
+        context.sendBroadcast(onLog);
     }
 
     private static String getSettingsKey(Pairing pairing, String settingsKey) {

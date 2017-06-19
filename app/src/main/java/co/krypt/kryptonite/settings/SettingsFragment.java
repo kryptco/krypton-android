@@ -153,7 +153,7 @@ public class SettingsFragment extends Fragment {
         exportLogsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String json = JSON.toJson(Silo.shared(v.getContext()).pairings().getAllLogsRedacted());
+                String json = JSON.toJson(Silo.shared(v.getContext()).pairings().getAllSSHLogsRedacted());
                 try {
                     String token = AuditLogContentProvider.writeAuditLogReturningToken(v.getContext(), json);
                     Intent sendIntent = new Intent();

@@ -66,6 +66,9 @@ public class TagInfo implements BinarySignable {
 
         s.append("tag ").append(tag).append("\n");
         s.append("o ").append(object).append("\n");
+        if (!type.equals("commit")) {
+            s.append("type ").append(type).append("\n");
+        }
 
         String taggerNameAndEmail = taggerNameAndEmail();
 
@@ -88,5 +91,10 @@ public class TagInfo implements BinarySignable {
     @Nullable
     public String taggerNameAndEmail() {
         return GitUtils.getNameAndEmail(tagger);
+    }
+
+    @Nullable
+    public Long taggerTime() {
+        return GitUtils.getUnixSecondsAfterEmail(tagger);
     }
 }

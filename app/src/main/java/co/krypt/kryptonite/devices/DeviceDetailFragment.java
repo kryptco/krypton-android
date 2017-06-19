@@ -67,7 +67,7 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         }
 
         List<SSHSignatureLog> sshSignatureLogs = SSHSignatureLog.sortByTimeDescending(
-                Silo.shared(getContext()).pairings().getLogs(pairingUUID));
+                Silo.shared(getContext()).pairings().getSSHLogs(pairingUUID));
         signatureLogAdapter = new SignatureLogRecyclerViewAdapter(sshSignatureLogs);
 
     }
@@ -122,7 +122,7 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
             @Override
             public void onReceive(Context context, Intent intent) {
                 List<SSHSignatureLog> sshSignatureLogs = SSHSignatureLog.sortByTimeDescending(
-                        Silo.shared(getContext()).pairings().getLogs(pairingUUID));
+                        Silo.shared(getContext()).pairings().getSSHLogs(pairingUUID));
                 signatureLogAdapter.setLogs(sshSignatureLogs);
             }
         };

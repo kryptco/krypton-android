@@ -21,6 +21,16 @@ public class GitUtils {
 
     @Nullable
     public static String getTimeAfterEmail(String s) {
+        Long time = getUnixSecondsAfterEmail(s);
+        if (time != null) {
+            return DateUtils.getRelativeTimeSpanString(time * 1000, System.currentTimeMillis(), 1000)
+                    .toString().toLowerCase();
+        }
+        return null;
+    }
+
+    @Nullable
+    public static Long getUnixSecondsAfterEmail(String s) {
         int endOfEmail = s.indexOf('>');
         if (endOfEmail < 0) {
             return null;
@@ -32,8 +42,7 @@ public class GitUtils {
         }
         try {
             long time = Long.parseLong(toks[0]);
-            return DateUtils.getRelativeTimeSpanString(time * 1000, System.currentTimeMillis(), 1000)
-                    .toString().toLowerCase();
+            return time;
         } catch (NumberFormatException e) {
             return null;
         }

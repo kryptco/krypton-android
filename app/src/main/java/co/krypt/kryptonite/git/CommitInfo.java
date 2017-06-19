@@ -67,6 +67,11 @@ public class CommitInfo implements BinarySignable {
         out.write(message);
     }
 
+    @Nullable
+    public Long committerTime() {
+        return GitUtils.getUnixSecondsAfterEmail(committer);
+    }
+
     public String display() {
         StringBuilder s = new StringBuilder();
 

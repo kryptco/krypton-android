@@ -11,6 +11,8 @@ import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
 
 import co.krypt.kryptonite.knownhosts.KnownHost;
+import co.krypt.kryptonite.log.GitCommitSignatureLog;
+import co.krypt.kryptonite.log.GitTagSignatureLog;
 import co.krypt.kryptonite.log.SSHSignatureLog;
 
 
@@ -22,12 +24,14 @@ import co.krypt.kryptonite.log.SSHSignatureLog;
 public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME = "kryptonite";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     /**
      * The data access object used to interact with the Sqlite database to do C.R.U.D operations.
      */
-    private Dao<SSHSignatureLog, Long> signatureLogDao;
+    private Dao<SSHSignatureLog, Long> sshSignatureLogDao;
+    private Dao<GitCommitSignatureLog, Long> gitCommitSignatureLogDao;
+    private Dao<GitTagSignatureLog, Long> gitTagSignatureLogDao;
 
     private Dao<KnownHost, Long> knownHostDao;
 
@@ -40,6 +44,8 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
         try {
             TableUtils.createTable(connectionSource, SSHSignatureLog.class);
             TableUtils.createTable(connectionSource, KnownHost.class);
+            TableUtils.createTable(connectionSource, GitCommitSignatureLog.class);
+            TableUtils.createTable(connectionSource, GitTagSignatureLog.class);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -53,8 +59,12 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
             /**
              * Recreates the database when onUpgrade is called by the framework
              */
-            if (oldVersion == 1 && newVersion == 2) {
+            if (oldVersion < 2 && newVersion >= 2) {
                 TableUtils.createTable(connectionSource, KnownHost.class);
+            }
+            if (oldVersion < 3 && newVersion >= 3) {
+                TableUtils.createTable(connectionSource, GitCommitSignatureLog.class);
+                TableUtils.createTable(connectionSource, GitTagSignatureLog.class);
             }
 
         } catch (SQLException e) {
@@ -67,11 +77,25 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
      * @return
      * @throws SQLException
      */
-    public Dao<SSHSignatureLog, Long> getSignatureLogDao() throws SQLException {
-        if(signatureLogDao == null) {
-            signatureLogDao = getDao(SSHSignatureLog.class);
+    public Dao<SSHSignatureLog, Long> getSSHSignatureLogDao() throws SQLException {
+        if(sshSignatureLogDao == null) {
+            sshSignatureLogDao = getDao(SSHSignatureLog.class);
         }
-        return signatureLogDao;
+        return sshSignatureLogDao;
+    }
+
+    public Dao<GitCommitSignatureLog, Long> getGitCommitSignatureLogDao() throws SQLException {
+        if(gitCommitSignatureLogDao == null) {
+            gitCommitSignatureLogDao = getDao(GitCommitSignatureLog.class);
+        }
+        return gitCommitSignatureLogDao;
+    }
+
+    public Dao<GitTagSignatureLog, Long> getGitTagSignatureLogDao() throws SQLException {
+        if(gitTagSignatureLogDao == null) {
+            gitTagSignatureLogDao = getDao(GitTagSignatureLog.class);
+        }
+        return gitTagSignatureLogDao;
     }
 
     public Dao<KnownHost, Long> getKnownHostDao() throws SQLException {
