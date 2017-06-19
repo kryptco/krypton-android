@@ -29,7 +29,6 @@ import co.krypt.kryptonite.log.AuditLogContentProvider;
 import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.onboarding.OnboardingActivity;
 import co.krypt.kryptonite.policy.LocalAuthentication;
-import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.silo.Silo;
 
 /**
@@ -153,13 +152,12 @@ public class SettingsFragment extends Fragment {
         exportLogsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String json = JSON.toJson(Silo.shared(v.getContext()).pairings().getAllSSHLogsRedacted());
                 try {
-                    String token = AuditLogContentProvider.writeAuditLogReturningToken(v.getContext(), json);
+                    String token = AuditLogContentProvider.setAuditLogToken(v.getContext());
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
-                    sendIntent.putExtra(Intent.EXTRA_SUBJECT, "SSH Audit Log");
-                    sendIntent.setType("text/plain");
+                    sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Kryptonite Audit Log");
+                    sendIntent.setType("application/x-sqlite3");
                     Uri auditLogUriWithToken = AuditLogContentProvider.getAuditLogURIWithToken();
                     if (auditLogUriWithToken == null) {
                         return;

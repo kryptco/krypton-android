@@ -14,10 +14,11 @@ import android.util.Log;
 import com.amazonaws.util.Base32;
 
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.List;
+
+import co.krypt.kryptonite.db.OpenDatabaseHelper;
 
 /**
  * Created by Kevin King on 3/26/17.
@@ -28,7 +29,7 @@ public class AuditLogContentProvider extends ContentProvider {
     public static final String AUTHORITY = "co.krypt.kryptonite.log.AuditLogContentProvider";
 
     private static String token = null;
-    private final static String AUDIT_LOG_FILE_NAME = "audit_log.json";
+    private final static String AUDIT_LOG_FILE_NAME = "kryptonite.sqlite3";
 
     public static synchronized void setToken(String token) {
         AuditLogContentProvider.token = token;
@@ -97,7 +98,7 @@ public class AuditLogContentProvider extends ContentProvider {
                 if (lastToken != null && token.equals(lastToken)) {
                     try {
                         Log.i("AuditLogContentProvider", "exporting audit log");
-                        return ParcelFileDescriptor.open(getContext().getFileStreamPath(AUDIT_LOG_FILE_NAME), ParcelFileDescriptor.MODE_READ_ONLY);
+                        return ParcelFileDescriptor.open(getContext().getDatabasePath(OpenDatabaseHelper.DATABASE_NAME), ParcelFileDescriptor.MODE_READ_ONLY);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -106,11 +107,7 @@ public class AuditLogContentProvider extends ContentProvider {
         return null;
     }
 
-    public static String writeAuditLogReturningToken(Context context, String auditLogJson) throws IOException {
-        FileOutputStream outputStream = context.openFileOutput(AUDIT_LOG_FILE_NAME, Context.MODE_PRIVATE);
-        outputStream.write(auditLogJson.getBytes());
-        outputStream.close();
-
+    public static String setAuditLogToken(Context context) throws IOException {
         String token = Base32.encodeAsString(SecureRandom.getSeed(16));
         setToken(token);
         return token;

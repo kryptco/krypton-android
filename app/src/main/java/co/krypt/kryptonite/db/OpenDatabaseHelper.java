@@ -23,7 +23,7 @@ import co.krypt.kryptonite.log.SSHSignatureLog;
 
 public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
 
-    private static final String DATABASE_NAME = "kryptonite";
+    public static final String DATABASE_NAME = "kryptonite";
     private static final int DATABASE_VERSION = 3;
 
     /**
@@ -33,10 +33,13 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<GitCommitSignatureLog, Long> gitCommitSignatureLogDao;
     private Dao<GitTagSignatureLog, Long> gitTagSignatureLogDao;
 
+    private final Context context;
+
     private Dao<KnownHost, Long> knownHostDao;
 
     public OpenDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION) ;
+        this.context = context;
     }
 
     @Override
