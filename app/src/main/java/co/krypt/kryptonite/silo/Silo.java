@@ -35,13 +35,20 @@ import co.krypt.kryptonite.exception.MismatchedHostKeyException;
 import co.krypt.kryptonite.exception.ProtocolException;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.knownhosts.KnownHost;
-import co.krypt.kryptonite.log.SignatureLog;
+import co.krypt.kryptonite.log.GitCommitSignatureLog;
+import co.krypt.kryptonite.log.GitTagSignatureLog;
+import co.krypt.kryptonite.log.SSHSignatureLog;
 import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.onboarding.TestSSHFragment;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Pairings;
+import co.krypt.kryptonite.pgp.PGPException;
+import co.krypt.kryptonite.pgp.packet.HashAlgorithm;
+import co.krypt.kryptonite.pgp.packet.SignableUtils;
 import co.krypt.kryptonite.policy.Policy;
 import co.krypt.kryptonite.protocol.AckResponse;
+import co.krypt.kryptonite.protocol.GitSignRequest;
+import co.krypt.kryptonite.protocol.GitSignResponse;
 import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.protocol.MeResponse;
 import co.krypt.kryptonite.protocol.NetworkMessage;
@@ -309,6 +316,10 @@ public class Silo {
             return;
         }
 
+        if (request.signRequest != null && request.gitSignRequest != null) {
+            throw new ProtocolException("multiple signature requests unsupported");
+        }
+
         lastRequestTimeSeconds.put(pairing, System.currentTimeMillis() / 1000);
 
         if (request.signRequest != null) {
@@ -317,7 +328,7 @@ public class Silo {
                     if (Policy.requestApproval(context, pairing, request)) {
                         new Analytics(context).postEvent("signature", "requires approval", communicationMedium, null, false);
                     }
-                    if (request.sendACK == true) {
+                    if (request.sendACK) {
                         Response ackResponse = Response.with(request);
                         ackResponse.ackResponse = new AckResponse();
                         send(pairing, ackResponse);
@@ -327,6 +338,23 @@ public class Silo {
             }
 
             new Analytics(context).postEvent("signature", "automatic approval", communicationMedium, null, false);
+        }
+
+        if (request.gitSignRequest != null) {
+            synchronized (policyLock) {
+                if (!Policy.isApprovedNow(context, pairing, request.gitSignRequest)) {
+                    if (Policy.requestApproval(context, pairing, request)) {
+                        new Analytics(context).postEvent("git-commit-signature", "requires approval", communicationMedium, null, false);
+                    }
+                    if (request.sendACK) {
+                        Response ackResponse = Response.with(request);
+                        ackResponse.ackResponse = new AckResponse();
+                        send(pairing, ackResponse);
+                    }
+                    return;
+                }
+            }
+            new Analytics(context).postEvent("git-commit-signature", "automatic approval", communicationMedium, null, false);
         }
 
         respondToRequest(pairing, request, true);
@@ -348,6 +376,51 @@ public class Silo {
         if (request.meRequest != null) {
             SSHKeyPairI key = KeyManager.loadMeRSAOrEdKeyPair(context);
             response.meResponse = new MeResponse(meStorage.load(key, request.meRequest.userID()));
+        }
+
+        if (request.gitSignRequest != null) {
+            GitSignRequest gitSignRequest = request.gitSignRequest;
+            if (signatureAllowed) {
+                SSHKeyPairI key = KeyManager.loadMeRSAOrEdKeyPair(context);
+                try {
+                    if (gitSignRequest.commit != null) {
+                        response.gitSignResponse = new GitSignResponse(
+                                SignableUtils.signBinaryDocument(gitSignRequest.commit, key, HashAlgorithm.SHA512),
+                                null
+                        );
+                    }
+                    if (gitSignRequest.tag != null) {
+                        response.gitSignResponse = new GitSignResponse(
+                                SignableUtils.signBinaryDocument(gitSignRequest.tag, key, HashAlgorithm.SHA512),
+                                null
+                        );
+                    }
+                    Notifications.notifySuccess(context, pairing, request);
+                } catch (PGPException | NoSuchAlgorithmException | SignatureException e) {
+                    e.printStackTrace();
+                    response.gitSignResponse = new GitSignResponse(null, "unknown error");
+                }
+            } else {
+                response.gitSignResponse = new GitSignResponse(null, "rejected");
+            }
+            if (gitSignRequest.commit != null) {
+                pairings().appendToCommitLogs(
+                        new GitCommitSignatureLog(
+                                pairing,
+                                request.gitSignRequest.commit,
+                                signatureAllowed
+                        )
+                );
+            }
+            if (gitSignRequest.tag != null) {
+                pairings().appendToTagLogs(
+                        new GitTagSignatureLog(
+                                pairing,
+                                request.gitSignRequest.tag,
+                                signatureAllowed
+                        )
+                );
+            }
         }
 
         if (request.signRequest != null) {
@@ -378,7 +451,7 @@ public class Silo {
                             algo = "ssh-rsa";
                         }
                         response.signResponse.signature = key.signDigestAppendingPubkey(request.signRequest.data, algo);
-                        pairingStorage.appendToLog(pairing, new SignatureLog(
+                        pairingStorage.appendToSSHLog(new SSHSignatureLog(
                                 signRequest.data,
                                 true,
                                 signRequest.command,
@@ -413,7 +486,7 @@ public class Silo {
                 }
             } else {
                 response.signResponse.error = "rejected";
-                pairingStorage.appendToLog(pairing, new SignatureLog(
+                pairingStorage.appendToSSHLog(new SSHSignatureLog(
                         signRequest.data,
                         false,
                         signRequest.command,
