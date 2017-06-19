@@ -72,18 +72,18 @@ public class TagInfo implements BinarySignable {
             s.append(validatedMessageStringOrError().trim()).append("\n");
         }
 
-        s.append("tag ").append(tag).append("\n");
-        s.append("o ").append(object).append("\n");
+        s.append("TAG ").append(tag).append("\n");
+        s.append("HASH ").append(object).append("\n");
         if (!type.equals("commit")) {
-            s.append("type ").append(type).append("\n");
+            s.append("TYPE ").append(type).append("\n");
         }
 
         String taggerNameAndEmail = taggerNameAndEmail();
 
         if (taggerNameAndEmail == null) {
-            s.append("c ").append(this.tagger).append("\n");
+            s.append("TAGGER ").append(this.tagger).append("\n");
         } else {
-            s.append("c ").append(taggerNameAndEmail).append("\n");
+            s.append("TAGGER ").append(taggerNameAndEmail).append("\n");
 
             String committerTime = GitUtils.getTimeAfterEmail(this.tagger);
             if (committerTime != null) {

@@ -77,24 +77,24 @@ public class CommitInfo implements BinarySignable {
 
         s.append(validatedMessageStringOrError().trim()).append("\n");
 
-        s.append("t ").append(tree).append("\n");
-        s.append("p ").append(parent).append("\n");
+        s.append("TREE ").append(tree).append("\n");
+        s.append("PARENT ").append(parent).append("\n");
 
         String authorNameAndEmail = authorNameAndEmail();
         String committerNameAndEmail = committerNameAndEmail();
 
         if (authorNameAndEmail == null) {
-            s.append("a ").append(this.author).append("\n");
+            s.append("AUTHOR ").append(this.author).append("\n");
         } else {
             if (!authorNameAndEmail.equals(committerNameAndEmail)) {
-                s.append("a ").append(authorNameAndEmail).append("\n");
+                s.append("AUTHOR ").append(authorNameAndEmail).append("\n");
             }
         }
 
         if (committerNameAndEmail == null) {
-            s.append("c ").append(this.committer).append("\n");
+            s.append("COMMITTER ").append(this.committer).append("\n");
         } else {
-            s.append("c ").append(committerNameAndEmail).append("\n");
+            s.append("COMMITTER ").append(committerNameAndEmail).append("\n");
 
             String committerTime = GitUtils.getTimeAfterEmail(this.committer);
             if (committerTime != null) {
