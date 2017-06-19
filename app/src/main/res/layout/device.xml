@@ -68,23 +68,23 @@
                 android:textColor="@color/appWhite" />
 
             <TextView
-                android:text="Last SSH Login"
+                android:id="@+id/lastCommandTitle"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:id="@+id/lastCommandTitle"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:textAllCaps="true"
+                android:background="@color/appBlack"
+                android:paddingBottom="0dp"
                 android:paddingLeft="10dp"
                 android:paddingTop="5dp"
+                android:text="Last Approval"
+                android:textAllCaps="true"
+                android:textColor="@color/appWhite"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toTopOf="@+id/lastCommandText"
-                app:layout_constraintRight_toRightOf="@+id/lastCommandTimeText"
-                android:background="@color/appBlack"
-                android:textColor="@color/appWhite"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintVertical_bias="0.0"
-                android:paddingBottom="0dp" />
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="@+id/lastCommandTimeText"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:layout_width="wrap_content"

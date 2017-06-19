@@ -9,7 +9,9 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +19,7 @@ import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.db.OpenDatabaseHelper;
 import co.krypt.kryptonite.log.GitCommitSignatureLog;
 import co.krypt.kryptonite.log.GitTagSignatureLog;
+import co.krypt.kryptonite.log.Log;
 import co.krypt.kryptonite.log.SSHSignatureLog;
 import co.krypt.kryptonite.protocol.JSON;
 
@@ -178,7 +181,7 @@ public class Pairings {
             HashSet<Pairing> pairings = loadAllLocked();
             HashSet<Session> sessions = new HashSet<>();
             for (Pairing pairing: pairings) {
-                List<SSHSignatureLog> sortedLogs = SSHSignatureLog.sortByTimeDescending(getSSHLogs(pairing));
+                List<Log> sortedLogs = getAllLogsTimeDescending(pairing);
                 if (sortedLogs.size() > 0) {
                     sessions.add(new Session(pairing, sortedLogs.get(0), getApproved(pairing), getApprovedUntil(pairing)));
                 } else {
@@ -325,6 +328,31 @@ public class Pairings {
         Intent onLog = new Intent(ON_DEVICE_LOG_ACTION);
         context.sendBroadcast(onLog);
     }
+
+    public List<Log> getAllLogsTimeDescending(String pairingUUID) {
+        synchronized (lock) {
+            List<SSHSignatureLog> sshLogs = new LinkedList<>(getSSHLogs(pairingUUID));
+            List<GitCommitSignatureLog> commitLogs = new LinkedList<>(getCommitLogs(pairingUUID));
+            List<GitTagSignatureLog> tagLogs = new LinkedList<>(getTagLogs(pairingUUID));
+
+            List<Log> logs = new LinkedList<>();
+            logs.addAll(sshLogs);
+            logs.addAll(commitLogs);
+            logs.addAll(tagLogs);
+            java.util.Collections.sort(logs, new Comparator<Log>() {
+                @Override
+                public int compare(Log lhs, Log rhs) {
+                    return Long.compare(rhs.unixSeconds(), lhs.unixSeconds());
+                }
+            });
+            return logs;
+        }
+    }
+
+    public List<Log> getAllLogsTimeDescending(Pairing pairing) {
+        return getAllLogsTimeDescending(pairing.getUUIDString());
+    }
+
 
     private static String getSettingsKey(Pairing pairing, String settingsKey) {
         return pairing.getUUIDString() + "." + settingsKey;

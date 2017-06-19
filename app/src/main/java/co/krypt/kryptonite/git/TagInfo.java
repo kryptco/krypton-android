@@ -36,6 +36,14 @@ public class TagInfo implements BinarySignable {
     @JSON.JsonRequired
     public byte[] message;
 
+    public TagInfo(String object, String type, String tag, String tagger, byte[] message) {
+        this.object = object;
+        this.type = type;
+        this.tag = tag;
+        this.tagger = tagger;
+        this.message = message;
+    }
+
     @Override
     public void writeSignableData(DataOutputStream out) throws IOException {
         out.write("object ".getBytes("UTF-8"));

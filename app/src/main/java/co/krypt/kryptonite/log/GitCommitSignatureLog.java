@@ -19,7 +19,7 @@ import co.krypt.kryptonite.pairing.Pairing;
  * Copyright 2017. KryptCo, Inc.
  */
 @DatabaseTable(tableName = "git_commit_signature_log")
-public class GitCommitSignatureLog {
+public class GitCommitSignatureLog implements Log {
     @DatabaseField(generatedId = true)
     private Long id;
 
@@ -97,5 +97,34 @@ public class GitCommitSignatureLog {
             }
         });
         return sortedLogs;
+    }
+
+    @Override
+    public long unixSeconds() {
+        return unixSeconds;
+    }
+
+    public CommitInfo commitInfo() {
+        return new CommitInfo(
+                tree,
+                parent,
+                author,
+                committer,
+                message.getBytes()
+        );
+    }
+
+    private String header() {
+        return (allowed ? "" : "rejected ") + "commit";
+    }
+
+    @Override
+    public String shortDisplay() {
+        return header() + ": " + new String(message).replace("\n", " ").trim();
+    }
+
+    @Override
+    public String longDisplay() {
+        return header() + "\n" + commitInfo().display();
     }
 }

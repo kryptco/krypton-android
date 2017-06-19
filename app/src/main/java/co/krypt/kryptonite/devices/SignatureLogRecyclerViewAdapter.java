@@ -10,13 +10,13 @@ import android.widget.TextView;
 import java.util.List;
 
 import co.krypt.kryptonite.R;
-import co.krypt.kryptonite.log.SSHSignatureLog;
+import co.krypt.kryptonite.log.Log;
 
 public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<SignatureLogRecyclerViewAdapter.ViewHolder> {
 
-    private final List<SSHSignatureLog> mValues;
+    private final List<Log> mValues;
 
-    public SignatureLogRecyclerViewAdapter(List<SSHSignatureLog> items) {
+    public SignatureLogRecyclerViewAdapter(List<Log> items) {
         mValues = items;
     }
 
@@ -29,10 +29,10 @@ public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<Signat
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.sshSignatureLog = mValues.get(position);
-        holder.commandText.setText(holder.sshSignatureLog.userHostText());
+        holder.log = mValues.get(position);
+        holder.commandText.setText(holder.log.shortDisplay());
         holder.commandTime.setText(
-                DateUtils.getRelativeTimeSpanString(holder.sshSignatureLog.unixSeconds * 1000, System.currentTimeMillis(), 1000));
+                DateUtils.getRelativeTimeSpanString(holder.log.unixSeconds() * 1000, System.currentTimeMillis(), 1000));
     }
 
     @Override
@@ -40,9 +40,9 @@ public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<Signat
         return mValues.size();
     }
 
-    public synchronized void setLogs(List<SSHSignatureLog> newLogs) {
+    public synchronized void setLogs(List<Log> newLogs) {
         mValues.clear();
-        for (SSHSignatureLog log : newLogs) {
+        for (Log log : newLogs) {
             mValues.add(log);
         }
         notifyDataSetChanged();
@@ -52,13 +52,31 @@ public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<Signat
         public final View mView;
         public final TextView commandText;
         public final TextView commandTime;
-        public SSHSignatureLog sshSignatureLog;
+        public Log log;
+
+        private boolean longText = false;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
             commandText = (TextView) view.findViewById(R.id.commandText);
+            view.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (longText) {
+                                commandText.setText(log.shortDisplay());
+                                commandText.setMaxLines(3);
+                            } else {
+                                commandText.setText(log.longDisplay());
+                                commandText.setMaxLines(30);
+                            }
+                            longText = !longText;
+                        }
+                    }
+            );
             commandTime = (TextView) view.findViewById(R.id.commandTime);
+
         }
 
         @Override

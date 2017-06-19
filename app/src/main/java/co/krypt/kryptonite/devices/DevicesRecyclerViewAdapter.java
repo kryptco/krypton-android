@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import co.krypt.kryptonite.R;
-import co.krypt.kryptonite.log.SSHSignatureLog;
+import co.krypt.kryptonite.log.Log;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Session;
 
@@ -42,12 +42,12 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.device = sessions.get(position).pairing;
-        holder.lastLog = sessions.get(position).lastCommand;
+        holder.lastLog = sessions.get(position).lastApproval;
 
         holder.deviceName.setText(sessions.get(position).pairing.workstationName);
         if (holder.lastLog != null) {
-            holder.lastCommand.setText(holder.lastLog.userHostText());
-            holder.lastCommandTime.setText(DateUtils.getRelativeTimeSpanString(holder.lastLog.unixSeconds * 1000, System.currentTimeMillis(), 1000));
+            holder.lastCommand.setText(holder.lastLog.shortDisplay());
+            holder.lastCommandTime.setText(DateUtils.getRelativeTimeSpanString(holder.lastLog.unixSeconds() * 1000, System.currentTimeMillis(), 1000));
         }
 
        holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -71,7 +71,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         public final TextView lastCommand;
         public final TextView lastCommandTime;
         public Pairing device;
-        public SSHSignatureLog lastLog;
+        public Log lastLog;
 
         public ViewHolder(final View view) {
             super(view);

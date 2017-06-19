@@ -9,8 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 import co.krypt.kryptonite.git.TagInfo;
 import co.krypt.kryptonite.pairing.Pairing;
 
@@ -19,7 +17,7 @@ import co.krypt.kryptonite.pairing.Pairing;
  * Copyright 2017. KryptCo, Inc.
  */
 @DatabaseTable(tableName = "git_tag_signature_log")
-public class GitTagSignatureLog {
+public class GitTagSignatureLog implements Log {
     @DatabaseField(generatedId = true)
     private Long id;
 
@@ -41,7 +39,6 @@ public class GitTagSignatureLog {
     @DatabaseField(columnName = "type")
     public String type;
 
-    @Nullable
     @SerializedName("tag")
     @DatabaseField(columnName = "tag")
     public String tag;
@@ -97,5 +94,34 @@ public class GitTagSignatureLog {
             }
         });
         return sortedLogs;
+    }
+
+    @Override
+    public long unixSeconds() {
+        return unixSeconds;
+    }
+
+    public TagInfo tagInfo() {
+        return new TagInfo(
+                object,
+                type,
+                tag,
+                tagger,
+                message.getBytes()
+        );
+    }
+
+    private String header() {
+        return (allowed ? "" : "rejected ") + "tag";
+    }
+
+    @Override
+    public String shortDisplay() {
+        return header() + ": " + tag.trim();
+    }
+
+    @Override
+    public String longDisplay() {
+        return header() + "\n" + tagInfo().display();
     }
 }

@@ -17,7 +17,7 @@ import java.util.Set;
  * Copyright 2016. KryptCo, Inc.
  */
 @DatabaseTable(tableName = "signature_log")
-public class SSHSignatureLog {
+public class SSHSignatureLog implements Log {
     @DatabaseField(generatedId = true)
     private Long id;
 
@@ -140,5 +140,20 @@ public class SSHSignatureLog {
 
     public SSHSignatureLog withDataRedacted() {
         return new SSHSignatureLog(null, this.allowed, this.command, this.user, this.hostName, this.unixSeconds, this.hostNameVerified, this.hostAuthJSON, this.pairingUUID, this.workstationName);
+    }
+
+    @Override
+    public long unixSeconds() {
+        return unixSeconds;
+    }
+
+    @Override
+    public String shortDisplay() {
+        return userHostText();
+    }
+
+    @Override
+    public String longDisplay() {
+        return shortDisplay();
     }
 }

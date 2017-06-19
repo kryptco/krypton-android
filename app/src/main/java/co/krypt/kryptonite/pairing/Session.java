@@ -1,6 +1,6 @@
 package co.krypt.kryptonite.pairing;
 
-import co.krypt.kryptonite.log.SSHSignatureLog;
+import co.krypt.kryptonite.log.Log;
 
 /**
  * Created by Kevin King on 12/18/16.
@@ -9,13 +9,13 @@ import co.krypt.kryptonite.log.SSHSignatureLog;
 
 public class Session {
     public final Pairing pairing;
-    public final SSHSignatureLog lastCommand;
+    public final Log lastApproval;
     public final boolean approved;
     public final Long approvedUntilUnixSeconds;
 
-    public Session(Pairing pairing, SSHSignatureLog lastCommand, boolean approved, Long approvedUntilUnixSeconds) {
+    public Session(Pairing pairing, Log lastApproval, boolean approved, Long approvedUntilUnixSeconds) {
         this.pairing = pairing;
-        this.lastCommand = lastCommand;
+        this.lastApproval = lastApproval;
         this.approved = approved;
         this.approvedUntilUnixSeconds = approvedUntilUnixSeconds;
     }

@@ -20,11 +20,8 @@ import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import java.util.List;
-
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
-import co.krypt.kryptonite.log.SSHSignatureLog;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.silo.Silo;
@@ -66,9 +63,9 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
             pairingUUID = getArguments().getString(ARG_PAIRING_UUID);
         }
 
-        List<SSHSignatureLog> sshSignatureLogs = SSHSignatureLog.sortByTimeDescending(
-                Silo.shared(getContext()).pairings().getSSHLogs(pairingUUID));
-        signatureLogAdapter = new SignatureLogRecyclerViewAdapter(sshSignatureLogs);
+        signatureLogAdapter = new SignatureLogRecyclerViewAdapter(
+                Silo.shared(getContext()).pairings().getAllLogsTimeDescending(pairingUUID)
+        );
 
     }
 
@@ -121,9 +118,9 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         onDeviceLogReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                List<SSHSignatureLog> sshSignatureLogs = SSHSignatureLog.sortByTimeDescending(
-                        Silo.shared(getContext()).pairings().getSSHLogs(pairingUUID));
-                signatureLogAdapter.setLogs(sshSignatureLogs);
+                signatureLogAdapter.setLogs(
+                        Silo.shared(getContext()).pairings().getAllLogsTimeDescending(pairingUUID)
+                );
             }
         };
         IntentFilter filter = new IntentFilter();
