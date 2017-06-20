@@ -15,4 +15,7 @@ public class Base64 {
             throw new CryptoException(e.getMessage());
         }
     }
+    public static String encode(byte[] b) {
+        return com.amazonaws.util.Base64.encodeAsString(b);
+    }
 }

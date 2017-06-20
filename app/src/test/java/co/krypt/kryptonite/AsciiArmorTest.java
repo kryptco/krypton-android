@@ -19,5 +19,8 @@ public class AsciiArmorTest {
         Assert.assertTrue(aa.headers.size() == 1);
         Assert.assertTrue(aa.headers.get(0).first.equals("Comment"));
         Assert.assertTrue(aa.headers.get(0).second.equals("Some test hello"));
+
+        String reserialized = aa.toString();
+        Assert.assertTrue(reserialized.equals(PGPPublicKeyTest.testPubKey1));
     }
 }

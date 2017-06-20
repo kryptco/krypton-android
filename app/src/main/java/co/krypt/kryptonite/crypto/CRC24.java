@@ -1,5 +1,8 @@
 package co.krypt.kryptonite.crypto;
 
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
 /**
  * Created by Kevin King on 6/13/17.
  * Copyright 2017. KryptCo, Inc.
@@ -21,5 +24,13 @@ public class CRC24 {
             }
         }
         return crc24 & 0xFFFFFF;
+    }
+
+    public static byte[] computeBytes(byte[] data) {
+        ByteBuffer buf = ByteBuffer.allocate(4);
+        buf.putInt(compute(data)).flip();
+        byte[] dst = new byte[4];
+        buf.get(dst);
+        return Arrays.copyOfRange(dst, 1, 4);
     }
 }

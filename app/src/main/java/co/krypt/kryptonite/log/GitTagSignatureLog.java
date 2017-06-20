@@ -10,6 +10,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import co.krypt.kryptonite.git.TagInfo;
 import co.krypt.kryptonite.pairing.Pairing;
 
@@ -64,8 +66,13 @@ public class GitTagSignatureLog implements Log {
     @DatabaseField(columnName = "workstation_name")
     public String workstationName;
 
-    public GitTagSignatureLog(Pairing pairing, TagInfo tag, boolean allowed) {
-        this.allowed = allowed;
+    @SerializedName("signature")
+    @DatabaseField(columnName = "signature")
+    @Nullable
+    public String signature;
+
+    public GitTagSignatureLog(Pairing pairing, TagInfo tag, @Nullable String signature) {
+        this.allowed = signature != null;
 
         Long taggerTime = tag.taggerTime();
         if (taggerTime != null) {
@@ -83,6 +90,8 @@ public class GitTagSignatureLog implements Log {
 
         this.pairingUUID = pairing.getUUIDString();
         this.workstationName = pairing.workstationName;
+
+        this.signature = signature;
     }
 
     protected GitTagSignatureLog() { }

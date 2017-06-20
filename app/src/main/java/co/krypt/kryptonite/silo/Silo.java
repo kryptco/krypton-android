@@ -43,6 +43,7 @@ import co.krypt.kryptonite.onboarding.TestSSHFragment;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.pgp.PGPException;
+import co.krypt.kryptonite.pgp.asciiarmor.AsciiArmor;
 import co.krypt.kryptonite.pgp.packet.HashAlgorithm;
 import co.krypt.kryptonite.pgp.packet.SignableUtils;
 import co.krypt.kryptonite.policy.Policy;
@@ -384,15 +385,31 @@ public class Silo {
                 SSHKeyPairI key = KeyManager.loadMeRSAOrEdKeyPair(context);
                 try {
                     if (gitSignRequest.commit != null) {
+                        byte[] signature = SignableUtils.signBinaryDocument(gitSignRequest.commit, key, HashAlgorithm.SHA512);
                         response.gitSignResponse = new GitSignResponse(
-                                SignableUtils.signBinaryDocument(gitSignRequest.commit, key, HashAlgorithm.SHA512),
+                                signature,
                                 null
+                        );
+                        pairings().appendToCommitLogs(
+                                new GitCommitSignatureLog(
+                                        pairing,
+                                        request.gitSignRequest.commit,
+                                        new AsciiArmor(AsciiArmor.HeaderLine.SIGNATURE, AsciiArmor.DEFAULT_HEADERS, signature).toString()
+                                )
                         );
                     }
                     if (gitSignRequest.tag != null) {
+                        byte[] signature = SignableUtils.signBinaryDocument(gitSignRequest.tag, key, HashAlgorithm.SHA512);
                         response.gitSignResponse = new GitSignResponse(
-                                SignableUtils.signBinaryDocument(gitSignRequest.tag, key, HashAlgorithm.SHA512),
+                                signature,
                                 null
+                        );
+                        pairings().appendToTagLogs(
+                                new GitTagSignatureLog(
+                                        pairing,
+                                        request.gitSignRequest.tag,
+                                        new AsciiArmor(AsciiArmor.HeaderLine.SIGNATURE, AsciiArmor.DEFAULT_HEADERS, signature).toString()
+                                )
                         );
                     }
                     Notifications.notifySuccess(context, pairing, request);
@@ -402,24 +419,24 @@ public class Silo {
                 }
             } else {
                 response.gitSignResponse = new GitSignResponse(null, "rejected");
-            }
-            if (gitSignRequest.commit != null) {
-                pairings().appendToCommitLogs(
-                        new GitCommitSignatureLog(
-                                pairing,
-                                request.gitSignRequest.commit,
-                                signatureAllowed
-                        )
-                );
-            }
-            if (gitSignRequest.tag != null) {
-                pairings().appendToTagLogs(
-                        new GitTagSignatureLog(
-                                pairing,
-                                request.gitSignRequest.tag,
-                                signatureAllowed
-                        )
-                );
+                if (gitSignRequest.commit != null) {
+                    pairings().appendToCommitLogs(
+                            new GitCommitSignatureLog(
+                                    pairing,
+                                    request.gitSignRequest.commit,
+                                    null
+                            )
+                    );
+                }
+                if (gitSignRequest.tag != null) {
+                    pairings().appendToTagLogs(
+                            new GitTagSignatureLog(
+                                    pairing,
+                                    request.gitSignRequest.tag,
+                                    null
+                            )
+                    );
+                }
             }
         }
 

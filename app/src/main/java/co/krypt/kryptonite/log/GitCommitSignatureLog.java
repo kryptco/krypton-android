@@ -36,6 +36,7 @@ public class GitCommitSignatureLog implements Log {
 
     @SerializedName("tree")
     @DatabaseField(columnName = "tree")
+    @Nullable
     public String tree;
 
     @Nullable
@@ -67,8 +68,13 @@ public class GitCommitSignatureLog implements Log {
     @DatabaseField(columnName = "workstation_name")
     public String workstationName;
 
-    public GitCommitSignatureLog(Pairing pairing, CommitInfo commit, boolean allowed) {
-        this.allowed = allowed;
+    @SerializedName("signature")
+    @DatabaseField(columnName = "signature")
+    @Nullable
+    public String signature;
+
+    public GitCommitSignatureLog(Pairing pairing, CommitInfo commit, @Nullable String signature) {
+        this.allowed = signature != null;
 
         Long committerTime = commit.committerTime();
         if (committerTime != null) {
@@ -86,6 +92,8 @@ public class GitCommitSignatureLog implements Log {
 
         this.pairingUUID = pairing.getUUIDString();
         this.workstationName = pairing.workstationName;
+
+        this.signature = signature;
     }
 
     protected GitCommitSignatureLog() { }

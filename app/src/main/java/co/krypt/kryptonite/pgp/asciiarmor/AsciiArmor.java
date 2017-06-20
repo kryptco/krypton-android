@@ -3,6 +3,7 @@ package co.krypt.kryptonite.pgp.asciiarmor;
 import android.support.v4.util.Pair;
 
 import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -42,6 +43,10 @@ public class AsciiArmor {
     private static final String HEADER_LINE_SUFFIX = "-----";
     private static final String LAST_LINE_PREFIX = "-----END ";
     private static final String LAST_LINE_SUFFIX = "-----";
+
+    public static final List<Pair<String, String>> DEFAULT_HEADERS = Collections.singletonList(new Pair<String, String>(
+            "Comment", "Created with Kryptonite"
+    ));
 
     public final HeaderLine headerLine;
     public final List<Pair<String, String>> headers;
@@ -125,5 +130,30 @@ public class AsciiArmor {
                 headers,
                 data
         );
+    }
+
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        s.append(HEADER_LINE_PREFIX).append(headerLine.s).append(HEADER_LINE_SUFFIX).append("\n");
+
+        for (Pair<String, String> header: headers) {
+            s.append(header.first).append(": ").append(header.second).append("\n");
+        }
+        if (headers.size() > 0) {
+            s.append("\n");
+        }
+
+
+        String b64Data = Base64.encode(data);
+        //  https://stackoverflow.com/questions/10530102/java-parse-string-and-add-line-break-every-100-characters
+        String splitLines = b64Data.replaceAll("(.{64})", "$1\n").trim();
+        s.append(splitLines).append("\n");
+
+        s.append("=").append(Base64.encode(CRC24.computeBytes(data)));
+        s.append("\n");
+
+        s.append(LAST_LINE_PREFIX).append(headerLine.s).append(LAST_LINE_SUFFIX);
+
+        return s.toString();
     }
 }
