@@ -15,11 +15,14 @@ import javax.annotation.Nullable;
 import co.krypt.kryptonite.crypto.KeyManager;
 import co.krypt.kryptonite.crypto.SSHKeyPairI;
 import co.krypt.kryptonite.exception.CryptoException;
+import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pgp.PGPException;
 import co.krypt.kryptonite.pgp.PGPManager;
+import co.krypt.kryptonite.pgp.PGPPublicKey;
 import co.krypt.kryptonite.pgp.UserID;
 import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.protocol.Profile;
+import co.krypt.kryptonite.silo.Notifications;
 
 /**
  * Created by Kevin King on 12/3/16.
@@ -38,7 +41,12 @@ public class MeStorage {
         this.context = context;
     }
 
-    public Profile load(@Nullable SSHKeyPairI kp, @Nullable UserID userID) {
+
+    public Profile load() {
+        return loadWithUserID(null, null, null);
+    }
+
+    public Profile loadWithUserID(@Nullable SSHKeyPairI kp, @Nullable UserID userID, @Nullable Pairing pairing) {
         synchronized (lock) {
             String meJSON = preferences.getString("ME", null);
             if (meJSON == null) {
@@ -64,7 +72,9 @@ public class MeStorage {
                             userIDs.remove(0);
                         }
                         userIDs.add(userID);
-                        me.pgpPublicKey = PGPManager.publicKeyWithIdentities(kp, userIDs);
+                        PGPPublicKey pgpPublicKey = PGPManager.publicKeyWithIdentities(kp, userIDs);
+                        me.pgpPublicKey = pgpPublicKey.serializedBytes();
+                        Notifications.notifyPGPKeyExport(context, pgpPublicKey);
                         set(me, userIDs);
                     }
                 } catch (PGPException | IOException e) {
@@ -113,7 +123,7 @@ public class MeStorage {
 
     public void setEmail(String email) {
         synchronized (lock) {
-            Profile me = load(null, null);
+            Profile me = load();
             if (me == null) {
                 me = new Profile();
             }

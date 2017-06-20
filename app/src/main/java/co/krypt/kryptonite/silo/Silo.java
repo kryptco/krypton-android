@@ -375,14 +375,14 @@ public class Silo {
 
         if (request.meRequest != null) {
             SSHKeyPairI key = KeyManager.loadMeRSAOrEdKeyPair(context);
-            response.meResponse = new MeResponse(meStorage.load(key, request.meRequest.userID()));
+            response.meResponse = new MeResponse(meStorage.loadWithUserID(key, request.meRequest.userID(), pairing));
         }
 
         if (request.gitSignRequest != null) {
             GitSignRequest gitSignRequest = request.gitSignRequest;
             if (signatureAllowed) {
                 SSHKeyPairI key = KeyManager.loadMeRSAOrEdKeyPair(context);
-                new MeStorage(context).load(key, UserID.parse(gitSignRequest.userID));
+                new MeStorage(context).loadWithUserID(key, UserID.parse(gitSignRequest.userID), pairing);
                 try {
                     if (gitSignRequest.commit != null) {
                         byte[] signature = SignableUtils.signBinaryDocument(gitSignRequest.commit, key, HashAlgorithm.SHA512);

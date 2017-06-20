@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         silo = Silo.shared(getApplicationContext());
         startService(new Intent(this, BluetoothService.class));
         OnboardingProgress progress = new OnboardingProgress(getApplicationContext());
-        if (new MeStorage(getApplicationContext()).load(null, null) == null || progress.inProgress()) {
+        if (new MeStorage(getApplicationContext()).load() == null || progress.inProgress()) {
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
             return;

@@ -78,7 +78,7 @@ public class EnterEmailFragment extends Fragment {
                 onEmailChanged();
             }
         });
-        Profile me = new MeStorage(getContext()).load(null, null);
+        Profile me = new MeStorage(getContext()).load();
         if (me != null && me.email != null) {
             profileEmail.setText(me.email);
         }

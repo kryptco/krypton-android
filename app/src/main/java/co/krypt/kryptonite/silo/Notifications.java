@@ -16,6 +16,8 @@ import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.onboarding.OnboardingActivity;
 import co.krypt.kryptonite.onboarding.OnboardingProgress;
 import co.krypt.kryptonite.pairing.Pairing;
+import co.krypt.kryptonite.pgp.PGPPublicKey;
+import co.krypt.kryptonite.pgp.publickey.SignedPublicKeySelfCertification;
 import co.krypt.kryptonite.policy.NoAuthReceiver;
 import co.krypt.kryptonite.policy.Policy;
 import co.krypt.kryptonite.policy.UnlockScreenDummyActivity;
@@ -217,6 +219,50 @@ public class Notifications {
         NotificationManager mNotifyMgr =
                 (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         mNotifyMgr.notify(request.requestID, 0, mBuilder.build());
+    }
+
+    public static void notifyPGPKeyExport(Context context, PGPPublicKey pubkey) {
+        Intent clickIntent = new Intent(context, MainActivity.class);
+        if (new OnboardingProgress(context).inProgress()) {
+            clickIntent.setClass(context, OnboardingActivity.class);
+        }
+        clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(context, ("CLICK-PGPPUBKEY").hashCode(), clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        String userIDs = "";
+        for (SignedPublicKeySelfCertification signedIdentity : pubkey.signedIdentities) {
+            userIDs += signedIdentity.certification.userIDPacket.userID.toString() + "\n";
+        }
+
+        NotificationCompat.InboxStyle inboxStyle =
+                new NotificationCompat.InboxStyle();
+        inboxStyle.setBigContentTitle("Exported PGP Public Key");
+        for (SignedPublicKeySelfCertification signedIdentity : pubkey.signedIdentities) {
+            inboxStyle.addLine(signedIdentity.certification.userIDPacket.userID.toString());
+        }
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setContentTitle("Exported PGP Public Key")
+                        .setContentText(userIDs.trim())
+                        .setSmallIcon(R.drawable.ic_notification_white)
+                        .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
+                        .setPriority(NotificationCompat.PRIORITY_MAX)
+                        .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        .setContentIntent(clickPendingIntent)
+                        .setAutoCancel(true)
+                        .setStyle(inboxStyle)
+                ;
+        if (!new Settings(context).silenceNotifications()) {
+            mBuilder.setSound(notificationSound)
+                    .setVibrate(new long[]{0, 100, 100, 100});
+        }
+
+        NotificationManager mNotifyMgr =
+                (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        mNotifyMgr.notify(1, mBuilder.build());
     }
 
     public static void clearRequest(Context context, Request request) {

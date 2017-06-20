@@ -11,7 +11,7 @@ import co.krypt.kryptonite.crypto.SSHKeyPairI;
  */
 
 public class PGPManager {
-    public static byte[] publicKeyWithIdentities(SSHKeyPairI kp, List<UserID> userIDs) throws PGPException, IOException {
-        return new PGPPublicKey(kp, userIDs).serializedBytes();
+    public static PGPPublicKey publicKeyWithIdentities(SSHKeyPairI kp, List<UserID> userIDs) throws PGPException, IOException {
+        return new PGPPublicKey(kp, userIDs);
     }
 }
