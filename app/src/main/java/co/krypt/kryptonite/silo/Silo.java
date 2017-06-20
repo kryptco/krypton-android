@@ -45,6 +45,7 @@ import co.krypt.kryptonite.onboarding.TestSSHFragment;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Pairings;
 import co.krypt.kryptonite.pgp.PGPException;
+import co.krypt.kryptonite.pgp.UserID;
 import co.krypt.kryptonite.pgp.asciiarmor.AsciiArmor;
 import co.krypt.kryptonite.pgp.packet.HashAlgorithm;
 import co.krypt.kryptonite.pgp.packet.SignableUtils;
@@ -381,6 +382,7 @@ public class Silo {
             GitSignRequest gitSignRequest = request.gitSignRequest;
             if (signatureAllowed) {
                 SSHKeyPairI key = KeyManager.loadMeRSAOrEdKeyPair(context);
+                new MeStorage(context).load(key, UserID.parse(gitSignRequest.userID));
                 try {
                     if (gitSignRequest.commit != null) {
                         byte[] signature = SignableUtils.signBinaryDocument(gitSignRequest.commit, key, HashAlgorithm.SHA512);

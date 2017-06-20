@@ -32,4 +32,25 @@ public class UserID {
             return new UserID(contents, "");
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserID userID = (UserID) o;
+
+        if (!contents.equals(userID.contents)) return false;
+        if (!name.equals(userID.name)) return false;
+        return email.equals(userID.email);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = contents.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + email.hashCode();
+        return result;
+    }
 }

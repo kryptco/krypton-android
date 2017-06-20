@@ -6,8 +6,9 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -26,6 +27,7 @@ import co.krypt.kryptonite.protocol.Profile;
  */
 
 public class MeStorage {
+    private static final int USER_ID_LIMIT = 3;
     private static final String TAG = "MeStorage";
     private static final Object lock = new Object();
     private SharedPreferences preferences;
@@ -37,7 +39,6 @@ public class MeStorage {
     }
 
     public Profile load(@Nullable SSHKeyPairI kp, @Nullable UserID userID) {
-        //TODO: store signed userIDs
         synchronized (lock) {
             String meJSON = preferences.getString("ME", null);
             if (meJSON == null) {
@@ -56,7 +57,16 @@ public class MeStorage {
             }
             if (kp != null && userID != null) {
                 try {
-                    me.pgpPublicKey = PGPManager.publicKeyWithIdentities(kp, Collections.singletonList(userID));
+                    List<UserID> userIDs = getUserIDs();
+                    if (!userIDs.contains(userID)) {
+                        //  keep USER_ID_LIMIT most recent UserIDs
+                        if (userIDs.size() >= USER_ID_LIMIT) {
+                            userIDs.remove(0);
+                        }
+                        userIDs.add(userID);
+                        me.pgpPublicKey = PGPManager.publicKeyWithIdentities(kp, userIDs);
+                        set(me, userIDs);
+                    }
                 } catch (PGPException | IOException e) {
                     e.printStackTrace();
                 }
@@ -75,6 +85,30 @@ public class MeStorage {
         synchronized (lock) {
             preferences.edit().putString("ME", JSON.toJson(profile)).apply();
         }
+    }
+
+    public void set(Profile profile, List<UserID> userIDs) {
+        ArrayList<String> userIDStrings = new ArrayList<>();
+        for (UserID userID : userIDs) {
+            userIDStrings.add(new String(userID.utf8()));
+        }
+        synchronized (lock) {
+            set(profile);
+            preferences.edit().putString("ME.USER_IDS", JSON.toJson(userIDStrings.toArray(new String[]{}))).apply();
+        }
+    }
+
+    public List<UserID> getUserIDs() {
+        List<UserID> userIDs = new LinkedList<>();
+
+        synchronized (lock) {
+            String[] userIDStrings = JSON.fromJson(preferences.getString("ME.USER_IDS", "[]"), String[].class);
+            for (String userIDString: userIDStrings) {
+                userIDs.add(UserID.parse(userIDString));
+            }
+        }
+
+        return userIDs;
     }
 
     public void setEmail(String email) {
