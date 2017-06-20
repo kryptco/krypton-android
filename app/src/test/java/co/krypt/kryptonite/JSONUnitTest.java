@@ -15,22 +15,22 @@ import co.krypt.kryptonite.protocol.Request;
 public class JSONUnitTest {
     @Test(expected=JsonParseException.class)
     public void requestDeserializationMissingFields_fails() throws Exception {
-        String json = "{\"request_id\":\"132\"}";
+        String json = "{\"request_id\":\"132\", \"v\": \"1.0.0\"}";
         JSON.fromJson(json, Request.class);
     }
     @Test
     public void requestDeserialization_works() throws Exception {
-        String json = "{\"request_id\":\"132\", \"unix_seconds\":0}";
+        String json = "{\"request_id\":\"132\", \"unix_seconds\":0, \"v\": \"1.0.0\"}";
         JSON.fromJson(json, Request.class);
     }
     @Test
     public void nestedRequestDeserialization_works() throws Exception {
-        String json = "{\"request_id\":\"132\", \"unix_seconds\":0, \"sign_request\":{\"public_key_fingerprint\":\"aGkK\", \"data\": \"aGkK\"}}";
+        String json = "{\"request_id\":\"132\", \"unix_seconds\":0, \"sign_request\":{\"public_key_fingerprint\":\"aGkK\", \"data\": \"aGkK\"}, \"v\": \"1.0.0\"}";
         JSON.fromJson(json, Request.class);
     }
     @Test(expected = JsonParseException.class)
     public void nestedRequestDeserializationMissingFields_fails() throws Exception {
-        String json = "{\"request_id\":\"132\", \"unix_seconds\":0, \"sign_request\":{\"public_key_fingerprint\":\"aGkK\"}}";
+        String json = "{\"request_id\":\"132\", \"unix_seconds\":0, \"sign_request\":{\"public_key_fingerprint\":\"aGkK\"}, \"v\": \"1.0.0\"}";
         JSON.fromJson(json, Request.class);
     }
 }
