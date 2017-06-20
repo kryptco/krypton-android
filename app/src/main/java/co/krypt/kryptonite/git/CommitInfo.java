@@ -2,11 +2,14 @@ package co.krypt.kryptonite.git;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 import javax.annotation.Nullable;
 
+import co.krypt.kryptonite.crypto.SHA1;
+import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.pgp.packet.BinarySignable;
 import co.krypt.kryptonite.protocol.JSON;
 
@@ -105,6 +108,48 @@ public class CommitInfo implements BinarySignable {
         }
 
         return s.toString();
+    }
+
+    public byte[] commitHash(String asciiArmorSignature) throws IOException, CryptoException {
+        ByteArrayOutputStream commitBuf = new ByteArrayOutputStream();
+        DataOutputStream commitDataBuf = new DataOutputStream(commitBuf);
+        commitDataBuf.write("tree ".getBytes("UTF-8"));
+        commitDataBuf.write(tree.getBytes("UTF-8"));
+        commitDataBuf.write("\n".getBytes("UTF-8"));
+
+        if (parent != null) {
+            commitDataBuf.write("parent ".getBytes("UTF-8"));
+            commitDataBuf.write(parent.getBytes("UTF-8"));
+            commitDataBuf.write("\n".getBytes("UTF-8"));
+        }
+
+        commitDataBuf.write("author ".getBytes("UTF-8"));
+        commitDataBuf.write(author.getBytes("UTF-8"));
+        commitDataBuf.write("\n".getBytes("UTF-8"));
+
+        commitDataBuf.write("committer ".getBytes("UTF-8"));
+        commitDataBuf.write(committer.getBytes());
+        commitDataBuf.write("\n".getBytes("UTF-8"));
+
+        commitDataBuf.write("gpgsig ".getBytes("UTF-8"));
+        commitDataBuf.write(asciiArmorSignature.replaceAll("\n", "\n ").getBytes("UTF-8"));
+        commitDataBuf.write("\n".getBytes("UTF-8"));
+
+        commitDataBuf.write(message);
+
+        commitDataBuf.close();
+
+        ByteArrayOutputStream fullBuf = new ByteArrayOutputStream();
+        DataOutputStream fullDataBuf = new DataOutputStream(fullBuf);
+
+        fullDataBuf.write("commit ".getBytes("UTF-8"));
+        fullDataBuf.write(String.valueOf(commitBuf.toByteArray().length).getBytes("UTF-8"));
+        fullDataBuf.writeByte(0x00);
+        fullDataBuf.write(commitBuf.toByteArray());
+
+        fullDataBuf.close();
+
+        return SHA1.digest(fullBuf.toByteArray());
     }
 
     public String validatedMessageStringOrError() {
