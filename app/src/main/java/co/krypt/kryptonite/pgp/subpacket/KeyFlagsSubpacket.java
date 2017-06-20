@@ -64,7 +64,7 @@ public class KeyFlagsSubpacket extends Subpacket {
             f |= flag.f;
         }
         return new KeyFlagsSubpacket(
-                SubpacketHeader.fromLengthAndTypeCritical(
+                SubpacketHeader.fromLengthAndTypeIgnorable(
                         1,
                         SubpacketType.KEY_FLAGS
                 ),
