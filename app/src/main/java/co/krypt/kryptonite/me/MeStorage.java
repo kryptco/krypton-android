@@ -66,8 +66,10 @@ public class MeStorage {
             if (kp != null && userID != null) {
                 try {
                     List<UserID> userIDs = getUserIDs();
-                    if (!userIDs.contains(userID)) {
-                        //  keep USER_ID_LIMIT most recent UserIDs
+                    //  keep USER_ID_LIMIT most recent UserIDs
+                    if (userIDs.remove(userID)) {
+                        userIDs.add(userID);
+                    } else {
                         if (userIDs.size() >= USER_ID_LIMIT) {
                             userIDs.remove(0);
                         }
@@ -75,8 +77,8 @@ public class MeStorage {
                         PGPPublicKey pgpPublicKey = PGPManager.publicKeyWithIdentities(kp, userIDs);
                         me.pgpPublicKey = pgpPublicKey.serializedBytes();
                         Notifications.notifyPGPKeyExport(context, pgpPublicKey);
-                        set(me, userIDs);
                     }
+                    set(me, userIDs);
                 } catch (PGPException | IOException e) {
                     e.printStackTrace();
                 }
