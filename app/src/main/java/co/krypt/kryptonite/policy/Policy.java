@@ -73,40 +73,35 @@ public class Policy {
             return;
         }
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Notifications.clearRequest(context, pairingAndRequest.second);
-                switch (action) {
-                    case APPROVE_ONCE:
-                        try {
-                            Silo.shared(context).pairings().setApproved(pairingAndRequest.first.getUUIDString(), false);
-                            Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
-                            new Analytics(context).postEvent("signature", "background approve", "once", null, false);
-                        } catch (CryptoException | InvalidKeyException | IOException | TransportException | InvalidKeySpecException | NoSuchProviderException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    case APPROVE_TEMPORARILY:
-                        try {
-                            Silo.shared(context).pairings().setApprovedUntil(pairingAndRequest.first.getUUIDString(), (System.currentTimeMillis() / 1000) + 3600);
-                            Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
-                            new Analytics(context).postEvent("signature", "background approve", "time", 3600, false);
-                        } catch (CryptoException | InvalidKeyException | IOException | TransportException | NoSuchProviderException | InvalidKeySpecException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    case REJECT:
-                        try {
-                            Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, false);
-                            new Analytics(context).postEvent("signature", "background reject", null, null, false);
-                        } catch (CryptoException | InvalidKeyException | IOException | TransportException | InvalidKeySpecException | NoSuchProviderException e) {
-                            e.printStackTrace();
-                        }
-                        break;
+        Notifications.clearRequest(context, pairingAndRequest.second);
+        switch (action) {
+            case APPROVE_ONCE:
+                try {
+                    Silo.shared(context).pairings().setApproved(pairingAndRequest.first.getUUIDString(), false);
+                    Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
+                    new Analytics(context).postEvent("signature", "background approve", "once", null, false);
+                } catch (CryptoException | InvalidKeyException | IOException | TransportException | InvalidKeySpecException | NoSuchProviderException e) {
+                    e.printStackTrace();
                 }
-            }
-        }).start();
+                break;
+            case APPROVE_TEMPORARILY:
+                try {
+                    Silo.shared(context).pairings().setApprovedUntil(pairingAndRequest.first.getUUIDString(), (System.currentTimeMillis() / 1000) + 3600);
+                    Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
+                    new Analytics(context).postEvent("signature", "background approve", "time", 3600, false);
+                } catch (CryptoException | InvalidKeyException | IOException | TransportException | NoSuchProviderException | InvalidKeySpecException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case REJECT:
+                try {
+                    Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, false);
+                    new Analytics(context).postEvent("signature", "background reject", null, null, false);
+                } catch (CryptoException | InvalidKeyException | IOException | TransportException | InvalidKeySpecException | NoSuchProviderException e) {
+                    e.printStackTrace();
+                }
+                break;
+        }
     }
 
 }

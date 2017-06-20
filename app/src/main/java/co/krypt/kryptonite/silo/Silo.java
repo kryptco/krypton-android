@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.crypto.KeyManager;
 import co.krypt.kryptonite.crypto.SSHKeyPairI;
@@ -85,11 +87,11 @@ public class Silo {
     public final Context context;
     private final Map<Pairing, Long> lastRequestTimeSeconds = Collections.synchronizedMap(new HashMap<Pairing, Long>());
     private final LruCache<String, Response> responseMemCacheByRequestID = new LruCache<>(8192);
+    @Nullable
     private DiskLruCache responseDiskCacheByRequestID;
     private final OpenDatabaseHelper dbHelper;
 
     private final Object pairingsLock = new Object();
-    private final Object cacheLock = new Object();
     private final Object databaseLock = new Object();
     private final Object policyLock = new Object();
 
@@ -152,15 +154,13 @@ public class Silo {
         }
     }
 
-    public void exit() {
+    public synchronized void exit() {
         bluetoothTransport.stop();
-        synchronized (cacheLock) {
-            if (responseDiskCacheByRequestID != null) {
-                try {
-                    responseDiskCacheByRequestID.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        if (responseDiskCacheByRequestID != null) {
+            try {
+                responseDiskCacheByRequestID.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -274,35 +274,33 @@ public class Silo {
         }).start();
     }
 
-    private boolean sendCachedResponseIfPresent(Pairing pairing, Request request) throws CryptoException, TransportException, IOException {
-        synchronized (cacheLock) {
-            if (responseDiskCacheByRequestID != null) {
-                DiskLruCache.Snapshot cacheEntry = responseDiskCacheByRequestID.get(request.requestIDCacheKey(pairing));
-                if (cacheEntry != null) {
-                    String cachedJSON = cacheEntry.getString(0);
-                    if (cachedJSON != null) {
-                        send(pairing, JSON.fromJson(cachedJSON, Response.class));
-                        Log.i(TAG, "sent cached response to " + request.requestID);
-                        return true;
-                    } else {
-                        Log.v(TAG, "no cache JSON");
-                    }
+    private synchronized boolean sendCachedResponseIfPresent(Pairing pairing, Request request) throws CryptoException, TransportException, IOException {
+        if (responseDiskCacheByRequestID != null) {
+            DiskLruCache.Snapshot cacheEntry = responseDiskCacheByRequestID.get(request.requestIDCacheKey(pairing));
+            if (cacheEntry != null) {
+                String cachedJSON = cacheEntry.getString(0);
+                if (cachedJSON != null) {
+                    send(pairing, JSON.fromJson(cachedJSON, Response.class));
+                    Log.i(TAG, "sent cached response to " + request.requestID);
+                    return true;
                 } else {
-                    Log.v(TAG, "no cache entry");
+                    Log.v(TAG, "no cache JSON");
                 }
+            } else {
+                Log.v(TAG, "no cache entry");
             }
-            Response cachedResponse = responseMemCacheByRequestID.get(request.requestIDCacheKey(pairing));
-            if (cachedResponse != null) {
-                send(pairing, cachedResponse);
-                Log.i(TAG, "sent memory cached response to " + request.requestID);
-                return true;
-            }
+        }
+        Response cachedResponse = responseMemCacheByRequestID.get(request.requestIDCacheKey(pairing));
+        if (cachedResponse != null) {
+            send(pairing, cachedResponse);
+            Log.i(TAG, "sent memory cached response to " + request.requestID);
+            return true;
         }
         return false;
     }
 
 
-    public void handle(Pairing pairing, Request request, String communicationMedium) throws CryptoException, TransportException, IOException, InvalidKeyException, ProtocolException, NoSuchProviderException, InvalidKeySpecException {
+    public synchronized void handle(Pairing pairing, Request request, String communicationMedium) throws CryptoException, TransportException, IOException, InvalidKeyException, ProtocolException, NoSuchProviderException, InvalidKeySpecException {
         //  Allow 15 minutes of clock skew
         if (Math.abs(request.unixSeconds - (System.currentTimeMillis() / 1000)) > 15 * 60) {
             throw new ProtocolException("invalid request time");
@@ -361,7 +359,7 @@ public class Silo {
         respondToRequest(pairing, request, true);
     }
 
-    public void respondToRequest(Pairing pairing, Request request, boolean signatureAllowed) throws CryptoException, InvalidKeyException, IOException, TransportException, NoSuchProviderException, InvalidKeySpecException {
+    public synchronized void respondToRequest(Pairing pairing, Request request, boolean signatureAllowed) throws CryptoException, InvalidKeyException, IOException, TransportException, NoSuchProviderException, InvalidKeySpecException {
         if (sendCachedResponseIfPresent(pairing, request)) {
             return;
         }
@@ -519,15 +517,14 @@ public class Silo {
 
         response.snsEndpointARN = SNSTransport.getInstance(context).getEndpointARN();
 
-        synchronized (cacheLock) {
-            if (responseDiskCacheByRequestID != null) {
-                DiskLruCache.Editor cacheEditor = responseDiskCacheByRequestID.edit(request.requestIDCacheKey(pairing));
-                cacheEditor.set(0, JSON.toJson(response));
-                cacheEditor.commit();
-                responseDiskCacheByRequestID.flush();
-            }
-            responseMemCacheByRequestID.put(request.requestIDCacheKey(pairing), response);
+        if (responseDiskCacheByRequestID != null) {
+            DiskLruCache.Editor cacheEditor = responseDiskCacheByRequestID.edit(request.requestIDCacheKey(pairing));
+            cacheEditor.set(0, JSON.toJson(response));
+            cacheEditor.commit();
+            responseDiskCacheByRequestID.flush();
         }
+        responseMemCacheByRequestID.put(request.requestIDCacheKey(pairing), response);
+
         send(pairing, response);
     }
 
