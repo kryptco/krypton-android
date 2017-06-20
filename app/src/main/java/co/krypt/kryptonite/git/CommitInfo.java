@@ -1,5 +1,6 @@
 package co.krypt.kryptonite.git;
 
+import com.amazonaws.util.Base16;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.ByteArrayOutputStream;
@@ -108,6 +109,21 @@ public class CommitInfo implements BinarySignable {
         }
 
         return s.toString();
+    }
+
+    public String shortHash(String asciiArmorSignature) {
+        try {
+            byte[] hash = commitHash(asciiArmorSignature);
+            String hashHex = Base16.encodeAsString(hash).toLowerCase();
+            if (hashHex.length() < 7) {
+                return "";
+            }
+            return hashHex.substring(0, 7);
+        } catch (IOException | CryptoException e) {
+            e.printStackTrace();
+            return "";
+        }
+
     }
 
     public byte[] commitHash(String asciiArmorSignature) throws IOException, CryptoException {

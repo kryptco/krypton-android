@@ -129,7 +129,11 @@ public class GitCommitSignatureLog implements Log {
     }
 
     private String header() {
-        return (allowed ? "" : "rejected ") + "commit";
+        return (allowed ? "" : "rejected ") + "commit" +
+                (signature != null ?
+                        " " + commitInfo().shortHash(signature) :
+                        ""
+                );
     }
 
     @Override
