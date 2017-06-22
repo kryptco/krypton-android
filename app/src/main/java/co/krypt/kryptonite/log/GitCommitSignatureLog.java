@@ -168,6 +168,4 @@ public class GitCommitSignatureLog implements Log {
     public String getSignature() {
         return signature;
     }
-
-
 }

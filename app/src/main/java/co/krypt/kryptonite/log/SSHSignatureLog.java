@@ -2,7 +2,9 @@ package co.krypt.kryptonite.log;
 
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.text.format.DateUtils;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
@@ -13,6 +15,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+
+import co.krypt.kryptonite.R;
 
 /**
  * Created by Kevin King on 12/15/16.
@@ -124,8 +128,12 @@ public class SSHSignatureLog implements Log {
         return allowed == null || allowed;
     }
 
+    public String userHostTextWithReject() {
+        return (isAllowed() ? "" : "rejected: ") + userHostText();
+    }
+
     public String userHostText() {
-        return (isAllowed() ? "" : "rejected: ") + (user != null ? user + "@" : "") +
+        return (user != null ? user + "@" : "") +
                 (hostNameVerified ? hostName : "unknown host");
     }
 
@@ -151,7 +159,7 @@ public class SSHSignatureLog implements Log {
 
     @Override
     public String shortDisplay() {
-        return userHostText();
+        return userHostTextWithReject();
     }
 
     @Override
@@ -162,18 +170,39 @@ public class SSHSignatureLog implements Log {
     @javax.annotation.Nullable
     @Override
     public View fillShortView(ConstraintLayout container) {
-        return null;
+        container.removeAllViews();
+        return fillView(container, allowed, null);
     }
 
     @javax.annotation.Nullable
     @Override
     public View fillLongView(ConstraintLayout container) {
-        return null;
+        container.removeAllViews();
+        return fillShortView(container);
     }
 
     @javax.annotation.Nullable
     @Override
     public String getSignature() {
         return null;
+    }
+
+    public View fillView(ConstraintLayout container, @Nullable Boolean approved, @Nullable String signature) {
+        View sshView = View.inflate(container.getContext(), R.layout.ssh_short, container);
+
+        TextView messageText = (TextView) sshView.findViewById(R.id.message);
+        messageText.setText(userHostText());
+
+        if (approved != null && !approved) {
+            TextView sshText = (TextView) sshView.findViewById(R.id.ssh);
+            sshText.setBackgroundResource(R.drawable.hash_red_bg);
+        }
+
+        TextView timeText = (TextView) sshView.findViewById(R.id.time);
+        timeText.setText(
+                DateUtils.getRelativeTimeSpanString(unixSeconds() * 1000, System.currentTimeMillis(), 1000)
+        );
+
+        return sshView;
     }
 }

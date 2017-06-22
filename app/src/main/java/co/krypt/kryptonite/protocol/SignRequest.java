@@ -1,11 +1,13 @@
 package co.krypt.kryptonite.protocol;
 
 import android.support.annotation.Nullable;
+import android.widget.RemoteViews;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
 
+import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.crypto.SSHWireDataParser;
 
 /**
@@ -150,4 +152,22 @@ public class SignRequest {
         }
         return verifyHostName() ? firstHostName : defaultHostName;
     }
+
+    public void fillRemoteViews(RemoteViews remoteViewsContainer, @javax.annotation.Nullable Boolean approved, @javax.annotation.Nullable String signature) {
+        remoteViewsContainer.removeAllViews(R.id.content);
+        RemoteViews remoteViews = new RemoteViews(remoteViewsContainer.getPackage(), R.layout.ssh_short_remote);
+
+        remoteViewsContainer.addView(R.id.content, remoteViews);
+
+        remoteViews.setTextViewText(R.id.message, verifiedHostNameOrDefault("unknown host"));
+
+        if (approved != null && !approved) {
+            remoteViews.setInt(R.id.ssh, "setBackgroundResource", R.drawable.hash_red_bg);
+        }
+    }
+
+    public void fillShortRemoteViews(RemoteViews remoteViewsContainer, @javax.annotation.Nullable Boolean approved, @javax.annotation.Nullable String signature) {
+        fillRemoteViews(remoteViewsContainer, approved, signature);
+    }
+
 }

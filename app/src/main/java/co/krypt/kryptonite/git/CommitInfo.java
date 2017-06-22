@@ -1,6 +1,5 @@
 package co.krypt.kryptonite.git;
 
-import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -299,7 +298,7 @@ public class CommitInfo implements BinarySignable {
         } else {
             if (approved != null && !approved) {
                 remoteViews.setTextViewText(R.id.hash, "REJECTED");
-                remoteViews.setTextColor(R.id.hash, Color.RED);
+                remoteViews.setInt(R.id.hash, "setBackgroundResource", R.drawable.hash_red_bg);
             } else {
                 if (parent != null) {
                     if (parent.length() >= 7) {
@@ -357,7 +356,7 @@ public class CommitInfo implements BinarySignable {
         } else {
             if (approved != null && !approved) {
                 remoteViews.setTextViewText(R.id.hash, "REJECTED");
-                remoteViews.setTextColor(R.id.hash, Color.RED);
+                remoteViews.setInt(R.id.hash, "setBackgroundResource", R.drawable.hash_red_bg);
             } else {
                 remoteViews.setViewVisibility(R.id.hash, GONE);
             }

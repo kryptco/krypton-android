@@ -1,9 +1,14 @@
 package co.krypt.kryptonite.protocol;
 
+import android.widget.RemoteViews;
+
 import com.amazonaws.util.Base32;
 import com.github.zafarkhaja.semver.Version;
 import com.google.gson.annotations.SerializedName;
 
+import javax.annotation.Nullable;
+
+import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.crypto.SHA256;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.pairing.Pairing;
@@ -52,6 +57,26 @@ public class Request {
             e.printStackTrace();
         }
         return Version.valueOf("0.0.0");
+    }
+
+    public void fillRemoteViews(RemoteViews remoteViewsContainer, @Nullable Boolean approved, @Nullable String signature) {
+        remoteViewsContainer.removeAllViews(R.id.content);
+        if (gitSignRequest != null) {
+            gitSignRequest.fillRemoteViews(remoteViewsContainer, approved, signature);
+        }
+        if (signRequest != null) {
+            signRequest.fillRemoteViews(remoteViewsContainer, approved, signature);
+        }
+    }
+
+    public void fillShortRemoteViews(RemoteViews remoteViewsContainer, @Nullable Boolean approved, @Nullable String signature) {
+        remoteViewsContainer.removeAllViews(R.id.content);
+        if (gitSignRequest != null) {
+            gitSignRequest.fillShortRemoteViews(remoteViewsContainer, approved, signature);
+        }
+        if (signRequest != null) {
+            signRequest.fillShortRemoteViews(remoteViewsContainer, approved, signature);
+        }
     }
 
 }

@@ -216,6 +216,7 @@ public class TagInfo implements BinarySignable {
         }
 
         if (approved != null && !approved) {
+            remoteViews.setInt(R.id.tag, "setBackgroundResource", R.drawable.hash_red_bg);
             remoteViews.setImageViewResource(R.id.tagImage, R.drawable.tag_hires_red);
         }
     }
@@ -234,6 +235,11 @@ public class TagInfo implements BinarySignable {
             remoteViews.setTextViewText(R.id.time, taggerTime);
         } else {
             remoteViews.setTextViewText(R.id.time, "invalid time");
+        }
+
+        if (approved != null && !approved) {
+            remoteViews.setInt(R.id.tag, "setBackgroundResource", R.drawable.hash_red_bg);
+            remoteViews.setImageViewResource(R.id.tagImage, R.drawable.tag_hires_red);
         }
     }
 }

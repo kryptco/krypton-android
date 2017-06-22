@@ -58,6 +58,10 @@ public class Notifications {
             mBuilder
                     .setContentTitle("SSH Login Approved")
                     .setContentText(pairing.workstationName + ": " + request.signRequest.display());
+            RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.result_remote);
+            remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
+            request.fillShortRemoteViews(remoteViewsSmall, true, log != null ? log.getSignature() : null);
+            mBuilder.setContent(remoteViewsSmall);
         }
         if (request.gitSignRequest != null) {
             mBuilder
@@ -207,6 +211,18 @@ public class Notifications {
             mBuilder
                     .setContentTitle("Allow SSH Login?")
                     .setContentText(pairing.workstationName + ": " + request.signRequest.display());
+            RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.request_no_action_remote);
+            remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
+            request.fillShortRemoteViews(remoteViewsSmall, null, null);
+            mBuilder.setContent(remoteViewsSmall);
+
+            RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.request_remote);
+            remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
+            request.fillRemoteViews(remoteViewsBig, null, null);
+            remoteViewsBig.setOnClickPendingIntent(R.id.reject, rejectPendingIntent);
+            remoteViewsBig.setOnClickPendingIntent(R.id.allowOnce, approveOncePendingIntent);
+            remoteViewsBig.setOnClickPendingIntent(R.id.allowTemporarily, approveTemporarilyPendingIntent);
+            mBuilder.setCustomBigContentView(remoteViewsBig);
         }
         if (request.gitSignRequest != null) {
             mBuilder
