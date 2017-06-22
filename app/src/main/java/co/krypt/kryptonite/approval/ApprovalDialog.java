@@ -2,9 +2,12 @@ package co.krypt.kryptonite.approval;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.pairing.Pairing;
@@ -61,8 +64,15 @@ public class ApprovalDialog {
             builder.setMessage(pairing.workstationName + ": " + request.signRequest.display());
         }
         if (request.gitSignRequest != null) {
-            builder.setTitle("Allow " + request.gitSignRequest.title() + "?");
-            builder.setMessage(pairing.workstationName + "\n" + request.gitSignRequest.display());
+//            builder.setTitle("Allow " + request.gitSignRequest.title() + "?");
+//            builder.setMessage(pairing.workstationName + "\n" + request.gitSignRequest.display());
+
+            View requestView = activity.getLayoutInflater().inflate(R.layout.request, null);
+            TextView workstationNameText = (TextView) requestView.findViewById(R.id.workstationName);
+            workstationNameText.setText(pairing.workstationName);
+            ConstraintLayout content = (ConstraintLayout) requestView.findViewById(R.id.content);
+            request.gitSignRequest.fillView(content);
+            builder.setView(requestView);
         }
         builder.create().show();
     }

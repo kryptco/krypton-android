@@ -1,11 +1,10 @@
 package co.krypt.kryptonite.devices;
 
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.List;
 
@@ -30,9 +29,14 @@ public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<Signat
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.log = mValues.get(position);
-        holder.commandText.setText(holder.log.shortDisplay());
-        holder.commandTime.setText(
-                DateUtils.getRelativeTimeSpanString(holder.log.unixSeconds() * 1000, System.currentTimeMillis(), 1000));
+//        holder.commandText.setText(holder.log.shortDisplay());
+//        holder.commandTime.setText(
+//                DateUtils.getRelativeTimeSpanString(holder.log.unixSeconds() * 1000, System.currentTimeMillis(), 1000));
+
+        holder.log.fillShortView((ConstraintLayout) holder.mView);
+        holder.mView.requestLayout();
+
+        holder._long = false;
     }
 
     @Override
@@ -50,38 +54,26 @@ public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<Signat
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView commandText;
-        public final TextView commandTime;
         public Log log;
 
-        private boolean longText = false;
+        private boolean _long = false;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            commandText = (TextView) view.findViewById(R.id.commandText);
             view.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (longText) {
-                                commandText.setText(log.shortDisplay());
-                                commandText.setMaxLines(3);
+                            _long = !_long;
+                            if (_long) {
+                                log.fillLongView((ConstraintLayout) v);
                             } else {
-                                commandText.setText(log.longDisplay());
-                                commandText.setMaxLines(30);
+                                log.fillShortView((ConstraintLayout) v);
                             }
-                            longText = !longText;
                         }
                     }
             );
-            commandTime = (TextView) view.findViewById(R.id.commandTime);
-
-        }
-
-        @Override
-        public String toString() {
-            return super.toString() + " '" + commandText.getText() + "'";
         }
     }
 }

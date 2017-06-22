@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    >
+
+    <TextView
+        android:id="@+id/hash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/hash_bg"
+        android:padding="4dp"
+        android:text="923FA1B"
+        android:textAllCaps="false"
+        android:textColor="@color/appWhite"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        />
+
+    <RelativeLayout
+        android:id="@+id/messageContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/appBlack"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/hash"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:id="@+id/header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="4dp"
+            android:text="Git Commit Signature"
+            android:textAllCaps="true"
+            android:textColor="@color/appGray"
+            android:textSize="10sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/header"
+            android:layout_marginLeft="8dp"
+            android:fontFamily="monospace"
+            android:maxLines="2"
+            android:scrollHorizontally="true"
+            android:ellipsize="end"
+            android:text="message"
+            android:textAllCaps="false"
+            android:textColor="@color/appWhite"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginRight="8dp"
+            android:text="5m ago"
+            android:textAllCaps="true"
+            android:textColor="@color/appGray"
+            android:textSize="10sp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/message"
+            />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/authorLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="0dp"
+        android:text="Author"
+        android:textAllCaps="true"
+        android:textColor="@color/appGray"
+        android:textSize="10sp"
+        android:layout_alignBottom="@+id/author"
+        android:layout_alignRight="@+id/committerLabel"
+        android:layout_alignTop="@+id/author"
+        android:gravity="center"
+        />
+
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:text="@string/exampleUserID"
+        android:textColor="@color/appGreen"
+        android:textStyle="bold"
+        android:layout_below="@id/messageContainer"
+        android:layout_marginTop="4dp"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/authorLabel"
+        android:layout_marginRight="4dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:layout_marginLeft="4dp" />
+
+    <TextView
+        android:id="@+id/committer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:text="@string/exampleUserID"
+        android:textColor="@color/appGreen"
+        android:textStyle="bold"
+        android:layout_below="@id/author"
+        android:layout_toRightOf="@id/committerLabel"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="4dp"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        />
+    <TextView
+        android:id="@+id/committerLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="4dp"
+        android:text="Committer"
+        android:textAllCaps="true"
+        android:textColor="@color/appGray"
+        android:textSize="10sp"
+        android:layout_alignBottom="@id/committer"
+        android:layout_alignTop="@id/committer"
+        android:layout_alignParentLeft="true"
+        android:gravity="center"
+        android:layout_marginLeft="8dp" />
+
+    <TextView
+        android:id="@+id/tree"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="monospace"
+        android:text="f21ec9de97e3ff0a66a068682a176020e91dcf29"
+        android:textAllCaps="false"
+        android:textColor="@color/appGray"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:layout_toRightOf="@id/committerLabel"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/committer"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        />
+
+    <TextView
+        android:id="@+id/treeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="4dp"
+        android:text="Tree"
+        android:textAllCaps="true"
+        android:textColor="@color/appGray"
+        android:textSize="10sp"
+        android:layout_alignTop="@id/tree"
+        android:layout_alignBottom="@id/tree"
+        android:layout_alignRight="@id/committerLabel"
+        android:gravity="center"
+        android:layout_marginLeft="8dp" />
+
+    <TextView
+        android:id="@+id/parent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="monospace"
+        android:text="9d66027f0cbff220fdce8c2f9ab61aad4c65d6fa"
+        android:textColor="@color/appGray"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:layout_toRightOf="@id/committerLabel"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/tree"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        />
+
+    <TextView
+        android:id="@+id/parentLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="4dp"
+        android:text="Parent"
+        android:textAllCaps="true"
+        android:textColor="@color/appGray"
+        android:textSize="10sp"
+        android:layout_alignBottom="@id/parent"
+        android:layout_alignTop="@id/parent"
+        android:layout_alignRight="@id/committerLabel"
+        android:gravity="center"
+        android:layout_marginLeft="8dp" />
+
+</RelativeLayout>

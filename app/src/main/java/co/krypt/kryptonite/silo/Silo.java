@@ -384,18 +384,21 @@ public class Silo {
                 SSHKeyPairI key = KeyManager.loadMeRSAOrEdKeyPair(context);
                 new MeStorage(context).loadWithUserID(key, UserID.parse(gitSignRequest.userID), pairing);
                 try {
+                    co.krypt.kryptonite.log.Log log = null;
                     if (gitSignRequest.commit != null) {
                         byte[] signature = SignableUtils.signBinaryDocument(gitSignRequest.commit, key, HashAlgorithm.SHA512);
                         response.gitSignResponse = new GitSignResponse(
                                 signature,
                                 null
                         );
+                        GitCommitSignatureLog commitLog = new GitCommitSignatureLog(
+                                pairing,
+                                request.gitSignRequest.commit,
+                                new AsciiArmor(AsciiArmor.HeaderLine.SIGNATURE, AsciiArmor.DEFAULT_HEADERS, signature).toString()
+                        );
+                        log = commitLog;
                         pairings().appendToCommitLogs(
-                                new GitCommitSignatureLog(
-                                        pairing,
-                                        request.gitSignRequest.commit,
-                                        new AsciiArmor(AsciiArmor.HeaderLine.SIGNATURE, AsciiArmor.DEFAULT_HEADERS, signature).toString()
-                                )
+                                commitLog
                         );
                     }
                     if (gitSignRequest.tag != null) {
@@ -404,15 +407,17 @@ public class Silo {
                                 signature,
                                 null
                         );
+                        GitTagSignatureLog tagLog = new GitTagSignatureLog(
+                                pairing,
+                                request.gitSignRequest.tag,
+                                new AsciiArmor(AsciiArmor.HeaderLine.SIGNATURE, AsciiArmor.DEFAULT_HEADERS, signature).toString()
+                        );
+                        log = tagLog;
                         pairings().appendToTagLogs(
-                                new GitTagSignatureLog(
-                                        pairing,
-                                        request.gitSignRequest.tag,
-                                        new AsciiArmor(AsciiArmor.HeaderLine.SIGNATURE, AsciiArmor.DEFAULT_HEADERS, signature).toString()
-                                )
+                                tagLog
                         );
                     }
-                    Notifications.notifySuccess(context, pairing, request);
+                    Notifications.notifySuccess(context, pairing, request, log);
                 } catch (PGPException | NoSuchAlgorithmException | SignatureException e) {
                     e.printStackTrace();
                     response.gitSignResponse = new GitSignResponse(null, "unknown error");
@@ -468,7 +473,7 @@ public class Silo {
                             algo = "ssh-rsa";
                         }
                         response.signResponse.signature = key.signDigestAppendingPubkey(request.signRequest.data, algo);
-                        pairingStorage.appendToSSHLog(new SSHSignatureLog(
+                        SSHSignatureLog log = new SSHSignatureLog(
                                 signRequest.data,
                                 true,
                                 signRequest.command,
@@ -478,8 +483,9 @@ public class Silo {
                                 signRequest.verifyHostName(),
                                 JSON.toJson(signRequest.hostAuth),
                                 pairing.getUUIDString(),
-                                pairing.workstationName));
-                        Notifications.notifySuccess(context, pairing, request);
+                                pairing.workstationName);
+                        pairingStorage.appendToSSHLog(log);
+                        Notifications.notifySuccess(context, pairing, request, log);
                         if (signRequest.verifiedHostNameOrDefault("unknown host").equals("me.krypt.co")) {
                             Intent sshMeIntent = new Intent(TestSSHFragment.SSH_ME_ACTION);
                             context.sendBroadcast(sshMeIntent);

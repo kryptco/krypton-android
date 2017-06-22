@@ -1,6 +1,8 @@
 package co.krypt.kryptonite.log;
 
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
+import android.view.View;
 
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
@@ -155,5 +157,23 @@ public class SSHSignatureLog implements Log {
     @Override
     public String longDisplay() {
         return shortDisplay();
+    }
+
+    @javax.annotation.Nullable
+    @Override
+    public View fillShortView(ConstraintLayout container) {
+        return null;
+    }
+
+    @javax.annotation.Nullable
+    @Override
+    public View fillLongView(ConstraintLayout container) {
+        return null;
+    }
+
+    @javax.annotation.Nullable
+    @Override
+    public String getSignature() {
+        return null;
     }
 }

@@ -11,4 +11,6 @@
     <color name="appGray">#AAAAAA</color>
     <color name="appBlack">#464646</color>
 
+    <color name="reject">#FF6361</color>
+
 </resources>

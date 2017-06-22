@@ -1,5 +1,8 @@
 package co.krypt.kryptonite.log;
 
+import android.support.constraint.ConstraintLayout;
+import android.view.View;
+
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -139,4 +142,25 @@ public class GitTagSignatureLog implements Log {
     public String longDisplay() {
         return header() + "\n" + tagInfo().display();
     }
+
+    @Nullable
+    @Override
+    public View fillShortView(ConstraintLayout container) {
+        container.removeAllViews();
+        return tagInfo().fillShortView(container, signature != null, signature);
+    }
+
+    @Nullable
+    @Override
+    public View fillLongView(ConstraintLayout container) {
+        container.removeAllViews();
+        return tagInfo().fillView(container, signature != null, signature);
+    }
+
+    @Nullable
+    @Override
+    public String getSignature() {
+        return signature;
+    }
+
 }

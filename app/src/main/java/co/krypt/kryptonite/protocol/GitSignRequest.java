@@ -1,9 +1,14 @@
 package co.krypt.kryptonite.protocol;
 
+import android.support.constraint.ConstraintLayout;
+import android.view.View;
+import android.widget.RemoteViews;
+
 import com.google.gson.annotations.SerializedName;
 
 import javax.annotation.Nullable;
 
+import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.git.CommitInfo;
 import co.krypt.kryptonite.git.TagInfo;
 
@@ -43,5 +48,37 @@ public class GitSignRequest {
             return "Tag Signature";
         }
         return "invalid git sign request";
+    }
+
+    @Nullable
+    public View fillView(ConstraintLayout container) {
+        if (commit != null) {
+            return commit.fillView(container, null, null);
+        }
+        if (tag != null) {
+            return tag.fillView(container, null, null);
+        }
+        return null;
+    }
+    public void fillRemoteViews(RemoteViews remoteViewsContainer, @Nullable Boolean approved, @Nullable String signature) {
+        remoteViewsContainer.removeAllViews(R.id.content);
+        if (commit != null) {
+            commit.fillRemoteViews(remoteViewsContainer, approved, signature);
+        }
+
+        if (tag != null) {
+            tag.fillRemoteViews(remoteViewsContainer, approved, signature);
+        }
+    }
+
+    public void fillShortRemoteViews(RemoteViews remoteViewsContainer, @Nullable Boolean approved, @Nullable String signature) {
+        remoteViewsContainer.removeAllViews(R.id.content);
+        if (commit != null) {
+            commit.fillShortRemoteViews(remoteViewsContainer, approved, signature);
+        }
+
+        if (tag != null) {
+            tag.fillShortRemoteViews(remoteViewsContainer, approved, signature);
+        }
     }
 }

@@ -1,5 +1,11 @@
 package co.krypt.kryptonite.git;
 
+import android.graphics.Color;
+import android.support.constraint.ConstraintLayout;
+import android.view.View;
+import android.widget.RemoteViews;
+import android.widget.TextView;
+
 import com.amazonaws.util.Base16;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,10 +15,13 @@ import java.io.IOException;
 
 import javax.annotation.Nullable;
 
+import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.crypto.SHA1;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.pgp.packet.BinarySignable;
 import co.krypt.kryptonite.protocol.JSON;
+
+import static android.view.View.GONE;
 
 /**
  * Created by Kevin King on 6/17/17.
@@ -180,4 +189,180 @@ public class CommitInfo implements BinarySignable {
         return GitUtils.getNameAndEmail(committer);
     }
 
+    public View fillShortView(ConstraintLayout container, @Nullable Boolean approved, @Nullable String signature) {
+        View commitView = View.inflate(container.getContext(), R.layout.commit_short, container);
+
+        TextView messageText = (TextView) commitView.findViewById(R.id.message);
+        messageText.setText(validatedMessageStringOrError().replaceAll("\n", " ").trim());
+
+        TextView timeText = (TextView) commitView.findViewById(R.id.time);
+        String committerTime = GitUtils.getTimeAfterEmail(this.committer);
+        if (committerTime != null) {
+            timeText.setText(committerTime);
+        } else {
+            timeText.setText("invalid time");
+        }
+
+        TextView hashText = (TextView) commitView.findViewById(R.id.hash);
+        if (signature != null) {
+            hashText.setText(shortHash(signature));
+        } else {
+            if (approved != null && !approved) {
+                hashText.setText("REJECTED");
+                hashText.setBackgroundResource(R.drawable.hash_red_bg);
+            } else {
+                commitView.findViewById(R.id.hash).setVisibility(GONE);
+            }
+        }
+
+        return commitView;
+    }
+
+    public View fillView(ConstraintLayout container, @Nullable Boolean approved, @Nullable String signature) {
+        View commitView = View.inflate(container.getContext(), R.layout.commit, container);
+
+        TextView authorText = (TextView) commitView.findViewById(R.id.author);
+        String authorNameAndEmail = authorNameAndEmail();
+        String committerNameAndEmail = committerNameAndEmail();
+        if (authorNameAndEmail == null) {
+            authorText.setText(author);
+        } else  {
+            if (authorNameAndEmail.equals(committerNameAndEmail)) {
+                authorText.setText("");
+                authorText.setVisibility(GONE);
+                commitView.findViewById(R.id.authorLabel).setVisibility(GONE);
+            } else {
+                authorText.setText(authorNameAndEmail);
+            }
+        }
+
+        TextView committerText = (TextView) commitView.findViewById(R.id.committer);
+        if (committerNameAndEmail == null) {
+            committerText.setText(committer);
+        } else {
+            committerText.setText(committerNameAndEmail);
+        }
+
+        TextView treeText = (TextView) commitView.findViewById(R.id.tree);
+        treeText.setText(tree);
+
+        TextView parentText = (TextView) commitView.findViewById(R.id.parent);
+        if (parent != null) {
+            parentText.setText(parent);
+        } else {
+            parentText.setText("");
+            commitView.findViewById(R.id.parentLabel).setVisibility(GONE);
+        }
+
+        TextView messageText = (TextView) commitView.findViewById(R.id.message);
+        messageText.setText(validatedMessageStringOrError());
+
+        TextView timeText = (TextView) commitView.findViewById(R.id.time);
+        String committerTime = GitUtils.getTimeAfterEmail(this.committer);
+        if (committerTime != null) {
+            timeText.setText(committerTime);
+        } else {
+            timeText.setText("invalid time");
+        }
+
+        TextView hashText = (TextView) commitView.findViewById(R.id.hash);
+        if (signature != null) {
+            hashText.setText(shortHash(signature));
+        } else {
+            if (approved != null && !approved) {
+                hashText.setText("REJECTED");
+                hashText.setBackgroundResource(R.drawable.hash_red_bg);
+            } else {
+                commitView.findViewById(R.id.hash).setVisibility(GONE);
+            }
+        }
+
+        return commitView;
+    }
+
+    public void fillRemoteTime(RemoteViews remoteViews, @Nullable Boolean approved, @Nullable String signature) {
+        String committerTime = GitUtils.getTimeAfterEmail(this.committer);
+        if (committerTime != null) {
+            remoteViews.setTextViewText(R.id.time, committerTime);
+        } else {
+            remoteViews.setTextViewText(R.id.time, "invalid time");
+        }
+    }
+    public void fillShortRemoteViews(RemoteViews remoteViewsContainer, @Nullable Boolean approved, @Nullable String signature) {
+        RemoteViews remoteViews = new RemoteViews(remoteViewsContainer.getPackage(), R.layout.commit_short_remote);
+
+        remoteViewsContainer.addView(R.id.content, remoteViews);
+        remoteViews.setTextViewText(R.id.message, validatedMessageStringOrError().replaceAll("\n", " ").trim());
+
+        if (signature != null) {
+            remoteViews.setTextViewText(R.id.hash, shortHash(signature));
+        } else {
+            if (approved != null && !approved) {
+                remoteViews.setTextViewText(R.id.hash, "REJECTED");
+                remoteViews.setTextColor(R.id.hash, Color.RED);
+            } else {
+                if (parent != null) {
+                    if (parent.length() >= 7) {
+                        remoteViews.setTextViewText(R.id.hash, parent.substring(0, 7));
+                } else {
+                        remoteViews.setTextViewText(R.id.hash, parent);
+                    }
+                } else {
+                    remoteViews.setTextViewText(R.id.hash, "[first]");
+                }
+            }
+        }
+        fillRemoteTime(remoteViews, approved, signature);
+    }
+
+    public void fillRemoteViews(RemoteViews remoteViewsContainer, @Nullable Boolean approved, @Nullable String signature) {
+        RemoteViews remoteViews = new RemoteViews(remoteViewsContainer.getPackage(), R.layout.commit_remote);
+        remoteViewsContainer.addView(R.id.content, remoteViews);
+
+        String authorNameAndEmail = authorNameAndEmail();
+        String committerNameAndEmail = committerNameAndEmail();
+        if (authorNameAndEmail == null) {
+            remoteViews.setTextViewText(R.id.author, author);
+        } else  {
+            if (authorNameAndEmail.equals(committerNameAndEmail)) {
+                remoteViews.setTextViewText(R.id.author, "");
+                remoteViews.setViewVisibility(R.id.author, GONE);
+                remoteViews.setViewVisibility(R.id.authorLabel, GONE);
+            } else {
+                remoteViews.setTextViewText(R.id.author, authorNameAndEmail);
+            }
+        }
+
+        if (committerNameAndEmail == null) {
+            remoteViews.setTextViewText(R.id.committer, committer);
+        } else {
+            remoteViews.setTextViewText(R.id.committer, committerNameAndEmail);
+        }
+
+
+        remoteViews.setTextViewText(R.id.tree, tree);
+
+        if (parent != null) {
+            remoteViews.setTextViewText(R.id.parent, parent);
+        } else {
+            remoteViews.setTextViewText(R.id.parent, "");
+            remoteViews.setViewVisibility(R.id.parent, GONE);
+            remoteViews.setViewVisibility(R.id.parentLabel, GONE);
+        }
+
+        remoteViews.setTextViewText(R.id.message, validatedMessageStringOrError().replaceAll("\n", " ").trim());
+
+        if (signature != null) {
+            remoteViews.setTextViewText(R.id.hash, shortHash(signature));
+        } else {
+            if (approved != null && !approved) {
+                remoteViews.setTextViewText(R.id.hash, "REJECTED");
+                remoteViews.setTextColor(R.id.hash, Color.RED);
+            } else {
+                remoteViews.setViewVisibility(R.id.hash, GONE);
+            }
+        }
+
+        fillRemoteTime(remoteViews, approved, signature);
+    }
 }

@@ -10,9 +10,13 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
+import android.widget.RemoteViews;
+
+import javax.annotation.Nullable;
 
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
+import co.krypt.kryptonite.log.Log;
 import co.krypt.kryptonite.onboarding.OnboardingActivity;
 import co.krypt.kryptonite.onboarding.OnboardingProgress;
 import co.krypt.kryptonite.pairing.Pairing;
@@ -32,7 +36,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
  */
 
 public class Notifications {
-    public static void notifySuccess(Context context, Pairing pairing, Request request) {
+    public static void notifySuccess(Context context, Pairing pairing, Request request, @Nullable Log log) {
         if (!new Settings(context).approvedNotificationsEnabled()) {
             return;
         }
@@ -56,17 +60,19 @@ public class Notifications {
                     .setContentText(pairing.workstationName + ": " + request.signRequest.display());
         }
         if (request.gitSignRequest != null) {
-            String display = request.gitSignRequest.display();
             mBuilder
                     .setContentTitle(request.gitSignRequest.title() + " Approved")
                     .setContentText(pairing.workstationName + ": " + request.gitSignRequest.display());
-            NotificationCompat.InboxStyle inboxStyle =
-                    new NotificationCompat.InboxStyle();
-            inboxStyle.setBigContentTitle(request.gitSignRequest.title() + " Approved");
-            for (String line : display.split("\n")) {
-                inboxStyle.addLine(line);
-            }
-            mBuilder.setStyle(inboxStyle);
+
+            RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.result_remote);
+            remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
+            request.gitSignRequest.fillShortRemoteViews(remoteViewsSmall, true, log != null ? log.getSignature() : null);
+            mBuilder.setContent(remoteViewsSmall);
+
+            RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.result_remote);
+            remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
+            request.gitSignRequest.fillRemoteViews(remoteViewsBig, true, log != null ? log.getSignature() : null);
+            mBuilder.setCustomBigContentView(remoteViewsBig);
         }
 
         // The stack builder object will contain an artificial back stack for the
@@ -114,17 +120,21 @@ public class Notifications {
                     .setContentText(pairing.workstationName + ": " + request.signRequest.display());
         }
         if (request.gitSignRequest != null) {
-            String display = request.gitSignRequest.display();
             mBuilder
                     .setContentTitle(request.gitSignRequest.title() + " Rejected")
                     .setContentText(pairing.workstationName + ": " + request.gitSignRequest.display());
-            NotificationCompat.InboxStyle inboxStyle =
-                    new NotificationCompat.InboxStyle();
-            inboxStyle.setBigContentTitle(request.gitSignRequest.title() + " Rejected");
-            for (String line : display.split("\n")) {
-                inboxStyle.addLine(line);
-            }
-            mBuilder.setStyle(inboxStyle);
+
+            RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.result_remote);
+            remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
+            remoteViewsSmall.setTextViewText(R.id.header, "Rejected Request From");
+            request.gitSignRequest.fillShortRemoteViews(remoteViewsSmall, false, null);
+            mBuilder.setCustomContentView(remoteViewsSmall);
+
+            RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.result_remote);
+            remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
+            remoteViewsBig.setTextViewText(R.id.header, "Rejected Request From");
+            request.gitSignRequest.fillRemoteViews(remoteViewsBig, false, null);
+            mBuilder.setCustomBigContentView(remoteViewsBig);
         }
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
@@ -199,17 +209,22 @@ public class Notifications {
                     .setContentText(pairing.workstationName + ": " + request.signRequest.display());
         }
         if (request.gitSignRequest != null) {
-            String display = request.gitSignRequest.display();
             mBuilder
                     .setContentTitle("Allow " + request.gitSignRequest.title() + "?")
                     .setContentText(pairing.workstationName + ": " + request.gitSignRequest.display());
-            NotificationCompat.InboxStyle inboxStyle =
-                    new NotificationCompat.InboxStyle();
-            inboxStyle.setBigContentTitle("Allow " + request.gitSignRequest.title() + "?");
-            for (String line : display.split("\n")) {
-                inboxStyle.addLine(line);
-            }
-            mBuilder.setStyle(inboxStyle);
+
+            RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.request_no_action_remote);
+            remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
+            request.gitSignRequest.fillShortRemoteViews(remoteViewsSmall, null, null);
+            mBuilder.setContent(remoteViewsSmall);
+
+            RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.request_remote);
+            remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
+            request.gitSignRequest.fillRemoteViews(remoteViewsBig, null, null);
+            remoteViewsBig.setOnClickPendingIntent(R.id.reject, rejectPendingIntent);
+            remoteViewsBig.setOnClickPendingIntent(R.id.allowOnce, approveOncePendingIntent);
+            remoteViewsBig.setOnClickPendingIntent(R.id.allowTemporarily, approveTemporarilyPendingIntent);
+            mBuilder.setCustomBigContentView(remoteViewsBig);
         }
         if (!new Settings(context).silenceNotifications()) {
             mBuilder.setSound(notificationSound)

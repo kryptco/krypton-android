@@ -2,40 +2,10 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_margin="5dp">
+    android:layout_margin="5dp"
+    android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/commandText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceListItem"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/commandTime"
-        app:layout_constraintTop_toTopOf="parent"
-        android:fontFamily="monospace"
-        app:layout_constraintHorizontal_bias="0.0"
-        android:text="really long test command really long test commandreally long test command really long test commandreally long test command really long test command"
-        android:maxLines="3"
-        android:ellipsize="end" />
-
-    <TextView
-        android:text="5m ago"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/commandTime"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textAlignment="textEnd"
-        android:layout_marginEnd="8dp" />
 </android.support.constraint.ConstraintLayout>

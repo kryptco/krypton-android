@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    >
+
+    <TextView
+        android:id="@+id/hash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/hash_bg"
+        android:padding="4dp"
+        android:text="923FA1B"
+        android:textAllCaps="false"
+        android:textColor="@color/appWhite"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/messageContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/appBlack"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hash"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:id="@+id/header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="4dp"
+            android:text="Git Commit Signature"
+            android:textAllCaps="true"
+            android:textColor="@color/appGray"
+            android:textSize="10sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:fontFamily="monospace"
+            android:text="message"
+            android:textAllCaps="false"
+            android:textColor="@color/appWhite"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/header" />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginRight="8dp"
+            android:text="5m ago"
+            android:textAllCaps="true"
+            android:textColor="@color/appGray"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/message" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/authorLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="0dp"
+        android:text="Author"
+        android:textAllCaps="true"
+        android:textColor="@color/appGray"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/author"
+        app:layout_constraintRight_toRightOf="@+id/committerLabel"
+        app:layout_constraintTop_toTopOf="@+id/author" />
+
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:text="@string/exampleUserID"
+        android:textColor="@color/appGreen"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/messageContainer"
+        android:layout_marginTop="4dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/authorLabel"
+        android:layout_marginRight="4dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginLeft="4dp" />
+
+    <TextView
+        android:id="@+id/committer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:text="@string/exampleUserID"
+        android:textColor="@color/appGreen"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/author"
+        app:layout_constraintLeft_toRightOf="@id/committerLabel"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginLeft="4dp"
+        app:layout_constraintRight_toRightOf="parent" />
+    <TextView
+        android:id="@+id/committerLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="4dp"
+        android:text="Committer"
+        android:textAllCaps="true"
+        android:textColor="@color/appGray"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/committer"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/committer"
+        android:layout_marginLeft="8dp" />
+
+    <TextView
+        android:id="@+id/tree"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="monospace"
+        android:text="f21ec9de97e3ff0a66a068682a176020e91dcf29"
+        android:textAllCaps="false"
+        android:textColor="@color/appGray"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toRightOf="@id/committerLabel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/committer" />
+
+    <TextView
+        android:id="@+id/treeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="4dp"
+        android:text="Tree"
+        android:textAllCaps="true"
+        android:textColor="@color/appGray"
+        android:textSize="10sp"
+        app:layout_constraintTop_toTopOf="@id/tree"
+        app:layout_constraintBottom_toBottomOf="@id/tree"
+        app:layout_constraintRight_toRightOf="@id/committerLabel"
+        android:layout_marginLeft="8dp" />
+
+    <TextView
+        android:id="@+id/parent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="monospace"
+        android:text="9d66027f0cbff220fdce8c2f9ab61aad4c65d6fa"
+        android:textColor="@color/appGray"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toRightOf="@id/committerLabel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tree" />
+
+    <TextView
+        android:id="@+id/parentLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="4dp"
+        android:text="Parent"
+        android:textAllCaps="true"
+        android:textColor="@color/appGray"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/parent"
+        app:layout_constraintTop_toTopOf="@+id/parent"
+        app:layout_constraintRight_toRightOf="@id/committerLabel"
+        android:layout_marginLeft="8dp" />
+
+</android.support.constraint.ConstraintLayout>
