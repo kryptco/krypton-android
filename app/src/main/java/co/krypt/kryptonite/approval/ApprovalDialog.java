@@ -64,9 +64,6 @@ public class ApprovalDialog {
             builder.setMessage(pairing.workstationName + ": " + request.signRequest.display());
         }
         if (request.gitSignRequest != null) {
-//            builder.setTitle("Allow " + request.gitSignRequest.title() + "?");
-//            builder.setMessage(pairing.workstationName + "\n" + request.gitSignRequest.display());
-
             View requestView = activity.getLayoutInflater().inflate(R.layout.request, null);
             TextView workstationNameText = (TextView) requestView.findViewById(R.id.workstationName);
             workstationNameText.setText(pairing.workstationName);

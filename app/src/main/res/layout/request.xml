@@ -45,12 +45,17 @@
         app:layout_constraintRight_toRightOf="parent"
         />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/content"
-        android:layout_width="0dp"
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/workstationName"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        />
+        >
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+    </ScrollView>
 </android.support.constraint.ConstraintLayout>
