@@ -40,7 +40,7 @@
         android:textStyle="bold"
         android:layout_toRightOf="@id/ssh"
         android:layout_toLeftOf="@+id/time"
-        android:maxLines="2"
+        android:maxLines="1"
         android:scrollHorizontally="true"
         android:ellipsize="end"
         android:layout_centerVertical="true"
