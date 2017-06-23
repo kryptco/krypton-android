@@ -1,7 +1,10 @@
 package co.krypt.kryptonite.protocol;
 
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
+import android.view.View;
 import android.widget.RemoteViews;
+import android.widget.TextView;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -153,21 +156,43 @@ public class SignRequest {
         return verifyHostName() ? firstHostName : defaultHostName;
     }
 
+    public String userOrInvalid() {
+        if (parsedUser == null) {
+            return "invalid user";
+        } else {
+            return parsedUser;
+        }
+    }
+
+    public View fillView(ConstraintLayout container) {
+        View sshView = View.inflate(container.getContext(), R.layout.ssh_short, container);
+
+        TextView messageText = (TextView) sshView.findViewById(R.id.message);
+        messageText.setText(userOrInvalid() + "@" + verifiedHostNameOrDefault("unknown host"));
+        messageText.setMaxLines(Integer.MAX_VALUE);
+
+        TextView timeText = (TextView) sshView.findViewById(R.id.time);
+        timeText.setText("");
+
+        return sshView;
+    }
+
     public void fillRemoteViews(RemoteViews remoteViewsContainer, @javax.annotation.Nullable Boolean approved, @javax.annotation.Nullable String signature) {
+        fillShortRemoteViews(remoteViewsContainer, approved, signature);
+        remoteViewsContainer.setInt(R.id.message, "setMaxLines", Integer.MAX_VALUE);
+    }
+
+    public void fillShortRemoteViews(RemoteViews remoteViewsContainer, @javax.annotation.Nullable Boolean approved, @javax.annotation.Nullable String signature) {
         remoteViewsContainer.removeAllViews(R.id.content);
         RemoteViews remoteViews = new RemoteViews(remoteViewsContainer.getPackage(), R.layout.ssh_short_remote);
 
         remoteViewsContainer.addView(R.id.content, remoteViews);
 
-        remoteViews.setTextViewText(R.id.message, verifiedHostNameOrDefault("unknown host"));
+        remoteViews.setTextViewText(R.id.message, userOrInvalid() + "@" + verifiedHostNameOrDefault("unknown host"));
 
         if (approved != null && !approved) {
             remoteViews.setInt(R.id.ssh, "setBackgroundResource", R.drawable.hash_red_bg);
         }
-    }
-
-    public void fillShortRemoteViews(RemoteViews remoteViewsContainer, @javax.annotation.Nullable Boolean approved, @javax.annotation.Nullable String signature) {
-        fillRemoteViews(remoteViewsContainer, approved, signature);
     }
 
 }

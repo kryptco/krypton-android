@@ -178,7 +178,9 @@ public class SSHSignatureLog implements Log {
     @Override
     public View fillLongView(ConstraintLayout container) {
         container.removeAllViews();
-        return fillShortView(container);
+        View v = fillShortView(container);
+        ((TextView) v.findViewById(R.id.message)).setMaxLines(Integer.MAX_VALUE);
+        return v;
     }
 
     @javax.annotation.Nullable

@@ -60,8 +60,12 @@ public class ApprovalDialog {
                 });
         builder.setCancelable(false);
         if (request.signRequest != null) {
-            builder.setTitle("Allow SSH Login?");
-            builder.setMessage(pairing.workstationName + ": " + request.signRequest.display());
+            View requestView = activity.getLayoutInflater().inflate(R.layout.request, null);
+            TextView workstationNameText = (TextView) requestView.findViewById(R.id.workstationName);
+            workstationNameText.setText(pairing.workstationName);
+            ConstraintLayout content = (ConstraintLayout) requestView.findViewById(R.id.content);
+            request.signRequest.fillView(content);
+            builder.setView(requestView);
         }
         if (request.gitSignRequest != null) {
             View requestView = activity.getLayoutInflater().inflate(R.layout.request, null);
