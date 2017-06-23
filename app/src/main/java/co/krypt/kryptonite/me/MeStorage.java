@@ -76,7 +76,10 @@ public class MeStorage {
                         userIDs.add(userID);
                         PGPPublicKey pgpPublicKey = PGPManager.publicKeyWithIdentities(kp, userIDs);
                         me.pgpPublicKey = pgpPublicKey.serializedBytes();
-                        Notifications.notifyPGPKeyExport(context, pgpPublicKey);
+                        if (userIDs.size() == USER_ID_LIMIT) {
+                            //  detect abuse of exporting PGP userIDs
+                            Notifications.notifyPGPKeyExport(context, pgpPublicKey);
+                        }
                     }
                     set(me, userIDs);
                 } catch (PGPException | IOException e) {
