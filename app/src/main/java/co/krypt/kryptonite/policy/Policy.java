@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.exception.CryptoException;
+import co.krypt.kryptonite.exception.ProtocolException;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.protocol.GitSignRequest;
@@ -80,7 +81,7 @@ public class Policy {
                     Silo.shared(context).pairings().setApproved(pairingAndRequest.first.getUUIDString(), false);
                     Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
                     new Analytics(context).postEvent("signature", "background approve", "once", null, false);
-                } catch (CryptoException | InvalidKeyException | IOException | TransportException | InvalidKeySpecException | NoSuchProviderException e) {
+                } catch (CryptoException | InvalidKeyException | IOException | TransportException | InvalidKeySpecException | NoSuchProviderException | ProtocolException e) {
                     e.printStackTrace();
                 }
                 break;
@@ -89,7 +90,7 @@ public class Policy {
                     Silo.shared(context).pairings().setApprovedUntil(pairingAndRequest.first.getUUIDString(), (System.currentTimeMillis() / 1000) + 3600);
                     Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
                     new Analytics(context).postEvent("signature", "background approve", "time", 3600, false);
-                } catch (CryptoException | InvalidKeyException | IOException | TransportException | NoSuchProviderException | InvalidKeySpecException e) {
+                } catch (CryptoException | InvalidKeyException | IOException | TransportException | NoSuchProviderException | InvalidKeySpecException | ProtocolException e) {
                     e.printStackTrace();
                 }
                 break;
@@ -97,7 +98,7 @@ public class Policy {
                 try {
                     Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, false);
                     new Analytics(context).postEvent("signature", "background reject", null, null, false);
-                } catch (CryptoException | InvalidKeyException | IOException | TransportException | InvalidKeySpecException | NoSuchProviderException e) {
+                } catch (CryptoException | InvalidKeyException | IOException | TransportException | InvalidKeySpecException | NoSuchProviderException | ProtocolException e) {
                     e.printStackTrace();
                 }
                 break;

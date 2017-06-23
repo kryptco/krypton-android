@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.crypto.SSHWireDataParser;
+import co.krypt.kryptonite.exception.ProtocolException;
 
 /**
  * Created by Kevin King on 12/3/16.
@@ -40,6 +41,18 @@ public class SignRequest {
             return command;
         }
         return defaultString;
+    }
+
+    public void validate() throws ProtocolException {
+        if (sessionID() == null) {
+            throw new ProtocolException("no sessionID");
+        }
+        if (user() == null) {
+            throw new ProtocolException("no user name");
+        }
+        if (algo() == null) {
+            throw new ProtocolException("no algo");
+        }
     }
 
     private boolean parsed;
@@ -157,10 +170,10 @@ public class SignRequest {
     }
 
     public String userOrInvalid() {
-        if (parsedUser == null) {
+        if (user() == null) {
             return "invalid user";
         } else {
-            return parsedUser;
+            return user();
         }
     }
 

@@ -360,7 +360,7 @@ public class Silo {
         respondToRequest(pairing, request, true);
     }
 
-    public synchronized void respondToRequest(Pairing pairing, Request request, boolean signatureAllowed) throws CryptoException, InvalidKeyException, IOException, TransportException, NoSuchProviderException, InvalidKeySpecException {
+    public synchronized void respondToRequest(Pairing pairing, Request request, boolean signatureAllowed) throws CryptoException, InvalidKeyException, IOException, TransportException, NoSuchProviderException, InvalidKeySpecException, ProtocolException {
         if (sendCachedResponseIfPresent(pairing, request)) {
             return;
         }
@@ -447,6 +447,7 @@ public class Silo {
 
         if (request.signRequest != null) {
             SignRequest signRequest = request.signRequest;
+            signRequest.validate();
             response.signResponse = new SignResponse();
             if (signatureAllowed) {
                 try {
@@ -469,7 +470,7 @@ public class Silo {
                             }
                         }
                         String algo = signRequest.algo();
-                        if (algo == null || request.semVer().lessThan(Versions.KR_SUPPORTS_RSA_SHA256_512)) {
+                        if (request.semVer().lessThan(Versions.KR_SUPPORTS_RSA_SHA256_512)) {
                             algo = "ssh-rsa";
                         }
                         response.signResponse.signature = key.signDigestAppendingPubkey(request.signRequest.data, algo);
