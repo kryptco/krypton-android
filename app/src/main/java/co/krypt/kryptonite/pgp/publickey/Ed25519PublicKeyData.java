@@ -21,7 +21,7 @@ public class Ed25519PublicKeyData extends PublicKeyData {
     //  strip prefix byte
     public final byte[] pk;
 
-    public Ed25519PublicKeyData(MPInt q) {
+    private Ed25519PublicKeyData(MPInt q) {
         this.q = q;
         pk = Arrays.copyOfRange(q.body, 1, q.body.length);
     }

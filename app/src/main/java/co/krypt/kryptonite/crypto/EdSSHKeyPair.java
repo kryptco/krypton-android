@@ -22,7 +22,6 @@ import co.krypt.kryptonite.pgp.packet.Ed25519Signature;
 import co.krypt.kryptonite.pgp.packet.HashAlgorithm;
 import co.krypt.kryptonite.pgp.packet.MPInt;
 import co.krypt.kryptonite.pgp.packet.Signature;
-import co.krypt.kryptonite.pgp.packet.UnsupportedHashAlgorithmException;
 import co.krypt.kryptonite.pgp.publickey.Ed25519PublicKeyData;
 import co.krypt.kryptonite.pgp.publickey.PublicKeyAlgorithm;
 import co.krypt.kryptonite.pgp.publickey.PublicKeyData;
@@ -89,11 +88,7 @@ public class EdSSHKeyPair implements SSHKeyPairI {
 
     @Override
     public PublicKeyData pgpPublicKeyData() {
-        return new Ed25519PublicKeyData(
-                new MPInt(
-                        pk
-                )
-        );
+        return new Ed25519PublicKeyData(pk);
     }
 
     @Override
