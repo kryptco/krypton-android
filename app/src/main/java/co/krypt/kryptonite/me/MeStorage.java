@@ -92,7 +92,9 @@ public class MeStorage {
 
     public void delete() {
         synchronized (lock) {
-            preferences.edit().putString("ME", "").apply();
+            preferences.edit()
+                    .remove("ME")
+                    .remove("ME.USER_IDS").apply();
         }
     }
 
