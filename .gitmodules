@@ -1,6 +1,6 @@
 [submodule "libsodium-jni"]
 	path = libsodium-jni
-	url = https://github.com/joshjdevl/libsodium-jni
+	url = git@github.com:kryptco/libsodium-jni
 [submodule "zxing"]
 	path = zxing
 	url = https://github.com/zxing/zxing
