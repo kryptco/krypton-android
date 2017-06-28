@@ -19,6 +19,7 @@ import co.krypt.kryptonite.pgp.publickey.PublicKeyPacket;
 import co.krypt.kryptonite.pgp.publickey.SignedPublicKeySelfCertification;
 import co.krypt.kryptonite.pgp.publickey.UnsignedPublicKeySelfCertification;
 import co.krypt.kryptonite.pgp.subpacket.KeyFlagsSubpacket;
+import co.krypt.kryptonite.silo.Silo;
 
 /**
  * Created by Kevin King on 6/16/17.
@@ -40,7 +41,7 @@ public class PGPPublicKey extends Serializable {
                         publicKeyPacket,
                         userID,
                         hash,
-                        System.currentTimeMillis() / 1000,
+                        currentTimeBackdatedByClockSkewTolerance(),
                         new KeyFlagsSubpacket.Flag[]{KeyFlagsSubpacket.Flag.SIGN_DATA}
                         );
                 signedIdentities.add(
@@ -54,6 +55,12 @@ public class PGPPublicKey extends Serializable {
         } catch (IOException | CryptoException | NoSuchAlgorithmException | SignatureException | InvalidKeyException | NoSuchProviderException | InvalidKeySpecException e) {
             throw new PGPException(e.getMessage(), e);
         }
+    }
+
+    //  GPG tools rejects public keys created in the future --
+    //  adjust signing time by clock-skew tolerance into past.
+    public static long currentTimeBackdatedByClockSkewTolerance() {
+        return System.currentTimeMillis() / 1000 - Silo.CLOCK_SKEW_TOLERANCE_SECONDS;
     }
 
     @Override

@@ -22,6 +22,7 @@ import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 
 import co.krypt.kryptonite.exception.CryptoException;
+import co.krypt.kryptonite.pgp.PGPPublicKey;
 
 /**
  * Created by Kevin King on 11/30/16.
@@ -47,7 +48,7 @@ public class RSAKeyManager implements KeyManagerI {
                 if (preferences.contains(SSH_KEYPAIR_CREATED_KEY + "." + tag)) {
                     created = preferences.getLong(SSH_KEYPAIR_CREATED_KEY + "." + tag, 0);
                 } else {
-                    created = System.currentTimeMillis() / 1000;
+                    created = PGPPublicKey.currentTimeBackdatedByClockSkewTolerance();
                     preferences.edit().putLong(SSH_KEYPAIR_CREATED_KEY + "." + tag, created).apply();
                 }
 

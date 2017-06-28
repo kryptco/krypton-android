@@ -77,6 +77,8 @@ public class Silo {
 
     public static final String KNOWN_HOSTS_CHANGED_ACTION = "co.krypt.kryptonite.action.KNOWN_HOSTS_CHANGED";
 
+    public static final long CLOCK_SKEW_TOLERANCE_SECONDS = 15*60;
+
     private static Silo singleton;
 
     private final Pairings pairingStorage;
@@ -303,7 +305,7 @@ public class Silo {
 
     public synchronized void handle(Pairing pairing, Request request, String communicationMedium) throws CryptoException, TransportException, IOException, InvalidKeyException, ProtocolException, NoSuchProviderException, InvalidKeySpecException {
         //  Allow 15 minutes of clock skew
-        if (Math.abs(request.unixSeconds - (System.currentTimeMillis() / 1000)) > 15 * 60) {
+        if (Math.abs(request.unixSeconds - (System.currentTimeMillis() / 1000)) > CLOCK_SKEW_TOLERANCE_SECONDS) {
             throw new ProtocolException("invalid request time");
         }
 
