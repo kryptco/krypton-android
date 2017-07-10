@@ -29,9 +29,6 @@ public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<Signat
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.log = mValues.get(position);
-//        holder.commandText.setText(holder.log.shortDisplay());
-//        holder.commandTime.setText(
-//                DateUtils.getRelativeTimeSpanString(holder.log.unixSeconds() * 1000, System.currentTimeMillis(), 1000));
 
         holder.log.fillShortView((ConstraintLayout) holder.mView);
         holder.mView.requestLayout();
