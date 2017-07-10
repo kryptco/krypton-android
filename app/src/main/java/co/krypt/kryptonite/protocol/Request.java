@@ -79,4 +79,14 @@ public class Request {
         }
     }
 
+    public String analyticsCategory() {
+        if (signRequest != null) {
+            return "signature";
+        }
+        if (gitSignRequest != null) {
+            return gitSignRequest.analyticsCategory();
+        }
+        return "no analytics category";
+    }
+
 }

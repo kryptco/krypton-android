@@ -80,7 +80,7 @@ public class Policy {
                 try {
                     Silo.shared(context).pairings().setApproved(pairingAndRequest.first.getUUIDString(), false);
                     Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
-                    new Analytics(context).postEvent("signature", "background approve", "once", null, false);
+                    new Analytics(context).postEvent(pairingAndRequest.second.analyticsCategory(), "background approve", "once", null, false);
                 } catch (CryptoException | InvalidKeyException | IOException | TransportException | InvalidKeySpecException | NoSuchProviderException | ProtocolException e) {
                     e.printStackTrace();
                 }
@@ -89,7 +89,7 @@ public class Policy {
                 try {
                     Silo.shared(context).pairings().setApprovedUntil(pairingAndRequest.first.getUUIDString(), (System.currentTimeMillis() / 1000) + 3600);
                     Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
-                    new Analytics(context).postEvent("signature", "background approve", "time", 3600, false);
+                    new Analytics(context).postEvent(pairingAndRequest.second.analyticsCategory(), "background approve", "time", 3600, false);
                 } catch (CryptoException | InvalidKeyException | IOException | TransportException | NoSuchProviderException | InvalidKeySpecException | ProtocolException e) {
                     e.printStackTrace();
                 }
@@ -97,7 +97,7 @@ public class Policy {
             case REJECT:
                 try {
                     Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, false);
-                    new Analytics(context).postEvent("signature", "background reject", null, null, false);
+                    new Analytics(context).postEvent(pairingAndRequest.second.analyticsCategory(), "background reject", null, null, false);
                 } catch (CryptoException | InvalidKeyException | IOException | TransportException | InvalidKeySpecException | NoSuchProviderException | ProtocolException e) {
                     e.printStackTrace();
                 }

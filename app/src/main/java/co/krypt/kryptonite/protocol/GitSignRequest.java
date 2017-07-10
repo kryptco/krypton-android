@@ -50,6 +50,20 @@ public class GitSignRequest {
         return "invalid git sign request";
     }
 
+    public boolean valid() {
+        return commit != null ^ tag != null;
+    }
+
+    public String analyticsCategory() {
+        if (commit != null) {
+            return "git-commit-signature";
+        }
+        if (tag != null) {
+            return "git-tag-signature";
+        }
+        return "invalid git sign request";
+    }
+
     @Nullable
     public View fillView(ConstraintLayout container) {
         if (commit != null) {

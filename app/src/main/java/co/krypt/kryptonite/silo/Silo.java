@@ -328,7 +328,7 @@ public class Silo {
             synchronized (policyLock) {
                 if (!Policy.isApprovedNow(context, pairing, request.signRequest)) {
                     if (Policy.requestApproval(context, pairing, request)) {
-                        new Analytics(context).postEvent("signature", "requires approval", communicationMedium, null, false);
+                        new Analytics(context).postEvent(request.analyticsCategory(), "requires approval", communicationMedium, null, false);
                     }
                     if (request.sendACK) {
                         Response ackResponse = Response.with(request);
@@ -339,14 +339,14 @@ public class Silo {
                 }
             }
 
-            new Analytics(context).postEvent("signature", "automatic approval", communicationMedium, null, false);
+            new Analytics(context).postEvent(request.analyticsCategory(), "automatic approval", communicationMedium, null, false);
         }
 
         if (request.gitSignRequest != null) {
             synchronized (policyLock) {
                 if (!Policy.isApprovedNow(context, pairing, request.gitSignRequest)) {
                     if (Policy.requestApproval(context, pairing, request)) {
-                        new Analytics(context).postEvent("git-commit-signature", "requires approval", communicationMedium, null, false);
+                        new Analytics(context).postEvent(request.analyticsCategory(), "requires approval", communicationMedium, null, false);
                     }
                     if (request.sendACK) {
                         Response ackResponse = Response.with(request);
@@ -356,7 +356,7 @@ public class Silo {
                     return;
                 }
             }
-            new Analytics(context).postEvent("git-commit-signature", "automatic approval", communicationMedium, null, false);
+            new Analytics(context).postEvent(request.analyticsCategory(), "automatic approval", communicationMedium, null, false);
         }
 
         respondToRequest(pairing, request, true);
