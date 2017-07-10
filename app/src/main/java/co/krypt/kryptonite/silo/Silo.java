@@ -343,6 +343,9 @@ public class Silo {
         }
 
         if (request.gitSignRequest != null) {
+            if (!request.gitSignRequest.valid()) {
+                throw new ProtocolException("invalid git sign request");
+            }
             synchronized (policyLock) {
                 if (!Policy.isApprovedNow(context, pairing, request.gitSignRequest)) {
                     if (Policy.requestApproval(context, pairing, request)) {
