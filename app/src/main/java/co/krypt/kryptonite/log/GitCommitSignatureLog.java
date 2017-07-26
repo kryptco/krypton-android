@@ -3,12 +3,14 @@ package co.krypt.kryptonite.log;
 import android.support.constraint.ConstraintLayout;
 import android.view.View;
 
+import com.amazonaws.util.StringUtils;
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -48,9 +50,10 @@ public class GitCommitSignatureLog implements Log {
     public String parent;
 
     @Nullable
-    @SerializedName("second_parent")
-    @DatabaseField(columnName = "second_parent")
-    public String secondParent;
+    @SerializedName("merge_parents")
+    @DatabaseField(columnName = "merge_parents")
+    //  Comma-separated list
+    public String mergeParents;
 
     @SerializedName("author")
     @DatabaseField(columnName = "author")
@@ -93,7 +96,9 @@ public class GitCommitSignatureLog implements Log {
 
         this.tree = commit.tree;
         this.parent = commit.parent;
-        this.secondParent = commit.secondParent;
+        if (commit.mergeParents != null) {
+            this.mergeParents = StringUtils.join(",", commit.mergeParents.toArray(new String[0]));
+        }
         this.author = commit.author;
         this.committer = commit.committer;
         this.messageString = commit.validatedMessageStringOrError();
@@ -128,10 +133,14 @@ public class GitCommitSignatureLog implements Log {
     }
 
     public CommitInfo commitInfo() {
+        List<String> mergeParents = null;
+        if (this.mergeParents != null) {
+            mergeParents = Arrays.asList(this.mergeParents.split(","));
+        }
         return new CommitInfo(
                 tree,
                 parent,
-                secondParent,
+                mergeParents,
                 author,
                 committer,
                 message

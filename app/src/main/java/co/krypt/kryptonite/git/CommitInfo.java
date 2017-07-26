@@ -11,6 +11,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -37,8 +38,8 @@ public class CommitInfo implements BinarySignable {
     public String parent;
 
     @Nullable
-    @SerializedName("second_parent")
-    public String secondParent;
+    @SerializedName("merge_parents")
+    public List<String> mergeParents;
 
     @SerializedName("author")
     @JSON.JsonRequired
@@ -52,11 +53,11 @@ public class CommitInfo implements BinarySignable {
     @JSON.JsonRequired
     public byte[] message;
 
-    public CommitInfo(String tree, @Nullable String parent, @Nullable String secondParent, String author, String committer, byte[] message) {
+    public CommitInfo(String tree, @Nullable String parent, @Nullable List<String> mergeParents, String author, String committer, byte[] message) {
         this.tree = tree;
         this.parent = parent;
         this.author = author;
-        this.secondParent = secondParent;
+        this.mergeParents = mergeParents;
         this.committer = committer;
         this.message = message;
     }
@@ -73,10 +74,12 @@ public class CommitInfo implements BinarySignable {
             out.write("\n".getBytes("UTF-8"));
         }
 
-        if (secondParent != null) {
-            out.write("parent ".getBytes("UTF-8"));
-            out.write(secondParent.getBytes("UTF-8"));
-            out.write("\n".getBytes("UTF-8"));
+        if (mergeParents != null) {
+            for (String mergeParent: mergeParents) {
+                out.write("parent ".getBytes("UTF-8"));
+                out.write(mergeParent.getBytes("UTF-8"));
+                out.write("\n".getBytes("UTF-8"));
+            }
         }
 
         out.write("author ".getBytes("UTF-8"));
@@ -103,8 +106,10 @@ public class CommitInfo implements BinarySignable {
         s.append("TREE ").append(tree).append("\n");
         s.append("PARENT ").append(parent).append("\n");
 
-        if (secondParent != null) {
-            s.append("PARENT ").append(secondParent).append("\n");
+        if (mergeParents != null) {
+            for (String mergeParent: mergeParents) {
+                s.append("PARENT ").append(mergeParent).append("\n");
+            }
         }
 
         String authorNameAndEmail = authorNameAndEmail();
@@ -162,10 +167,12 @@ public class CommitInfo implements BinarySignable {
             commitDataBuf.write("\n".getBytes("UTF-8"));
         }
 
-        if (secondParent != null) {
-            commitDataBuf.write("parent ".getBytes("UTF-8"));
-            commitDataBuf.write(secondParent.getBytes("UTF-8"));
-            commitDataBuf.write("\n".getBytes("UTF-8"));
+        if (mergeParents != null) {
+            for (String mergeParent: mergeParents) {
+                commitDataBuf.write("parent ".getBytes("UTF-8"));
+                commitDataBuf.write(mergeParent.getBytes("UTF-8"));
+                commitDataBuf.write("\n".getBytes("UTF-8"));
+            }
         }
 
         commitDataBuf.write("author ".getBytes("UTF-8"));
@@ -269,10 +276,13 @@ public class CommitInfo implements BinarySignable {
         TextView parentText = (TextView) commitView.findViewById(R.id.parent);
         if (parent != null) {
             parentText.setText(parent);
-            if (secondParent != null) {
-                parentText.append("\n" + secondParent);
+        }
+        if (mergeParents != null) {
+            for (String mergeParent: mergeParents) {
+                parentText.append("\n" + mergeParent);
             }
-        } else {
+        }
+        if (parent == null && mergeParents == null) {
             parentText.setText("");
             commitView.findViewById(R.id.parentLabel).setVisibility(GONE);
         }
@@ -365,12 +375,17 @@ public class CommitInfo implements BinarySignable {
 
         remoteViews.setTextViewText(R.id.tree, tree);
 
-        if (parent != null) {
-            if (secondParent != null) {
-                remoteViews.setTextViewText(R.id.parent, parent + "\n" + secondParent);
-            } else {
-                remoteViews.setTextViewText(R.id.parent, parent);
+        if (parent != null || mergeParents != null) {
+            String parentText = "";
+            if (parent != null) {
+                parentText = parent;
             }
+            if (mergeParents != null) {
+                for (String mergeParent: mergeParents) {
+                    parentText += "\n" + mergeParent;
+                }
+            }
+            remoteViews.setTextViewText(R.id.parent, parentText);
         } else {
             remoteViews.setTextViewText(R.id.parent, "");
             remoteViews.setViewVisibility(R.id.parent, GONE);
