@@ -201,7 +201,7 @@
         android:layout_toRightOf="@id/committerLabel"
         android:layout_alignParentRight="true"
         android:layout_below="@id/tree"
-        android:maxLines="1"
+        android:maxLines="2"
         android:scrollHorizontally="true"
         android:ellipsize="end"
         />

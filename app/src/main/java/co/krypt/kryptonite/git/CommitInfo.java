@@ -36,6 +36,10 @@ public class CommitInfo implements BinarySignable {
     @SerializedName("parent")
     public String parent;
 
+    @Nullable
+    @SerializedName("second_parent")
+    public String secondParent;
+
     @SerializedName("author")
     @JSON.JsonRequired
     public String author;
@@ -48,10 +52,11 @@ public class CommitInfo implements BinarySignable {
     @JSON.JsonRequired
     public byte[] message;
 
-    public CommitInfo(String tree, @Nullable String parent, String author, String committer, byte[] message) {
+    public CommitInfo(String tree, @Nullable String parent, @Nullable String secondParent, String author, String committer, byte[] message) {
         this.tree = tree;
         this.parent = parent;
         this.author = author;
+        this.secondParent = secondParent;
         this.committer = committer;
         this.message = message;
     }
@@ -65,6 +70,12 @@ public class CommitInfo implements BinarySignable {
         if (parent != null) {
             out.write("parent ".getBytes("UTF-8"));
             out.write(parent.getBytes("UTF-8"));
+            out.write("\n".getBytes("UTF-8"));
+        }
+
+        if (secondParent != null) {
+            out.write("parent ".getBytes("UTF-8"));
+            out.write(secondParent.getBytes("UTF-8"));
             out.write("\n".getBytes("UTF-8"));
         }
 
@@ -91,6 +102,10 @@ public class CommitInfo implements BinarySignable {
 
         s.append("TREE ").append(tree).append("\n");
         s.append("PARENT ").append(parent).append("\n");
+
+        if (secondParent != null) {
+            s.append("PARENT ").append(secondParent).append("\n");
+        }
 
         String authorNameAndEmail = authorNameAndEmail();
         String committerNameAndEmail = committerNameAndEmail();
@@ -144,6 +159,12 @@ public class CommitInfo implements BinarySignable {
         if (parent != null) {
             commitDataBuf.write("parent ".getBytes("UTF-8"));
             commitDataBuf.write(parent.getBytes("UTF-8"));
+            commitDataBuf.write("\n".getBytes("UTF-8"));
+        }
+
+        if (secondParent != null) {
+            commitDataBuf.write("parent ".getBytes("UTF-8"));
+            commitDataBuf.write(secondParent.getBytes("UTF-8"));
             commitDataBuf.write("\n".getBytes("UTF-8"));
         }
 
@@ -248,6 +269,9 @@ public class CommitInfo implements BinarySignable {
         TextView parentText = (TextView) commitView.findViewById(R.id.parent);
         if (parent != null) {
             parentText.setText(parent);
+            if (secondParent != null) {
+                parentText.append("\n" + secondParent);
+            }
         } else {
             parentText.setText("");
             commitView.findViewById(R.id.parentLabel).setVisibility(GONE);
@@ -342,7 +366,11 @@ public class CommitInfo implements BinarySignable {
         remoteViews.setTextViewText(R.id.tree, tree);
 
         if (parent != null) {
-            remoteViews.setTextViewText(R.id.parent, parent);
+            if (secondParent != null) {
+                remoteViews.setTextViewText(R.id.parent, parent + "\n" + secondParent);
+            } else {
+                remoteViews.setTextViewText(R.id.parent, parent);
+            }
         } else {
             remoteViews.setTextViewText(R.id.parent, "");
             remoteViews.setViewVisibility(R.id.parent, GONE);

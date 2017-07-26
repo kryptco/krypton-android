@@ -24,7 +24,7 @@ import co.krypt.kryptonite.log.SSHSignatureLog;
 public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     public static final String DATABASE_NAME = "kryptonite";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     /**
      * The data access object used to interact with the Sqlite database to do C.R.U.D operations.
@@ -68,6 +68,10 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
             if (oldVersion < 3 && newVersion >= 3) {
                 TableUtils.createTable(connectionSource, GitCommitSignatureLog.class);
                 TableUtils.createTable(connectionSource, GitTagSignatureLog.class);
+            }
+
+            if (oldVersion < 4 && newVersion >= 4) {
+                database.execSQL("ALTER TABLE `git_commit_signature_log` ADD COLUMN second_parent VARCHAR;");
             }
 
         } catch (SQLException e) {

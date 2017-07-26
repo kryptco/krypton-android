@@ -47,6 +47,11 @@ public class GitCommitSignatureLog implements Log {
     @DatabaseField(columnName = "parent")
     public String parent;
 
+    @Nullable
+    @SerializedName("second_parent")
+    @DatabaseField(columnName = "second_parent")
+    public String secondParent;
+
     @SerializedName("author")
     @DatabaseField(columnName = "author")
     public String author;
@@ -88,6 +93,7 @@ public class GitCommitSignatureLog implements Log {
 
         this.tree = commit.tree;
         this.parent = commit.parent;
+        this.secondParent = commit.secondParent;
         this.author = commit.author;
         this.committer = commit.committer;
         this.messageString = commit.validatedMessageStringOrError();
@@ -125,6 +131,7 @@ public class GitCommitSignatureLog implements Log {
         return new CommitInfo(
                 tree,
                 parent,
+                secondParent,
                 author,
                 committer,
                 message
