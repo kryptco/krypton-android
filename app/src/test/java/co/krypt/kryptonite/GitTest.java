@@ -27,6 +27,7 @@ public class GitTest {
         CommitInfo commit = new CommitInfo(
                 "2c4df4a89ac5b0b8b21fd2aad4d9b19cd91e7049",
                 "1cd97d0545a25c578e3f4da5283106606276eadf",
+                null,
                 "Alex Grinman <alex@krypt.co> 1495570495 -0400",
                 "Alex Grinman <alex@krypt.co> 1495570495 -0400",
                 "\ntest1234\n".getBytes("UTF-8")

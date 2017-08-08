@@ -11,6 +11,8 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.jakewharton.disklrucache.DiskLruCache;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -505,8 +507,15 @@ public class Silo {
                         Log.e(TAG, Base64.encodeAsString(request.signRequest.publicKeyFingerprint) + " != " + Base64.encodeAsString(key.publicKeyFingerprint()));
                         response.signResponse.error = "unknown key fingerprint";
                     }
-                } catch (NoSuchAlgorithmException | SignatureException | SQLException e) {
+                } catch (NoSuchAlgorithmException | SignatureException e) {
                     response.signResponse.error = "unknown error";
+                    e.printStackTrace();
+                } catch (SQLException e) {
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    sw.toString();
+                    response.signResponse.error = "SQL error: " + e.getMessage() + "\n" + sw.toString();
                     e.printStackTrace();
                 } catch (MismatchedHostKeyException e) {
                     response.signResponse.error = "host public key mismatched";
