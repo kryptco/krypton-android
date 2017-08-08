@@ -71,7 +71,7 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
                 TableUtils.createTable(connectionSource, GitTagSignatureLog.class);
             }
 
-            if (oldVersion < 5 && newVersion >= 5) {
+            if (oldVersion == 4 && newVersion >= 5) {
                 database.execSQL("ALTER TABLE `git_commit_signature_log` ADD COLUMN merge_parents VARCHAR;");
             }
 
