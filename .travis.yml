@@ -7,14 +7,17 @@ before_install:
   - mkdir -p libsodium-jni/installs/android-sdk-linux/licenses
   - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > libsodium-jni/installs/android-sdk-linux//licenses/android-sdk-license
   - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > libsodium-jni/installs/android-sdk-linux//licenses/android-sdk-preview-license
+
+after_install:
   - cd libsodium-jni && ./build-linux.sh
+
 git:
   submodules: false
 android:
   components:
     # Uncomment the lines below if you want to
     # use the latest revision of Android SDK Tools
-    # - tools
+    - tools
     # - platform-tools
 
     # The BuildTools version used by your project
