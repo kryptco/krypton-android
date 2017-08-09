@@ -1,5 +1,7 @@
 language: android
 before_install: ./.travis.before.sh
+git:
+  submodules: false
 android:
   components:
     # Uncomment the lines below if you want to
