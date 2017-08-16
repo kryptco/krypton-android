@@ -143,6 +143,10 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
     }
 
     private void refreshCameraPermissionInfoVisibility() {
+        if (cameraPermissionInfoLayout == null) {
+            Log.v(TAG, "layout refreshed before onViewCreate()");
+            return;
+        }
         Log.v(TAG, "updating camera permission layout");
         Runnable r = new Runnable() {
             @Override
