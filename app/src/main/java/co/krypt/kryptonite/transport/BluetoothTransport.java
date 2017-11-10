@@ -161,6 +161,14 @@ public class BluetoothTransport extends BroadcastReceiver {
                     } else {
                         Log.v(TAG, "device subscribed: " + device.toString());
                     }
+                    NetworkMessage lastOutgoingMessage = self.lastOutgoingMessage.get(serviceUUID);
+                    if (lastOutgoingMessage != null) {
+                        try {
+                            send(serviceUUID, lastOutgoingMessage);
+                        } catch (TransportException e) {
+                            Log.e(TAG, e.getMessage());
+                        }
+                    }
                 } else {
                     Log.v(TAG, "unhandled descriptor write request");
                 }
@@ -388,18 +396,22 @@ public class BluetoothTransport extends BroadcastReceiver {
     }
 
     public synchronized void send(Pairing pairing, NetworkMessage message) throws TransportException {
-        BluetoothGattCharacteristic characteristic = characteristicsByUUID.get(pairing.uuid);
+        lastOutgoingMessage.put(pairing.uuid, message);
+        send(pairing.uuid, message);
+    }
+
+    private synchronized void send(UUID serviceUUID, NetworkMessage message) throws TransportException {
+        BluetoothGattCharacteristic characteristic = characteristicsByUUID.get(serviceUUID);
         if (characteristic == null) {
-            lastOutgoingMessage.put(pairing.uuid, message);
             return;
         }
-        //TODO: store last outgoing message
         //TODO: better MTU
         for (byte[] split : splitMessage(message.bytes(), 512)) {
-            queuedOutgoingSplitsWithServiceUUID.add(new Pair<>(pairing.uuid, split));
+            queuedOutgoingSplitsWithServiceUUID.add(new Pair<>(serviceUUID, split));
         }
 
         tryWrite();
+
     }
 
     private synchronized void tryWrite() {
