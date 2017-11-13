@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.exception.TransportException;
@@ -53,10 +54,6 @@ public class BluetoothTransport extends BroadcastReceiver {
     private static final UUID CONFIGURATION_DESCRIPTOR_UUID = UUID.fromString("00002902-0000-1000-8000-00805F9B34FB");
     private static final String TAG = "BluetoothTransport";
 
-    public static final byte REFRESH_BYTE = 0;
-    public static final byte PING_BYTE = 1;
-
-    private final BluetoothManager manager;
     private final BluetoothAdapter adapter;
     private final Set<UUID> allServiceUUIDS = new HashSet<>();
     private final Set<UUID> advertisingServiceUUIDS = new HashSet<>();
@@ -67,15 +64,13 @@ public class BluetoothTransport extends BroadcastReceiver {
     private final Map<UUID, Set<BluetoothDevice>> subscribedDevicesByUUID = new HashMap<>();
     private boolean readyToUpdateSubscribers = true;
     private final List<Pair<UUID, byte[]>> queuedOutgoingSplitsWithServiceUUID = new LinkedList<>();
+    private final AtomicInteger mtu = new AtomicInteger(512);
 
     private final Map<UUID, NetworkMessage> lastOutgoingMessage = new HashMap<>();
 
     private final Map<BluetoothGattCharacteristic, Pair<Byte, ByteArrayOutputStream>> incomingMessageBuffersByCharacteristic = new HashMap<>();
-    private final Map<BluetoothGatt, Integer> mtuByBluetoothGatt = new HashMap<>();
-    private final Map<BluetoothGattCharacteristic, Boolean> characteristicWritePending = new HashMap<>();
 
     private final AdvertiseCallback advertiseCallback;
-    private final BluetoothGattServerCallback gattServerCallback;
     private final BluetoothGattServer gattServer;
     private final Context context;
 
@@ -83,7 +78,6 @@ public class BluetoothTransport extends BroadcastReceiver {
 
     private BluetoothTransport(Context context, BluetoothManager manager, BluetoothAdapter adapter) {
         this.context = context;
-        this.manager = manager;
         this.adapter = adapter;
         final BluetoothTransport self = this;
 
@@ -96,7 +90,7 @@ public class BluetoothTransport extends BroadcastReceiver {
             }
         };
 
-        gattServerCallback = new BluetoothGattServerCallback() {
+        final BluetoothGattServerCallback gattServerCallback = new BluetoothGattServerCallback() {
             @Override
             public void onConnectionStateChange(BluetoothDevice device, int status, int newState) {
                 if (BluetoothGatt.GATT_SUCCESS == status) {
@@ -182,6 +176,7 @@ public class BluetoothTransport extends BroadcastReceiver {
             @Override
             public void onMtuChanged(BluetoothDevice device, int mtu) {
                 Log.v(TAG, "onMtuChanged: " + mtu);
+                self.mtu.set(mtu);
             }
         };
 
@@ -197,6 +192,9 @@ public class BluetoothTransport extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.v(TAG, "bluetooth adapter intent action: " + intent.getAction());
+            if (intent.getAction() == null) {
+                return;
+            }
             switch (intent.getAction()) {
                 case BluetoothAdapter.ACTION_STATE_CHANGED:
                     int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
@@ -236,6 +234,9 @@ public class BluetoothTransport extends BroadcastReceiver {
         }
         final BluetoothManager manager =
                 (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+        if (manager == null) {
+            return null;
+        }
         return new BluetoothTransport(context, manager, manager.getAdapter());
     }
 
@@ -368,8 +369,7 @@ public class BluetoothTransport extends BroadcastReceiver {
         if (characteristic == null) {
             return;
         }
-        //TODO: better MTU
-        for (byte[] split : splitMessage(message.bytes(), 512)) {
+        for (byte[] split : splitMessage(message.bytes(), this.mtu.get())) {
             queuedOutgoingSplitsWithServiceUUID.add(new Pair<>(serviceUUID, split));
         }
 
