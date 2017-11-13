@@ -26,7 +26,6 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -68,11 +67,6 @@ public class BluetoothTransport extends BroadcastReceiver {
     private final Map<UUID, Set<BluetoothDevice>> subscribedDevicesByUUID = new HashMap<>();
     private boolean readyToUpdateSubscribers = true;
     private final List<Pair<UUID, byte[]>> queuedOutgoingSplitsWithServiceUUID = new LinkedList<>();
-
-    private final Set<BluetoothDevice> connectedDevices = new HashSet<>();
-    private final Set<BluetoothGatt> connectedGatts = new HashSet<>();
-    private final Set<BluetoothDevice> connectingDevices = new HashSet<>();
-    private final Map<UUID, Pair<BluetoothGatt, BluetoothGattCharacteristic>> characteristicsAndDevicesByServiceUUID = new HashMap<>();
 
     private final Map<UUID, NetworkMessage> lastOutgoingMessage = new HashMap<>();
 
@@ -211,14 +205,10 @@ public class BluetoothTransport extends BroadcastReceiver {
                         switch (state) {
                             case BluetoothAdapter.STATE_ON:
                                 readyToUpdateSubscribers = true;
-                                connectingDevices.clear();
                                 advertiseLogicPool.execute(advertiseLogic);
                                 break;
                             case BluetoothAdapter.STATE_OFF:
                                 readyToUpdateSubscribers = false;
-                                connectingDevices.clear();
-                                connectedDevices.clear();
-                                connectedGatts.clear();
                                 advertiseLogicPool.execute(advertiseLogic);
                                 break;
                         }
@@ -234,26 +224,8 @@ public class BluetoothTransport extends BroadcastReceiver {
         }
     };
 
-    private synchronized boolean refreshDeviceCache(BluetoothGatt gatt){
-        try {
-            BluetoothGatt localBluetoothGatt = gatt;
-            Method localMethod = localBluetoothGatt.getClass().getMethod("refresh", new Class[0]);
-            if (localMethod != null) {
-                boolean bool = ((Boolean) localMethod.invoke(localBluetoothGatt, new Object[0])).booleanValue();
-                return bool;
-            }
-        }
-        catch (Exception localException) {
-            Log.e(TAG, "An exception occurred while refreshing device");
-        }
-        return false;
-    }
-
     public synchronized void stop() {
-        for (Pair<BluetoothGatt, BluetoothGattCharacteristic> pair : characteristicsAndDevicesByServiceUUID.values()) {
-            pair.first.disconnect();
-            pair.first.close();
-        }
+        //TODO unimplemented
         context.unregisterReceiver(bluetoothStateReceiver);
     }
 
@@ -268,22 +240,13 @@ public class BluetoothTransport extends BroadcastReceiver {
     }
 
     public synchronized void add(Pairing pairing) {
-        for (BluetoothGatt connectedGatt: connectedGatts) {
-            refreshDeviceCache(connectedGatt);
-            connectedGatt.discoverServices();
-        }
         allServiceUUIDS.add(pairing.uuid);
         advertiseLogicPool.execute(advertiseLogic);
     }
 
     public synchronized void remove(Pairing pairing) {
         allServiceUUIDS.remove(pairing.uuid);
-        Pair<BluetoothGatt, BluetoothGattCharacteristic> characteristicAndDevice = characteristicsAndDevicesByServiceUUID.get(pairing.uuid);
-        if (characteristicAndDevice != null) {
-            characteristicAndDevice.first.setCharacteristicNotification(characteristicAndDevice.second, false);
-            characteristicAndDevice.first.disconnect();
-            mtuByBluetoothGatt.remove(characteristicAndDevice.first);
-        }
+        //TODO unimplemented
         advertiseLogicPool.execute(advertiseLogic);
     }
 
@@ -317,7 +280,7 @@ public class BluetoothTransport extends BroadcastReceiver {
                             BluetoothGattCharacteristic.PERMISSION_READ | BluetoothGattCharacteristic.PERMISSION_WRITE
                     );
                     BluetoothGattDescriptor configurationDescriptor = new BluetoothGattDescriptor(
-                            UUID.fromString("00002902-0000-1000-8000-00805F9B34FB"),
+                            CONFIGURATION_DESCRIPTOR_UUID,
                             BluetoothGattDescriptor.PERMISSION_WRITE | BluetoothGattDescriptor.PERMISSION_READ);
                     characteristic.addDescriptor(configurationDescriptor);
 
@@ -387,7 +350,7 @@ public class BluetoothTransport extends BroadcastReceiver {
             }
             if (n == 0) {
                 Log.v(TAG, "received message of length " + String.valueOf(newMessageBuffer.toByteArray().length));
-                incomingMessageBuffersByCharacteristic.remove(uuid);
+                incomingMessageBuffersByCharacteristic.remove(characteristic);
                 Silo.shared(context).onMessage(uuid, newMessageBuffer.toByteArray(), "bluetooth");
             } else {
                 incomingMessageBuffersByCharacteristic.put(characteristic, new Pair<>(n, newMessageBuffer));
@@ -434,7 +397,9 @@ public class BluetoothTransport extends BroadcastReceiver {
                 continue;
             }
             characteristic.setValue(next.second);
-            Log.v(TAG, "set value n=" + String.valueOf(next.second) + " length=" + String.valueOf(next.second.length));
+            if (next.second.length > 0) {
+                Log.v(TAG, "set value n=" + String.valueOf(next.second[0]) + " length=" + String.valueOf(next.second.length));
+            }
             for (BluetoothDevice device : subscribedDevices) {
                 readyToUpdateSubscribers = gattServer.notifyCharacteristicChanged(device, characteristic, false);
             }
@@ -474,16 +439,6 @@ public class BluetoothTransport extends BroadcastReceiver {
         }
         Log.v(TAG, "split message into " + String.valueOf(splits.size()));
         return splits;
-    }
-
-    private synchronized void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-        characteristicWritePending.remove(characteristic);
-        tryWrite();
-    }
-
-    private synchronized void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
-                                  int status) {
-        tryWrite();
     }
 
     public static synchronized void requestUserEnableBluetooth(Activity activity, int requestID) {
