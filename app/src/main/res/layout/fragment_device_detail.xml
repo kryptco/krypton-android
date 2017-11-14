@@ -12,195 +12,24 @@
     tools:context="co.krypt.kryptonite.devices.DevicesFragment"
     android:background="@android:color/white">
 
-    <android.support.v7.widget.CardView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/deviceCard"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp">
-
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:paddingBottom="20dp"
-            android:paddingTop="15dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp">
-
-            <ImageView
-                android:id="@+id/imacImage"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/imac" />
-
-            <TextView
-                android:text="TextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/deviceName"
-                android:textSize="22sp"
-                android:textAlignment="center"
-                tools:layout_constraintTop_creator="1"
-                tools:layout_constraintLeft_creator="1"
-                app:layout_constraintLeft_toRightOf="@+id/imacImage"
-                app:layout_constraintTop_toTopOf="@+id/imacImage"
-                app:layout_constraintBottom_toBottomOf="@+id/imacImage"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="@color/appBlack"
-                android:layout_marginStart="8dp" />
-
-            <TextView
-                android:text="When should Kryptonite ask for your approval?"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imacImage"
-                android:id="@+id/approvalLabel"
-                android:textAlignment="center"
-                android:layout_marginTop="8dp"
-                android:textColor="@color/appBlack" />
-
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/approvalSettingsLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/approvalLabel">
-                <RadioButton
-                    android:text="Always ask"
-                    android:id="@+id/manualApprovalButton"
-                    android:button="@android:color/transparent"
-                    android:background="@android:color/transparent"
-                    android:drawableTop="?android:attr/listChoiceIndicatorSingle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@+id/temporaryApprovalButton"
-                    tools:layout_editor_absoluteY="50dp" />
-
-                <RadioButton
-                    android:text="Don't ask for 1 hour"
-                    android:button="@android:color/transparent"
-                    android:background="@android:color/transparent"
-                    android:drawableTop="?android:attr/listChoiceIndicatorSingle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintLeft_toRightOf="@+id/manualApprovalButton"
-                    app:layout_constraintRight_toLeftOf="@+id/automaticApprovalButton"
-                    android:id="@+id/temporaryApprovalButton"
-                    tools:layout_editor_absoluteY="50dp" />
-
-                <RadioButton
-                    android:text="Never ask"
-                    android:button="@android:color/transparent"
-                    android:background="@android:color/transparent"
-                    android:drawableTop="?android:attr/listChoiceIndicatorSingle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintLeft_toRightOf="@+id/temporaryApprovalButton"
-                    app:layout_constraintRight_toRightOf="parent"
-                    android:id="@+id/automaticApprovalButton"
-                    tools:layout_editor_absoluteY="50dp"
-                    android:layout_marginTop="4dp" />
-            </android.support.constraint.ConstraintLayout>
-
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/requireUnknownHostApprovalContainer"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="@color/appWhite"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/approvalSettingsLayout"
-                android:layout_marginTop="6dp">
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:background="@color/appGray"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <Switch
-                    android:id="@+id/requireUnknownHostApprovalSwitch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text=""
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="6dp" />
-
-                <TextView
-                    android:id="@+id/requireUnknownHostApprovalHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="6dp"
-                    android:text="Always ask for unknown hosts"
-                    android:textStyle="normal"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@+id/requireUnknownHostApprovalSwitch"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </android.support.constraint.ConstraintLayout>
-
-            <Button
-                android:text="Unpair"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/unpairButton"
-                app:layout_constraintTop_toBottomOf="@+id/requireUnknownHostApprovalContainer"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                android:textColor="@android:color/holo_red_light"
-                android:background="@drawable/flat_button"
-                android:backgroundTint="@android:color/holo_red_light"
-                android:minHeight="36dip"
-                android:textSize="16sp"
-                android:layout_marginTop="16dp" />
-
-        </android.support.constraint.ConstraintLayout>
-
-    </android.support.v7.widget.CardView>
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list"
         android:name="co.krypt.kryptonite.devices.DeviceDetailFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layoutManager="LinearLayoutManager"
-        tools:context="co.krypt.kryptonite.devices.DeviceDetailFragment"
-        tools:listitem="@layout/signature_log"
         android:background="@color/cardview_light_background"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/deviceCard"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layoutManager="LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintVertical_bias="1.0"
-        android:layout_marginTop="8dp">
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:context="co.krypt.kryptonite.devices.DeviceDetailFragment"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1"
+        tools:listitem="@layout/signature_log">
 
     </android.support.v7.widget.RecyclerView>
 </android.support.constraint.ConstraintLayout>

@@ -54,7 +54,6 @@ dependencies {
     compile 'com.google.code.findbugs:jsr305:2.0.1'
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.google.android.gms:play-services:10.0.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
     compile 'com.android.support:design:24.0.0'
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.amazonaws:aws-android-sdk-core:2.2.22'
@@ -73,6 +72,7 @@ dependencies {
     testCompile 'org.powermock:powermock-module-junit4-rule:1.6.4'
     testCompile 'org.powermock:powermock-api-mockito:1.6.4'
     testCompile 'org.powermock:powermock-classloading-xstream:1.6.4'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }
 
 
