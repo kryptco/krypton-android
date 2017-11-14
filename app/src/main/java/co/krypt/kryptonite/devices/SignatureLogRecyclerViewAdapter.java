@@ -7,38 +7,62 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.log.Log;
 
-public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<SignatureLogRecyclerViewAdapter.ViewHolder> {
-
+public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final List<Log> mValues;
+    public AtomicReference<View> deviceCardView = new AtomicReference<>(null);
+    private static final int TYPE_HEADER = 0;
+    private static final int TYPE_ITEM = 1;
+
+    private static final String TAG = "SignatureLogAdapter";
 
     public SignatureLogRecyclerViewAdapter(List<Log> items) {
         mValues = items;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.signature_log, parent, false);
-        return new ViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == TYPE_HEADER) {
+            return new DeviceViewHolder(deviceCardView.get());
+        } else {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.signature_log, parent, false);
+            return new LogViewHolder(view);
+        }
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.log = mValues.get(position);
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof DeviceViewHolder) {
+            //  rendered by DeviceDetailFragment
+        } else if (holder instanceof LogViewHolder) {
+            LogViewHolder logHolder = (LogViewHolder) holder;
+            logHolder.log = mValues.get(position - 1);
 
-        holder.log.fillShortView((ConstraintLayout) holder.mView);
-        holder.mView.requestLayout();
+            logHolder.log.fillShortView((ConstraintLayout) logHolder.mView);
+            logHolder.mView.requestLayout();
 
-        holder._long = false;
+            logHolder._long = false;
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        //  items + header
+        return mValues.size() + (deviceCardView.get() != null ? 1 : 0);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0) {
+            return TYPE_HEADER;
+        }
+
+        return TYPE_ITEM;
     }
 
     public synchronized void setLogs(List<Log> newLogs) {
@@ -49,13 +73,13 @@ public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<Signat
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class LogViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public Log log;
 
         private boolean _long = false;
 
-        public ViewHolder(View view) {
+        public LogViewHolder(View view) {
             super(view);
             mView = view;
             view.setOnClickListener(
@@ -71,6 +95,14 @@ public class SignatureLogRecyclerViewAdapter extends RecyclerView.Adapter<Signat
                         }
                     }
             );
+        }
+    }
+    public static class DeviceViewHolder extends RecyclerView.ViewHolder {
+        public final View mView;
+
+        public DeviceViewHolder(View view) {
+            super(view);
+            mView = view;
         }
     }
 }

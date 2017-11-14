@@ -28,7 +28,6 @@ import co.krypt.kryptonite.silo.Silo;
 
 public class DeviceDetailFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener, CompoundButton.OnCheckedChangeListener {
 
-    private static final String ARG_COLUMN_COUNT = "column-count";
     private static final String ARG_PAIRING_UUID = "pairing-uuid";
     private int mColumnCount = 1;
     private String pairingUUID;
@@ -46,10 +45,9 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     public DeviceDetailFragment() {
     }
 
-    public static DeviceDetailFragment newInstance(int columnCount, String pairingUUID) {
+    public static DeviceDetailFragment newInstance(String pairingUUID) {
         DeviceDetailFragment fragment = new DeviceDetailFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
         args.putString(ARG_PAIRING_UUID, pairingUUID);
         fragment.setArguments(args);
         return fragment;
@@ -59,7 +57,6 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
             pairingUUID = getArguments().getString(ARG_PAIRING_UUID);
         }
 
@@ -78,14 +75,37 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
             return view;
         }
 
-        TextView deviceName = (TextView) view.findViewById(R.id.deviceName);
+        View deviceCardView = inflater.inflate(R.layout.device_card, container, false);
+
+        TextView deviceName = (TextView) deviceCardView.findViewById(R.id.deviceName);
         deviceName.setText(pairing.workstationName);
 
-        manualButton = (RadioButton) view.findViewById(R.id.manualApprovalButton);
-        temporaryButton = (RadioButton) view.findViewById(R.id.temporaryApprovalButton);
-        automaticButton = (RadioButton) view.findViewById(R.id.automaticApprovalButton);
+        manualButton = (RadioButton) deviceCardView.findViewById(R.id.manualApprovalButton);
+        temporaryButton = (RadioButton) deviceCardView.findViewById(R.id.temporaryApprovalButton);
+        automaticButton = (RadioButton) deviceCardView.findViewById(R.id.automaticApprovalButton);
 
         updateApprovalButtons();
+
+        unpairButton = (Button) deviceCardView.findViewById(R.id.unpairButton);
+        unpairButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Silo.shared(v.getContext()).unpair(pairing, true);
+                new Analytics(getContext()).postEvent("device", "unpair", null, null, false);
+                getFragmentManager().popBackStackImmediate();
+            }
+        });
+
+        final Switch askUnknownHostsSwitch = (Switch) deviceCardView.findViewById(R.id.requireUnknownHostApprovalSwitch);
+        askUnknownHostsSwitch.setChecked(new Pairings(getContext()).requireUnknownHostManualApproval(pairing));
+        askUnknownHostsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                new Pairings(getContext()).setRequireUnknownHostManualApproval(pairing, isChecked);
+            }
+        });
+
+        signatureLogAdapter.deviceCardView.set(deviceCardView);
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
         Context context = recyclerView.getContext();
@@ -96,24 +116,6 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         }
         recyclerView.setAdapter(signatureLogAdapter);
 
-        unpairButton = (Button) view.findViewById(R.id.unpairButton);
-        unpairButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Silo.shared(v.getContext()).unpair(pairing, true);
-                new Analytics(getContext()).postEvent("device", "unpair", null, null, false);
-                getFragmentManager().popBackStackImmediate();
-            }
-        });
-
-        final Switch askUnknownHostsSwitch = (Switch) view.findViewById(R.id.requireUnknownHostApprovalSwitch);
-        askUnknownHostsSwitch.setChecked(new Pairings(getContext()).requireUnknownHostManualApproval(pairing));
-        askUnknownHostsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                new Pairings(getContext()).setRequireUnknownHostManualApproval(pairing, isChecked);
-            }
-        });
 
         onDeviceLogReceiver = new BroadcastReceiver() {
             @Override

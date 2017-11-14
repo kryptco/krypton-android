@@ -132,7 +132,7 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
                         R.anim.enter_from_left_fast, R.anim.exit_to_right_fast
                 )
                 .addToBackStack(null)
-                .add(R.id.deviceDetail, DeviceDetailFragment.newInstance(1, device.getUUIDString()))
+                .add(R.id.deviceDetail, DeviceDetailFragment.newInstance(device.getUUIDString()))
                 .commit();
     }
 
