@@ -5,8 +5,6 @@
     android:layout_height="match_parent"
     tools:context="co.krypt.kryptonite.onboarding.FirstPairFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <Button
         android:text="SKIP"
         android:layout_width="wrap_content"

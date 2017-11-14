@@ -7,7 +7,6 @@
     <string name="rsa_key_type">rsa</string>
     <string name="ed25519_key_type">ed25519</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="exampleUserID"><![CDATA[Kevin King <kevin @ krypt.co>]]></string>
 </resources>
