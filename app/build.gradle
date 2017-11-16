@@ -52,6 +52,7 @@ dependencies {
     compile 'org.cache2k:cache2k-api:0.19.1'
     compile 'org.cache2k:cache2k-core:0.19.1'
     compile 'com.google.code.findbugs:jsr305:2.0.1'
+    compile 'com.google.guava:guava:23.4-android'
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.google.android.gms:play-services:10.0.1'
     compile 'com.android.support:design:24.0.0'
