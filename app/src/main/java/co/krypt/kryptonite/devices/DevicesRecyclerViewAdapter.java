@@ -48,6 +48,9 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         if (holder.lastLog != null) {
             holder.lastCommand.setText(holder.lastLog.shortDisplay());
             holder.lastCommandTime.setText(DateUtils.getRelativeTimeSpanString(holder.lastLog.unixSeconds() * 1000, System.currentTimeMillis(), 1000));
+        } else {
+            holder.lastCommand.setText("no activity");
+            holder.lastCommandTime.setText("");
         }
 
        holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +81,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
             mView = view;
             deviceName = (TextView) view.findViewById(R.id.deviceName);
             lastCommand = (TextView) view.findViewById(R.id.lastCommandText);
+            lastCommand.setText("");
             lastCommandTime = (TextView) view.findViewById(R.id.lastCommandTimeText);
             lastCommandTime.setText("");
         }
