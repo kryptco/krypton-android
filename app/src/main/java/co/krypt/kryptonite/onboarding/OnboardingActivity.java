@@ -15,9 +15,12 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import java.util.Iterator;
+
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.approval.ApprovalDialog;
+import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.policy.LocalAuthentication;
 import co.krypt.kryptonite.silo.Silo;
 
@@ -66,8 +69,15 @@ public class OnboardingActivity extends FragmentActivity {
                 fragmentTransaction.add(R.id.activity_onboarding, firstPairFragment).commit();
                 break;
             case TEST_SSH:
-                testSSHFragment = new TestSSHFragment();
-                fragmentTransaction.add(R.id.activity_onboarding, testSSHFragment).commit();
+                Iterator<Pairing> pairings = Silo.shared(getApplicationContext()).pairings().loadAll().iterator();
+                if (pairings.hasNext()) {
+                    testSSHFragment = TestSSHFragment.newInstance(pairings.next().workstationName);
+                    fragmentTransaction.add(R.id.activity_onboarding, testSSHFragment).commit();
+                } else {
+                    //  revert to FirstPair stage
+                    firstPairFragment = new FirstPairFragment();
+                    fragmentTransaction.add(R.id.activity_onboarding, firstPairFragment).commit();
+                }
                 break;
         }
 

@@ -81,6 +81,8 @@ public class EnterEmailFragment extends Fragment {
         Profile me = new MeStorage(getContext()).load();
         if (me != null && me.email != null) {
             profileEmail.setText(me.email);
+        } else {
+            profileEmail.setText("");
         }
 
         MLRoundedImageView identiconImage = (MLRoundedImageView) root.findViewById(R.id.identicon);
