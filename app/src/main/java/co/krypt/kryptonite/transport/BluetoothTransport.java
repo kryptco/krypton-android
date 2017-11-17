@@ -373,7 +373,7 @@ public class BluetoothTransport extends BroadcastReceiver {
                     Log.v(TAG, "stopped advertising");
                 }
             } else {
-                Log.e(TAG, "bluetooth disabled, not advertising");
+                Log.v(TAG, "bluetooth disabled, not advertising");
             }
         }
     };
