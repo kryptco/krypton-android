@@ -23,8 +23,6 @@ import co.krypt.kryptonite.silo.Silo;
 
 import static co.krypt.kryptonite.MainActivity.CAMERA_PERMISSION_GRANTED_ACTION;
 import static co.krypt.kryptonite.MainActivity.CAMERA_PERMISSION_REQUEST;
-import static co.krypt.kryptonite.MainActivity.LOCATION_PERMISSION_GRANTED_ACTION;
-import static co.krypt.kryptonite.MainActivity.LOCATION_PERMISSION_REQUEST;
 import static co.krypt.kryptonite.MainActivity.USER_AUTHENTICATION_REQUEST;
 
 public class OnboardingActivity extends FragmentActivity {
@@ -102,11 +100,6 @@ public class OnboardingActivity extends FragmentActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent cameraIntent = new Intent(CAMERA_PERMISSION_GRANTED_ACTION);
                     sendBroadcast(cameraIntent);
-                }
-            case LOCATION_PERMISSION_REQUEST:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Intent locationIntent = new Intent(LOCATION_PERMISSION_GRANTED_ACTION);
-                    sendBroadcast(locationIntent);
                 }
         }
     }

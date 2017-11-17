@@ -45,7 +45,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.Nullable;
 
-import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.exception.TransportException;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.protocol.NetworkMessage;
@@ -106,7 +105,6 @@ public class BluetoothTransport extends BroadcastReceiver {
 
         IntentFilter bluetoothStateFilter = new IntentFilter();
         bluetoothStateFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-        bluetoothStateFilter.addAction(MainActivity.LOCATION_PERMISSION_GRANTED_ACTION);
         context.registerReceiver(bluetoothStateReceiver, bluetoothStateFilter);
 
         advertiseLogicPool.scheduleWithFixedDelay(advertiseLogic, 1, 5, TimeUnit.SECONDS);
@@ -258,9 +256,6 @@ public class BluetoothTransport extends BroadcastReceiver {
                     } else {
                         Log.v(TAG, "ignoring BluetoothAdapter state change; previous == current");
                     }
-                    break;
-                case MainActivity.LOCATION_PERMISSION_GRANTED_ACTION:
-                    advertiseLogicPool.submit(advertiseLogic);
                     break;
             }
 

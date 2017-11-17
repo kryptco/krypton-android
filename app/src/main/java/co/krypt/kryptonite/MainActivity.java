@@ -50,8 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String CAMERA_PERMISSION_GRANTED_ACTION = "co.krypt.android.action.CAMERA_PERMISSION_GRANTED";
 
-    private Fragment overlayFragment = null;
-
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -110,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 SettingsFragment settingsFragment = new SettingsFragment();
-                overlayFragment = settingsFragment;
                 transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom)
                         .replace(R.id.fragmentOverlay, settingsFragment).commit();
                 new Analytics(getApplicationContext()).postPageView("About");
@@ -123,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 HelpFragment helpFragment = new HelpFragment();
-                overlayFragment = helpFragment;
                 transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom)
                         .replace(R.id.fragmentOverlay, helpFragment).commit();
                 new Analytics(getApplicationContext()).postPageView("Help");
