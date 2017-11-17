@@ -11,7 +11,7 @@
     app:layout_constraintTop_toTopOf="parent"
     android:animateLayoutChanges="true">
 
-    <co.krypt.kryptonite.pairing.CroppedCameraPreview
+    <com.journeyapps.barcodescanner.BarcodeView
         android:id="@+id/camera_preview"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
@@ -24,7 +24,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0"
+        >
+
+    </com.journeyapps.barcodescanner.BarcodeView>
 
     <ImageView
         android:layout_width="0dp"

@@ -71,6 +71,8 @@ dependencies {
     compile 'com.j256.ormlite:ormlite-android:4.48'
     compile 'com.jaredrummler:android-device-names:1.1.2'
     compile 'com.github.zafarkhaja:java-semver:0.9.0'
+    compile 'com.journeyapps:zxing-android-embedded:3.0.2@aar'
+    compile 'com.google.zxing:core:3.2.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.powermock:powermock-module-junit4:1.6.4'

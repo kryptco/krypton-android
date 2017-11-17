@@ -9,11 +9,13 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +23,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.firebase.crash.FirebaseCrash;
+import com.google.gson.JsonParseException;
+import com.google.zxing.ResultPoint;
+import com.journeyapps.barcodescanner.BarcodeCallback;
+import com.journeyapps.barcodescanner.BarcodeResult;
+import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -54,10 +60,10 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
     private ThreadPoolExecutor threadPool;
 
     private Camera mCamera;
-    private CameraPreview mPreview;
-    private CroppedCameraPreview preview;
+
     private AtomicBoolean fragmentVisible = new AtomicBoolean();
 
+    private BarcodeView barcodeView;
     private View pairingStatusView;
     private TextView pairingStatusText;
 
@@ -76,7 +82,6 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
         }
     };
 
-    private PairScanner pairScanner;
     private AtomicReference<PairingQR> pendingPairingQR = new AtomicReference<>();
 
     public PairingQR getPendingPairingQR() {
@@ -153,11 +158,30 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_pair, container, false);
-        preview = (CroppedCameraPreview) rootView.findViewById(R.id.camera_preview);
+
+        barcodeView = (BarcodeView) rootView.findViewById(R.id.camera_preview);
+        barcodeView.decodeContinuous(new BarcodeCallback() {
+            @Override
+            public void barcodeResult(BarcodeResult result) {
+                if (result.getText() != null) {
+                    try {
+                        PairingQR pairingQR = PairingQR.parseJson(result.getText());
+                        Log.i(TAG, "found pairingQR: " + Base64.encodeToString(pairingQR.workstationPublicKey, Base64.DEFAULT));
+                        onPairingScanned(pairingQR);
+                    } catch (JsonParseException e) {
+                        Log.e(TAG, "could not parse QR code", e);
+                    }
+                }
+            }
+
+            @Override
+            public void possibleResultPoints(List<ResultPoint> resultPoints) {
+
+            }
+        });
+
         pairingStatusView = rootView.findViewById(R.id.pairingStatusLayout);
         pairingStatusText = (TextView) rootView.findViewById(R.id.pairingStatusText);
-        mPreview = new CameraPreview(getContext());
-        preview.setPreview(mPreview);
 
         cameraPermissionInfoLayout = (ConstraintLayout) rootView.findViewById(R.id.cameraPermissionInfo);
         cameraPermissionInfoLayout.setOnClickListener(new View.OnClickListener() {
@@ -210,70 +234,21 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
         getContext().unregisterReceiver(permissionReceiver);
     }
 
-    private void startCamera(final Context context) {
-        if (mCamera != null) {
-            return;
-        }
-
-        Log.v(TAG, "starting camera");
-
-        try {
-            mCamera = Camera.open();
-            if (mCamera == null) {
-                return;
-            }
-
-            // Configure camera
-            mCamera.setDisplayOrientation(90);
-            List<String> focusModes = mCamera.getParameters().getSupportedFocusModes();
-            if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
-                Camera.Parameters params = mCamera.getParameters();
-                params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-                mCamera.setParameters(params);
-            }
-
-            // Setup PairScanner
-            int previewWidth = mCamera.getParameters().getPreviewSize().width;
-            int previewHeight = mCamera.getParameters().getPreviewSize().height;
-
-            pairScanner = new PairScanner(context, this, previewHeight, previewWidth);
-            mCamera.setPreviewCallback(pairScanner);
-
-            // Start preview
-            mPreview.setup(mCamera);
-            mCamera.startPreview();
-
-        } catch (RuntimeException e) {
-            Log.d(TAG, "Error setting up camera: " + e.getMessage());
-            e.printStackTrace();
-            FirebaseCrash.report(e);
-        }
-    }
-
-    private void stopCamera(boolean clear) {
-        if (mCamera != null) {
-            Log.v(TAG, "stopping camera");
-            mCamera.stopPreview();
-            mCamera.setPreviewCallback(null);
-            mCamera.release();
-            mCamera = null;
-        }
-        if (pairScanner != null) {
-            pairScanner.stop();
-            pairScanner = null;
-        }
-        if (clear && mPreview != null) {
-            mPreview.clear();
-        }
-    }
 
     private void updateCamera(Context context) {
-        if (fragmentVisible.get() && mCamera == null) {
-            startCamera(context);
-            refreshCameraPermissionInfoVisibility();
-        } else if (!fragmentVisible.get() && mCamera != null) {
-            stopCamera(true);
-        }
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        mainHandler.post(() -> {
+            if (fragmentVisible.get()) {
+                if (barcodeView != null) {
+                    barcodeView.resume();
+                }
+                refreshCameraPermissionInfoVisibility();
+            } else if (!fragmentVisible.get()) {
+                if (barcodeView != null) {
+                    barcodeView.pause();
+                }
+            }
+        });
     }
 
     @Override
@@ -303,13 +278,10 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
     @Override
     public void onPause() {
         super.onPause();
-        threadPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                // We need to let go of the camera when pausing, regardless of visibility.
-                stopCamera(false);
-            }
-        });
+        // We need to let go of the camera when pausing, regardless of visibility.
+        if (barcodeView != null) {
+            barcodeView.pause();
+        }
     }
 
     private void onPairingSuccess(final Pairing pairing) {
