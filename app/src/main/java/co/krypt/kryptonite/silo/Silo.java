@@ -148,6 +148,10 @@ public class Silo {
         synchronized (pairingsLock) {
             for (Pairing pairing : activePairingsByUUID.values()) {
                 Log.i(TAG, "starting "+ Base64.encodeAsString(pairing.workstationPublicKey));
+                SQSPoller poller = pollers.remove(pairing);
+                if (poller != null) {
+                    poller.stop();
+                }
                 pollers.put(pairing, new SQSPoller(context, pairing));
             }
         }
