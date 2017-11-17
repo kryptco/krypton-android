@@ -44,32 +44,6 @@
         android:tint="@color/appGreen" />
 
     <android.support.constraint.ConstraintLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:id="@+id/locationPermissionLayout"
-        android:layout_marginBottom="30dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:alpha=".75">
-
-        <TextView
-            android:id="@+id/locationPermissionText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#e0424242"
-            android:padding="15dp"
-            android:text="Location permissions required to scan for new Bluetooth devices. Optionally tap here to enable."
-            android:textAllCaps="false"
-            android:textColor="@color/appWhite"
-            android:textSize="16sp"
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="125dp" />
-    </android.support.constraint.ConstraintLayout>
-
-    <android.support.constraint.ConstraintLayout
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         tools:layout_constraintRight_creator="1"

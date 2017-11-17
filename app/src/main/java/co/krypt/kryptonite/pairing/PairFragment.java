@@ -61,8 +61,6 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
     private View pairingStatusView;
     private TextView pairingStatusText;
 
-    private ConstraintLayout locationPermissionLayout;
-
     private ConstraintLayout cameraPermissionInfoLayout;
     private TextView cameraPermissionHeader;
     private TextView cameraPermissionText;
@@ -73,9 +71,6 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
             switch (intent.getAction()) {
                 case MainActivity.CAMERA_PERMISSION_GRANTED_ACTION:
                     onCameraPermissionGranted();
-                    break;
-                case MainActivity.LOCATION_PERMISSION_GRANTED_ACTION:
-                    onLocationPermissionGranted();
                     break;
             }
         }
@@ -122,24 +117,9 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
         }
     }
 
-    private static void onClickRequestLocationPermission(Activity context) {
-        switch (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            case PackageManager.PERMISSION_DENIED:
-                ActivityCompat.requestPermissions(context,
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        MainActivity.LOCATION_PERMISSION_REQUEST);
-        }
-    }
-
     private void onCameraPermissionGranted() {
         Log.i(TAG, "camera permission granted");
         refreshCameraPermissionInfoVisibility();
-    }
-
-    private void onLocationPermissionGranted() {
-        Log.i(TAG, "location permission granted");
-        refreshLocationPermissionInfoVisibility();
     }
 
     private void refreshCameraPermissionInfoVisibility() {
@@ -165,30 +145,6 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
             if (!cameraPermissionInfoLayout.post(r)) {
                 Log.e(TAG, "could not post to cameraPermissionInfoLayout");
             }
-        }
-        refreshLocationPermissionInfoVisibility();
-    }
-
-    private void refreshLocationPermissionInfoVisibility() {
-        Log.v(TAG, "updating location permission layout");
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                if ((ContextCompat.checkSelfPermission(locationPermissionLayout.getContext(),
-                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-                        &&
-                        (ContextCompat.checkSelfPermission(locationPermissionLayout.getContext(),
-                                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-                    locationPermissionLayout.setVisibility(View.VISIBLE);
-                } else {
-                    locationPermissionLayout.setVisibility(View.GONE);
-                }
-            }
-        };
-        if (Looper.getMainLooper().equals(Looper.myLooper())) {
-            r.run();
-        } else {
-            locationPermissionLayout.post(r);
         }
     }
 
@@ -219,16 +175,7 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
             }
         });
 
-        locationPermissionLayout = (ConstraintLayout) rootView.findViewById(R.id.locationPermissionLayout);
-        locationPermissionLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickRequestLocationPermission(getActivity());
-            }
-        });
-
         refreshCameraPermissionInfoVisibility();
-        refreshLocationPermissionInfoVisibility();
 
         cameraPermissionHeader = (TextView) rootView.findViewById(R.id.cameraPermissionTitle);
         cameraPermissionText = (TextView) rootView.findViewById(R.id.cameraPermissionExplanation);
@@ -246,7 +193,6 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
         super.onAttach(context);
         IntentFilter permissionFilter = new IntentFilter();
         permissionFilter.addAction(MainActivity.CAMERA_PERMISSION_GRANTED_ACTION);
-        permissionFilter.addAction(MainActivity.LOCATION_PERMISSION_GRANTED_ACTION);
         context.registerReceiver(permissionReceiver, permissionFilter);
     }
 
@@ -255,7 +201,6 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
         super.onAttach(activity);
         IntentFilter permissionFilter = new IntentFilter();
         permissionFilter.addAction(MainActivity.CAMERA_PERMISSION_GRANTED_ACTION);
-        permissionFilter.addAction(MainActivity.LOCATION_PERMISSION_GRANTED_ACTION);
         getContext().registerReceiver(permissionReceiver, permissionFilter);
     }
 
