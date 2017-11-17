@@ -1,10 +1,17 @@
 package co.krypt.kryptonite.protocol;
 
+import android.support.constraint.ConstraintLayout;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import com.amazonaws.util.Base32;
 import com.github.zafarkhaja.semver.Version;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -36,18 +43,27 @@ public class Request {
     public Long unixSeconds;
 
     @SerializedName("me_request")
+    @Nullable
     public MeRequest meRequest;
 
     @SerializedName("sign_request")
+    @Nullable
     public SignRequest signRequest;
 
     @SerializedName("git_sign_request")
+    @Nullable
     public GitSignRequest gitSignRequest;
 
     @SerializedName("unpair_request")
+    @Nullable
     public UnpairRequest unpairRequest;
 
+    @SerializedName("hosts_request")
+    @Nullable
+    public HostsRequest hostsRequest;
+
     @SerializedName("a")
+    @Nullable
     public Boolean sendACK;
 
     public Version semVer() {
@@ -86,7 +102,33 @@ public class Request {
         if (gitSignRequest != null) {
             return gitSignRequest.analyticsCategory();
         }
+        if (hostsRequest != null) {
+            return "hosts";
+        }
         return "no analytics category";
     }
 
+    public boolean containsExactlyOneRequestType() {
+        List<Object> requests = new ArrayList<>(Arrays.asList(meRequest, signRequest, gitSignRequest, unpairRequest, hostsRequest));
+        Iterator<Object> iter = requests.iterator();
+        while (iter.hasNext()) {
+            if (iter.next() == null) {
+                iter.remove();
+            }
+        }
+        return requests.size() == 1;
+    }
+
+    public View fillView(ConstraintLayout container) {
+        if (signRequest != null) {
+            return signRequest.fillView(container);
+        }
+        if (gitSignRequest != null) {
+            return gitSignRequest.fillView(container);
+        }
+        if (hostsRequest != null) {
+            return hostsRequest.fillView(container);
+        }
+        return null;
+    }
 }

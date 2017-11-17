@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,6 +56,8 @@ import co.krypt.kryptonite.policy.Policy;
 import co.krypt.kryptonite.protocol.AckResponse;
 import co.krypt.kryptonite.protocol.GitSignRequest;
 import co.krypt.kryptonite.protocol.GitSignResponse;
+import co.krypt.kryptonite.protocol.HostInfo;
+import co.krypt.kryptonite.protocol.HostsResponse;
 import co.krypt.kryptonite.protocol.JSON;
 import co.krypt.kryptonite.protocol.MeResponse;
 import co.krypt.kryptonite.protocol.NetworkMessage;
@@ -63,6 +66,7 @@ import co.krypt.kryptonite.protocol.Response;
 import co.krypt.kryptonite.protocol.SignRequest;
 import co.krypt.kryptonite.protocol.SignResponse;
 import co.krypt.kryptonite.protocol.UnpairResponse;
+import co.krypt.kryptonite.protocol.UserAndHost;
 import co.krypt.kryptonite.protocol.Versions;
 import co.krypt.kryptonite.transport.BluetoothTransport;
 import co.krypt.kryptonite.transport.SNSTransport;
@@ -250,13 +254,13 @@ public class Silo {
         }
     }
 
-    public void send(Pairing pairing, Response response) throws CryptoException, TransportException {
+    private void send(Pairing pairing, Response response) throws CryptoException, TransportException {
         byte[] responseJson = JSON.toJson(response).getBytes();
         byte[] sealed = pairing.seal(responseJson);
         send(pairing, new NetworkMessage(NetworkMessage.Header.CIPHERTEXT, sealed));
     }
 
-    public void send(final Pairing pairing, final NetworkMessage message) throws TransportException {
+    private void send(final Pairing pairing, final NetworkMessage message) throws TransportException {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -305,7 +309,10 @@ public class Silo {
     }
 
 
-    public synchronized void handle(Pairing pairing, Request request, String communicationMedium) throws CryptoException, TransportException, IOException, InvalidKeyException, ProtocolException, NoSuchProviderException, InvalidKeySpecException {
+    private synchronized void handle(Pairing pairing, Request request, String communicationMedium) throws CryptoException, TransportException, IOException, InvalidKeyException, ProtocolException, NoSuchProviderException, InvalidKeySpecException {
+        if (!request.containsExactlyOneRequestType()) {
+            throw new ProtocolException("invalid request");
+        }
         //  Allow 15 minutes of clock skew
         if (Math.abs(request.unixSeconds - (System.currentTimeMillis() / 1000)) > CLOCK_SKEW_TOLERANCE_SECONDS) {
             throw new ProtocolException("invalid request time");
@@ -320,10 +327,6 @@ public class Silo {
             return;
         }
 
-        if (request.signRequest != null && request.gitSignRequest != null) {
-            throw new ProtocolException("multiple signature requests unsupported");
-        }
-
         lastRequestTimeSeconds.put(pairing, System.currentTimeMillis() / 1000);
 
         if (request.signRequest != null) {
@@ -332,7 +335,7 @@ public class Silo {
                     if (Policy.requestApproval(context, pairing, request)) {
                         new Analytics(context).postEvent(request.analyticsCategory(), "requires approval", communicationMedium, null, false);
                     }
-                    if (request.sendACK) {
+                    if (request.sendACK != null && request.sendACK) {
                         Response ackResponse = Response.with(request);
                         ackResponse.ackResponse = new AckResponse();
                         send(pairing, ackResponse);
@@ -353,7 +356,7 @@ public class Silo {
                     if (Policy.requestApproval(context, pairing, request)) {
                         new Analytics(context).postEvent(request.analyticsCategory(), "requires approval", communicationMedium, null, false);
                     }
-                    if (request.sendACK) {
+                    if (request.sendACK != null && request.sendACK) {
                         Response ackResponse = Response.with(request);
                         ackResponse.ackResponse = new AckResponse();
                         send(pairing, ackResponse);
@@ -362,6 +365,18 @@ public class Silo {
                 }
             }
             new Analytics(context).postEvent(request.analyticsCategory(), "automatic approval", communicationMedium, null, false);
+        }
+
+        if (request.hostsRequest != null) {
+            if (Policy.requestApproval(context, pairing, request)) {
+                new Analytics(context).postEvent(request.analyticsCategory(), "requires approval", communicationMedium, null, false);
+            }
+            if (request.sendACK != null && request.sendACK) {
+                Response ackResponse = Response.with(request);
+                ackResponse.ackResponse = new AckResponse();
+                send(pairing, ackResponse);
+            }
+            return;
         }
 
         respondToRequest(pairing, request, true);
@@ -514,7 +529,6 @@ public class Silo {
                     StringWriter sw = new StringWriter();
                     PrintWriter pw = new PrintWriter(sw);
                     e.printStackTrace(pw);
-                    sw.toString();
                     response.signResponse.error = "SQL error: " + e.getMessage() + "\n" + sw.toString();
                     e.printStackTrace();
                 } catch (MismatchedHostKeyException e) {
@@ -536,6 +550,45 @@ public class Silo {
                         pairing.getUUIDString(),
                         pairing.workstationName));
             }
+        }
+
+        if (request.hostsRequest != null) {
+            HostsResponse hostsResponse = new HostsResponse();
+
+            synchronized (databaseLock) {
+                try {
+                    List<SSHSignatureLog> sshLogs = dbHelper.getSSHSignatureLogDao().queryBuilder()
+                            .groupByRaw("user, host_name").query();
+                    List<UserAndHost> userAndHosts = new LinkedList<>();
+                    for (SSHSignatureLog log: sshLogs) {
+                        UserAndHost userAndHost = new UserAndHost();
+                        userAndHost.user = log.user;
+                        userAndHost.host = log.hostName;
+                        userAndHosts.add(userAndHost);
+                    }
+
+                    HostInfo hostInfo = new HostInfo();
+                    UserAndHost[] userAndHostsArray = new UserAndHost[userAndHosts.size()];
+                    userAndHosts.toArray(userAndHostsArray);
+                    hostInfo.hosts = userAndHostsArray;
+
+                    List<UserID> userIDs = meStorage.getUserIDs();
+                    List<String> userIDStrings = new LinkedList<>();
+                    for (UserID userID: userIDs) {
+                        userIDStrings.add(userID.toString());
+                    }
+                    String[] userIDArray = new String[userIDs.size()];
+                    userIDStrings.toArray(userIDArray);
+                    hostInfo.pgpUserIDs = userIDArray;
+
+                    hostsResponse.hostInfo = hostInfo;
+
+                } catch (SQLException e) {
+                    hostsResponse.error = "sql exception";
+                }
+            }
+
+            response.hostsResponse = hostsResponse;
         }
 
         response.snsEndpointARN = SNSTransport.getInstance(context).getEndpointARN();
@@ -571,7 +624,7 @@ public class Silo {
 
     public boolean hasKnownHost(String hostName) {
         synchronized (databaseLock) {
-            List<KnownHost> matchingHosts = null;
+            List<KnownHost> matchingHosts;
             try {
                 matchingHosts = dbHelper.getKnownHostDao().queryForEq("host_name", hostName);
             } catch (SQLException e) {

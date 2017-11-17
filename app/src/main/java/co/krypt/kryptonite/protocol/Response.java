@@ -25,6 +25,9 @@ public class Response {
     @SerializedName("unpair_response")
     public UnpairResponse unpairResponse;
 
+    @SerializedName("hosts_response")
+    public HostsResponse hostsResponse;
+
     @SerializedName("ack_response")
     public AckResponse ackResponse;
 

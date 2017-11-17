@@ -204,7 +204,7 @@ public class SignRequest {
         remoteViews.setTextViewText(R.id.message, userOrInvalid() + "@" + verifiedHostNameOrDefault("unknown host"));
 
         if (approved != null && !approved) {
-            remoteViews.setInt(R.id.ssh, "setBackgroundResource", R.drawable.hash_red_bg);
+            remoteViews.setInt(R.id.label, "setBackgroundResource", R.drawable.hash_red_bg);
         }
     }
 

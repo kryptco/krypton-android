@@ -51,6 +51,8 @@ public class JSON {
             .registerTypeAdapter(MeRequest.class, new AnnotatedDeserializer<>())
             .registerTypeAdapter(SignRequest.class, new AnnotatedDeserializer<>())
             .registerTypeAdapter(UnpairRequest.class, new AnnotatedDeserializer<>())
+            .registerTypeAdapter(HostsRequest.class, new AnnotatedDeserializer<>())
+            .registerTypeAdapter(GitSignRequest.class, new AnnotatedDeserializer<>())
             .registerTypeAdapter(HostAuth.class, new AnnotatedDeserializer<>())
             .create();
 

@@ -202,11 +202,13 @@ public class Notifications {
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         .addAction(approveOnceBuilder.build())
-                        .addAction(approveTemporarilyBuilder.build())
                         .setDeleteIntent(rejectPendingIntent)
                         .setContentIntent(clickPendingIntent)
                         .setAutoCancel(true)
                 ;
+        if (request.signRequest != null || request.gitSignRequest != null) {
+            mBuilder .addAction(approveTemporarilyBuilder.build());
+        }
         if (request.signRequest != null) {
             mBuilder
                     .setContentTitle("Allow SSH Login?")
@@ -241,6 +243,11 @@ public class Notifications {
             remoteViewsBig.setOnClickPendingIntent(R.id.allowOnce, approveOncePendingIntent);
             remoteViewsBig.setOnClickPendingIntent(R.id.allowTemporarily, approveTemporarilyPendingIntent);
             mBuilder.setCustomBigContentView(remoteViewsBig);
+        }
+        if (request.hostsRequest != null) {
+            mBuilder
+                    .setContentTitle("Send user@hostname records?")
+                    .setContentText(pairing.workstationName + " is requesting your SSH login records.");
         }
         if (!new Settings(context).silenceNotifications()) {
             mBuilder.setSound(notificationSound)

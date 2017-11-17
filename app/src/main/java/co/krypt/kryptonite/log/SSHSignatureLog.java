@@ -196,7 +196,7 @@ public class SSHSignatureLog implements Log {
         messageText.setText(userHostText());
 
         if (approved != null && !approved) {
-            TextView sshText = (TextView) sshView.findViewById(R.id.ssh);
+            TextView sshText = (TextView) sshView.findViewById(R.id.label);
             sshText.setBackgroundResource(R.drawable.hash_red_bg);
         }
 

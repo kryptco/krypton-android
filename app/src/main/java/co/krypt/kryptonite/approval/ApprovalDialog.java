@@ -35,7 +35,11 @@ public class ApprovalDialog {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setIcon(R.mipmap.ic_launcher);
-        builder.setPositiveButton("Once",
+        String allowText = "Once";
+        if (request.hostsRequest != null) {
+            allowText = "Allow";
+        }
+        builder.setPositiveButton(allowText,
                 new DialogInterface.OnClickListener()
                 {
                     public void onClick(DialogInterface dialog, int id) {
@@ -51,30 +55,21 @@ public class ApprovalDialog {
                     }
                 });
 
-        builder.setNegativeButton("For 1 Hour",
-                new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_TEMPORARILY);
-                    }
-                });
+        if (request.signRequest != null || request.gitSignRequest != null) {
+            builder.setNegativeButton("For 1 Hour",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_TEMPORARILY);
+                        }
+                    });
+        }
         builder.setCancelable(false);
-        if (request.signRequest != null) {
-            View requestView = activity.getLayoutInflater().inflate(R.layout.request, null);
-            TextView workstationNameText = (TextView) requestView.findViewById(R.id.workstationName);
-            workstationNameText.setText(pairing.workstationName);
-            ConstraintLayout content = (ConstraintLayout) requestView.findViewById(R.id.content);
-            request.signRequest.fillView(content);
-            builder.setView(requestView);
-        }
-        if (request.gitSignRequest != null) {
-            View requestView = activity.getLayoutInflater().inflate(R.layout.request, null);
-            TextView workstationNameText = (TextView) requestView.findViewById(R.id.workstationName);
-            workstationNameText.setText(pairing.workstationName);
-            ConstraintLayout content = (ConstraintLayout) requestView.findViewById(R.id.content);
-            request.gitSignRequest.fillView(content);
-            builder.setView(requestView);
-        }
+        View requestView = activity.getLayoutInflater().inflate(R.layout.request, null);
+        TextView workstationNameText = (TextView) requestView.findViewById(R.id.workstationName);
+        workstationNameText.setText(pairing.workstationName);
+        ConstraintLayout content = (ConstraintLayout) requestView.findViewById(R.id.content);
+        request.fillView(content);
+        builder.setView(requestView);
         builder.create().show();
     }
 }
