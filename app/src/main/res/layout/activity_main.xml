@@ -10,62 +10,62 @@
 
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/topBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:id="@+id/topBar"
+        android:background="@color/appWhite"
+        android:elevation="1dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
         tools:layout_constraintLeft_creator="1"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp"
-        android:elevation="5dp"
-        android:background="@color/appWhite">
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1">
 
         <ImageButton
-            android:layout_width="wrap_content"
-            app:srcCompat="@drawable/settings"
             android:id="@+id/settingsButton"
-            android:background="@android:color/transparent"
-            android:tint="@color/appGreen"
-            app:layout_constraintTop_toTopOf="@+id/imageView2"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-            android:scaleType="fitCenter"
+            android:layout_width="wrap_content"
             android:layout_height="30dp"
-            android:layout_marginStart="8dp" />
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:tint="@color/appGreen"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/imageView2"
+            app:srcCompat="@drawable/settings"/>
 
         <ImageView
-            android:layout_width="34dp"
-            app:srcCompat="@drawable/kryptonite_icon_transparent_circle"
             android:id="@+id/imageView2"
+            android:layout_width="34dp"
             android:layout_height="42dp"
             android:layout_weight="1"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:layout_constraintTop_creator="1"
-            tools:layout_constraintRight_creator="1"
+            app:srcCompat="@drawable/kryptonite_icon_transparent_circle"
             tools:layout_constraintBottom_creator="1"
-            tools:layout_constraintLeft_creator="1" />
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintTop_creator="1"/>
 
         <ImageButton
-            android:layout_width="wrap_content"
-            app:srcCompat="@drawable/info"
             android:id="@+id/infoButton"
-            android:background="@android:color/transparent"
-            android:tint="@color/appGreen"
-            app:layout_constraintTop_toTopOf="@+id/imageView2"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginRight="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-            android:scaleType="fitCenter"
+            android:layout_width="wrap_content"
             android:layout_height="30dp"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:tint="@color/appGreen"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/imageView2"
+            app:srcCompat="@drawable/info"/>
 
     </android.support.constraint.ConstraintLayout>
 
