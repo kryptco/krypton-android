@@ -1,5 +1,7 @@
 package co.krypt.kryptonite.protocol;
 
+import android.util.Log;
+
 import com.amazonaws.util.Base64;
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.gson.annotations.SerializedName;
@@ -10,6 +12,7 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class HostAuth {
+    private static final String TAG = "HostAuth";
     @SerializedName("host_key")
     public byte[] hostKey;
 
@@ -40,6 +43,7 @@ public class HostAuth {
             System.loadLibrary("sshwire");
             hasSSHWire = true;
         } catch (UnsatisfiedLinkError e) {
+            Log.e(TAG, e.getMessage());
             FirebaseCrash.report(e);
         }
     }
