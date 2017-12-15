@@ -5,7 +5,6 @@
     android:id="@+id/constraintLayout"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/cast_skip_ad_label_border"
     android:backgroundTint="@color/appGreen"
     android:orientation="vertical"
     android:paddingBottom="2dp"

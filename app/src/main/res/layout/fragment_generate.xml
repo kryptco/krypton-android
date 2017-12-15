@@ -56,27 +56,24 @@
         >
 
         <Button
-            android:text="GENERATE KEY PAIR"
+            android:id="@+id/generateButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/generateButton"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="32dp"
-            android:layout_marginStart="16dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintVertical_bias="0.68"
-            android:textSize="18sp"
-            android:textColor="@color/appWhite"
+            android:layout_marginTop="8dp"
             android:backgroundTint="@color/appGreen"
-            android:background="@drawable/mr_dialog_material_background_dark"
             android:elevation="4dp"
-            android:textAlignment="center"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/bottomText" />
+            android:text="GENERATE KEY PAIR"
+            android:textAlignment="center"
+            android:textColor="@color/appWhite"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bottomText"
+            app:layout_constraintVertical_bias="0.68"/>
 
         <TextView
             android:text="Let's get started by generating a new key pair"
