@@ -94,17 +94,14 @@
         android:id="@+id/content">
 
         <TabHost
+            android:id="@+id/addKeyInstructions"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            android:id="@+id/addKeyInstructions"
-            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            app:layout_constraintRight_toRightOf="parent"
             android:layout_marginStart="16dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            >
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -114,55 +111,57 @@
                 <TabWidget
                     android:id="@android:id/tabs"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"/>
 
                 <FrameLayout
                     android:id="@android:id/tabcontent"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                     <LinearLayout
                         android:id="@+id/tab1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical">
+
                         <TextView
-                            android:text="ADD MY PUBLIC KEY TO"
                             android:id="@+id/githubHeader"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/terminal_bg_middle"
                             android:fontFamily="sans-serif"
-                            android:textColor="@color/appWhite"
-                            android:background="@drawable/terminal_bg_top"
-                            android:shadowColor="@color/appBlack"
                             android:lineSpacingExtra="18sp"
-                            android:layout_width="match_parent"
-                            android:paddingTop="4dp"
-                            android:paddingLeft="4dp"
-                            android:paddingBottom="4dp"
                             android:padding="4dp"
+                            android:paddingBottom="4dp"
+                            android:paddingLeft="4dp"
+                            android:paddingTop="4dp"
+                            android:shadowColor="@color/appBlack"
+                            android:text="ADD MY PUBLIC KEY"
+                            android:textColor="@color/appWhite"
                             android:textSize="10sp"
-                            android:layout_height="match_parent" />
-                        <TextView
-                            android:text="$ kr github"
-                            android:layout_height="wrap_content"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/githubHeader"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                        <TextView
                             android:layout_width="match_parent"
-                            android:textSize="16sp"
-                            android:fontFamily="monospace"
-                            android:textColor="@color/appWhite"
+                            android:layout_height="wrap_content"
                             android:background="@drawable/terminal_bg_bottom"
+                            android:fontFamily="monospace"
+                            android:paddingBottom="10dp"
                             android:paddingLeft="6dp"
                             android:paddingTop="6dp"
-                            android:paddingBottom="10dp"
-                            android:typeface="monospace"
-                            android:textStyle="normal|bold"
-                            android:shadowRadius="4"
                             android:shadowColor="@color/appBlack"
-                            app:layout_constraintHorizontal_bias="0.56" />
+                            android:shadowRadius="4"
+                            android:text="$ kr github"
+                            android:textColor="@color/appWhite"
+                            android:textSize="16sp"
+                            android:textStyle="normal|bold"
+                            android:typeface="monospace"
+                            app:layout_constraintHorizontal_bias="0.56"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/githubHeader"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -170,43 +169,45 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical">
+
                         <TextView
-                            android:text="ADD MY PUBLIC KEY TO"
                             android:id="@+id/doHeader"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/terminal_bg_middle"
                             android:fontFamily="sans-serif"
-                            android:textColor="@color/appWhite"
-                            android:background="@drawable/terminal_bg_top"
-                            android:shadowColor="@color/appBlack"
                             android:lineSpacingExtra="18sp"
-                            android:layout_width="match_parent"
-                            android:paddingTop="4dp"
-                            android:paddingLeft="4dp"
-                            android:paddingBottom="4dp"
                             android:padding="4dp"
+                            android:paddingBottom="4dp"
+                            android:paddingLeft="4dp"
+                            android:paddingTop="4dp"
+                            android:shadowColor="@color/appBlack"
+                            android:text="ADD MY PUBLIC KEY"
+                            android:textColor="@color/appWhite"
                             android:textSize="10sp"
-                            android:layout_height="match_parent" />
-                        <TextView
-                            android:text="$ kr digital-ocean"
-                            android:layout_height="wrap_content"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/doHeader"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                        <TextView
                             android:layout_width="match_parent"
-                            android:textSize="16sp"
-                            android:fontFamily="monospace"
-                            android:textColor="@color/appWhite"
+                            android:layout_height="wrap_content"
                             android:background="@drawable/terminal_bg_bottom"
+                            android:fontFamily="monospace"
+                            android:paddingBottom="10dp"
                             android:paddingLeft="6dp"
                             android:paddingTop="6dp"
-                            android:paddingBottom="10dp"
-                            android:typeface="monospace"
-                            android:textStyle="normal|bold"
-                            android:shadowRadius="4"
                             android:shadowColor="@color/appBlack"
-                            app:layout_constraintHorizontal_bias="0.56" />
+                            android:shadowRadius="4"
+                            android:text="$ kr digital-ocean"
+                            android:textColor="@color/appWhite"
+                            android:textSize="16sp"
+                            android:textStyle="normal|bold"
+                            android:typeface="monospace"
+                            app:layout_constraintHorizontal_bias="0.56"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/doHeader"/>
 
                     </LinearLayout>
 
@@ -217,42 +218,43 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:text="ADD MY PUBLIC KEY TO"
                             android:id="@+id/awsHeader"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/terminal_bg_middle"
                             android:fontFamily="sans-serif"
-                            android:textColor="@color/appWhite"
-                            android:background="@drawable/terminal_bg_top"
-                            android:shadowColor="@color/appBlack"
                             android:lineSpacingExtra="18sp"
-                            android:layout_width="match_parent"
-                            android:paddingTop="4dp"
-                            android:paddingLeft="4dp"
-                            android:paddingBottom="4dp"
                             android:padding="4dp"
+                            android:paddingBottom="4dp"
+                            android:paddingLeft="4dp"
+                            android:paddingTop="4dp"
+                            android:shadowColor="@color/appBlack"
+                            android:text="ADD MY PUBLIC KEY"
+                            android:textColor="@color/appWhite"
                             android:textSize="10sp"
-                            android:layout_height="match_parent" />
-                        <TextView
-                            android:text="$ kr aws"
-                            android:layout_height="wrap_content"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/awsHeader"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                        <TextView
                             android:layout_width="match_parent"
-                            android:textSize="16sp"
-                            android:fontFamily="monospace"
-                            android:textColor="@color/appWhite"
+                            android:layout_height="wrap_content"
                             android:background="@drawable/terminal_bg_bottom"
+                            android:fontFamily="monospace"
+                            android:paddingBottom="10dp"
                             android:paddingLeft="6dp"
                             android:paddingTop="6dp"
-                            android:paddingBottom="10dp"
-                            android:typeface="monospace"
-                            android:textStyle="normal|bold"
-                            android:shadowRadius="4"
                             android:shadowColor="@color/appBlack"
-                            app:layout_constraintHorizontal_bias="0.56" />
+                            android:shadowRadius="4"
+                            android:text="$ kr aws"
+                            android:textColor="@color/appWhite"
+                            android:textSize="16sp"
+                            android:textStyle="normal|bold"
+                            android:typeface="monospace"
+                            app:layout_constraintHorizontal_bias="0.56"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/awsHeader"/>
 
                     </LinearLayout>
                 </FrameLayout>
@@ -261,76 +263,58 @@
         </android.support.constraint.ConstraintLayout>
 
     <LinearLayout
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:id="@+id/krcodesign"
-        app:layout_constraintTop_toBottomOf="@id/content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/shareButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/shareButton"
+        app:layout_constraintTop_toBottomOf="@id/content"
         >
 
         <TextView
-            android:text="SET UP CODE SIGNING"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:fontFamily="sans-serif"
-            android:textColor="@color/appWhite"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
             android:background="@drawable/terminal_bg_top"
-            android:shadowColor="@color/appBlack"
+            android:fontFamily="sans-serif"
             android:lineSpacingExtra="18sp"
-            android:layout_width="match_parent"
-            android:paddingTop="4dp"
-            android:paddingLeft="4dp"
-            android:paddingBottom="4dp"
             android:padding="4dp"
-            android:textSize="10sp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_height="match_parent" />
-        <TextView
-            android:text="$ kr upgrade # kr 2.2+"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/awsHeader"
-            android:layout_width="match_parent"
-            android:textSize="16sp"
-            android:fontFamily="monospace"
-            android:textColor="@color/appWhite"
-            android:background="@drawable/terminal_bg_middle"
-            android:paddingLeft="6dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="10dp"
-            android:typeface="monospace"
-            android:textStyle="normal|bold"
-            android:shadowRadius="4"
+            android:paddingBottom="4dp"
+            android:paddingLeft="4dp"
+            android:paddingTop="4dp"
             android:shadowColor="@color/appBlack"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            app:layout_constraintHorizontal_bias="0.56" />
-        <TextView
-            android:text="$ kr codesign"
-            android:layout_height="wrap_content"
+            android:text="SET UP GIT CODE SIGNING"
+            android:textColor="@color/appWhite"
+            android:textSize="10sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/awsHeader"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
             android:layout_width="match_parent"
-            android:textSize="16sp"
-            android:fontFamily="monospace"
-            android:textColor="@color/appWhite"
-            android:background="@drawable/terminal_bg_bottom"
-            android:paddingLeft="6dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="10dp"
-            android:typeface="monospace"
-            android:textStyle="normal|bold"
-            android:shadowRadius="4"
-            android:shadowColor="@color/appBlack"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
-            app:layout_constraintHorizontal_bias="0.56" />
+            android:background="@drawable/terminal_bg_bottom"
+            android:fontFamily="monospace"
+            android:paddingBottom="10dp"
+            android:paddingLeft="6dp"
+            android:paddingTop="6dp"
+            android:shadowColor="@color/appBlack"
+            android:shadowRadius="4"
+            android:text="$ kr codesign"
+            android:textColor="@color/appWhite"
+            android:textSize="16sp"
+            android:textStyle="normal|bold"
+            android:typeface="monospace"
+            app:layout_constraintHorizontal_bias="0.56"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/awsHeader"/>
     </LinearLayout>
 
     <ImageButton
