@@ -11,7 +11,9 @@ import co.krypt.kryptonite.R;
  * Copyright 2016. KryptCo, Inc.
  */
 
-public class HostsRequest {
+public class HostsRequest extends RequestBody {
+    public static final String FIELD_NAME = "hosts_request";
+
     public View fillView(ConstraintLayout container) {
         View hostsView = View.inflate(container.getContext(), R.layout.hosts_short, container);
 
@@ -20,5 +22,10 @@ public class HostsRequest {
         messageText.setMaxLines(Integer.MAX_VALUE);
 
         return hostsView;
+    }
+
+    @Override
+    public <T, E extends Throwable> T visit(Visitor<T, E> visitor) throws E {
+        return visitor.visit(this);
     }
 }

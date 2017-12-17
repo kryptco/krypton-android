@@ -5,4 +5,11 @@ package co.krypt.kryptonite.protocol;
  * Copyright 2016. KryptCo, Inc.
  */
 
-public class UnpairRequest {}
+public class UnpairRequest extends RequestBody {
+    public static final String FIELD_NAME = "unpair_request";
+
+    @Override
+    public <T, E extends Throwable> T visit(Visitor<T, E> visitor) throws E {
+        return visitor.visit(this);
+    }
+}

@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
 
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.pgp.packet.BinarySignable;
+import co.krypt.kryptonite.protocol.GitSignRequestBody;
 import co.krypt.kryptonite.protocol.JSON;
 
 import static android.view.View.GONE;
@@ -24,7 +25,9 @@ import static android.view.View.GONE;
  * Copyright 2017. KryptCo, Inc.
  */
 
-public class TagInfo implements BinarySignable {
+public class TagInfo extends GitSignRequestBody implements BinarySignable {
+    public static final String FIELD_NAME = "tag";
+
     @SerializedName("object")
     @JSON.JsonRequired
     public String object;
@@ -241,5 +244,10 @@ public class TagInfo implements BinarySignable {
             remoteViews.setInt(R.id.tag, "setBackgroundResource", R.drawable.hash_red_bg);
             remoteViews.setImageViewResource(R.id.tagImage, R.drawable.tag_hires_red);
         }
+    }
+
+    @Override
+    public <T, E extends Throwable> T visit(Visitor<T, E> visitor) throws E {
+        return visitor.visit(this);
     }
 }

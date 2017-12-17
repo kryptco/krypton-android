@@ -33,7 +33,6 @@ import co.krypt.kryptonite.me.MeStorage;
 import co.krypt.kryptonite.onboarding.OnboardingActivity;
 import co.krypt.kryptonite.onboarding.OnboardingProgress;
 import co.krypt.kryptonite.pairing.PairFragment;
-import co.krypt.kryptonite.pairing.RePairDialogFragment;
 import co.krypt.kryptonite.policy.LocalAuthentication;
 import co.krypt.kryptonite.settings.SettingsFragment;
 import co.krypt.kryptonite.silo.Silo;
@@ -82,11 +81,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (ConnectionResult.SUCCESS != GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getApplicationContext())) {
             //  TODO: warn about no push notifications, prompt to install google play services
-        }
-
-        if (silo.pairings().hasOldPairings()) {
-            RePairDialogFragment rePairDialogFragment = new RePairDialogFragment();
-            getSupportFragmentManager().beginTransaction().add(R.id.centeredFragmentOverlay, rePairDialogFragment).commit();
         }
 
         setContentView(R.layout.activity_main);

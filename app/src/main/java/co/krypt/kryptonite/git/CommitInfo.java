@@ -19,6 +19,7 @@ import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.crypto.SHA1;
 import co.krypt.kryptonite.exception.CryptoException;
 import co.krypt.kryptonite.pgp.packet.BinarySignable;
+import co.krypt.kryptonite.protocol.GitSignRequestBody;
 import co.krypt.kryptonite.protocol.JSON;
 
 import static android.view.View.GONE;
@@ -28,7 +29,9 @@ import static android.view.View.GONE;
  * Copyright 2017. KryptCo, Inc.
  */
 
-public class CommitInfo implements BinarySignable {
+public class CommitInfo extends GitSignRequestBody implements BinarySignable {
+    public static final String FIELD_NAME = "commit";
+
     @SerializedName("tree")
     @JSON.JsonRequired
     public String tree;
@@ -406,5 +409,10 @@ public class CommitInfo implements BinarySignable {
         }
 
         fillRemoteTime(remoteViews, approved, signature);
+    }
+
+    @Override
+    public <T, E extends Throwable> T visit(Visitor<T, E> visitor) throws E {
+        return visitor.visit(this);
     }
 }

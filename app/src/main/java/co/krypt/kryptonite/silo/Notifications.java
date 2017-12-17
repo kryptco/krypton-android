@@ -25,7 +25,13 @@ import co.krypt.kryptonite.pgp.publickey.SignedPublicKeySelfCertification;
 import co.krypt.kryptonite.policy.NoAuthReceiver;
 import co.krypt.kryptonite.policy.Policy;
 import co.krypt.kryptonite.policy.UnlockScreenDummyActivity;
+import co.krypt.kryptonite.protocol.GitSignRequest;
+import co.krypt.kryptonite.protocol.HostsRequest;
+import co.krypt.kryptonite.protocol.MeRequest;
 import co.krypt.kryptonite.protocol.Request;
+import co.krypt.kryptonite.protocol.RequestBody;
+import co.krypt.kryptonite.protocol.SignRequest;
+import co.krypt.kryptonite.protocol.UnpairRequest;
 import co.krypt.kryptonite.settings.Settings;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -54,30 +60,52 @@ public class Notifications {
             mBuilder.setSound(notificationSound)
                     .setVibrate(new long[]{0, 100});
         }
-        if (request.signRequest != null) {
-            mBuilder
-                    .setContentTitle("SSH Login Approved")
-                    .setContentText(pairing.workstationName + ": " + request.signRequest.display());
-            RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.result_remote);
-            remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
-            request.fillShortRemoteViews(remoteViewsSmall, true, log != null ? log.getSignature() : null);
-            mBuilder.setContent(remoteViewsSmall);
-        }
-        if (request.gitSignRequest != null) {
-            mBuilder
-                    .setContentTitle(request.gitSignRequest.title() + " Approved")
-                    .setContentText(pairing.workstationName + ": " + request.gitSignRequest.display());
+        request.body.visit(new RequestBody.Visitor<Void, RuntimeException>() {
+            @Override
+            public Void visit(MeRequest meRequest) throws RuntimeException {
+                return null;
+            }
 
-            RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.result_remote);
-            remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
-            request.gitSignRequest.fillShortRemoteViews(remoteViewsSmall, true, log != null ? log.getSignature() : null);
-            mBuilder.setContent(remoteViewsSmall);
+            @Override
+            public Void visit(SignRequest signRequest) throws RuntimeException {
+                mBuilder
+                        .setContentTitle("SSH Login Approved")
+                        .setContentText(pairing.workstationName + ": " + signRequest.display());
+                RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.result_remote);
+                remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
+                request.fillShortRemoteViews(remoteViewsSmall, true, log != null ? log.getSignature() : null);
+                mBuilder.setContent(remoteViewsSmall);
+                return null;
+            }
 
-            RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.result_remote);
-            remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
-            request.gitSignRequest.fillRemoteViews(remoteViewsBig, true, log != null ? log.getSignature() : null);
-            mBuilder.setCustomBigContentView(remoteViewsBig);
-        }
+            @Override
+            public Void visit(GitSignRequest gitSignRequest) throws RuntimeException {
+                mBuilder
+                        .setContentTitle(gitSignRequest.title() + " Approved")
+                        .setContentText(pairing.workstationName + ": " + gitSignRequest.display());
+
+                RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.result_remote);
+                remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
+                gitSignRequest.fillShortRemoteViews(remoteViewsSmall, true, log != null ? log.getSignature() : null);
+                mBuilder.setContent(remoteViewsSmall);
+
+                RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.result_remote);
+                remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
+                gitSignRequest.fillRemoteViews(remoteViewsBig, true, log != null ? log.getSignature() : null);
+                mBuilder.setCustomBigContentView(remoteViewsBig);
+                return null;
+            }
+
+            @Override
+            public Void visit(UnpairRequest unpairRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(HostsRequest hostsRequest) throws RuntimeException {
+                return null;
+            }
+        });
 
         // The stack builder object will contain an artificial back stack for the
         // started Activity.
@@ -119,27 +147,48 @@ public class Notifications {
             mBuilder.setSound(notificationSound)
                     .setVibrate(new long[]{0, 100, 100, 100});
         }
-        if (request.signRequest != null) {
-            mBuilder
-                    .setContentText(pairing.workstationName + ": " + request.signRequest.display());
-        }
-        if (request.gitSignRequest != null) {
-            mBuilder
-                    .setContentTitle(request.gitSignRequest.title() + " Rejected")
-                    .setContentText(pairing.workstationName + ": " + request.gitSignRequest.display());
+        request.body.visit(new RequestBody.Visitor<Void, RuntimeException>() {
+            @Override
+            public Void visit(MeRequest meRequest) throws RuntimeException {
+                return null;
+            }
 
-            RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.result_remote);
-            remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
-            remoteViewsSmall.setTextViewText(R.id.header, "Rejected Request From");
-            request.gitSignRequest.fillShortRemoteViews(remoteViewsSmall, false, null);
-            mBuilder.setCustomContentView(remoteViewsSmall);
+            @Override
+            public Void visit(SignRequest signRequest) throws RuntimeException {
+                mBuilder.setContentText(pairing.workstationName + ": " + signRequest.display());
+                return null;
+            }
 
-            RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.result_remote);
-            remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
-            remoteViewsBig.setTextViewText(R.id.header, "Rejected Request From");
-            request.gitSignRequest.fillRemoteViews(remoteViewsBig, false, null);
-            mBuilder.setCustomBigContentView(remoteViewsBig);
-        }
+            @Override
+            public Void visit(GitSignRequest gitSignRequest) throws RuntimeException {
+                mBuilder
+                        .setContentTitle(gitSignRequest.title() + " Rejected")
+                        .setContentText(pairing.workstationName + ": " + gitSignRequest.display());
+
+                RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.result_remote);
+                remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
+                remoteViewsSmall.setTextViewText(R.id.header, "Rejected Request From");
+                gitSignRequest.fillShortRemoteViews(remoteViewsSmall, false, null);
+                mBuilder.setCustomContentView(remoteViewsSmall);
+
+                RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.result_remote);
+                remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
+                remoteViewsBig.setTextViewText(R.id.header, "Rejected Request From");
+                gitSignRequest.fillRemoteViews(remoteViewsBig, false, null);
+                mBuilder.setCustomBigContentView(remoteViewsBig);
+                return null;
+            }
+
+            @Override
+            public Void visit(UnpairRequest unpairRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(HostsRequest hostsRequest) throws RuntimeException {
+                return null;
+            }
+        });
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(MainActivity.class);
@@ -206,49 +255,66 @@ public class Notifications {
                         .setContentIntent(clickPendingIntent)
                         .setAutoCancel(true)
                 ;
-        if (request.signRequest != null || request.gitSignRequest != null) {
-            mBuilder .addAction(approveTemporarilyBuilder.build());
-        }
-        if (request.signRequest != null) {
-            mBuilder
-                    .setContentTitle("Allow SSH Login?")
-                    .setContentText(pairing.workstationName + ": " + request.signRequest.display());
-            RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.request_no_action_remote);
-            remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
-            request.fillShortRemoteViews(remoteViewsSmall, null, null);
-            mBuilder.setContent(remoteViewsSmall);
+        request.body.visit(new RequestBody.Visitor<Void, RuntimeException>() {
+            @Override
+            public Void visit(MeRequest meRequest) throws RuntimeException {
+                return null;
+            }
 
-            RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.request_remote);
-            remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
-            request.fillRemoteViews(remoteViewsBig, null, null);
-            remoteViewsBig.setOnClickPendingIntent(R.id.reject, rejectPendingIntent);
-            remoteViewsBig.setOnClickPendingIntent(R.id.allowOnce, approveOncePendingIntent);
-            remoteViewsBig.setOnClickPendingIntent(R.id.allowTemporarily, approveTemporarilyPendingIntent);
-            mBuilder.setCustomBigContentView(remoteViewsBig);
-        }
-        if (request.gitSignRequest != null) {
-            mBuilder
-                    .setContentTitle("Allow " + request.gitSignRequest.title() + "?")
-                    .setContentText(pairing.workstationName + ": " + request.gitSignRequest.display());
+            @Override
+            public Void visit(SignRequest signRequest) throws RuntimeException {
+                mBuilder .addAction(approveTemporarilyBuilder.build());
+                mBuilder
+                        .setContentTitle("Allow SSH Login?")
+                        .setContentText(pairing.workstationName + ": " + signRequest.display());
+                RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.request_no_action_remote);
+                remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
+                request.fillShortRemoteViews(remoteViewsSmall, null, null);
+                mBuilder.setContent(remoteViewsSmall);
 
-            RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.request_no_action_remote);
-            remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
-            request.gitSignRequest.fillShortRemoteViews(remoteViewsSmall, null, null);
-            mBuilder.setContent(remoteViewsSmall);
+                RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.request_remote);
+                remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
+                request.fillRemoteViews(remoteViewsBig, null, null);
+                remoteViewsBig.setOnClickPendingIntent(R.id.reject, rejectPendingIntent);
+                remoteViewsBig.setOnClickPendingIntent(R.id.allowOnce, approveOncePendingIntent);
+                remoteViewsBig.setOnClickPendingIntent(R.id.allowTemporarily, approveTemporarilyPendingIntent);
+                mBuilder.setCustomBigContentView(remoteViewsBig);
+                return null;
+            }
 
-            RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.request_remote);
-            remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
-            request.gitSignRequest.fillRemoteViews(remoteViewsBig, null, null);
-            remoteViewsBig.setOnClickPendingIntent(R.id.reject, rejectPendingIntent);
-            remoteViewsBig.setOnClickPendingIntent(R.id.allowOnce, approveOncePendingIntent);
-            remoteViewsBig.setOnClickPendingIntent(R.id.allowTemporarily, approveTemporarilyPendingIntent);
-            mBuilder.setCustomBigContentView(remoteViewsBig);
-        }
-        if (request.hostsRequest != null) {
-            mBuilder
-                    .setContentTitle("Send user@hostname records?")
-                    .setContentText(pairing.workstationName + " is requesting your SSH login records.");
-        }
+            @Override
+            public Void visit(GitSignRequest gitSignRequest) throws RuntimeException {
+                mBuilder.addAction(approveTemporarilyBuilder.build());
+                mBuilder.setContentTitle("Allow " + gitSignRequest.title() + "?")
+                        .setContentText(pairing.workstationName + ": " + gitSignRequest.display());
+
+                RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.request_no_action_remote);
+                remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
+                gitSignRequest.fillShortRemoteViews(remoteViewsSmall, null, null);
+                mBuilder.setContent(remoteViewsSmall);
+
+                RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.request_remote);
+                remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
+                gitSignRequest.fillRemoteViews(remoteViewsBig, null, null);
+                remoteViewsBig.setOnClickPendingIntent(R.id.reject, rejectPendingIntent);
+                remoteViewsBig.setOnClickPendingIntent(R.id.allowOnce, approveOncePendingIntent);
+                remoteViewsBig.setOnClickPendingIntent(R.id.allowTemporarily, approveTemporarilyPendingIntent);
+                mBuilder.setCustomBigContentView(remoteViewsBig);
+                return null;
+            }
+
+            @Override
+            public Void visit(UnpairRequest unpairRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(HostsRequest hostsRequest) throws RuntimeException {
+                mBuilder.setContentTitle("Send user@hostname records?")
+                        .setContentText(pairing.workstationName + " is requesting your SSH login records.");
+                return null;
+            }
+        });
         if (!new Settings(context).silenceNotifications()) {
             mBuilder.setSound(notificationSound)
                     .setVibrate(new long[]{0, 100, 100, 100});

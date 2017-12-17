@@ -23,6 +23,9 @@ import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import co.krypt.kryptonite.git.CommitInfo;
+import co.krypt.kryptonite.git.TagInfo;
+
 /**
  * Created by Kevin King on 12/2/16.
  * Copyright 2016. KryptCo, Inc.
@@ -45,18 +48,22 @@ public class JSON {
         return gson.toJson(object);
     }
 
-    private static final Gson gson = new GsonBuilder()
+    static final Gson gson = new GsonBuilder()
             .registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter())
-            .registerTypeAdapter(Request.class, new AnnotatedDeserializer<>())
+            .registerTypeAdapter(Request.class, new Request.Deserializer())
+            .registerTypeAdapter(Request.class, new Request.Serializer())
+            .registerTypeAdapter(GitSignRequest.class, new GitSignRequest.Deserializer())
+            .registerTypeAdapter(GitSignRequest.class, new GitSignRequest.Serializer())
+            .registerTypeAdapter(CommitInfo.class, new AnnotatedDeserializer<>())
+            .registerTypeAdapter(TagInfo.class, new AnnotatedDeserializer<>())
             .registerTypeAdapter(MeRequest.class, new AnnotatedDeserializer<>())
             .registerTypeAdapter(SignRequest.class, new AnnotatedDeserializer<>())
             .registerTypeAdapter(UnpairRequest.class, new AnnotatedDeserializer<>())
             .registerTypeAdapter(HostsRequest.class, new AnnotatedDeserializer<>())
-            .registerTypeAdapter(GitSignRequest.class, new AnnotatedDeserializer<>())
             .registerTypeAdapter(HostAuth.class, new AnnotatedDeserializer<>())
             .create();
 
-    private static final Gson gsonWithoutRequiredFields = new GsonBuilder()
+    static final Gson gsonWithoutRequiredFields = new GsonBuilder()
             .registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter())
             .create();
 
@@ -82,37 +89,38 @@ public class JSON {
             return pojo;
         }
 
-        private void checkPojoRecursively(Object pojo) {
-            Field[] fields = pojo.getClass().getDeclaredFields();
-            for (Field f : fields)
+    }
+
+    public static void checkPojoRecursively(Object pojo) {
+        Field[] fields = pojo.getClass().getDeclaredFields();
+        for (Field f : fields)
+        {
+            if (f.getAnnotation(JsonRequired.class) != null)
             {
-                if (f.getAnnotation(JsonRequired.class) != null)
+                try
                 {
-                    try
-                    {
-                        f.setAccessible(true);
-                        if (f.get(pojo) == null)
-                        {
-                            throw new JsonParseException("Missing field in JSON: " + f.getName());
-                        }
-                    }
-                    catch (IllegalArgumentException ex)
-                    {
-                        Logger.getLogger(AnnotatedDeserializer.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    catch (IllegalAccessException ex)
-                    {
-                        Logger.getLogger(AnnotatedDeserializer.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-                try {
                     f.setAccessible(true);
-                    if (f.get(pojo) != null && f.getAnnotation(SerializedName.class) != null) {
-                        checkPojoRecursively(f.get(pojo));
+                    if (f.get(pojo) == null)
+                    {
+                        throw new JsonParseException("Missing field in JSON: " + f.getName());
                     }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
                 }
+                catch (IllegalArgumentException ex)
+                {
+                    Logger.getLogger(AnnotatedDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                catch (IllegalAccessException ex)
+                {
+                    Logger.getLogger(AnnotatedDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            try {
+                f.setAccessible(true);
+                if (f.get(pojo) != null && f.getAnnotation(SerializedName.class) != null) {
+                    checkPojoRecursively(f.get(pojo));
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
         }
     }

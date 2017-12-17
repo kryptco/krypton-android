@@ -19,7 +19,8 @@ import co.krypt.kryptonite.exception.ProtocolException;
  * Copyright 2016. KryptCo, Inc.
  */
 
-public class SignRequest {
+public class SignRequest extends RequestBody {
+    public static final String FIELD_NAME = "sign_request";
     @SerializedName("data")
     @JSON.JsonRequired
     public byte[] data;
@@ -208,4 +209,8 @@ public class SignRequest {
         }
     }
 
+    @Override
+    public <T, E extends Throwable> T visit(Visitor<T, E> visitor) throws E {
+        return visitor.visit(this);
+    }
 }

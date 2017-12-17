@@ -1,17 +1,20 @@
 package co.krypt.kryptonite.protocol;
 
 import android.support.constraint.ConstraintLayout;
-import android.view.View;
 import android.widget.RemoteViews;
 
 import com.amazonaws.util.Base32;
 import com.github.zafarkhaja.semver.Version;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.lang.reflect.Type;
 
 import javax.annotation.Nullable;
 
@@ -42,29 +45,12 @@ public class Request {
     @JSON.JsonRequired
     public Long unixSeconds;
 
-    @SerializedName("me_request")
-    @Nullable
-    public MeRequest meRequest;
-
-    @SerializedName("sign_request")
-    @Nullable
-    public SignRequest signRequest;
-
-    @SerializedName("git_sign_request")
-    @Nullable
-    public GitSignRequest gitSignRequest;
-
-    @SerializedName("unpair_request")
-    @Nullable
-    public UnpairRequest unpairRequest;
-
-    @SerializedName("hosts_request")
-    @Nullable
-    public HostsRequest hostsRequest;
 
     @SerializedName("a")
     @Nullable
     public Boolean sendACK;
+
+    public RequestBody body;
 
     public Version semVer() {
         try {
@@ -77,58 +63,176 @@ public class Request {
 
     public void fillRemoteViews(RemoteViews remoteViewsContainer, @Nullable Boolean approved, @Nullable String signature) {
         remoteViewsContainer.removeAllViews(R.id.content);
-        if (gitSignRequest != null) {
-            gitSignRequest.fillRemoteViews(remoteViewsContainer, approved, signature);
-        }
-        if (signRequest != null) {
-            signRequest.fillRemoteViews(remoteViewsContainer, approved, signature);
-        }
+        body.visit(new RequestBody.Visitor<Void, RuntimeException>() {
+            @Override
+            public Void visit(MeRequest meRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(SignRequest signRequest) throws RuntimeException {
+                signRequest.fillRemoteViews(remoteViewsContainer, approved, signature);
+                return null;
+            }
+
+            @Override
+            public Void visit(GitSignRequest gitSignRequest) throws RuntimeException {
+                gitSignRequest.fillRemoteViews(remoteViewsContainer, approved, signature);
+                return null;
+            }
+
+            @Override
+            public Void visit(UnpairRequest unpairRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(HostsRequest hostsRequest) throws RuntimeException {
+                return null;
+            }
+        });
     }
 
     public void fillShortRemoteViews(RemoteViews remoteViewsContainer, @Nullable Boolean approved, @Nullable String signature) {
         remoteViewsContainer.removeAllViews(R.id.content);
-        if (gitSignRequest != null) {
-            gitSignRequest.fillShortRemoteViews(remoteViewsContainer, approved, signature);
-        }
-        if (signRequest != null) {
-            signRequest.fillShortRemoteViews(remoteViewsContainer, approved, signature);
-        }
+        body.visit(new RequestBody.Visitor<Void, RuntimeException>() {
+            @Override
+            public Void visit(MeRequest meRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(SignRequest signRequest) throws RuntimeException {
+                signRequest.fillShortRemoteViews(remoteViewsContainer, approved, signature);
+                return null;
+            }
+
+            @Override
+            public Void visit(GitSignRequest gitSignRequest) throws RuntimeException {
+                gitSignRequest.fillShortRemoteViews(remoteViewsContainer, approved, signature);
+                return null;
+            }
+
+            @Override
+            public Void visit(UnpairRequest unpairRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(HostsRequest hostsRequest) throws RuntimeException {
+                return null;
+            }
+        });
+    }
+
+    public void fillView(ConstraintLayout content) {
+        body.visit(new RequestBody.Visitor<Void, RuntimeException>() {
+            @Override
+            public Void visit(MeRequest meRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(SignRequest signRequest) throws RuntimeException {
+                signRequest.fillView(content);
+                return null;
+            }
+
+            @Override
+            public Void visit(GitSignRequest gitSignRequest) throws RuntimeException {
+                gitSignRequest.fillView(content);
+                return null;
+            }
+
+            @Override
+            public Void visit(UnpairRequest unpairRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(HostsRequest hostsRequest) throws RuntimeException {
+                return null;
+            }
+        });
     }
 
     public String analyticsCategory() {
-        if (signRequest != null) {
-            return "signature";
-        }
-        if (gitSignRequest != null) {
-            return gitSignRequest.analyticsCategory();
-        }
-        if (hostsRequest != null) {
-            return "hosts";
-        }
-        return "no analytics category";
-    }
-
-    public boolean containsExactlyOneRequestType() {
-        List<Object> requests = new ArrayList<>(Arrays.asList(meRequest, signRequest, gitSignRequest, unpairRequest, hostsRequest));
-        Iterator<Object> iter = requests.iterator();
-        while (iter.hasNext()) {
-            if (iter.next() == null) {
-                iter.remove();
+        return body.visit(new RequestBody.Visitor<String, RuntimeException>() {
+            @Override
+            public String visit(MeRequest meRequest) throws RuntimeException {
+                return "me";
             }
-        }
-        return requests.size() == 1;
+
+            @Override
+            public String visit(SignRequest signRequest) throws RuntimeException {
+                return "signature";
+            }
+
+            @Override
+            public String visit(GitSignRequest gitSignRequest) throws RuntimeException {
+                return gitSignRequest.analyticsCategory();
+            }
+
+            @Override
+            public String visit(UnpairRequest unpairRequest) throws RuntimeException {
+                return "unpair";
+            }
+
+            @Override
+            public String visit(HostsRequest hostsRequest) throws RuntimeException {
+                return "hosts";
+            }
+        });
     }
 
-    public View fillView(ConstraintLayout container) {
-        if (signRequest != null) {
-            return signRequest.fillView(container);
+    public static class Serializer implements JsonSerializer<Request> {
+        @Override
+        public JsonElement serialize(Request src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonElement j = JSON.gson.toJsonTree(src);
+            JsonObject o = j.getAsJsonObject();
+            src.body.visit(new RequestBody.Visitor<Void, RuntimeException>() {
+                @Override
+                public Void visit(MeRequest meRequest) {
+                    o.add(MeRequest.FIELD_NAME, context.serialize(meRequest));
+                    return null;
+                }
+
+                @Override
+                public Void visit(SignRequest signRequest) {
+                    o.add(SignRequest.FIELD_NAME, context.serialize(signRequest));
+                    return null;
+                }
+
+                @Override
+                public Void visit(GitSignRequest gitSignRequest) {
+                    o.add(GitSignRequest.FIELD_NAME, context.serialize(gitSignRequest));
+                    return null;
+                }
+
+                @Override
+                public Void visit(UnpairRequest unpairRequest) {
+                    o.add(UnpairRequest.FIELD_NAME, context.serialize(unpairRequest));
+                    return null;
+                }
+
+                @Override
+                public Void visit(HostsRequest hostsRequest) {
+                    o.add(HostsRequest.FIELD_NAME, context.serialize(hostsRequest));
+                    return null;
+                }
+            });
+            return o;
         }
-        if (gitSignRequest != null) {
-            return gitSignRequest.fillView(container);
+    }
+
+    public static class Deserializer implements JsonDeserializer<Request> {
+        @Override
+        public Request deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            Request request = JSON.gsonWithoutRequiredFields.fromJson(json, typeOfT);
+            //TODO: does not use correct deserializer for gitsignrequestbody
+            request.body = new RequestBody.Deserializer().deserialize(json, typeOfT, context);
+            JSON.checkPojoRecursively(request);
+            return request;
         }
-        if (hostsRequest != null) {
-            return hostsRequest.fillView(container);
-        }
-        return null;
     }
 }

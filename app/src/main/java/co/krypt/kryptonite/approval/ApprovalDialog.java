@@ -12,7 +12,10 @@ import android.widget.TextView;
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.policy.Policy;
+import co.krypt.kryptonite.protocol.GitSignRequest;
+import co.krypt.kryptonite.protocol.HostsRequest;
 import co.krypt.kryptonite.protocol.Request;
+import co.krypt.kryptonite.protocol.SignRequest;
 
 /**
  * Created by Kevin King on 5/5/17.
@@ -36,7 +39,7 @@ public class ApprovalDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setIcon(R.mipmap.ic_launcher);
         String allowText = "Once";
-        if (request.hostsRequest != null) {
+        if (request.body instanceof HostsRequest) {
             allowText = "Allow";
         }
         builder.setPositiveButton(allowText,
@@ -55,7 +58,7 @@ public class ApprovalDialog {
                     }
                 });
 
-        if (request.signRequest != null || request.gitSignRequest != null) {
+        if (request.body instanceof SignRequest || request.body instanceof GitSignRequest) {
             builder.setNegativeButton("For 1 Hour",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
