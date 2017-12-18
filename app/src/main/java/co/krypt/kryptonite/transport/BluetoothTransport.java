@@ -461,7 +461,16 @@ public class BluetoothTransport extends BroadcastReceiver {
                 Log.v(TAG, "set value n=" + String.valueOf(next.second[0]) + " length=" + String.valueOf(next.second.length));
             }
             for (BluetoothDevice device : subscribedDevices) {
-                readyToUpdateSubscribers = gattServer.get().notifyCharacteristicChanged(device, characteristic, false);
+                try {
+                    //  Exception java.lang.NullPointerException: Attempt to invoke virtual method 'int java.lang.Integer.intValue()' on a null object reference
+                    //  android.os.Parcel.readException (Parcel.java:1690)
+                    //  android.os.Parcel.readException (Parcel.java:1637)
+                    //  android.bluetooth.IBluetoothGatt$Stub$Proxy.sendNotification (IBluetoothGatt.java:1318)
+                    //  android.bluetooth.BluetoothGattServer.notifyCharacteristicChanged (BluetoothGattServer.java:537)
+                    readyToUpdateSubscribers = gattServer.get().notifyCharacteristicChanged(device, characteristic, false);
+                } catch (NullPointerException npe) {
+                    readyToUpdateSubscribers = false;
+                }
             }
             Log.v(TAG, "notified");
             if (readyToUpdateSubscribers) {

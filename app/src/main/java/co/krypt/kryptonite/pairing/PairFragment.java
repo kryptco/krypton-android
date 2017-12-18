@@ -329,6 +329,9 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
         final Runnable checker = new Runnable() {
             @Override
             public void run() {
+                if (isDetached()) {
+                    return;
+                }
                 if (Silo.shared(getContext()).hasActivity(pairing)) {
                     onPairingSuccess(pairing);
                 } else if ((System.currentTimeMillis() - pairTime) >= 20000) {

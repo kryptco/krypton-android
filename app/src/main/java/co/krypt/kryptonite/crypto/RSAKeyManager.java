@@ -55,7 +55,20 @@ public class RSAKeyManager implements KeyManagerI {
 
                 KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
                 keyStore.load(null);
-                KeyStore.Entry privateKeyEntry = keyStore.getEntry(tag, null);
+                KeyStore.Entry privateKeyEntry;
+                try {
+                    //  Exception java.lang.NullPointerException: chain == null
+                    //  java.security.KeyStore$PrivateKeyEntry.<init> (KeyStore.java:1206)
+                    //  java.security.KeyStoreSpi.engineGetEntry (KeyStoreSpi.java:374)
+                    //  java.security.KeyStore.getEntry (KeyStore.java:645)
+                    //  co.krypt.kryptonite.crypto.RSAKeyManager.loadOrGenerateKeyPair (RSAKeyManager.java:58)
+                    //  co.krypt.kryptonite.crypto.KeyManager.loadOrGenerateKeyPair (KeyManager.java:16)
+                    //  co.krypt.kryptonite.onboarding.GenerateFragment$3.run (GenerateFragment.java:105)
+                    //  java.lang.Thread.run (Thread.java:818)
+                    privateKeyEntry = keyStore.getEntry(tag, null);
+                } catch (NullPointerException npe) {
+                    throw new CryptoException(npe.getMessage());
+                }
                 if (privateKeyEntry instanceof KeyStore.PrivateKeyEntry) {
                     return new RSASSHKeyPair(
                             new KeyPair(((KeyStore.PrivateKeyEntry) privateKeyEntry).getCertificate().getPublicKey(), ((KeyStore.PrivateKeyEntry) privateKeyEntry).getPrivateKey()),
@@ -82,23 +95,7 @@ public class RSAKeyManager implements KeyManagerI {
                 long genStop = System.currentTimeMillis();
                 Log.i(LOG_TAG, "KeyGen took " + String.valueOf((genStop - genStart)));
                 return new RSASSHKeyPair(keyPair, created);
-            } catch (CertificateException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (InvalidAlgorithmParameterException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (IOException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (KeyStoreException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (NoSuchAlgorithmException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (NoSuchProviderException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (ProviderException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (UnrecoverableEntryException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (UnsupportedOperationException e) {
+            } catch (CertificateException | UnsupportedOperationException | UnrecoverableEntryException | ProviderException | NoSuchProviderException | NoSuchAlgorithmException | KeyStoreException | IOException | InvalidAlgorithmParameterException e) {
                 throw new CryptoException(e.getMessage());
             }
         }
