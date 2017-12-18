@@ -8,9 +8,8 @@ receives a notification and chooses whether to allow the SSH login. For more
 information, check out [krypt.co](https://krypt.co).
 
 # Build Instructions
-1) Follow build instructions in `libsodium-jni`
-2) Follow build instructions in `ssh-wire`
-3) Open project in Android Studio
+1) Follow build instructions in `ssh-wire`
+2) Open project in Android Studio
 
 # Have an iPhone?
 The iOS implementation is located [here](https://github.com/kryptco/kryptonite-ios).
