@@ -222,7 +222,7 @@ public class Notifications {
         approveTemporarilyIntent.putExtra("requestID", request.requestID);
         PendingIntent approveTemporarilyPendingIntent = PendingIntent.getActivity(context, (Policy.APPROVE_TEMPORARILY + "-" + request.requestID).hashCode(), approveTemporarilyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Action.Builder approveTemporarilyBuilder = new NotificationCompat.Action.Builder(
-                R.drawable.ic_notification_stopwatch, "For 1 Hour", approveTemporarilyPendingIntent);
+                R.drawable.ic_notification_stopwatch, "For " + Policy.temporaryApprovalDuration(), approveTemporarilyPendingIntent);
 
         Intent rejectIntent = new Intent(context, NoAuthReceiver.class);
         rejectIntent.setAction(Policy.REJECT + "-" + request.requestID);
@@ -277,6 +277,7 @@ public class Notifications {
                 request.fillRemoteViews(remoteViewsBig, null, null);
                 remoteViewsBig.setOnClickPendingIntent(R.id.reject, rejectPendingIntent);
                 remoteViewsBig.setOnClickPendingIntent(R.id.allowOnce, approveOncePendingIntent);
+                remoteViewsBig.setTextViewText(R.id.allowTemporarily, "For " + Policy.temporaryApprovalDuration());
                 remoteViewsBig.setOnClickPendingIntent(R.id.allowTemporarily, approveTemporarilyPendingIntent);
                 mBuilder.setCustomBigContentView(remoteViewsBig);
                 return null;
@@ -298,6 +299,7 @@ public class Notifications {
                 gitSignRequest.fillRemoteViews(remoteViewsBig, null, null);
                 remoteViewsBig.setOnClickPendingIntent(R.id.reject, rejectPendingIntent);
                 remoteViewsBig.setOnClickPendingIntent(R.id.allowOnce, approveOncePendingIntent);
+                remoteViewsBig.setTextViewText(R.id.allowTemporarily, "For " + Policy.temporaryApprovalDuration());
                 remoteViewsBig.setOnClickPendingIntent(R.id.allowTemporarily, approveTemporarilyPendingIntent);
                 mBuilder.setCustomBigContentView(remoteViewsBig);
                 return null;

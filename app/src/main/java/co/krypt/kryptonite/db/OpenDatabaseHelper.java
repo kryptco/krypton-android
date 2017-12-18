@@ -15,6 +15,7 @@ import co.krypt.kryptonite.knownhosts.KnownHost;
 import co.krypt.kryptonite.log.GitCommitSignatureLog;
 import co.krypt.kryptonite.log.GitTagSignatureLog;
 import co.krypt.kryptonite.log.SSHSignatureLog;
+import co.krypt.kryptonite.policy.Approval;
 
 
 /**
@@ -25,7 +26,7 @@ import co.krypt.kryptonite.log.SSHSignatureLog;
 public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     public static final String DATABASE_NAME = "kryptonite";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     /**
      * The data access object used to interact with the Sqlite database to do C.R.U.D operations.
@@ -33,6 +34,7 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<SSHSignatureLog, Long> sshSignatureLogDao;
     private Dao<GitCommitSignatureLog, Long> gitCommitSignatureLogDao;
     private Dao<GitTagSignatureLog, Long> gitTagSignatureLogDao;
+    private Dao<Approval, Long> approvalDao;
 
     private final Context context;
 
@@ -50,6 +52,7 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, KnownHost.class);
             TableUtils.createTable(connectionSource, GitCommitSignatureLog.class);
             TableUtils.createTable(connectionSource, GitTagSignatureLog.class);
+            TableUtils.createTable(connectionSource, Approval.class);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -73,6 +76,10 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
 
             if (oldVersion == 4 && newVersion >= 5) {
                 database.execSQL("ALTER TABLE `git_commit_signature_log` ADD COLUMN merge_parents VARCHAR;");
+            }
+
+            if (oldVersion < 6 && newVersion >= 6) {
+                TableUtils.createTable(connectionSource, Approval.class);
             }
 
         } catch (SQLException e) {
@@ -112,5 +119,11 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
             knownHostDao = getDao(KnownHost.class);
         }
         return knownHostDao;
+    }
+    public Dao<Approval, Long> getApprovalDao() throws SQLException {
+        if(approvalDao == null) {
+            approvalDao = getDao(Approval.class);
+        }
+        return approvalDao;
     }
 }

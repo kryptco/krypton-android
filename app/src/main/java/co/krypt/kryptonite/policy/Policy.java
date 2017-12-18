@@ -4,20 +4,21 @@ import android.content.Context;
 import android.support.v4.util.Pair;
 import android.util.Log;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchProviderException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 
 import co.krypt.kryptonite.analytics.Analytics;
-import co.krypt.kryptonite.exception.CryptoException;
-import co.krypt.kryptonite.exception.ProtocolException;
-import co.krypt.kryptonite.exception.TransportException;
+import co.krypt.kryptonite.db.OpenDatabaseHelper;
+import co.krypt.kryptonite.git.CommitInfo;
+import co.krypt.kryptonite.git.TagInfo;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.protocol.GitSignRequest;
+import co.krypt.kryptonite.protocol.GitSignRequestBody;
+import co.krypt.kryptonite.protocol.HostsRequest;
+import co.krypt.kryptonite.protocol.MeRequest;
 import co.krypt.kryptonite.protocol.Request;
+import co.krypt.kryptonite.protocol.RequestBody;
 import co.krypt.kryptonite.protocol.SignRequest;
+import co.krypt.kryptonite.protocol.UnpairRequest;
 import co.krypt.kryptonite.silo.Notifications;
 import co.krypt.kryptonite.silo.Silo;
 
@@ -32,6 +33,12 @@ public class Policy {
     public static final String APPROVE_TEMPORARILY = "approve-temporarily";
     public static final String REJECT = "reject";
 
+    public static final long TEMPORARY_APPROVAL_SECONDS = 3600*3;
+
+    public static String temporaryApprovalDuration() {
+        return co.krypt.kryptonite.uiutils.TimeUtils.formatDurationMillis(TEMPORARY_APPROVAL_SECONDS * 1000);
+    }
+
     private static final HashMap<String, Pair<Pairing, Request>> pendingRequestCache = new HashMap<>();
 
     public static synchronized boolean requestApproval(Context context, Pairing pairing, Request request) {
@@ -43,23 +50,63 @@ public class Policy {
         return true;
     }
 
-    public static synchronized boolean isApprovedNow(Context context, Pairing pairing, SignRequest request) {
+    public static synchronized boolean isApprovedNow(Context context, Pairing pairing, Request request) {
         Silo silo = Silo.shared(context);
-        if (!silo.pairings().isApprovedNow(pairing)) {
+        OpenDatabaseHelper db = silo.pairings().dbHelper;
+        try {
+            return request.body.visit(new RequestBody.Visitor<Boolean, Exception>() {
+                @Override
+                public Boolean visit(MeRequest meRequest) throws Exception {
+                    return true;
+                }
+
+                @Override
+                public Boolean visit(SignRequest signRequest) throws Exception {
+                    String hostname = signRequest.verifiedHostNameOrDefault(null);
+                    if (hostname == null) {
+                        return Approval.isSSHAnyHostApprovedNow(db, pairing.uuid, TEMPORARY_APPROVAL_SECONDS) &&
+                                !Silo.shared(context).pairings().requireUnknownHostManualApproval(pairing);
+                    }
+                    if (!Silo.shared(context).hasKnownHost(hostname)) {
+                        return false;
+                    }
+                    return Approval.isSSHUserHostApprovedNow(db, pairing.uuid, TEMPORARY_APPROVAL_SECONDS, signRequest.user(), hostname);
+                }
+
+                @Override
+                public Boolean visit(GitSignRequest gitSignRequest) throws Exception {
+                    try {
+                        return gitSignRequest.body.visit(new GitSignRequestBody.Visitor<Boolean, Exception>() {
+                            @Override
+                            public Boolean visit(CommitInfo commit) throws Exception {
+                                return Approval.isGitCommitApprovedNow(db, pairing.uuid, (long) TEMPORARY_APPROVAL_SECONDS);
+                            }
+
+                            @Override
+                            public Boolean visit(TagInfo tag) throws Exception {
+                                return Approval.isGitTagApprovedNow(db, pairing.uuid, (long) TEMPORARY_APPROVAL_SECONDS);
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
+
+                @Override
+                public Boolean visit(UnpairRequest unpairRequest) throws Exception {
+                    return true;
+                }
+
+                @Override
+                public Boolean visit(HostsRequest hostsRequest) throws Exception {
+                    return false;
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
-        String hostname = request.verifiedHostNameOrDefault(null);
-        if (hostname == null) {
-            return !Silo.shared(context).pairings().requireUnknownHostManualApproval(pairing);
-        }
-        if (!Silo.shared(context).hasKnownHost(hostname)) {
-            return false;
-        }
-        return true;
-    }
-    public static synchronized boolean isApprovedNow(Context context, Pairing pairing, GitSignRequest request) {
-        Silo silo = Silo.shared(context);
-        return silo.pairings().isApprovedNow(pairing);
     }
 
     public static synchronized Pair<Pairing, Request> getPendingRequestAndPairing(String requestID) {
@@ -74,31 +121,76 @@ public class Policy {
             return;
         }
 
+        Silo silo = Silo.shared(context);
+        OpenDatabaseHelper db = silo.pairings().dbHelper;
+
         Notifications.clearRequest(context, pairingAndRequest.second);
         switch (action) {
             case APPROVE_ONCE:
                 try {
-                    Silo.shared(context).pairings().setApproved(pairingAndRequest.first.getUUIDString(), false);
-                    Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
+                    silo.respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
                     new Analytics(context).postEvent(pairingAndRequest.second.analyticsCategory(), "background approve", "once", null, false);
-                } catch (CryptoException | InvalidKeyException | IOException | TransportException | InvalidKeySpecException | NoSuchProviderException | ProtocolException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
             case APPROVE_TEMPORARILY:
                 try {
-                    Silo.shared(context).pairings().setApprovedUntil(pairingAndRequest.first.getUUIDString(), (System.currentTimeMillis() / 1000) + 3600);
-                    Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
-                    new Analytics(context).postEvent(pairingAndRequest.second.analyticsCategory(), "background approve", "time", 3600, false);
-                } catch (CryptoException | InvalidKeyException | IOException | TransportException | NoSuchProviderException | InvalidKeySpecException | ProtocolException e) {
+                    pairingAndRequest.second.body.visit(new RequestBody.Visitor<Void, Exception>() {
+                        @Override
+                        public Void visit(MeRequest meRequest) throws Exception {
+                            return null;
+                        }
+
+                        @Override
+                        public Void visit(SignRequest signRequest) throws Exception {
+                            String user = signRequest.user();
+                            if (signRequest.hostNameVerified && signRequest.hostAuth.hostNames.length > 0) {
+                                Approval.approveSSHUserHost(db, pairingAndRequest.first.uuid, user, signRequest.hostAuth.hostNames[0]);
+                            }
+                            return null;
+                        }
+
+                        @Override
+                        public Void visit(GitSignRequest gitSignRequest) throws Exception {
+                            gitSignRequest.body.visit(new GitSignRequestBody.Visitor<Void, Exception>() {
+                                @Override
+                                public Void visit(CommitInfo commit) throws Exception {
+                                    Approval.approveGitCommitSignatures(db, pairingAndRequest.first.uuid);
+                                    return null;
+                                }
+
+                                @Override
+                                public Void visit(TagInfo tag) throws Exception {
+                                    Approval.approveGitTagSignatures(db, pairingAndRequest.first.uuid);
+                                    return null;
+                                }
+                            });
+                            return null;
+                        }
+
+                        @Override
+                        public Void visit(UnpairRequest unpairRequest) throws Exception {
+                            return null;
+                        }
+
+                        @Override
+                        public Void visit(HostsRequest hostsRequest) throws Exception {
+                            return null;
+                        }
+                    });
+                    silo.pairings().setApprovedUntil(pairingAndRequest.first.getUUIDString(), (System.currentTimeMillis() / 1000) + TEMPORARY_APPROVAL_SECONDS);
+                    silo.respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
+                    new Analytics(context).postEvent(pairingAndRequest.second.analyticsCategory(), "background approve", "time", (int) TEMPORARY_APPROVAL_SECONDS, false);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
             case REJECT:
                 try {
-                    Silo.shared(context).respondToRequest(pairingAndRequest.first, pairingAndRequest.second, false);
+                    silo.respondToRequest(pairingAndRequest.first, pairingAndRequest.second, false);
                     new Analytics(context).postEvent(pairingAndRequest.second.analyticsCategory(), "background reject", null, null, false);
-                } catch (CryptoException | InvalidKeyException | IOException | TransportException | InvalidKeySpecException | NoSuchProviderException | ProtocolException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;

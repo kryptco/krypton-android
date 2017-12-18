@@ -59,7 +59,7 @@ public class ApprovalDialog {
                 });
 
         if (request.body instanceof SignRequest || request.body instanceof GitSignRequest) {
-            builder.setNegativeButton("For 1 Hour",
+            builder.setNegativeButton("For " + Policy.temporaryApprovalDuration(),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_TEMPORARILY);

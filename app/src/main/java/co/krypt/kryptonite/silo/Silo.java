@@ -332,58 +332,12 @@ public class Silo {
 
         lastRequestTimeSeconds.put(pairing, System.currentTimeMillis() / 1000);
 
-        Boolean allowed = request.body.visit(new RequestBody.Visitor<Boolean, RuntimeException>() {
-            @Override
-            public Boolean visit(MeRequest meRequest) {
-                return true;
-            }
-
-            @Override
-            public Boolean visit(SignRequest signRequest) {
-                synchronized (policyLock) {
-                    if (!Policy.isApprovedNow(context, pairing, signRequest)) {
-                        if (Policy.requestApproval(context, pairing, request)) {
-                            new Analytics(context).postEvent(request.analyticsCategory(), "requires approval", communicationMedium, null, false);
-                        }
-                        return false;
-                    }
-                }
-
-                new Analytics(context).postEvent(request.analyticsCategory(), "automatic approval", communicationMedium, null, false);
-                return true;
-            }
-
-            @Override
-            public Boolean visit(GitSignRequest gitSignRequest) {
-                synchronized (policyLock) {
-                    if (!Policy.isApprovedNow(context, pairing, gitSignRequest)) {
-                        if (Policy.requestApproval(context, pairing, request)) {
-                            new Analytics(context).postEvent(request.analyticsCategory(), "requires approval", communicationMedium, null, false);
-                        }
-                        return false;
-                    }
-                }
-                new Analytics(context).postEvent(request.analyticsCategory(), "automatic approval", communicationMedium, null, false);
-                return true;
-            }
-
-            @Override
-            public Boolean visit(UnpairRequest unpairRequest) {
-                return true;
-            }
-
-            @Override
-            public Boolean visit(HostsRequest hostsRequest) {
-                if (Policy.requestApproval(context, pairing, request)) {
-                    new Analytics(context).postEvent(request.analyticsCategory(), "requires approval", communicationMedium, null, false);
-                }
-                return false;
-            }
-        });
-
-        if (allowed) {
+        if (Policy.isApprovedNow(context, pairing, request)) {
             respondToRequest(pairing, request, true);
         } else {
+            if (Policy.requestApproval(context, pairing, request)) {
+                new Analytics(context).postEvent(request.analyticsCategory(), "requires approval", communicationMedium, null, false);
+            }
             if (request.sendACK != null && request.sendACK) {
                 Response ackResponse = Response.with(request);
                 ackResponse.ackResponse = new AckResponse();

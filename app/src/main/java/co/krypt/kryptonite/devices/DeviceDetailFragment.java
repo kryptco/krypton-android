@@ -24,6 +24,7 @@ import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.pairing.Pairings;
+import co.krypt.kryptonite.policy.Policy;
 import co.krypt.kryptonite.silo.Silo;
 
 public class DeviceDetailFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener, CompoundButton.OnCheckedChangeListener {
@@ -148,7 +149,7 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         temporaryButton.setOnCheckedChangeListener(null);
         automaticButton.setOnCheckedChangeListener(null);
         Pairings pairings = Silo.shared(getContext()).pairings();
-        temporaryButton.setText("Don't ask for 1 hour");
+        temporaryButton.setText("Don't ask for " + Policy.temporaryApprovalDuration());
         if (pairings.getApproved(pairingUUID)) {
             automaticButton.setChecked(true);
             manualButton.setChecked(false);

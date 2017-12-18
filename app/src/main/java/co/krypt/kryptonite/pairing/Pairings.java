@@ -29,7 +29,6 @@ import co.krypt.kryptonite.protocol.JSON;
  */
 
 public class Pairings {
-    private static final String OLD_PAIRINGS_KEY = "PAIRINGS";
     private static final String PAIRINGS_KEY = "PAIRINGS_2";
     private static final Object lock = new Object();
     private final SharedPreferences preferences;
@@ -40,7 +39,6 @@ public class Pairings {
 
     //  per-pairing settings
     private static final String REQUIRE_UNKNOWN_HOST_MANUAL_APPROVAL = ".REQUIRE_UNKNOWN_HOST_MANUAL_APPROVAL";
-
 
     public final OpenDatabaseHelper dbHelper;
 
@@ -77,27 +75,6 @@ public class Pairings {
             pairings.add(JSON.fromJson(jsonPairing, Pairing.class));
         }
         return pairings;
-    }
-
-    public HashSet<Pairing> loadAllOldPairings() {
-        HashSet<Pairing> pairings = new HashSet<>();
-        synchronized (lock) {
-            Set<String> jsonPairings = new HashSet<>(preferences.getStringSet(OLD_PAIRINGS_KEY, new ArraySet<String>()));
-            for (String jsonPairing : jsonPairings) {
-                pairings.add(JSON.fromJson(jsonPairing, Pairing.class));
-            }
-        }
-        return pairings;
-    }
-
-    public boolean hasOldPairings() {
-        return !loadAllOldPairings().isEmpty();
-    }
-
-    public void clearOldPairings() {
-        synchronized (lock) {
-            preferences.edit().remove(OLD_PAIRINGS_KEY).apply();
-        }
     }
 
     private HashSet<Pairing> setAllLocked(HashSet<Pairing> pairings) {
