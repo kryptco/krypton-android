@@ -10,4 +10,8 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
+    <style name="CodeText">
+        <item name="fontFamily">@font/source_code_pro</item>
+    </style>
+
 </resources>
