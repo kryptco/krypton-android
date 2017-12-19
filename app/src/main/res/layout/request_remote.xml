@@ -98,11 +98,11 @@
         android:layout_marginRight="10dp"
         android:layout_marginTop="4dp"
         android:padding="10dp"
-        android:text="1 Hour"
+        android:text="For 1h"
         android:textAllCaps="true"
         android:textColor="@color/appGreen"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
 
 </RelativeLayout>
