@@ -79,12 +79,12 @@ public class Policy {
                         return gitSignRequest.body.visit(new GitSignRequestBody.Visitor<Boolean, Exception>() {
                             @Override
                             public Boolean visit(CommitInfo commit) throws Exception {
-                                return Approval.isGitCommitApprovedNow(db, pairing.uuid, (long) TEMPORARY_APPROVAL_SECONDS);
+                                return Approval.isGitCommitApprovedNow(db, pairing.uuid, TEMPORARY_APPROVAL_SECONDS);
                             }
 
                             @Override
                             public Boolean visit(TagInfo tag) throws Exception {
-                                return Approval.isGitTagApprovedNow(db, pairing.uuid, (long) TEMPORARY_APPROVAL_SECONDS);
+                                return Approval.isGitTagApprovedNow(db, pairing.uuid, TEMPORARY_APPROVAL_SECONDS);
                             }
                         });
                     } catch (Exception e) {
