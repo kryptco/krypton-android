@@ -6,7 +6,7 @@
     tools:context="co.krypt.kryptonite.onboarding.GeneratingFragment"
     android:background="@color/appWhite">
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/header"
@@ -29,7 +29,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp">
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/privateKeyHeader"
@@ -42,7 +42,7 @@
             android:textSize="20sp"
             android:layout_marginStart="16dp" />
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:text="Never leaves your phone. The private key is used to authenticate you in an ssh session."
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -105,7 +105,7 @@
             android:layout_marginStart="16dp"
             android:layout_width="40dp" />
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:text="Public Key"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -120,7 +120,7 @@
             app:layout_constraintHorizontal_bias="1.0"
             android:layout_marginStart="32dp" />
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:text="Add your public key to servers, web services such as GitHub, or share it with peers manually."
             android:layout_width="0dp"
             android:layout_height="wrap_content"

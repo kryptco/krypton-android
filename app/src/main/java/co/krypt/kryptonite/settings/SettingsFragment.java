@@ -8,13 +8,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -121,7 +121,7 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        Switch disableAnalyticsSwitch = (Switch) root.findViewById(R.id.disableAnalyticsSwitch);
+        SwitchCompat disableAnalyticsSwitch = (SwitchCompat) root.findViewById(R.id.disableAnalyticsSwitch);
         disableAnalyticsSwitch.setChecked(new Analytics(getContext()).isDisabled());
         disableAnalyticsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -130,7 +130,7 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        Switch enableApprovedNotifications = (Switch) root.findViewById(R.id.enableAutoApproveNotificationsSwitch);
+        SwitchCompat enableApprovedNotifications = (SwitchCompat) root.findViewById(R.id.enableAutoApproveNotificationsSwitch);
         enableApprovedNotifications.setChecked(new Settings(getContext()).approvedNotificationsEnabled());
         enableApprovedNotifications.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -139,7 +139,7 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        Switch silenceNotifications = (Switch) root.findViewById(R.id.silenceNotificationsSwitch);
+        SwitchCompat silenceNotifications = (SwitchCompat) root.findViewById(R.id.silenceNotificationsSwitch);
         silenceNotifications.setChecked(new Settings(getContext()).silenceNotifications());
         silenceNotifications.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context="co.krypt.kryptonite.onboarding.FirstPairFragment">
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:text="SKIP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         android:textColor="@color/appGray"
         android:background="@android:color/transparent" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:text="1. Install and run kr on your computer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <TextView
+                    <android.support.v7.widget.AppCompatTextView
                         android:text="@string/curl_install"
                         android:layout_height="wrap_content"
                         app:layout_constraintLeft_toLeftOf="parent"
@@ -103,7 +103,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
-                    <TextView
+                    <android.support.v7.widget.AppCompatTextView
                         android:text="$ brew install kryptco/tap/kr\n$ kr pair"
                         android:layout_height="wrap_content"
                         app:layout_constraintLeft_toLeftOf="parent"
@@ -129,7 +129,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
-                    <TextView
+                    <android.support.v7.widget.AppCompatTextView
                         android:text="$ npm install -g krd # mac only\n$ kr pair"
                         android:layout_height="wrap_content"
                         app:layout_constraintLeft_toLeftOf="parent"
@@ -156,7 +156,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
-                    <TextView
+                    <android.support.v7.widget.AppCompatTextView
                         android:text="$ # go to https://krypt.co/install\n$ kr pair"
                         android:layout_height="wrap_content"
                         app:layout_constraintLeft_toLeftOf="parent"
@@ -181,7 +181,7 @@
         </LinearLayout>
     </TabHost>
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:text="2. Scan the QR code on the screen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

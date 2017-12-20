@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/workstationName"
         android:layout_marginLeft="2dp" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/workstationName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

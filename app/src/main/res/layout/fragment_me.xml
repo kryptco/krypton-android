@@ -39,7 +39,7 @@
         android:typeface="normal"
         android:textStyle="normal|bold" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:text="VIEW MY PUBLIC KEY"
         android:layout_height="wrap_content"
         android:id="@+id/textView"
@@ -61,7 +61,7 @@
         android:padding="4dp"
         android:textSize="10sp" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:text="$ kr me"
         android:layout_height="wrap_content"
         android:id="@+id/textView2"
@@ -124,7 +124,7 @@
                         android:layout_height="match_parent"
                         android:orientation="vertical">
 
-                        <TextView
+                        <android.support.v7.widget.AppCompatTextView
                             android:id="@+id/githubHeader"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -143,7 +143,7 @@
                             app:layout_constraintRight_toRightOf="parent"
                             app:layout_constraintTop_toTopOf="parent"/>
 
-                        <TextView
+                        <android.support.v7.widget.AppCompatTextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/terminal_bg_bottom"
@@ -170,7 +170,7 @@
                         android:layout_height="match_parent"
                         android:orientation="vertical">
 
-                        <TextView
+                        <android.support.v7.widget.AppCompatTextView
                             android:id="@+id/doHeader"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -189,7 +189,7 @@
                             app:layout_constraintRight_toRightOf="parent"
                             app:layout_constraintTop_toTopOf="parent"/>
 
-                        <TextView
+                        <android.support.v7.widget.AppCompatTextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/terminal_bg_bottom"
@@ -217,7 +217,7 @@
                         android:layout_height="match_parent"
                         android:orientation="vertical">
 
-                        <TextView
+                        <android.support.v7.widget.AppCompatTextView
                             android:id="@+id/awsHeader"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -236,7 +236,7 @@
                             app:layout_constraintRight_toRightOf="parent"
                             app:layout_constraintTop_toTopOf="parent"/>
 
-                        <TextView
+                        <android.support.v7.widget.AppCompatTextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/terminal_bg_bottom"
@@ -274,7 +274,7 @@
         app:layout_constraintTop_toBottomOf="@id/content"
         >
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginEnd="16dp"
@@ -294,7 +294,7 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
@@ -317,7 +317,7 @@
             app:layout_constraintTop_toBottomOf="@+id/awsHeader"/>
     </LinearLayout>
 
-    <ImageButton
+    <android.support.v7.widget.AppCompatImageButton
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/krcodesign"

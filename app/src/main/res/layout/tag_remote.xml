@@ -11,7 +11,7 @@
     app:layout_constraintBottom_toBottomOf="parent"
     >
 
-    <android.widget.ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/tagImage"
         android:layout_width="30dp"
         android:layout_height="30dp"
@@ -23,7 +23,7 @@
         android:layout_marginLeft="4dp"
         />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/tag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
         android:layout_below="@id/tag"
         android:layout_marginTop="4dp">
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
             android:layout_alignParentTop="true"
             />
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
             android:ellipsize="end"
             />
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
 
     </RelativeLayout>
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/tagger"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -119,7 +119,7 @@
         android:scrollHorizontally="true"
         android:ellipsize="end"
         />
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/taggerLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -135,7 +135,7 @@
         android:gravity="center_vertical"
         />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/object"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -157,7 +157,7 @@
         android:ellipsize="end"
         />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/objectLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -172,7 +172,7 @@
         android:gravity="center_vertical"
         />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/type"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -192,7 +192,7 @@
         android:ellipsize="end"
         />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/typeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

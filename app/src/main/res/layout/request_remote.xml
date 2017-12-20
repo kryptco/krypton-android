@@ -8,7 +8,7 @@
     android:gravity="center"
     >
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
         android:textColor="@color/appGray"
         android:textSize="10sp" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/workstationName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
         android:textSize="16sp"
         android:textStyle="bold" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
         android:layout_alignParentRight="true"
         />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/reject"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
         android:textSize="16sp"
         android:textStyle="bold" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/allowOnce"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
         android:textSize="16sp"
         android:textStyle="bold" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/allowTemporarily"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

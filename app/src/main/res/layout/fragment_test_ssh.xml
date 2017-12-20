@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context="co.krypt.kryptonite.onboarding.TestSSHFragment">
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:text="SKIP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginEnd="16dp" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:text="kking@Macbook Pro"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
         android:textAllCaps="true"
         android:textStyle="normal|bold" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:text="Now you are ready to SSH using Kryptonite!"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:text="Try it out!"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
         app:layout_constraintTop_toBottomOf="@+id/rule"
         android:layout_marginTop="16dp" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/tryText"
         android:text="$ ssh me.krypt.co"
         android:layout_height="wrap_content"
@@ -106,7 +106,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:text="Add my SSH public key to GitHub"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -118,7 +118,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tryText"
         android:layout_marginTop="16dp" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/githubText"
         android:text="$ kr github"
         android:layout_height="wrap_content"
@@ -142,7 +142,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp" />
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:text="DONE"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

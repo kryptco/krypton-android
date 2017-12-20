@@ -29,7 +29,7 @@
 
     </com.journeyapps.barcodescanner.BarcodeView>
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:srcCompat="@drawable/crosshair"
@@ -63,7 +63,7 @@
         android:animateLayoutChanges="true"
         tools:layout_constraintTop_creator="1">
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:text="Pairing..."
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
             android:layout_marginEnd="40dp"
             android:padding="20dp">
 
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/cameraPermissionTitle"
                 android:text="Camera Permissions Required"
                 android:layout_width="wrap_content"
@@ -113,7 +113,7 @@
                 android:textSize="22sp"
                 android:textStyle="normal|bold" />
 
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:text='Kryptonite needs the camera to scan the QR code shown by the "kr pair" command on your workstation.'
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -127,7 +127,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp" />
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                 android:text="Enable Camera"
                 android:id="@+id/requestCameraPermissionButton"
                 android:layout_width="wrap_content"

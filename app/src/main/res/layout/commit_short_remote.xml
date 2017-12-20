@@ -7,7 +7,7 @@
     android:orientation="vertical"
     >
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/hash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginBottom="2dp" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
         android:layout_toLeftOf="@+id/time"
         />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

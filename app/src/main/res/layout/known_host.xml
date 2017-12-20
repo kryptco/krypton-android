@@ -21,7 +21,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/hostNameText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_constraintTop_creator="1" />
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/hostKeyFingerprintText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
             app:layout_constraintTop_toBottomOf="@+id/hostNameText"
             app:layout_constraintVertical_bias="0.0" />
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/addedTimeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

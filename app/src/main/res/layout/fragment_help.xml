@@ -10,7 +10,7 @@
     app:layout_constraintLeft_toLeftOf="parent"
     android:background="@color/appWhite">
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:text="Done"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:textStyle="normal|bold" />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:layout_height="60dp"
         app:srcCompat="@drawable/kryptonite_icon_transparent_circle"
         android:id="@+id/imageView5"
@@ -44,7 +44,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:id="@+id/content">
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:text="Install and Pair"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
                         android:layout_height="match_parent"
                         android:orientation="vertical">
 
-                        <TextView
+                        <android.support.v7.widget.AppCompatTextView
                             android:text="@string/curl_install"
                             android:layout_height="wrap_content"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -118,7 +118,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical">
-                        <TextView
+                        <android.support.v7.widget.AppCompatTextView
                             android:text="$ brew install kryptco/tap/kr\n$ kr pair"
                             android:layout_height="wrap_content"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -144,7 +144,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical">
-                        <TextView
+                        <android.support.v7.widget.AppCompatTextView
                             android:text="$ npm install -g krd # mac only\n$ kr pair"
                             android:layout_height="wrap_content"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -171,7 +171,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical">
-                        <TextView
+                        <android.support.v7.widget.AppCompatTextView
                             android:text="$ # go to https://krypt.co/install\n$ kr pair"
                             android:layout_height="wrap_content"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -195,7 +195,7 @@
             </LinearLayout>
         </TabHost>
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:text="Pair with a new Device"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

@@ -6,7 +6,7 @@
     tools:context="co.krypt.kryptonite.onboarding.EnterEmailFragment">
 
     <!-- Dummy item to prevent EditText from receiving focus -->
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:text="SKIP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:alpha=".70" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:text="Your email will be used as the comment string in the SSH public key. This is how other people can identify your public key."
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
         android:textSize="10sp"
         android:textColor="@color/appGray" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:text="Your key pair is ready. Let's identify it with an email address."
         android:layout_width="0dp"
         android:layout_height="wrap_content"

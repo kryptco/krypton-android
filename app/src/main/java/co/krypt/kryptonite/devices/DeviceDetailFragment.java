@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import co.krypt.kryptonite.R;
@@ -97,7 +97,7 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
             }
         });
 
-        final Switch askUnknownHostsSwitch = (Switch) deviceCardView.findViewById(R.id.requireUnknownHostApprovalSwitch);
+        final SwitchCompat askUnknownHostsSwitch = (SwitchCompat) deviceCardView.findViewById(R.id.requireUnknownHostApprovalSwitch);
         askUnknownHostsSwitch.setChecked(new Pairings(getContext()).requireUnknownHostManualApproval(pairing));
         askUnknownHostsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

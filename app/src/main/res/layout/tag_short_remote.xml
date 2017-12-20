@@ -7,7 +7,7 @@
     android:orientation="vertical"
     >
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/tagImage"
         android:layout_width="30dp"
         android:layout_height="30dp"
@@ -19,7 +19,7 @@
         android:layout_marginLeft="8dp"
         />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/tag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
         android:ellipsize="end"
         />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
         android:layout_centerVertical="true"
         />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

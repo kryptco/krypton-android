@@ -12,7 +12,7 @@
     android:clickable="true"
     >
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:text="Done"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
         android:background="@android:color/transparent"
         android:layout_marginTop="8dp" />
 
-    <ImageButton
+    <android.support.v7.widget.AppCompatImageButton
         android:layout_width="30dp"
         app:srcCompat="@drawable/trash"
         android:id="@+id/deleteButton"
@@ -49,7 +49,7 @@
         android:layout_marginStart="16dp"
         app:layout_constraintLeft_toLeftOf="parent" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:text="kryptonite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <Button
+                <android.support.v7.widget.AppCompatButton
                     android:id="@+id/editKnownHostsButton"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -108,7 +108,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     />
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/knownHostsHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -121,7 +121,7 @@
                     app:layout_constraintRight_toLeftOf="@+id/editKnownHostsButton"
                     app:layout_constraintTop_toTopOf="parent"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/editKnownHostsText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -147,7 +147,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/knownHostsContainer">
 
-                <Switch
+                <android.support.v7.widget.SwitchCompat
                     android:id="@+id/disableAnalyticsSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -157,7 +157,7 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/disableAnalyticsHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -170,7 +170,7 @@
                     app:layout_constraintRight_toLeftOf="@+id/disableAnalyticsSwitch"
                     app:layout_constraintTop_toTopOf="parent"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/disableAnalyticsText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -196,7 +196,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/disableAnalyticsContainer">
 
-                <Switch
+                <android.support.v7.widget.SwitchCompat
                     android:id="@+id/enableAutoApproveNotificationsSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -206,7 +206,7 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/enableAutoApproveNotificationsHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -219,7 +219,7 @@
                     app:layout_constraintRight_toLeftOf="@+id/enableAutoApproveNotificationsSwitch"
                     app:layout_constraintTop_toTopOf="parent"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/enableAutoApproveNotificationsText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -245,7 +245,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/enableAutoApproveNotificationsContainer">
 
-                <Switch
+                <android.support.v7.widget.SwitchCompat
                     android:id="@+id/silenceNotificationsSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -255,7 +255,7 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/silenceNotificationsHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -268,7 +268,7 @@
                     app:layout_constraintRight_toLeftOf="@+id/silenceNotificationsSwitch"
                     app:layout_constraintTop_toTopOf="parent"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/silenceNotificationsText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -294,7 +294,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/silenceNotificationsContainer">
 
-                <ImageButton
+                <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/exportLogsButton"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -310,7 +310,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="?attr/actionModeShareDrawable"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/exportLogsHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -323,7 +323,7 @@
                     app:layout_constraintRight_toLeftOf="@+id/exportLogsButton"
                     app:layout_constraintTop_toTopOf="parent"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/exportLogsText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -353,7 +353,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" >
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/privacyButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -371,7 +371,7 @@
             app:layout_constraintRight_toRightOf="parent"
             tools:layout_editor_absoluteY="453dp"/>
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/softwareButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -389,7 +389,7 @@
             tools:layout_editor_absoluteY="453dp"
             />
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/contactUsButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -420,7 +420,7 @@
         android:layout_marginBottom="8dp">
     </android.support.constraint.ConstraintLayout>
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:text="krypt co"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -432,7 +432,7 @@
         android:textStyle="normal|bold"
         android:textSize="18sp" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:text="Made in Boston"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -445,7 +445,7 @@
         android:layout_marginTop="2dp"
         android:layout_marginBottom="8dp" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:text=""
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

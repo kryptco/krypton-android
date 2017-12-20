@@ -11,7 +11,7 @@
     app:layout_constraintBottom_toBottomOf="parent"
     >
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/hash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
         android:layout_below="@id/hash"
         android:layout_marginTop="4dp">
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
 
     </RelativeLayout>
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/authorLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
         android:gravity="center"
         />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/author"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -118,7 +118,7 @@
         android:ellipsize="end"
         android:layout_marginLeft="4dp" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/committer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -135,7 +135,7 @@
         android:scrollHorizontally="true"
         android:ellipsize="end"
         />
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/committerLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -150,7 +150,7 @@
         android:gravity="center"
         android:layout_marginLeft="8dp" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/tree"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -171,7 +171,7 @@
         android:ellipsize="end"
         />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/treeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -186,7 +186,7 @@
         android:gravity="center"
         android:layout_marginLeft="8dp" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/parent"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -206,7 +206,7 @@
         android:ellipsize="end"
         />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/parentLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
