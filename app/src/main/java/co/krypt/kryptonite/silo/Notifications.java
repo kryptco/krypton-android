@@ -1,5 +1,6 @@
 package co.krypt.kryptonite.silo;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -7,7 +8,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.widget.RemoteViews;
@@ -34,14 +37,36 @@ import co.krypt.kryptonite.protocol.SignRequest;
 import co.krypt.kryptonite.protocol.UnpairRequest;
 import co.krypt.kryptonite.settings.Settings;
 
-import static android.content.Context.NOTIFICATION_SERVICE;
-
 /**
  * Created by Kevin King on 12/5/16.
  * Copyright 2016. KryptCo, Inc.
  */
 
 public class Notifications {
+    private static final String ACTION_REQUIRED_CHANNEL_ID = "action-required";
+    private static final String APPROVED_CHANNEL_ID = "approved";
+    public static void setupNotificationChannels(Context context) {
+        if (Build.VERSION.SDK_INT >= 26) {
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationChannel actionRequiredChannel = new NotificationChannel(ACTION_REQUIRED_CHANNEL_ID,
+                    "Action Required",
+                    NotificationManager.IMPORTANCE_HIGH);
+            actionRequiredChannel.setDescription("Requests that require your explicit approval.");
+            notificationManager.createNotificationChannel(actionRequiredChannel);
+
+            NotificationChannel approvedChannel = new NotificationChannel(APPROVED_CHANNEL_ID,
+                    "Approved",
+                    NotificationManager.IMPORTANCE_HIGH);
+            approvedChannel.setDescription("Automatically approved requests.");
+            notificationManager.createNotificationChannel(approvedChannel);
+        }
+    }
+    private static NotificationCompat.Builder buildNotification(Context context, String channelId) {
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context, channelId)
+                        .setSmallIcon(R.drawable.ic_notification_white);
+        return mBuilder;
+    }
     public static void notifySuccess(Context context, Pairing pairing, Request request, @Nullable Log log) {
         if (!new Settings(context).approvedNotificationsEnabled()) {
             return;
@@ -49,8 +74,7 @@ public class Notifications {
         Intent resultIntent = new Intent(context, MainActivity.class);
         Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_notification_white)
+                buildNotification(context, APPROVED_CHANNEL_ID)
                         .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                         .setAutoCancel(true)
                         .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -123,8 +147,7 @@ public class Notifications {
                 );
         mBuilder.setContentIntent(resultPendingIntent);
 
-        NotificationManager mNotifyMgr =
-                (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        NotificationManagerCompat mNotifyMgr = NotificationManagerCompat.from(context);
         mNotifyMgr.notify(0, mBuilder.build());
     }
 
@@ -135,8 +158,7 @@ public class Notifications {
         Intent resultIntent = new Intent(context, MainActivity.class);
         Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_notification_white)
+                buildNotification(context, APPROVED_CHANNEL_ID)
                         .setColor(Color.RED)
                         .setContentTitle(title)
                         .setAutoCancel(true)
@@ -200,8 +222,7 @@ public class Notifications {
                 );
         mBuilder.setContentIntent(resultPendingIntent);
 
-        NotificationManager mNotifyMgr =
-                (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        NotificationManagerCompat mNotifyMgr = NotificationManagerCompat.from(context);
         mNotifyMgr.notify(0, mBuilder.build());
     }
 
@@ -244,8 +265,7 @@ public class Notifications {
 
         Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_notification_white)
+                buildNotification(context, ACTION_REQUIRED_CHANNEL_ID)
                         .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                         .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
@@ -322,8 +342,7 @@ public class Notifications {
                     .setVibrate(new long[]{0, 100, 100, 100});
         }
 
-        NotificationManager mNotifyMgr =
-                (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        NotificationManagerCompat mNotifyMgr = NotificationManagerCompat.from(context);
         mNotifyMgr.notify(request.requestID, 0, mBuilder.build());
     }
 
@@ -349,10 +368,9 @@ public class Notifications {
         }
 
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context)
+                buildNotification(context, APPROVED_CHANNEL_ID)
                         .setContentTitle("Exported PGP Public Key")
                         .setContentText(userIDs.trim())
-                        .setSmallIcon(R.drawable.ic_notification_white)
                         .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                         .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
@@ -366,14 +384,12 @@ public class Notifications {
                     .setVibrate(new long[]{0, 100, 100, 100});
         }
 
-        NotificationManager mNotifyMgr =
-                (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        NotificationManagerCompat mNotifyMgr = NotificationManagerCompat.from(context);
         mNotifyMgr.notify(1, mBuilder.build());
     }
 
     public static void clearRequest(Context context, Request request) {
-        NotificationManager mNotifyMgr =
-                (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        NotificationManagerCompat mNotifyMgr = NotificationManagerCompat.from(context);
         mNotifyMgr.cancel(request.requestID, 0);
     }
 }

@@ -35,6 +35,7 @@ import co.krypt.kryptonite.onboarding.OnboardingProgress;
 import co.krypt.kryptonite.pairing.PairFragment;
 import co.krypt.kryptonite.policy.LocalAuthentication;
 import co.krypt.kryptonite.settings.SettingsFragment;
+import co.krypt.kryptonite.silo.Notifications;
 import co.krypt.kryptonite.silo.Silo;
 import co.krypt.kryptonite.transport.BluetoothService;
 
@@ -69,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Notifications.setupNotificationChannels(getApplicationContext());
 
         silo = Silo.shared(getApplicationContext());
         startService(new Intent(this, BluetoothService.class));

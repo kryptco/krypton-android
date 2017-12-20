@@ -8,7 +8,7 @@
     android:gravity="center"
     >
 
-    <android.support.v7.widget.AppCompatTextView
+    <TextView
         android:id="@+id/header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
         android:textColor="@color/appGray"
         android:textSize="10sp" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <TextView
         android:id="@+id/workstationName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
         android:textSize="16sp"
         android:textStyle="bold" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <TextView
         android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

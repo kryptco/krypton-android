@@ -171,7 +171,7 @@ public class Silo {
 
     public synchronized void exit() {
         bluetoothTransport.stop();
-        if (responseDiskCacheByRequestID != null) {
+        if (responseDiskCacheByRequestID != null && responseDiskCacheByRequestID.isClosed()) {
             try {
                 responseDiskCacheByRequestID.close();
             } catch (IOException e) {
@@ -289,8 +289,15 @@ public class Silo {
         }).start();
     }
 
+    private synchronized void trySetupCache() throws IOException {
+        if (responseDiskCacheByRequestID == null || responseDiskCacheByRequestID.isClosed()) {
+            responseDiskCacheByRequestID = DiskLruCache.open(context.getCacheDir(), 0, 1, 2 << 19);
+        }
+    }
+
     private synchronized boolean sendCachedResponseIfPresent(Pairing pairing, Request request) throws CryptoException, TransportException, IOException {
-        if (responseDiskCacheByRequestID != null) {
+        trySetupCache();
+        if (responseDiskCacheByRequestID != null && !responseDiskCacheByRequestID.isClosed()) {
             DiskLruCache.Snapshot cacheEntry = responseDiskCacheByRequestID.get(request.requestIDCacheKey(pairing));
             if (cacheEntry != null) {
                 String cachedJSON = cacheEntry.getString(0);
@@ -583,7 +590,7 @@ public class Silo {
 
         response.snsEndpointARN = SNSTransport.getInstance(context).getEndpointARN();
 
-        if (responseDiskCacheByRequestID != null) {
+        if (responseDiskCacheByRequestID != null && !responseDiskCacheByRequestID.isClosed()) {
             DiskLruCache.Editor cacheEditor = responseDiskCacheByRequestID.edit(request.requestIDCacheKey(pairing));
             cacheEditor.set(0, JSON.toJson(response));
             cacheEditor.commit();
