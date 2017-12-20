@@ -37,7 +37,7 @@ public class HelpFragment extends Fragment {
                 activity.postCurrentActivePageView();
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom)
-                        .hide(self).remove(self).commit();
+                        .hide(self).commit();
             }
         });
 
