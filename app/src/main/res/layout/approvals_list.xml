@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/appWhite"
+    >
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/textView8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Temporarily Approved Requests"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@color/appBlack"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/workstationName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="desktop"
+        android:textAlignment="center"
+        android:textColor="@color/appGray"
+        android:textSize="18sp"/>
+
+    <LinearLayout
+        android:id="@+id/requestTypesContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bottom_border"
+            android:paddingBottom="4dp"
+            android:paddingLeft="16dp"
+            android:text="Request Types"
+            android:textAlignment="textStart"
+            android:textAllCaps="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView8"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/approvedRequestTypes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/textView9"
+            tools:layout_editor_absoluteX="0dp">
+
+        </android.support.v7.widget.RecyclerView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sshHostsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bottom_border"
+            android:paddingBottom="4dp"
+            android:paddingLeft="16dp"
+            android:text="SSH - Temporarily Approved Hosts"
+            android:textAlignment="textStart"
+            android:textAllCaps="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView8"
+            app:textAllCaps="true"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/approvedSSHHosts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/textView9"
+            tools:layout_editor_absoluteX="0dp">
+
+        </android.support.v7.widget.RecyclerView>
+    </LinearLayout>
+
+
+
+</android.support.v7.widget.LinearLayoutCompat>

@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#2B424B</color>
     <!--<color name="colorAccent">#11A9E4</color>-->
     <color name="colorAccent">#5BC894</color>
-    <color name="colorDestructive">#E4113C</color>
+    <color name="colorDestructive">#e4113c</color>
 
     <color name="appGreen">#5bc894</color>
     <color name="appWhite">#ffffff</color>

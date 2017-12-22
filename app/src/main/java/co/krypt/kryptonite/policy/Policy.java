@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.v4.util.Pair;
 import android.util.Log;
 
+import com.j256.ormlite.dao.Dao;
+
 import java.util.HashMap;
 
 import co.krypt.kryptonite.analytics.Analytics;
@@ -52,8 +54,8 @@ public class Policy {
 
     public static synchronized boolean isApprovedNow(Context context, Pairing pairing, Request request) {
         Silo silo = Silo.shared(context);
-        OpenDatabaseHelper db = silo.pairings().dbHelper;
         try {
+            Dao<Approval, Long> db = silo.pairings().dbHelper.getApprovalDao();
             return request.body.visit(new RequestBody.Visitor<Boolean, Exception>() {
                 @Override
                 public Boolean visit(MeRequest meRequest) throws Exception {

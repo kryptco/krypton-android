@@ -27,8 +27,11 @@ public class TimeUtils {
             millis %= DateUtils.SECOND_IN_MILLIS;
         }
         if (millis >= 1) {
-            str += millis + "mss ";
+            str += millis + "ms ";
         }
         return str.trim();
+    }
+    public static String formatDurationSeconds(long seconds) {
+        return formatDurationMillis(seconds * 1000);
     }
 }

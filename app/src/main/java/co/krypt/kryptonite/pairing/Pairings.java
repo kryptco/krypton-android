@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import co.krypt.kryptonite.analytics.Analytics;
 import co.krypt.kryptonite.db.OpenDatabaseHelper;
@@ -174,6 +175,18 @@ public class Pairings {
             HashSet<Pairing> pairings =  loadAllLocked();
             for (Pairing pairing: pairings) {
                 if (pairing.getUUIDString().equals(pairingUUID)) {
+                    return pairing;
+                }
+            }
+            return null;
+        }
+    }
+
+    public Pairing getPairing(UUID pairingUUID) {
+        synchronized (lock) {
+            HashSet<Pairing> pairings =  loadAllLocked();
+            for (Pairing pairing: pairings) {
+                if (pairing.uuid.equals(pairingUUID)) {
                     return pairing;
                 }
             }
