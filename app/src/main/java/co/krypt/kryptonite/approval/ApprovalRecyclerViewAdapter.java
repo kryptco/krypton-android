@@ -1,5 +1,6 @@
 package co.krypt.kryptonite.approval;
 
+import android.os.Looper;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +25,7 @@ public class ApprovalRecyclerViewAdapter extends RecyclerView.Adapter<ApprovalRe
     public void setItems(List<Approval> items) {
         this.items.clear();
         this.items.addAll(items);
-        notifyDataSetChanged();
+        new android.os.Handler(Looper.getMainLooper()).post(this::notifyDataSetChanged);
     }
 
     @Override
