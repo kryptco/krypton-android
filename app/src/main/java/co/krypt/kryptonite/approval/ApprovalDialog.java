@@ -12,7 +12,6 @@ import android.widget.TextView;
 import co.krypt.kryptonite.R;
 import co.krypt.kryptonite.pairing.Pairing;
 import co.krypt.kryptonite.policy.Policy;
-import co.krypt.kryptonite.protocol.GitSignRequest;
 import co.krypt.kryptonite.protocol.HostsRequest;
 import co.krypt.kryptonite.protocol.Request;
 import co.krypt.kryptonite.protocol.SignRequest;
@@ -42,6 +41,7 @@ public class ApprovalDialog {
         if (request.body instanceof HostsRequest) {
             allowText = "Allow";
         }
+        //  right button
         builder.setPositiveButton(allowText,
                 new DialogInterface.OnClickListener()
                 {
@@ -50,19 +50,21 @@ public class ApprovalDialog {
                     }
                 });
 
-        builder.setNeutralButton("Reject",
+        //  left button
+        builder.setNeutralButton("All for " + Policy.temporaryApprovalDuration(),
                 new DialogInterface.OnClickListener()
                 {
                     public void onClick(DialogInterface dialog, int id) {
-                        Policy.onAction(activity.getApplicationContext(), requestID, Policy.REJECT);
+                        Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ALL_TEMPORARILY);
                     }
                 });
 
-        if (request.body instanceof SignRequest || request.body instanceof GitSignRequest) {
-            builder.setNegativeButton("For " + Policy.temporaryApprovalDuration(),
+        //  middle button
+        if (request.body instanceof SignRequest) {
+            builder.setNegativeButton("This host for " + Policy.temporaryApprovalDuration(),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_TEMPORARILY);
+                            Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_THIS_TEMPORARILY);
                         }
                     });
         }

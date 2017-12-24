@@ -11,12 +11,10 @@ public class Session {
     public final Pairing pairing;
     public final Log lastApproval;
     public final boolean approved;
-    public final Long approvedUntilUnixSeconds;
 
-    public Session(Pairing pairing, Log lastApproval, boolean approved, Long approvedUntilUnixSeconds) {
+    public Session(Pairing pairing, Log lastApproval, boolean approved) {
         this.pairing = pairing;
         this.lastApproval = lastApproval;
         this.approved = approved;
-        this.approvedUntilUnixSeconds = approvedUntilUnixSeconds;
     }
 }

@@ -96,20 +96,9 @@
                     android:drawableTop="?android:attr/listChoiceIndicatorSingle"
                     android:text="Always ask"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@+id/temporaryApprovalButton"
-                    app:layout_constraintTop_toTopOf="parent"/>
-
-                <android.support.v7.widget.AppCompatRadioButton
-                    android:id="@+id/temporaryApprovalButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:button="@android:color/transparent"
-                    android:drawableTop="?android:attr/listChoiceIndicatorSingle"
-                    android:text="Don't ask for 1 hour"
-                    app:layout_constraintLeft_toRightOf="@+id/manualApprovalButton"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintRight_toLeftOf="@+id/automaticApprovalButton"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    />
 
                 <android.support.v7.widget.AppCompatRadioButton
                     android:id="@+id/automaticApprovalButton"
@@ -119,9 +108,10 @@
                     android:button="@android:color/transparent"
                     android:drawableTop="?android:attr/listChoiceIndicatorSingle"
                     android:text="Never ask"
-                    app:layout_constraintLeft_toRightOf="@+id/temporaryApprovalButton"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toRightOf="@id/manualApprovalButton"
+                    />
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout

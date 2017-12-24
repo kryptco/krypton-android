@@ -62,47 +62,46 @@
         />
 
     <TextView
-        android:id="@+id/reject"
+        android:id="@+id/allowOnce"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="4dp"
-        android:padding="10dp"
-        android:text="Reject"
-        android:textAllCaps="true"
-        android:textColor="@color/reject"
-        android:textSize="16sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/allowOnce"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/content"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="4dp"
         android:padding="10dp"
         android:text="Once"
         android:textAllCaps="true"
         android:textColor="@color/appGreen"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textSize="14sp"
+        android:textStyle="bold"/>
 
     <TextView
         android:id="@+id/allowTemporarily"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_below="@id/content"
+        android:layout_toRightOf="@+id/allowOnce"
+        android:layout_marginTop="4dp"
+        android:padding="10dp"
+        android:text="This host for 3h"
+        android:textAllCaps="true"
+        android:textColor="@color/appGreen"
+        android:textSize="14sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/allowAllTemporarily"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/allowTemporarily"
         android:layout_below="@id/content"
         android:layout_marginRight="10dp"
         android:layout_marginTop="4dp"
         android:padding="10dp"
-        android:text="For 1h"
+        android:text="All for 3h"
         android:textAllCaps="true"
         android:textColor="@color/appGreen"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:textStyle="bold"/>
 
 

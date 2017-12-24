@@ -113,47 +113,6 @@ public class Pairings {
         }
     }
 
-    public Long getApprovedUntil(String pairingUUID) {
-        synchronized (lock) {
-            long approvedUntil = preferences.getLong(pairingApprovedUntilKey(pairingUUID), -1);
-            if (approvedUntil == -1) {
-                return null;
-            }
-            return approvedUntil;
-        }
-    }
-
-    public Long getApprovedUntil(Pairing pairing) {
-        return getApprovedUntil(pairing.getUUIDString());
-    }
-
-    public void setApprovedUntil(String pairingUUID, Long time) {
-        synchronized (lock) {
-            preferences.edit()
-                    .putLong(pairingApprovedUntilKey(pairingUUID), time)
-                    .putBoolean(pairingApprovedKey(pairingUUID), false)
-                    .apply();
-        }
-    }
-
-    public void setApprovedUntil(Pairing pairing, Long time) {
-        setApprovedUntil(pairing.getUUIDString(), time);
-    }
-
-    public boolean isApprovedNow(String pairingUUID) {
-        synchronized (lock) {
-            if (getApproved(pairingUUID)) {
-                return true;
-            }
-            Long approvedUntil = getApprovedUntil(pairingUUID);
-            return approvedUntil != null && System.currentTimeMillis() < approvedUntil * 1000;
-        }
-    }
-
-    public boolean isApprovedNow(Pairing pairing) {
-        return isApprovedNow(pairing.getUUIDString());
-    }
-
    public HashSet<Session> loadAllSessions() {
         synchronized (lock) {
             HashSet<Pairing> pairings = loadAllLocked();
@@ -161,9 +120,9 @@ public class Pairings {
             for (Pairing pairing: pairings) {
                 List<Log> sortedLogs = getAllLogsTimeDescending(pairing);
                 if (sortedLogs.size() > 0) {
-                    sessions.add(new Session(pairing, sortedLogs.get(0), getApproved(pairing), getApprovedUntil(pairing)));
+                    sessions.add(new Session(pairing, sortedLogs.get(0), getApproved(pairing)));
                 } else {
-                    sessions.add(new Session(pairing, null, getApproved(pairing), getApprovedUntil(pairing)));
+                    sessions.add(new Session(pairing, null, getApproved(pairing)));
                 }
             }
             return sessions;

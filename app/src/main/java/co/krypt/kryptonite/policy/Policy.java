@@ -32,7 +32,10 @@ import co.krypt.kryptonite.silo.Silo;
 public class Policy {
     private static final String TAG = "Policy";
     public static final String APPROVE_ONCE = "approve-once";
-    public static final String APPROVE_TEMPORARILY = "approve-temporarily";
+    //  approve a subset of a request type, such as a single SSH user@host
+    public static final String APPROVE_THIS_TEMPORARILY = "approve-this-temporarily";
+    //  approve all requests of a specific type, such as all SSH requests
+    public static final String APPROVE_ALL_TEMPORARILY = "approve-all-temporarily";
     public static final String REJECT = "reject";
 
     public static final long TEMPORARY_APPROVAL_SECONDS = 3600*3;
@@ -56,6 +59,7 @@ public class Policy {
         Silo silo = Silo.shared(context);
         try {
             Dao<Approval, Long> db = silo.pairings().dbHelper.getApprovalDao();
+            boolean neverAsk = Silo.shared(context).pairings().getApproved(pairing);
             return request.body.visit(new RequestBody.Visitor<Boolean, Exception>() {
                 @Override
                 public Boolean visit(MeRequest meRequest) throws Exception {
@@ -66,18 +70,26 @@ public class Policy {
                 public Boolean visit(SignRequest signRequest) throws Exception {
                     String hostname = signRequest.verifiedHostNameOrDefault(null);
                     if (hostname == null) {
-                        return Approval.isSSHAnyHostApprovedNow(db, pairing.uuid, TEMPORARY_APPROVAL_SECONDS) &&
-                                !Silo.shared(context).pairings().requireUnknownHostManualApproval(pairing);
+                        if (!Silo.shared(context).pairings().requireUnknownHostManualApproval(pairing)) {
+                            return Approval.isSSHAnyHostApprovedNow(db, pairing.uuid, TEMPORARY_APPROVAL_SECONDS) ||
+                                    neverAsk;
+                        }
+                        return false;
                     }
                     if (!Silo.shared(context).hasKnownHost(hostname)) {
                         return false;
                     }
-                    return Approval.isSSHUserHostApprovedNow(db, pairing.uuid, TEMPORARY_APPROVAL_SECONDS, signRequest.user(), hostname);
+                    return Approval.isSSHUserHostApprovedNow(db, pairing.uuid, TEMPORARY_APPROVAL_SECONDS, signRequest.user(), hostname) ||
+                            Approval.isSSHAnyHostApprovedNow(db, pairing.uuid, TEMPORARY_APPROVAL_SECONDS) ||
+                            neverAsk;
                 }
 
                 @Override
                 public Boolean visit(GitSignRequest gitSignRequest) throws Exception {
                     try {
+                        if (neverAsk) {
+                            return true;
+                        }
                         return gitSignRequest.body.visit(new GitSignRequestBody.Visitor<Boolean, Exception>() {
                             @Override
                             public Boolean visit(CommitInfo commit) throws Exception {
@@ -136,7 +148,7 @@ public class Policy {
                     e.printStackTrace();
                 }
                 break;
-            case APPROVE_TEMPORARILY:
+            case APPROVE_ALL_TEMPORARILY:
                 try {
                     pairingAndRequest.second.body.visit(new RequestBody.Visitor<Void, Exception>() {
                         @Override
@@ -146,10 +158,7 @@ public class Policy {
 
                         @Override
                         public Void visit(SignRequest signRequest) throws Exception {
-                            String user = signRequest.user();
-                            if (signRequest.hostNameVerified && signRequest.hostAuth.hostNames.length > 0) {
-                                Approval.approveSSHUserHost(db, pairingAndRequest.first.uuid, user, signRequest.hostAuth.hostNames[0]);
-                            }
+                            Approval.approveSSHAnyHost(db, pairingAndRequest.first.uuid);
                             return null;
                         }
 
@@ -181,13 +190,50 @@ public class Policy {
                             return null;
                         }
                     });
-                    silo.pairings().setApprovedUntil(pairingAndRequest.first.getUUIDString(), (System.currentTimeMillis() / 1000) + TEMPORARY_APPROVAL_SECONDS);
                     silo.respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
                     new Analytics(context).postEvent(pairingAndRequest.second.analyticsCategory(), "background approve", "time", (int) TEMPORARY_APPROVAL_SECONDS, false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
+            case APPROVE_THIS_TEMPORARILY:
+                try {
+                    pairingAndRequest.second.body.visit(new RequestBody.Visitor<Void, Exception>() {
+                        @Override
+                        public Void visit(MeRequest meRequest) throws Exception {
+                            return null;
+                        }
+
+                        @Override
+                        public Void visit(SignRequest signRequest) throws Exception {
+                            String user = signRequest.user();
+                            if (signRequest.hostNameVerified && signRequest.hostAuth.hostNames.length > 0) {
+                                Approval.approveSSHUserHost(db, pairingAndRequest.first.uuid, user, signRequest.hostAuth.hostNames[0]);
+                            }
+                            return null;
+                        }
+
+                        @Override
+                        public Void visit(GitSignRequest gitSignRequest) throws Exception {
+                            return null;
+                        }
+
+                        @Override
+                        public Void visit(UnpairRequest unpairRequest) throws Exception {
+                            return null;
+                        }
+
+                        @Override
+                        public Void visit(HostsRequest hostsRequest) throws Exception {
+                            return null;
+                        }
+                    });
+                    silo.respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
+                    new Analytics(context).postEvent(pairingAndRequest.second.analyticsCategory(), "background approve this", "time", (int) TEMPORARY_APPROVAL_SECONDS, false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             case REJECT:
                 try {
                     silo.respondToRequest(pairingAndRequest.first, pairingAndRequest.second, false);

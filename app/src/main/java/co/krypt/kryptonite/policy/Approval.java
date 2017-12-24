@@ -98,6 +98,7 @@ public class Approval {
 
         DeleteBuilder deleteExisting = db.getApprovalDao().deleteBuilder();
         deleteExisting.where().eq("pairing_uuid", pairingUUID)
+                .and()
                 .eq("type", ApprovalType.SSH_ANY_HOST);
         deleteExisting.delete();
 

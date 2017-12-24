@@ -13,7 +13,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +43,6 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
 
     private SignatureLogRecyclerViewAdapter signatureLogAdapter;
     private RadioButton manualButton;
-    private RadioButton temporaryButton;
     private RadioButton automaticButton;
 
     private Button viewTemporaryApprovalsButton;
@@ -97,7 +95,6 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         deviceName.setText(pairing.workstationName);
 
         manualButton = (RadioButton) deviceCardView.findViewById(R.id.manualApprovalButton);
-        temporaryButton = (RadioButton) deviceCardView.findViewById(R.id.temporaryApprovalButton);
         automaticButton = (RadioButton) deviceCardView.findViewById(R.id.automaticApprovalButton);
 
         viewTemporaryApprovalsButton = deviceCardView.findViewById(R.id.temporaryApprovalsViewButton);
@@ -184,33 +181,16 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     private synchronized void updateApprovalButtons() {
         new Handler(Looper.getMainLooper()).post(() -> {
             manualButton.setOnCheckedChangeListener(null);
-            temporaryButton.setOnCheckedChangeListener(null);
             automaticButton.setOnCheckedChangeListener(null);
             Pairings pairings = Silo.shared(getContext()).pairings();
-            temporaryButton.setText("Don't ask for " + Policy.temporaryApprovalDuration());;
             if (pairings.getApproved(pairingUUID)) {
                 automaticButton.setChecked(true);
                 manualButton.setChecked(false);
-                temporaryButton.setChecked(false);
             } else {
-                Long approvedUntil = pairings.getApprovedUntil(pairingUUID);
-                if (approvedUntil == null || (approvedUntil * 1000 < System.currentTimeMillis())) {
-                    manualButton.setChecked(true);
-                    automaticButton.setChecked(false);
-                    temporaryButton.setChecked(false);
-                } else {
-                    temporaryButton.setChecked(true);
-                    automaticButton.setChecked(false);
-                    manualButton.setChecked(false);
-
-                    String temporaryApprovalText = "Ask " +
-                            DateUtils.getRelativeTimeSpanString(approvedUntil * 1000, System.currentTimeMillis(), 1000)
-                                    .toString().toLowerCase();
-                    temporaryButton.setText(temporaryApprovalText);
-                }
+                manualButton.setChecked(true);
+                automaticButton.setChecked(false);
             }
             manualButton.setOnCheckedChangeListener(this);
-            temporaryButton.setOnCheckedChangeListener(this);
             automaticButton.setOnCheckedChangeListener(this);
         });
 
@@ -273,10 +253,6 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
             if (buttonView == manualButton) {
                 pairings.setApproved(pairingUUID, false);
                 analytics.postEvent("manual approval", String.valueOf(true), null, null, false);
-            }
-            if (buttonView == temporaryButton) {
-                pairings.setApprovedUntil(pairingUUID, (System.currentTimeMillis() / 1000) + 3600);
-                analytics.postEvent("manual approval", "time", null, 3600, false);
             }
             if (buttonView == automaticButton) {
                 pairings.setApproved(pairingUUID, true);

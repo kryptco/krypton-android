@@ -237,13 +237,22 @@ public class Notifications {
                 R.drawable.ic_notification_checkmark, "Once", approveOncePendingIntent);
 
         Intent approveTemporarilyIntent = new Intent(context, UnlockScreenDummyActivity.class);
-        approveTemporarilyIntent.setAction(Policy.APPROVE_TEMPORARILY + "-" + request.requestID);
+        approveTemporarilyIntent.setAction(Policy.APPROVE_THIS_TEMPORARILY + "-" + request.requestID);
         approveTemporarilyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        approveTemporarilyIntent.putExtra("action", Policy.APPROVE_TEMPORARILY);
+        approveTemporarilyIntent.putExtra("action", Policy.APPROVE_THIS_TEMPORARILY);
         approveTemporarilyIntent.putExtra("requestID", request.requestID);
-        PendingIntent approveTemporarilyPendingIntent = PendingIntent.getActivity(context, (Policy.APPROVE_TEMPORARILY + "-" + request.requestID).hashCode(), approveTemporarilyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent approveTemporarilyPendingIntent = PendingIntent.getActivity(context, (Policy.APPROVE_THIS_TEMPORARILY + "-" + request.requestID).hashCode(), approveTemporarilyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Action.Builder approveTemporarilyBuilder = new NotificationCompat.Action.Builder(
-                R.drawable.ic_notification_stopwatch, "For " + Policy.temporaryApprovalDuration(), approveTemporarilyPendingIntent);
+                R.drawable.ic_notification_stopwatch, "This host for " + Policy.temporaryApprovalDuration(), approveTemporarilyPendingIntent);
+
+        Intent approveAllTemporarilyIntent = new Intent(context, UnlockScreenDummyActivity.class);
+        approveAllTemporarilyIntent.setAction(Policy.APPROVE_ALL_TEMPORARILY + "-" + request.requestID);
+        approveAllTemporarilyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        approveAllTemporarilyIntent.putExtra("action", Policy.APPROVE_ALL_TEMPORARILY);
+        approveAllTemporarilyIntent.putExtra("requestID", request.requestID);
+        PendingIntent approveAllTemporarilyPendingIntent = PendingIntent.getActivity(context, (Policy.APPROVE_ALL_TEMPORARILY + "-" + request.requestID).hashCode(), approveAllTemporarilyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Action.Builder approveAllTemporarilyBuilder = new NotificationCompat.Action.Builder(
+                R.drawable.ic_notification_stopwatch, "All for " + Policy.temporaryApprovalDuration(), approveAllTemporarilyPendingIntent);
 
         Intent rejectIntent = new Intent(context, NoAuthReceiver.class);
         rejectIntent.setAction(Policy.REJECT + "-" + request.requestID);
@@ -251,8 +260,6 @@ public class Notifications {
         rejectIntent.putExtra("action", Policy.REJECT);
         rejectIntent.putExtra("requestID", request.requestID);
         PendingIntent rejectPendingIntent = PendingIntent.getBroadcast(context, (Policy.REJECT + "-" + request.requestID).hashCode(), rejectIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-
 
         Intent clickIntent = new Intent(context, MainActivity.class);
         if (new OnboardingProgress(context).inProgress()) {
@@ -283,7 +290,7 @@ public class Notifications {
 
             @Override
             public Void visit(SignRequest signRequest) throws RuntimeException {
-                mBuilder .addAction(approveTemporarilyBuilder.build());
+                mBuilder.addAction(approveTemporarilyBuilder.build());
                 mBuilder
                         .setContentTitle("Allow SSH Login?")
                         .setContentText(pairing.workstationName + ": " + signRequest.display());
@@ -295,17 +302,19 @@ public class Notifications {
                 RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.request_remote);
                 remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
                 request.fillRemoteViews(remoteViewsBig, null, null);
-                remoteViewsBig.setOnClickPendingIntent(R.id.reject, rejectPendingIntent);
                 remoteViewsBig.setOnClickPendingIntent(R.id.allowOnce, approveOncePendingIntent);
-                remoteViewsBig.setTextViewText(R.id.allowTemporarily, "For " + Policy.temporaryApprovalDuration());
+                remoteViewsBig.setTextViewText(R.id.allowAllTemporarily, "All for " + Policy.temporaryApprovalDuration());
+                remoteViewsBig.setOnClickPendingIntent(R.id.allowAllTemporarily, approveAllTemporarilyPendingIntent);
+
                 remoteViewsBig.setOnClickPendingIntent(R.id.allowTemporarily, approveTemporarilyPendingIntent);
+                remoteViewsBig.setTextViewText(R.id.allowTemporarily, "This host for " + Policy.temporaryApprovalDuration());
+
                 mBuilder.setCustomBigContentView(remoteViewsBig);
                 return null;
             }
 
             @Override
             public Void visit(GitSignRequest gitSignRequest) throws RuntimeException {
-                mBuilder.addAction(approveTemporarilyBuilder.build());
                 mBuilder.setContentTitle("Allow " + gitSignRequest.title() + "?")
                         .setContentText(pairing.workstationName + ": " + gitSignRequest.display());
 
@@ -317,10 +326,12 @@ public class Notifications {
                 RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.request_remote);
                 remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
                 gitSignRequest.fillRemoteViews(remoteViewsBig, null, null);
-                remoteViewsBig.setOnClickPendingIntent(R.id.reject, rejectPendingIntent);
                 remoteViewsBig.setOnClickPendingIntent(R.id.allowOnce, approveOncePendingIntent);
-                remoteViewsBig.setTextViewText(R.id.allowTemporarily, "For " + Policy.temporaryApprovalDuration());
-                remoteViewsBig.setOnClickPendingIntent(R.id.allowTemporarily, approveTemporarilyPendingIntent);
+                remoteViewsBig.setTextViewText(R.id.allowAllTemporarily, "All for " + Policy.temporaryApprovalDuration());
+                remoteViewsBig.setOnClickPendingIntent(R.id.allowAllTemporarily, approveAllTemporarilyPendingIntent);
+
+                remoteViewsBig.setTextViewText(R.id.allowTemporarily, "");
+
                 mBuilder.setCustomBigContentView(remoteViewsBig);
                 return null;
             }
@@ -341,6 +352,8 @@ public class Notifications {
             mBuilder.setSound(notificationSound)
                     .setVibrate(new long[]{0, 100, 100, 100});
         }
+
+        mBuilder.addAction(approveAllTemporarilyBuilder.build());
 
         NotificationManagerCompat mNotifyMgr = NotificationManagerCompat.from(context);
         mNotifyMgr.notify(request.requestID, 0, mBuilder.build());
