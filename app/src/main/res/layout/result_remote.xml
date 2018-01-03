@@ -18,12 +18,14 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/open_sans_bold"
         android:gravity="center_horizontal"
         android:text="Allowed Request From"
         android:textAllCaps="true"
-        android:textColor="@color/appGray"
-        android:textSize="10sp" />
+        android:textColor="@color/appBlack"
+        android:textSize="10sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/workstationName"
@@ -34,8 +36,9 @@
         android:layout_below="@id/header"
         android:gravity="center_horizontal"
         android:text="Computer Name"
+        android:fontFamily="@font/open_sans_bold"
+        android:textColor="@color/appBlack"
         android:textAllCaps="true"
-        android:textColor="@color/appGray"
         android:textSize="16sp"
         android:textStyle="bold" />
 

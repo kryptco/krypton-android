@@ -192,7 +192,7 @@ public class Approval {
     public String display() {
         switch (type) {
             case SSH_USER_HOST:
-                return user + "@" + host;
+                return user + " @ " + host;
             case SSH_ANY_HOST:
                 return "SSH Logins To Any Host";
             case GIT_COMMIT_SIGNATURES:

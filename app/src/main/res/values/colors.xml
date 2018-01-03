@@ -9,7 +9,8 @@
     <color name="appGreen">#5bc894</color>
     <color name="appWhite">#ffffff</color>
     <color name="appGray">#AAAAAA</color>
-    <color name="appBlack">#464646</color>
+    <color name="appBlack">#343434</color>
+    <color name="appShadowGray">#38aaaaaa</color>
 
     <color name="reject">#FF6361</color>
 

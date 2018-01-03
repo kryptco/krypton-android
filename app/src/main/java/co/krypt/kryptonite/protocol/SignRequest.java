@@ -132,7 +132,7 @@ public class SignRequest extends RequestBody {
         String hostName = firstHostnameIfExists() != null ? firstHostnameIfExists() : "unknown host";
         String user = user();
         if (user != null) {
-            return user + "@" + hostName;
+            return user + " @ " + hostName;
         }
         return hostName;
     }
@@ -141,7 +141,7 @@ public class SignRequest extends RequestBody {
         String hostName = "unknown host";
         String user = user();
         if (user != null) {
-            return user + "@" + hostName;
+            return user + " @ " + hostName;
         }
         return hostName;
     }
@@ -182,7 +182,7 @@ public class SignRequest extends RequestBody {
         View sshView = View.inflate(container.getContext(), R.layout.ssh_short, container);
 
         TextView messageText = (TextView) sshView.findViewById(R.id.message);
-        messageText.setText(userOrInvalid() + "@" + verifiedHostNameOrDefault("unknown host"));
+        messageText.setText(userOrInvalid() + " @ " + verifiedHostNameOrDefault("unknown host"));
         messageText.setMaxLines(Integer.MAX_VALUE);
 
         TextView timeText = (TextView) sshView.findViewById(R.id.time);
@@ -202,7 +202,7 @@ public class SignRequest extends RequestBody {
 
         remoteViewsContainer.addView(R.id.content, remoteViews);
 
-        remoteViews.setTextViewText(R.id.message, userOrInvalid() + "@" + verifiedHostNameOrDefault("unknown host"));
+        remoteViews.setTextViewText(R.id.message, userOrInvalid() + " @ " + verifiedHostNameOrDefault("unknown host"));
 
         if (approved != null && !approved) {
             remoteViews.setInt(R.id.label, "setBackgroundResource", R.drawable.hash_red_bg);

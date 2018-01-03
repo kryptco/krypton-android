@@ -17,6 +17,7 @@
         android:text="Temporarily Approved Requests"
         android:textAlignment="center"
         android:textAllCaps="false"
+        android:fontFamily="@font/open_sans_bold"
         android:textColor="@color/appBlack"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -29,8 +30,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="desktop"
+        android:textAllCaps="true"
         android:textAlignment="center"
-        android:textColor="@color/appGray"
+        android:textColor="@color/appBlack"
+        android:fontFamily="@font/open_sans_semibold"
         android:textSize="18sp"/>
 
     <LinearLayout
@@ -44,14 +47,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="@drawable/bottom_border"
+            android:fontFamily="@font/open_sans"
             android:paddingBottom="4dp"
-            android:paddingLeft="16dp"
+            android:paddingLeft="8dp"
             android:text="Request Types"
             android:textAlignment="textStart"
             android:textAllCaps="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView8"/>
+            app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/approvedRequestTypes"
@@ -74,15 +78,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="@drawable/bottom_border"
+            android:fontFamily="@font/open_sans"
             android:paddingBottom="4dp"
-            android:paddingLeft="16dp"
+            android:paddingLeft="8dp"
             android:text="SSH - Temporarily Approved Hosts"
             android:textAlignment="textStart"
             android:textAllCaps="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView8"
-            app:textAllCaps="true"/>
+            app:textAllCaps="true" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/approvedSSHHosts"

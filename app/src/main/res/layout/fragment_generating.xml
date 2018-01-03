@@ -11,6 +11,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/header"
         android:text="Generating a key pair"
+        android:fontFamily="@font/open_sans_bold"
+        android:textColor="@color/appBlack"
         android:textStyle="normal|bold"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -19,49 +21,56 @@
         android:layout_marginTop="16dp" />
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/privateKeyContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/animationContainer"
+        android:layout_marginBottom="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         app:layout_constraintBottom_toTopOf="@+id/publicKeyContainer"
-        android:id="@+id/privateKeyContainer"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <android.support.v7.widget.AppCompatTextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:id="@+id/privateKeyHeader"
-            android:text="Private Key"
-            android:textStyle="normal|bold"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/privateKeyImage"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/privateKeyDesc"
+            android:layout_width="0dp"
+            android:layout_height="34dp"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/open_sans_semibold"
+            android:text="Public Key"
+            android:textColor="@color/appBlack"
             android:textSize="20sp"
-            android:layout_marginStart="16dp" />
+            app:layout_constraintBottom_toTopOf="@+id/privateKeyDesc"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/privateKeyImage"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.v7.widget.AppCompatTextView
-            android:text="Never leaves your phone. The private key is used to authenticate you in an ssh session."
+            android:id="@+id/privateKeyDesc"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/privateKeyDesc"
-            app:layout_constraintTop_toBottomOf="@+id/privateKeyHeader"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/open_sans_light"
+            android:text="Add your public key to servers, web services such as GitHub, or share it with peers manually."
+            android:textColor="@color/appBlack"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="@+id/privateKeyHeader"
-            android:textSize="16sp" />
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/privateKeyImage"
+            app:layout_constraintTop_toBottomOf="@+id/privateKeyHeader" />
 
         <android.support.v7.widget.AppCompatImageView
-            android:layout_height="85dp"
-            app:srcCompat="@drawable/shield_outer"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/privateKeyHeader"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:id="@+id/privateKeyImage"
-            android:layout_width="75dp" />
+            android:layout_width="75dp"
+            android:layout_height="85dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/shield_outer" />
     </android.support.constraint.ConstraintLayout>
 
     <FrameLayout
@@ -84,52 +93,57 @@
     </FrameLayout>
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/publicKeyContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:id="@+id/publicKeyContainer"
-        android:layout_marginEnd="32dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/privateKeyContainer"
+        android:layout_marginBottom="50dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginStart="32dp"
-        app:layout_constraintLeft_toLeftOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <android.support.v7.widget.AppCompatImageView
-            android:layout_height="40dp"
-            app:srcCompat="@drawable/shield_inner"
             android:id="@+id/publicKeyImage"
+            android:layout_width="75dp"
+            android:layout_height="40dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/publicKeyHeader"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginStart="16dp"
-            android:layout_width="40dp" />
+            app:srcCompat="@drawable/shield_inner" />
 
         <android.support.v7.widget.AppCompatTextView
-            android:text="Public Key"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:id="@+id/publicKeyHeader"
-            android:textStyle="normal|bold"
-            android:textSize="20sp"
-
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/publicKeyImage"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/publicKeyDesc"
-            app:layout_constraintHorizontal_bias="1.0"
-            android:layout_marginStart="32dp" />
-
-        <android.support.v7.widget.AppCompatTextView
-            android:text="Add your public key to servers, web services such as GitHub, or share it with peers manually."
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/publicKeyDesc"
-            app:layout_constraintTop_toBottomOf="@+id/publicKeyHeader"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="Private Key"
+
+            android:textColor="@color/appGreen"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/publicKeyDesc"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/publicKeyImage"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread_inside" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/publicKeyDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/open_sans_light"
+            android:text="Never leaves your phone. The private key is used to authenticate you in an ssh session."
+            android:textColor="@color/appBlack"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="@+id/publicKeyHeader"
-            android:textSize="16sp" />
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/publicKeyImage"
+            app:layout_constraintTop_toBottomOf="@+id/publicKeyHeader" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

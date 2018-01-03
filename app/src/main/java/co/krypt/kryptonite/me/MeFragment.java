@@ -12,8 +12,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TabHost;
-import android.widget.TabWidget;
+import android.widget.Button;
 import android.widget.TextView;
 
 import co.krypt.kryptonite.R;
@@ -25,6 +24,12 @@ public class MeFragment extends Fragment {
     private static final String TAG = "MeFragment";
     private EditText profileEmail;
     private ImageButton shareButton;
+
+    private Button githubButton;
+    private Button digitaloceanButton;
+    private Button awsButton;
+
+    private TextView addKeyCommandTextView;
 
     public MeFragment() { }
 
@@ -65,42 +70,50 @@ public class MeFragment extends Fragment {
             Log.e(TAG, "no me profile");
         }
 
-        TabHost host = (TabHost) v.findViewById(R.id.addKeyInstructions);
-        host.setup();
+        githubButton = v.findViewById(R.id.githubButton);
+        digitaloceanButton = v.findViewById(R.id.digitaloceanButton);
+        awsButton = v.findViewById(R.id.awsButton);
+        addKeyCommandTextView = v.findViewById(R.id.addKeyTextView);
 
-        //Tab 1
-        TabHost.TabSpec spec = host.newTabSpec("GitHub");
-        spec.setContent(R.id.tab1);
-        spec.setIndicator("GitHub");
-        host.addTab(spec);
-
-        //Tab 2
-        spec = host.newTabSpec("DigitalOcean");
-        spec.setContent(R.id.tab2);
-        spec.setIndicator("DigitalOcean");
-        host.addTab(spec);
-
-        //Tab 3
-        spec = host.newTabSpec("AWS");
-        spec.setContent(R.id.tab3);
-        spec.setIndicator("AWS");
-        host.addTab(spec);
-
-        host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+        githubButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onTabChanged(String tabId) {
-                new Analytics(getContext()).postEvent("add key", tabId, null, null, false);
+            public void onClick(View v) {
+                addKeyCommandTextView.setText("$ kr github");
+
+                githubButton.setTextColor(getResources().getColor(R.color.appGreen));
+                digitaloceanButton.setTextColor(getResources().getColor(R.color.appGray));
+                awsButton.setTextColor(getResources().getColor(R.color.appGray));
+
+                new Analytics(getContext()).postEvent("add key", "GitHub", null, null, false);
             }
         });
 
-        final TabWidget tw = (TabWidget)host.findViewById(android.R.id.tabs);
-        for (int i = 0; i < tw.getChildCount(); ++i)
-        {
-            final View tabView = tw.getChildTabViewAt(i);
-            tabView.getLayoutParams().height = (int) (40 * getResources().getDisplayMetrics().density);
-            final TextView tv = (TextView)tabView.findViewById(android.R.id.title);
-            tv.setTextSize(12);
-        }
+        digitaloceanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addKeyCommandTextView.setText("$ kr digitalocean");
+
+                digitaloceanButton.setTextColor(getResources().getColor(R.color.appGreen));
+                githubButton.setTextColor(getResources().getColor(R.color.appGray));
+                awsButton.setTextColor(getResources().getColor(R.color.appGray));
+
+                new Analytics(getContext()).postEvent("add key", "DigitalOcean", null, null, false);
+            }
+        });
+
+        awsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addKeyCommandTextView.setText("$ kr aws");
+
+                awsButton.setTextColor(getResources().getColor(R.color.appGreen));
+                githubButton.setTextColor(getResources().getColor(R.color.appGray));
+                digitaloceanButton.setTextColor(getResources().getColor(R.color.appGray));
+
+                new Analytics(getContext()).postEvent("add key", "AWS", null, null, false);
+            }
+        });
+
 
         shareButton = (ImageButton) v.findViewById(R.id.shareButton);
         shareButton.setOnClickListener(new View.OnClickListener() {

@@ -15,8 +15,7 @@
     app:layoutManager="LinearLayoutManager"
     tools:context="co.krypt.kryptonite.devices.DevicesFragment">
 
-    <android.support.v7.widget.CardView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/deviceCard"
@@ -32,103 +31,101 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:paddingTop="15dp"
+            android:paddingBottom="0dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/imacImage"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/imac"/>
+            <View
+                android:id="@+id/view"
+                android:layout_width="0dp"
+                android:layout_height="3dp"
+                android:background="@color/appGreen"
+                app:layout_constraintEnd_toEndOf="@+id/deviceName"
+                app:layout_constraintStart_toStartOf="@+id/deviceName"
+                app:layout_constraintTop_toBottomOf="@+id/deviceName" />
 
             <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/deviceName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:ellipsize="end"
+                android:fontFamily="@font/open_sans_bold"
                 android:maxLines="1"
                 android:text="TextView"
                 android:textAlignment="center"
+                android:textAllCaps="true"
                 android:textColor="@color/appBlack"
                 android:textSize="22sp"
-                app:layout_constraintBottom_toBottomOf="@+id/imacImage"
-                app:layout_constraintLeft_toRightOf="@+id/imacImage"
-                app:layout_constraintTop_toTopOf="@+id/imacImage"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:layout_constraintLeft_creator="1"
-                tools:layout_constraintTop_creator="1"/>
+                tools:layout_constraintTop_creator="1" />
 
             <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/approvalLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="32dp"
+                android:fontFamily="@font/open_sans_semibold"
                 android:text="When should Kryptonite ask for your approval?"
-                android:textAlignment="center"
+                android:textAlignment="textStart"
                 android:textColor="@color/appBlack"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imacImage"/>
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/view"
+                app:layout_constraintTop_toBottomOf="@+id/deviceName" />
 
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/approvalSettingsLayout"
-                android:layout_width="0dp"
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/manualApprovalButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minHeight="0dp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/approvalLabel">
+                android:layout_marginTop="16dp"
+                android:background="@android:color/transparent"
+                android:button="@android:color/transparent"
+                android:drawableTop="?android:attr/listChoiceIndicatorSingle"
+                android:fontFamily="@font/open_sans"
+                android:text="Always ask"
+                android:textColor="@color/appBlack"
+                app:layout_constraintEnd_toStartOf="@+id/automaticApprovalButton"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/temporaryApprovalsContainer" />
 
-                <android.support.v7.widget.AppCompatRadioButton
-                    android:id="@+id/manualApprovalButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:button="@android:color/transparent"
-                    android:drawableTop="?android:attr/listChoiceIndicatorSingle"
-                    android:text="Always ask"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintRight_toLeftOf="@+id/automaticApprovalButton"
-                    />
-
-                <android.support.v7.widget.AppCompatRadioButton
-                    android:id="@+id/automaticApprovalButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:button="@android:color/transparent"
-                    android:drawableTop="?android:attr/listChoiceIndicatorSingle"
-                    android:text="Never ask"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintLeft_toRightOf="@id/manualApprovalButton"
-                    />
-            </android.support.constraint.ConstraintLayout>
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/automaticApprovalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:background="@android:color/transparent"
+                android:button="@android:color/transparent"
+                android:drawableTop="?android:attr/listChoiceIndicatorSingle"
+                android:fontFamily="@font/open_sans"
+                android:text="Never ask"
+                android:textColor="@color/appBlack"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/manualApprovalButton"
+                app:layout_constraintTop_toTopOf="@+id/manualApprovalButton" />
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/temporaryApprovalsContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
                 android:background="@color/appWhite"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/approvalSettingsLayout">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/approvalLabel"
+                app:layout_constraintTop_toBottomOf="@+id/approvalLabel">
 
                 <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/temporaryApprovalsHeader"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="8dp"
+                    android:fontFamily="@font/open_sans"
                     android:text="* some requests are temporarily approved"
                     android:textAlignment="textStart"
                     android:textColor="@color/appGray"
@@ -136,8 +133,8 @@
                     android:textStyle="normal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@+id/temporaryApprovalsViewButton"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
 
                 <android.support.v7.widget.AppCompatButton
@@ -145,8 +142,9 @@
                     style="@android:style/Widget.Holo.TextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="8dp"
+                    android:layout_marginStart="4dp"
                     android:background="@android:color/transparent"
+                    android:fontFamily="@font/open_sans_bold"
                     android:minHeight="0dp"
                     android:minWidth="0dp"
                     android:padding="2dp"
@@ -154,15 +152,17 @@
                     android:textAllCaps="false"
                     android:textColor="@color/appGray"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintRight_toLeftOf="@+id/temporaryApprovalsResetButton"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintStart_toEndOf="@+id/temporaryApprovalsHeader"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <android.support.v7.widget.AppCompatButton
                     android:id="@+id/temporaryApprovalsResetButton"
                     style="@android:style/Widget.Holo.TextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
                     android:background="@android:color/transparent"
+                    android:fontFamily="@font/open_sans_bold"
                     android:minHeight="0dp"
                     android:minWidth="0dp"
                     android:padding="2dp"
@@ -170,8 +170,8 @@
                     android:textAllCaps="false"
                     android:textColor="@android:color/holo_red_light"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintStart_toEndOf="@+id/temporaryApprovalsViewButton"
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -179,44 +179,44 @@
                 android:id="@+id/requireUnknownHostApprovalContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="32dp"
                 android:background="@color/appWhite"
-                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/temporaryApprovalsContainer">
+                app:layout_constraintStart_toStartOf="@+id/approvalLabel"
+                app:layout_constraintTop_toBottomOf="@+id/manualApprovalButton">
 
                 <View
                     android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:background="@color/appGray"
+                    android:layout_height="2dp"
+                    android:background="@color/appGreen"
+                    android:visibility="gone"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/requireUnknownHostApprovalSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginTop="6dp"
                     android:text=""
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="@+id/requireUnknownHostApprovalHeader" />
 
                 <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/requireUnknownHostApprovalHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="6dp"
+                    android:fontFamily="@font/open_sans_semibold"
                     android:text="Always ask for unknown hosts"
+                    android:textColor="@color/appBlack"
+                    android:textSize="16sp"
                     android:textStyle="normal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toLeftOf="@+id/requireUnknownHostApprovalSwitch"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -224,16 +224,19 @@
                 android:id="@+id/unpairButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
+                android:layout_marginTop="32dp"
                 android:background="@drawable/flat_button"
                 android:backgroundTint="@android:color/holo_red_light"
+                android:fontFamily="@font/open_sans_bold"
                 android:minHeight="36dip"
                 android:text="Unpair"
                 android:textColor="@android:color/holo_red_light"
                 android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/requireUnknownHostApprovalContainer"/>
+                app:layout_constraintTop_toBottomOf="@+id/requireUnknownHostApprovalContainer" />
 
         </android.support.constraint.ConstraintLayout>
 

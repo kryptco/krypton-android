@@ -133,7 +133,7 @@ public class SSHSignatureLog implements Log {
     }
 
     public String userHostText() {
-        return (user != null ? user + "@" : "") +
+        return (user != null ? user + " @ " : "") +
                 (hostNameVerified ? hostName : "unknown host");
     }
 

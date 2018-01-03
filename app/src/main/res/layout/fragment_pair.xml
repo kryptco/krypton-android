@@ -88,55 +88,69 @@
         app:layout_constraintRight_toRightOf="parent"
         android:id="@+id/cameraPermissionInfo"
         android:background="@color/appWhite"
-        android:visibility="gone">
+        android:visibility="gone"
+        >
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:padding="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
-            android:padding="20dp">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/cameraPermissionTitle"
-                android:text="Camera Permissions Required"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/open_sans_bold"
+                android:text="Camera Permissions Required"
+                android:textAlignment="center"
+                android:textColor="@color/appBlack"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toTopOf="@+id/cameraPermissionExplanation"
                 app:layout_constraintRight_toRightOf="parent"
-                android:textSize="22sp"
-                android:textStyle="normal|bold" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="spread" />
 
             <android.support.v7.widget.AppCompatTextView
-                android:text='Kryptonite needs the camera to scan the QR code shown by the "kr pair" command on your workstation.'
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/cameraPermissionExplanation"
-                app:layout_constraintLeft_toLeftOf="@+id/cameraPermissionTitle"
-                app:layout_constraintTop_toBottomOf="@+id/cameraPermissionTitle"
-                app:layout_constraintBottom_toTopOf="@+id/requestCameraPermissionButton"
-                app:layout_constraintRight_toRightOf="@+id/cameraPermissionTitle"
-
-                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="72dp"
+                android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp" />
+                android:fontFamily="@font/open_sans"
+                android:text='Kryptonite needs the camera to scan the QR code shown by the "kr pair" command on your workstation.'
+                android:textAlignment="center"
+                android:textColor="@color/appBlack"
+
+                android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@+id/requestCameraPermissionButton"
+                app:layout_constraintLeft_toLeftOf="@+id/cameraPermissionTitle"
+                app:layout_constraintRight_toRightOf="@+id/cameraPermissionTitle"
+                app:layout_constraintTop_toBottomOf="@+id/cameraPermissionTitle" />
 
             <android.support.v7.widget.AppCompatButton
-                android:text="Enable Camera"
                 android:id="@+id/requestCameraPermissionButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cameraPermissionExplanation"
+                android:layout_height="40dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/appGreen"
+                android:fontFamily="@font/code_bold"
+                android:padding="8dp"
+                android:text="Enable Camera"
+                android:textColor="@color/appWhite"
+
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                 />
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent" />
 
         </android.support.constraint.ConstraintLayout>
 

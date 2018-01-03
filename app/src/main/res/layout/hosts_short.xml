@@ -23,6 +23,7 @@
         android:text="hosts"
         android:textAllCaps="false"
         android:textColor="@color/appWhite"
+        android:fontFamily="@font/open_sans_bold"
         android:textSize="16sp"
         android:textStyle="bold"
         />
@@ -36,7 +37,7 @@
         android:layout_toLeftOf="@+id/time"
         android:layout_toRightOf="@id/label"
         android:ellipsize="end"
-        android:fontFamily="monospace"
+        android:fontFamily="@font/open_sans_bold"
         android:maxLines="1"
         android:scrollHorizontally="true"
         android:text="message"

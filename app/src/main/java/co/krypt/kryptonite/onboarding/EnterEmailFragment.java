@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
@@ -43,6 +45,13 @@ public class EnterEmailFragment extends Fragment {
     public EnterEmailFragment() {
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(profileEmail, InputMethodManager.SHOW_IMPLICIT);
+
+        super.onViewCreated(view, savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,6 +87,7 @@ public class EnterEmailFragment extends Fragment {
                 onEmailChanged();
             }
         });
+
         Profile me = new MeStorage(getContext()).load();
         if (me != null && me.email != null) {
             profileEmail.setText(me.email);
@@ -85,20 +95,6 @@ public class EnterEmailFragment extends Fragment {
             profileEmail.setText("");
         }
 
-        MLRoundedImageView identiconImage = (MLRoundedImageView) root.findViewById(R.id.identicon);
-        try {
-            SSHKeyPairI keyPair = KeyManager.loadMeRSAOrEdKeyPair(getContext());
-            BigInteger hash = new BigInteger(keyPair.publicKeyFingerprint());
-
-            NineBlockIdenticonRenderer renderer = new NineBlockIdenticonRenderer();
-            renderer.setBackgroundColor(Color.TRANSPARENT);
-            renderer.setPatchSize(80);
-            Bitmap identicon = renderer.render(hash, 2000);
-            identiconImage.setImageBitmap(identicon);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return root;
     }
 
@@ -129,7 +125,7 @@ public class EnterEmailFragment extends Fragment {
     private void onEmailChanged() {
         String email = profileEmail.getText().toString().trim();
         if (email.length() == 0) {
-            nextButton.setText("SKIP");
+            nextButton.setText("Skip");
             nextButton.setTextColor(getResources().getColor(R.color.appGray));
         } else {
             nextButton.setText("NEXT");

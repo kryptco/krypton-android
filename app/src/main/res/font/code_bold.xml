@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <font-family xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">>
-    <font android:font="@font/source_code_pro" app:font="@font/source_code_pro"/>
+    <font android:font="@font/source_code_pro_bold" app:font="@font/source_code_pro_bold"/>
 </font-family>

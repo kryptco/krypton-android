@@ -20,11 +20,12 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/open_sans_bold"
         android:gravity="center_horizontal"
         android:text="Allow Request From"
         android:textAllCaps="true"
-        android:textColor="@color/appGray"
+        android:textColor="@color/appBlack"
         android:textSize="10sp" />
 
     <TextView
@@ -36,7 +37,9 @@
         android:layout_centerHorizontal="true"
         android:text="Computer Name"
         android:textAllCaps="true"
-        android:textColor="@color/appGray"
+        android:fontFamily="@font/open_sans_bold"
+
+        android:textColor="@color/appBlack"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -44,12 +47,11 @@
         android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/workstationName"
-        android:layout_alignTop="@id/workstationName"
-        android:layout_marginLeft="2dp"
-        android:layout_toRightOf="@id/workstationName"
+        android:layout_below="@+id/header"
+        android:layout_toEndOf="@+id/workstationName"
         android:text="\?"
-        android:textColor="@color/appGray" />
+        android:textColor="@color/appBlack"
+        android:textStyle="bold" />
 
 
     <RelativeLayout

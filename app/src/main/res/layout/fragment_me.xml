@@ -3,335 +3,236 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusable="true"
+    android:background="@color/appWhite"
     android:clickable="true"
+    android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context="co.krypt.kryptonite.me.MeFragment"
-    android:background="@color/appWhite">
+    tools:context="co.krypt.kryptonite.me.MeFragment">
 
     <!-- Dummy item to prevent EditText from receiving focus -->
-    <LinearLayout
-        android:id="@+id/dummy"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        tools:layout_editor_absoluteY="0dp"
-        tools:layout_editor_absoluteX="0dp" />
 
-    <EditText
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/awsButton"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
+        android:background="@null"
+        android:fontFamily="@font/open_sans_bold"
+        android:text="AWS"
+        android:textAlignment="viewStart"
+        android:textAllCaps="false"
+        android:textColor="@color/appGray"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/digitaloceanButton"
+        app:layout_constraintEnd_toEndOf="@+id/textView14"
+        app:layout_constraintStart_toEndOf="@+id/digitaloceanButton" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/digitaloceanButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="kevin@krypt.co"
-        android:inputType="textEmailAddress"
-        android:maxLines="1"
-        android:nextFocusUp="@+id/dummy"
-        android:nextFocusLeft="@+id/dummy"
-        android:id="@+id/profileEmail"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="20dp"
         android:layout_marginStart="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        android:typeface="normal"
-        android:textStyle="normal|bold" />
+        android:background="@null"
+        android:elevation="0dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:text="DigitalOcean"
+        android:textAlignment="viewStart"
+        android:textAllCaps="false"
+        android:textColor="@color/appGray"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/githubButton"
+        app:layout_constraintStart_toEndOf="@+id/githubButton" />
 
     <android.support.v7.widget.AppCompatTextView
-        android:text="VIEW MY PUBLIC KEY"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginStart="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/profileEmail"
-        android:fontFamily="sans-serif"
-        android:textColor="@color/appWhite"
+        android:id="@+id/textView11"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="4dp"
         android:background="@drawable/terminal_bg_top"
-        android:shadowColor="@color/appBlack"
+        android:fontFamily="@font/open_sans"
         android:lineSpacingExtra="18sp"
-        android:layout_width="0dp"
-        android:paddingTop="4dp"
-        android:paddingLeft="4dp"
-        android:paddingBottom="4dp"
-        android:padding="4dp"
-        android:textSize="10sp" />
+        android:paddingBottom="0dp"
+        android:paddingLeft="8dp"
+        android:paddingTop="8dp"
+        android:shadowColor="@color/appBlack"
+        android:text="ENABLE GIT CODE SIGNING"
+        android:textColor="@color/appWhite"
+        android:textSize="9sp"
+        app:fontFamily="@font/open_sans"
+        app:layout_constraintEnd_toEndOf="@+id/addKeyTextView"
+        app:layout_constraintStart_toStartOf="@+id/addKeyTextView"
+        app:layout_constraintTop_toBottomOf="@+id/textView16" />
 
     <android.support.v7.widget.AppCompatTextView
-        android:text="$ kr me"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView2"
-        android:layout_marginStart="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        android:id="@+id/textView14"
         android:layout_width="0dp"
-        android:textSize="16sp"
-        android:fontFamily="monospace"
+        android:layout_height="20dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/terminal_bg_top"
+        android:fontFamily="@font/open_sans"
+        android:lineSpacingExtra="18sp"
+        android:paddingBottom="0dp"
+        android:paddingLeft="8dp"
+        android:paddingTop="8dp"
+        android:shadowColor="@color/appBlack"
+        android:text="ADD MY PUBLIC KEY"
         android:textColor="@color/appWhite"
+        android:textSize="9sp"
+        app:fontFamily="@font/open_sans"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/awsButton" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/addKeyTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:background="@drawable/terminal_bg_bottom"
+        android:fontFamily="@font/code"
+        android:paddingBottom="10dp"
         android:paddingLeft="6dp"
         android:paddingTop="6dp"
-        android:paddingBottom="10dp"
-        android:typeface="monospace"
-        android:textStyle="normal|bold"
+        android:shadowColor="@color/appBlack"
         android:shadowRadius="4"
-        android:shadowColor="@color/appBlack" />
+        android:text="$ kr github"
+        android:textColor="@color/appWhite"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:fontFamily="@font/code"
+        app:layout_constraintEnd_toEndOf="@+id/textView14"
+        app:layout_constraintStart_toStartOf="@+id/textView14"
+        app:layout_constraintTop_toBottomOf="@+id/textView14" />
 
-
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="0dp"
+    <EditText
+        android:id="@+id/profileEmail"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:layout_constraintBottom_toTopOf="@+id/krcodesign"
-        android:id="@+id/content">
-
-        <TabHost
-            android:id="@+id/addKeyInstructions"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <TabWidget
-                    android:id="@android:id/tabs"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-                <FrameLayout
-                    android:id="@android:id/tabcontent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <LinearLayout
-                        android:id="@+id/tab1"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-
-                        <android.support.v7.widget.AppCompatTextView
-                            android:id="@+id/githubHeader"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/terminal_bg_middle"
-                            android:fontFamily="sans-serif"
-                            android:lineSpacingExtra="18sp"
-                            android:padding="4dp"
-                            android:paddingBottom="4dp"
-                            android:paddingLeft="4dp"
-                            android:paddingTop="4dp"
-                            android:shadowColor="@color/appBlack"
-                            android:text="ADD MY PUBLIC KEY"
-                            android:textColor="@color/appWhite"
-                            android:textSize="10sp"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"/>
-
-                        <android.support.v7.widget.AppCompatTextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/terminal_bg_bottom"
-                            android:fontFamily="monospace"
-                            android:paddingBottom="10dp"
-                            android:paddingLeft="6dp"
-                            android:paddingTop="6dp"
-                            android:shadowColor="@color/appBlack"
-                            android:shadowRadius="4"
-                            android:text="$ kr github"
-                            android:textColor="@color/appWhite"
-                            android:textSize="16sp"
-                            android:textStyle="normal|bold"
-                            android:typeface="monospace"
-                            app:layout_constraintHorizontal_bias="0.56"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/githubHeader"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/tab2"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-
-                        <android.support.v7.widget.AppCompatTextView
-                            android:id="@+id/doHeader"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/terminal_bg_middle"
-                            android:fontFamily="sans-serif"
-                            android:lineSpacingExtra="18sp"
-                            android:padding="4dp"
-                            android:paddingBottom="4dp"
-                            android:paddingLeft="4dp"
-                            android:paddingTop="4dp"
-                            android:shadowColor="@color/appBlack"
-                            android:text="ADD MY PUBLIC KEY"
-                            android:textColor="@color/appWhite"
-                            android:textSize="10sp"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"/>
-
-                        <android.support.v7.widget.AppCompatTextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/terminal_bg_bottom"
-                            android:fontFamily="monospace"
-                            android:paddingBottom="10dp"
-                            android:paddingLeft="6dp"
-                            android:paddingTop="6dp"
-                            android:shadowColor="@color/appBlack"
-                            android:shadowRadius="4"
-                            android:text="$ kr digital-ocean"
-                            android:textColor="@color/appWhite"
-                            android:textSize="16sp"
-                            android:textStyle="normal|bold"
-                            android:typeface="monospace"
-                            app:layout_constraintHorizontal_bias="0.56"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/doHeader"/>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/tab3"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-
-                        <android.support.v7.widget.AppCompatTextView
-                            android:id="@+id/awsHeader"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/terminal_bg_middle"
-                            android:fontFamily="sans-serif"
-                            android:lineSpacingExtra="18sp"
-                            android:padding="4dp"
-                            android:paddingBottom="4dp"
-                            android:paddingLeft="4dp"
-                            android:paddingTop="4dp"
-                            android:shadowColor="@color/appBlack"
-                            android:text="ADD MY PUBLIC KEY"
-                            android:textColor="@color/appWhite"
-                            android:textSize="10sp"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"/>
-
-                        <android.support.v7.widget.AppCompatTextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/terminal_bg_bottom"
-                            android:fontFamily="monospace"
-                            android:paddingBottom="10dp"
-                            android:paddingLeft="6dp"
-                            android:paddingTop="6dp"
-                            android:shadowColor="@color/appBlack"
-                            android:shadowRadius="4"
-                            android:text="$ kr aws"
-                            android:textColor="@color/appWhite"
-                            android:textSize="16sp"
-                            android:textStyle="normal|bold"
-                            android:typeface="monospace"
-                            app:layout_constraintHorizontal_bias="0.56"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/awsHeader"/>
-
-                    </LinearLayout>
-                </FrameLayout>
-            </LinearLayout>
-        </TabHost>
-        </android.support.constraint.ConstraintLayout>
-
-    <LinearLayout
-        android:id="@+id/krcodesign"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/shareButton"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:inputType="textEmailAddress"
+        android:maxLines="1"
+        android:nextFocusLeft="@+id/dummy"
+        android:nextFocusUp="@+id/dummy"
+        android:text="kevin@krypt.co"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="@color/appBlack"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/content"
-        >
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <android.support.v7.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:background="@drawable/terminal_bg_top"
-            android:fontFamily="sans-serif"
-            android:lineSpacingExtra="18sp"
-            android:padding="4dp"
-            android:paddingBottom="4dp"
-            android:paddingLeft="4dp"
-            android:paddingTop="4dp"
-            android:shadowColor="@color/appBlack"
-            android:text="SET UP GIT CODE SIGNING"
-            android:textColor="@color/appWhite"
-            android:textSize="10sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/terminal_bg_top"
+        android:fontFamily="@font/open_sans"
+        android:lineSpacingExtra="18sp"
+        android:paddingBottom="0dp"
+        android:paddingLeft="8dp"
+        android:paddingTop="8dp"
+        android:shadowColor="@color/appBlack"
+        android:text="VIEW MY PUBLIC KEY"
+        android:textColor="@color/appWhite"
+        android:textSize="9sp"
+        app:fontFamily="@font/open_sans"
+        app:layout_constraintEnd_toEndOf="@+id/textView2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileEmail" />
 
-        <android.support.v7.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:background="@drawable/terminal_bg_bottom"
-            android:fontFamily="monospace"
-            android:paddingBottom="10dp"
-            android:paddingLeft="6dp"
-            android:paddingTop="6dp"
-            android:shadowColor="@color/appBlack"
-            android:shadowRadius="4"
-            android:text="$ kr codesign"
-            android:textColor="@color/appWhite"
-            android:textSize="16sp"
-            android:textStyle="normal|bold"
-            android:typeface="monospace"
-            app:layout_constraintHorizontal_bias="0.56"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/awsHeader"/>
-    </LinearLayout>
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/textView2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/terminal_bg_bottom"
+        android:fontFamily="@font/code"
+        android:paddingBottom="10dp"
+        android:paddingLeft="6dp"
+        android:paddingTop="6dp"
+        android:shadowColor="@color/appBlack"
+        android:shadowRadius="4"
+        android:text="$ kr me"
+        android:textColor="@color/appWhite"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:fontFamily="@font/code"
+        app:layout_constraintEnd_toStartOf="@+id/shareButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/textView13"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/terminal_bg_bottom"
+        android:fontFamily="@font/code"
+        android:paddingBottom="10dp"
+        android:paddingLeft="6dp"
+        android:paddingTop="6dp"
+        android:shadowColor="@color/appBlack"
+        android:shadowRadius="4"
+        android:text="$ kr codesign"
+        android:textColor="@color/appWhite"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:fontFamily="@font/code"
+        app:layout_constraintEnd_toEndOf="@+id/textView11"
+        app:layout_constraintStart_toStartOf="@+id/textView11"
+        app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
     <android.support.v7.widget.AppCompatImageButton
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/krcodesign"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:srcCompat="?attr/actionModeShareDrawable"
-        tools:layout_editor_absoluteY="452dp"
-        tools:layout_editor_absoluteX="151dp"
         android:id="@+id/shareButton"
-        android:background="@drawable/flat_button"
-        android:scaleType="fitCenter"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:tint="@color/appGreen"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/flat_button"
         android:backgroundTint="@color/appGreen"
-        android:padding="3dp"/>
+        android:padding="3dp"
+        android:scaleType="fitCenter"
+        android:tint="@color/appGreen"
+        app:layout_constraintBottom_toBottomOf="@+id/textView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView"
+        app:srcCompat="?attr/actionModeShareDrawable" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/githubButton"
+        android:layout_width="50dp"
+        android:layout_height="20dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="16dp"
+        android:background="@null"
+        android:fontFamily="@font/open_sans_bold"
+        android:text="GitHub"
+        android:textAlignment="viewStart"
+        android:textAllCaps="false"
+        android:textColor="@color/appGreen"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/textView14"
+        app:layout_constraintStart_toStartOf="@+id/textView14"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/textView16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:text="PGP Sign Git Commits and Tags"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textColor="@color/appGreen"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/textView11"
+        app:layout_constraintTop_toBottomOf="@+id/addKeyTextView" />
 
 </android.support.constraint.ConstraintLayout>

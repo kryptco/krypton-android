@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TabHost;
+import android.widget.TextView;
 
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.kryptonite.R;
@@ -24,6 +25,13 @@ import co.krypt.kryptonite.pairing.PairFragment;
  */
 public class FirstPairFragment extends Fragment {
 
+
+    private Button curlButton;
+    private Button brewButton;
+    private Button npmButton;
+    private Button moreButton;
+
+    private TextView installCommand;
 
     private final PairFragment pairFragment = new PairFragment();
 
@@ -87,38 +95,73 @@ public class FirstPairFragment extends Fragment {
             }
         });
 
-        TabHost host = (TabHost) root.findViewById(R.id.installInstructions);
-        host.setup();
 
-        TabHost.TabSpec spec = host.newTabSpec("curl");
-        spec.setContent(R.id.tab1);
-        spec.setIndicator("curl");
-        host.addTab(spec);
+        curlButton = root.findViewById(R.id.curlButton);
+        brewButton = root.findViewById(R.id.brewButton);
+        npmButton = root.findViewById(R.id.npmButton);
+        moreButton = root.findViewById(R.id.moreButton);
 
-        TabHost.TabSpec specBrew = host.newTabSpec("brew");
-        specBrew.setContent(R.id.tab2);
-        specBrew.setIndicator("brew");
-        host.addTab(specBrew);
+        installCommand = root.findViewById(R.id.installCommand);
 
-        TabHost.TabSpec specNPM = host.newTabSpec("npm");
-        specNPM.setContent(R.id.tab3);
-        specNPM.setIndicator("npm");
-        host.addTab(specNPM);
-
-        TabHost.TabSpec specMore = host.newTabSpec("more");
-        specMore.setContent(R.id.tab4);
-        specMore.setIndicator("more");
-        host.addTab(specMore);
-
-        host.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+        curlButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onTabChanged(String tabId) {
-                new Analytics(getContext()).postEvent("onboard_install", tabId, null, null, false);
+            public void onClick(View v) {
+                installCommand.setText("$ curl https://krypt.co/kr | sh");
+
+                resetButtons();
+                curlButton.setTextColor(getResources().getColor(R.color.appGreen));
+
+                new Analytics(getContext()).postEvent("onboard_install", "curl", null, null, false);
             }
         });
 
+        brewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                installCommand.setText("$ brew install kryptco/tap/kr");
+
+                resetButtons();
+                brewButton.setTextColor(getResources().getColor(R.color.appGreen));
+
+                new Analytics(getContext()).postEvent("onboard_install", "brew", null, null, false);
+            }
+        });
+
+        npmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                installCommand.setText("$ npm install -g krd # mac only");
+
+                resetButtons();
+                npmButton.setTextColor(getResources().getColor(R.color.appGreen));
+
+                new Analytics(getContext()).postEvent("onboard_install", "npm", null, null, false);
+            }
+        });
+
+        moreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                installCommand.setText("# go to https://krypt.co/install");
+
+                resetButtons();
+                moreButton.setTextColor(getResources().getColor(R.color.appGreen));
+
+                new Analytics(getContext()).postEvent("onboard_install", "more", null, null, false);
+            }
+        });
+
+
         return root;
     }
+
+    private void resetButtons() {
+        curlButton.setTextColor(getResources().getColor(R.color.appGray));
+        brewButton.setTextColor(getResources().getColor(R.color.appGray));
+        npmButton.setTextColor(getResources().getColor(R.color.appGray));
+        moreButton.setTextColor(getResources().getColor(R.color.appGray));
+    }
+
 
     @Override
     public void onDestroyView() {

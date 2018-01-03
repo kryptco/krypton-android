@@ -14,22 +14,25 @@
         app:layout_constraintLeft_toRightOf="@+id/workstationName"
         app:layout_constraintTop_toTopOf="@+id/workstationName"
         app:layout_constraintBottom_toBottomOf="@+id/workstationName"
+        android:fontFamily="@font/open_sans_bold"
+        android:textColor="@color/appBlack"
         android:layout_marginLeft="2dp" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/open_sans_bold"
         android:text="Allow Request From"
         android:textAllCaps="true"
+        android:textColor="@color/appBlack"
         android:textSize="10sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+
         app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.v7.widget.AppCompatTextView
@@ -40,6 +43,9 @@
         android:textAllCaps="true"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:fontFamily="@font/open_sans_bold"
+        android:textColor="@color/appBlack"
+
         app:layout_constraintTop_toBottomOf="@+id/header"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
