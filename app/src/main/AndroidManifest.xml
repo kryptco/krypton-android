@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="co.krypt.kryptonite">
+    package="co.krypt.krypton">
 
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -24,7 +24,7 @@
         tools:replace="android:allowBackup">
         <activity android:name=".MeActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name="co.krypt.krypton.MainActivity"
             android:label="Kryptonite"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
@@ -37,20 +37,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".policy.UnlockScreenDummyActivity"
+            android:name="co.krypt.krypton.policy.UnlockScreenDummyActivity"
             android:launchMode="singleInstance"
             android:taskAffinity=""
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <service
-            android:name=".transport.FirebaseMessagingService"
+            android:name="co.krypt.krypton.transport.FirebaseMessagingService"
             android:enabled="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name=".transport.FirebaseInstanceIDService"
+            android:name="co.krypt.krypton.transport.FirebaseInstanceIDService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -59,23 +59,23 @@
         </service>
 
         <receiver
-            android:name=".policy.NoAuthReceiver"
+            android:name="co.krypt.krypton.policy.NoAuthReceiver"
             android:enabled="true"
             android:exported="false" />
 
         <service
-            android:name=".transport.BluetoothService"
+            android:name="co.krypt.krypton.transport.BluetoothService"
             android:enabled="true"
             android:exported="false" />
 
         <activity
-            android:name=".onboarding.OnboardingActivity"
+            android:name="co.krypt.krypton.onboarding.OnboardingActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
 
         <provider
-            android:name=".log.AuditLogContentProvider"
-            android:authorities="co.krypt.kryptonite.log.AuditLogContentProvider"
+            android:name="co.krypt.krypton.log.AuditLogContentProvider"
+            android:authorities="co.krypt.krypton.log.AuditLogContentProvider"
             android:exported="true" />
 
     </application>

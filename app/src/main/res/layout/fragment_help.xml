@@ -8,7 +8,7 @@
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-    tools:context="co.krypt.kryptonite.help.HelpFragment">
+    tools:context="co.krypt.krypton.help.HelpFragment">
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/addKeyTextView5"

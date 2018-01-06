@@ -9,7 +9,7 @@
     app:layout_constraintBottom_toBottomOf="parent"
     android:layout_margin="0dp"
     android:background="@color/appWhite"
-    tools:context="co.krypt.kryptonite.knownhosts.KnownHostsFragment">
+    tools:context="co.krypt.krypton.knownhosts.KnownHostsFragment">
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/header"

@@ -9,7 +9,7 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context="co.krypt.kryptonite.devices.DevicesFragment"
+    tools:context="co.krypt.krypton.devices.DevicesFragment"
     tools:listitem="@layout/device" >
 
     <android.support.v7.widget.RecyclerView
