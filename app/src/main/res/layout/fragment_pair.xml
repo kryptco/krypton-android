@@ -127,7 +127,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/open_sans"
-                android:text='Kryptonite needs the camera to scan the QR code shown by the "kr pair" command on your workstation.'
+                android:text='Krypton needs the camera to scan the QR code shown by the "kr pair" command on your workstation.'
                 android:textAlignment="center"
                 android:textColor="@color/appBlack"
 

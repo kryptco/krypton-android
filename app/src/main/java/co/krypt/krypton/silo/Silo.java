@@ -478,7 +478,11 @@ public class Silo {
                                     GitCommitSignatureLog commitLog = new GitCommitSignatureLog(
                                             pairing,
                                             commit,
-                                            new AsciiArmor(AsciiArmor.HeaderLine.SIGNATURE, AsciiArmor.DEFAULT_HEADERS, signature).toString()
+                                            new AsciiArmor(
+                                                    AsciiArmor.HeaderLine.SIGNATURE,
+                                                    AsciiArmor.backwardsCompatibleHeaders(request.semVer()),
+                                                    signature
+                                            ).toString()
                                     );
                                     pairings().appendToCommitLogs(
                                             commitLog
@@ -496,7 +500,11 @@ public class Silo {
                                 GitTagSignatureLog tagLog = new GitTagSignatureLog(
                                         pairing,
                                         tag,
-                                        new AsciiArmor(AsciiArmor.HeaderLine.SIGNATURE, AsciiArmor.DEFAULT_HEADERS, signature).toString()
+                                        new AsciiArmor(
+                                                AsciiArmor.HeaderLine.SIGNATURE,
+                                                AsciiArmor.backwardsCompatibleHeaders(request.semVer()),
+                                                signature
+                                        ).toString()
                                 );
                                 pairings().appendToTagLogs(
                                         tagLog

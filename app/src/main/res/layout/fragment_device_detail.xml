@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
-    android:name="co.krypt.kryptonite.devices.DevicesFragment"
+    android:name="co.krypt.krypton.devices.DevicesFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginLeft="0dp"
@@ -14,7 +14,7 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list"
-        android:name="co.krypt.kryptonite.devices.DeviceDetailFragment"
+        android:name="co.krypt.krypton.devices.DeviceDetailFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/cardview_light_background"

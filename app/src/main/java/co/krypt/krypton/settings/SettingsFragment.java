@@ -97,7 +97,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                Uri data = Uri.parse("mailto:hello@krypt.co?subject=Kryptonite%20Feedback&body=");
+                Uri data = Uri.parse("mailto:hello@krypt.co?subject=Krypton%20Feedback&body=");
                 intent.setData(data);
                 startActivity(intent);
             }
@@ -156,7 +156,7 @@ public class SettingsFragment extends Fragment {
                     String token = AuditLogContentProvider.setAuditLogToken(v.getContext());
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
-                    sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Kryptonite Audit Log");
+                    sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Krypton Audit Log");
                     sendIntent.setType("application/x-sqlite3");
                     Uri auditLogUriWithToken = AuditLogContentProvider.getAuditLogURIWithToken();
                     if (auditLogUriWithToken == null) {

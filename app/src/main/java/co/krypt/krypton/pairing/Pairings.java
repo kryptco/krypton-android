@@ -36,7 +36,7 @@ public class Pairings {
     private final Context context;
     private final Analytics analytics;
 
-    public static final String ON_DEVICE_LOG_ACTION = "co.krypt.kryptonite.action.ON_DEVICE_LOG";
+    public static final String ON_DEVICE_LOG_ACTION = "co.krypt.krypton.action.ON_DEVICE_LOG";
 
     //  per-pairing settings
     private static final String REQUIRE_UNKNOWN_HOST_MANUAL_APPROVAL = ".REQUIRE_UNKNOWN_HOST_MANUAL_APPROVAL";

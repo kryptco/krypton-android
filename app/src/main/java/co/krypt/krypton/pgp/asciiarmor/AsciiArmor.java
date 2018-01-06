@@ -2,6 +2,8 @@ package co.krypt.krypton.pgp.asciiarmor;
 
 import android.support.v4.util.Pair;
 
+import com.github.zafarkhaja.semver.Version;
+
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -44,7 +46,18 @@ public class AsciiArmor {
     private static final String LAST_LINE_PREFIX = "-----END ";
     private static final String LAST_LINE_SUFFIX = "-----";
 
-    public static final List<Pair<String, String>> DEFAULT_HEADERS = Collections.singletonList(new Pair<String, String>(
+    public static List<Pair<String, String>> backwardsCompatibleHeaders(Version requestVersion) {
+        if (requestVersion.greaterThanOrEqualTo(Version.valueOf("2.3.1"))) {
+            return AsciiArmor.KRYPTON_DEFAULT_HEADERS;
+        } else {
+            return AsciiArmor.KRYPTONITE_DEFAULT_HEADERS;
+        }
+    }
+
+    public static final List<Pair<String, String>> KRYPTONITE_DEFAULT_HEADERS = Collections.singletonList(new Pair<String, String>(
+            "Comment", "Created with Kryptonite"
+    ));
+    public static final List<Pair<String, String>> KRYPTON_DEFAULT_HEADERS = Collections.singletonList(new Pair<String, String>(
             "Comment", "Created with Kryptonite"
     ));
 

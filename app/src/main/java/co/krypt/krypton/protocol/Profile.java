@@ -35,6 +35,6 @@ public class Profile {
     }
 
     public String shareText() {
-        return "This is my SSH public key:\n\n" + authorizedKeysFormat() + "\n\nStore your SSH key with Kryptonite! https://krypt.co";
+        return "This is my SSH public key:\n\n" + authorizedKeysFormat() + "\n\nStore your SSH key with Krypton! https://krypt.co";
     }
 }

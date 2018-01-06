@@ -25,7 +25,7 @@
         <activity android:name=".MeActivity" />
         <activity
             android:name="co.krypt.krypton.MainActivity"
-            android:label="Kryptonite"
+            android:label="Krypton"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"

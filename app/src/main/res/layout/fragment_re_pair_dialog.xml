@@ -31,7 +31,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Kryponite has been updated. Please update kr on your workstation(s) and re-pair."
+        android:text="Krypton has been updated. Please update kr on your workstation(s) and re-pair."
         android:textAlignment="center"
         android:textSize="16sp"
         app:layout_constraintLeft_toLeftOf="parent"

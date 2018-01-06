@@ -34,7 +34,7 @@ public class RSAKeyManager implements KeyManagerI {
 
     private final Object lock = new Object();
 
-    public static String LOG_TAG = "kryptonite";
+    public static String LOG_TAG = "krypton";
     private static final String SSH_KEYPAIR_CREATED_KEY = "SSH_KEY.created";
     private final SharedPreferences preferences;
 
@@ -61,9 +61,9 @@ public class RSAKeyManager implements KeyManagerI {
                     //  java.security.KeyStore$PrivateKeyEntry.<init> (KeyStore.java:1206)
                     //  java.security.KeyStoreSpi.engineGetEntry (KeyStoreSpi.java:374)
                     //  java.security.KeyStore.getEntry (KeyStore.java:645)
-                    //  co.krypt.kryptonite.crypto.RSAKeyManager.loadOrGenerateKeyPair (RSAKeyManager.java:58)
-                    //  co.krypt.kryptonite.crypto.KeyManager.loadOrGenerateKeyPair (KeyManager.java:16)
-                    //  co.krypt.kryptonite.onboarding.GenerateFragment$3.run (GenerateFragment.java:105)
+                    //  co.krypt.krypton.crypto.RSAKeyManager.loadOrGenerateKeyPair (RSAKeyManager.java:58)
+                    //  co.krypt.krypton.crypto.KeyManager.loadOrGenerateKeyPair (KeyManager.java:16)
+                    //  co.krypt.krypton.onboarding.GenerateFragment$3.run (GenerateFragment.java:105)
                     //  java.lang.Thread.run (Thread.java:818)
                     privateKeyEntry = keyStore.getEntry(tag, null);
                 } catch (NullPointerException npe) {

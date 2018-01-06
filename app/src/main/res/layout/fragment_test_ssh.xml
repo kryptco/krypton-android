@@ -44,7 +44,7 @@
         android:fontFamily="@font/open_sans_bold" />
 
     <android.support.v7.widget.AppCompatTextView
-        android:text="Now you are ready to SSH using Kryptonite!"
+        android:text="Now you are ready to SSH using Krypton!"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:id="@+id/sshText"

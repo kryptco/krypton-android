@@ -22,6 +22,7 @@ import co.krypt.krypton.exception.TransportException;
  */
 public class SNSTransport {
     private static final String TAG = "SNSTransport";
+    //  Note: must remain kryptonite for backwards compatibility
     private static final String PLATFORM_APPLICATION_ARN = "arn:aws:sns:us-east-1:911777333295:app/GCM/kryptonite-gcm";
     private Context context;
     private String token;

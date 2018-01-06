@@ -51,7 +51,7 @@
         app:layout_constraintLeft_toLeftOf="parent" />
 
     <android.support.v7.widget.AppCompatTextView
-        android:text="Kryptonite"
+        android:text="Krypton Core"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/open_sans_bold"

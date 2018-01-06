@@ -143,7 +143,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/doneButton"
-        app:srcCompat="@drawable/kryptonite_icon_transparent_circle" />
+        app:srcCompat="@drawable/krypton_icon_transparent_circle" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/textView5"
