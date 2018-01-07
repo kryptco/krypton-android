@@ -61,14 +61,18 @@ public class ApprovalDialog {
 
         //  middle button
         if (request.body instanceof SignRequest) {
-            builder.setNegativeButton("This host for " + Policy.temporaryApprovalDuration(),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_THIS_TEMPORARILY);
-                        }
-                    });
+            if (((SignRequest)request.body).hostNameVerified) {
+                builder.setNegativeButton("This host for " + Policy.temporaryApprovalDuration(),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_THIS_TEMPORARILY);
+                            }
+                        });
+            }
         }
-        builder.setCancelable(false);
+        builder.setOnDismissListener(dialogInterface -> {
+            Policy.onAction(activity.getApplicationContext(), requestID, Policy.REJECT);
+        });
         View requestView = activity.getLayoutInflater().inflate(R.layout.request, null);
         TextView workstationNameText = (TextView) requestView.findViewById(R.id.workstationName);
         workstationNameText.setText(pairing.workstationName);
