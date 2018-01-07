@@ -1,7 +1,7 @@
 <a href="https://krypt.co"><img src="https://krypt.co/static/dist/img/kryptonite-logo-green-on-white.svg" width="400"/> </a>
 
-__Kryptonite__ generates and stores an SSH key pair on a mobile phone. The
-Kryptonite app is paired with one or more workstations by scanning a QR code
+__Krypton__ generates and stores an SSH key pair on a mobile phone. The
+Krypton app is paired with one or more workstations by scanning a QR code
 presented in the terminal. When using SSH from a paired workstation, the
 workstation requests a private key signature from the phone. The user then
 receives a notification and chooses whether to allow the SSH login. For more
@@ -15,7 +15,7 @@ information, check out [krypt.co](https://krypt.co).
 The iOS implementation is located [here](https://github.com/kryptco/kryptonite-ios).
 
 # Workstation SSH Integration
-To use an SSH key stored in Kryptonite, install __kr__
+To use an SSH key stored in Krypton, install __kr__
 ```sh
 curl https://krypt.co/kr | sh
 ```
@@ -25,7 +25,7 @@ or build it [from source](https://github.com/kryptco/kr).
 Check out `CONTRIBUTING.md`
 
 # Security Disclosure Policy
-__Kryptonite__ follows a 7-day disclosure policy. If you find a security flaw,
+__Krypton__ follows a 7-day disclosure policy. If you find a security flaw,
 please send it to `disclose@krypt.co` encrypted to the PGP key with fingerprint
 `B873685251A928262210E094A70D71BE0646732C` (full key below). We ask that you
 delay publication of the flaw until we have published a fix, or seven days have
@@ -87,5 +87,5 @@ C6kMeRvyJtlm/+OvMe2MUvyKnQpbXo6Zj2HXBiuegvgKUTydpwx10/g+odIR
 ```
 
 # LICENSE
-We are currently working on a new license for Kryptonite. For now, the code
+We are currently working on a new license for Krypton. For now, the code
 is released under All Rights Reserved.
