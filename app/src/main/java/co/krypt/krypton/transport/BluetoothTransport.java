@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -82,6 +83,7 @@ public class BluetoothTransport extends BroadcastReceiver {
     private final AdvertiseCallback advertiseCallback;
     private AtomicReference<BluetoothGattServer> gattServer = new AtomicReference<>(null);
     private final Context context;
+    private final AtomicBoolean initialized = new AtomicBoolean(false);
 
     private final ScheduledThreadPoolExecutor advertiseLogicPool = new ScheduledThreadPoolExecutor(1);
 
@@ -106,6 +108,7 @@ public class BluetoothTransport extends BroadcastReceiver {
         IntentFilter bluetoothStateFilter = new IntentFilter();
         bluetoothStateFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         context.registerReceiver(bluetoothStateReceiver, bluetoothStateFilter);
+        initialized.set(true);
 
         advertiseLogicPool.scheduleWithFixedDelay(advertiseLogic, 1, 5, TimeUnit.SECONDS);
     }
@@ -263,8 +266,9 @@ public class BluetoothTransport extends BroadcastReceiver {
     };
 
     public synchronized void stop() {
-        //TODO unimplemented
-        context.unregisterReceiver(bluetoothStateReceiver);
+        if (initialized.getAndSet(false)) {
+            context.unregisterReceiver(bluetoothStateReceiver);
+        }
     }
 
 
