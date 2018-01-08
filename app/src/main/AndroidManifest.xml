@@ -23,8 +23,9 @@
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
         <activity android:name=".MeActivity" />
+        <!--Note: MainActivity kept the legacy package so that launch icons on the home screen remained. -->
         <activity
-            android:name="co.krypt.krypton.MainActivity"
+            android:name="co.krypt.kryptonite.MainActivity"
             android:label="Krypton"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"

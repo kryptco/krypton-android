@@ -5,7 +5,7 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 
-import co.krypt.krypton.MainActivity;
+import co.krypt.kryptonite.MainActivity;
 
 /**
  * Created by Kevin King on 1/10/17.

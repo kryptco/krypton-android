@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import co.krypt.krypton.MainActivity;
+import co.krypt.kryptonite.MainActivity;
 import co.krypt.krypton.R;
 
 /**

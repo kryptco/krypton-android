@@ -17,7 +17,7 @@ import android.widget.RemoteViews;
 
 import javax.annotation.Nullable;
 
-import co.krypt.krypton.MainActivity;
+import co.krypt.kryptonite.MainActivity;
 import co.krypt.krypton.R;
 import co.krypt.krypton.log.Log;
 import co.krypt.krypton.onboarding.OnboardingActivity;

@@ -1,4 +1,4 @@
-package co.krypt.krypton;
+package co.krypt.kryptonite;
 
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.approval.ApprovalDialog;
 import co.krypt.krypton.devices.DevicesFragment;

@@ -24,9 +24,9 @@ import co.krypt.krypton.pairing.Pairing;
 import co.krypt.krypton.policy.LocalAuthentication;
 import co.krypt.krypton.silo.Silo;
 
-import static co.krypt.krypton.MainActivity.CAMERA_PERMISSION_GRANTED_ACTION;
-import static co.krypt.krypton.MainActivity.CAMERA_PERMISSION_REQUEST;
-import static co.krypt.krypton.MainActivity.USER_AUTHENTICATION_REQUEST;
+import static co.krypt.kryptonite.MainActivity.CAMERA_PERMISSION_GRANTED_ACTION;
+import static co.krypt.kryptonite.MainActivity.CAMERA_PERMISSION_REQUEST;
+import static co.krypt.kryptonite.MainActivity.USER_AUTHENTICATION_REQUEST;
 
 public class OnboardingActivity extends FragmentActivity {
 

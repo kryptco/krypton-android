@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import co.krypt.krypton.MainActivity;
+import co.krypt.kryptonite.MainActivity;
 import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.exception.CryptoException;
