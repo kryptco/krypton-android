@@ -32,7 +32,7 @@
         android:text="v1.0.0"
         android:textAllCaps="false"
         android:textColor="@color/appWhite"
-        android:fontFamily="@font/open_sans_bold"
+        android:fontFamily="@font/open_sans_semibold"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintLeft_toRightOf="@id/tagImage"
