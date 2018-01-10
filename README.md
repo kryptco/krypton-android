@@ -1,4 +1,4 @@
-<a href="https://krypt.co"><img src="https://krypt.co/static/dist/img/kryptonite-logo-green-on-white.svg" width="400"/> </a>
+<a href="https://krypt.co"><img src="https://krypt.co/static/dist/img/krypton_core_logo.svg" width="200"/> </a>
 
 __Krypton__ generates and stores an SSH key pair on a mobile phone. The
 Krypton app is paired with one or more workstations by scanning a QR code
