@@ -12,7 +12,7 @@ information, check out [krypt.co](https://krypt.co).
 2) Open project in Android Studio
 
 # Have an iPhone?
-The iOS implementation is located [here](https://github.com/kryptco/kryptonite-ios).
+The iOS implementation is located [here](https://github.com/kryptco/krypton-ios).
 
 # Workstation SSH Integration
 To use an SSH key stored in Krypton, install __kr__
