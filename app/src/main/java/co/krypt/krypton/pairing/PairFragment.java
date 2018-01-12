@@ -287,8 +287,11 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
     private void onPairingSuccess(final Pairing pairing) {
         Intent successIntent = new Intent(PAIRING_SUCCESS_ACTION);
         successIntent.putExtra("deviceName", pairing.workstationName);
-        getContext().sendBroadcast(successIntent);
-        new Analytics(getContext()).postEvent("device", "pair", "success", null, false);
+        Context context = getContext();
+        if (context != null) {
+            context.sendBroadcast(successIntent);
+            new Analytics(context).postEvent("device", "pair", "success", null, false);
+        }
 
         pairingStatusText.setText("Paired with\n" + pairing.workstationName);
         pairingStatusView.setVisibility(View.VISIBLE);
