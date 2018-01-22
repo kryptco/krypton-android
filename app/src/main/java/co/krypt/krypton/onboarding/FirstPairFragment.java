@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,13 +60,13 @@ public class FirstPairFragment extends Fragment {
         super.onAttach(context);
         IntentFilter pairFilter = new IntentFilter();
         pairFilter.addAction(PairFragment.PAIRING_SUCCESS_ACTION);
-        context.registerReceiver(pairReceiver, pairFilter);
+        LocalBroadcastManager.getInstance(context).registerReceiver(pairReceiver, pairFilter);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        getContext().unregisterReceiver(pairReceiver);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(pairReceiver);
     }
 
     @Override

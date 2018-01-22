@@ -15,6 +15,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,7 +37,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import co.krypt.kryptonite.MainActivity;
 import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.exception.CryptoException;
@@ -44,6 +44,7 @@ import co.krypt.krypton.exception.TransportException;
 import co.krypt.krypton.onboarding.OnboardingActivity;
 import co.krypt.krypton.protocol.PairingQR;
 import co.krypt.krypton.silo.Silo;
+import co.krypt.kryptonite.MainActivity;
 
 
 /**
@@ -217,7 +218,7 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
         super.onAttach(context);
         IntentFilter permissionFilter = new IntentFilter();
         permissionFilter.addAction(MainActivity.CAMERA_PERMISSION_GRANTED_ACTION);
-        context.registerReceiver(permissionReceiver, permissionFilter);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(permissionReceiver, permissionFilter);
     }
 
     @Override
@@ -225,13 +226,13 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
         super.onAttach(activity);
         IntentFilter permissionFilter = new IntentFilter();
         permissionFilter.addAction(MainActivity.CAMERA_PERMISSION_GRANTED_ACTION);
-        getContext().registerReceiver(permissionReceiver, permissionFilter);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(permissionReceiver, permissionFilter);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        getContext().unregisterReceiver(permissionReceiver);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(permissionReceiver);
     }
 
 
@@ -262,6 +263,7 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
                 updateCamera(getContext());
             }
         });
+
     }
 
     @Override
@@ -289,7 +291,7 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
         successIntent.putExtra("deviceName", pairing.workstationName);
         Context context = getContext();
         if (context != null) {
-            context.sendBroadcast(successIntent);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(successIntent);
             new Analytics(context).postEvent("device", "pair", "success", null, false);
         }
 

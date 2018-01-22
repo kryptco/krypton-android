@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             case CAMERA_PERMISSION_REQUEST:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent cameraIntent = new Intent(CAMERA_PERMISSION_GRANTED_ACTION);
-                    sendBroadcast(cameraIntent);
+                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(cameraIntent);
                 }
         }
     }

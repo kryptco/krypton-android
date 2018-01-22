@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -98,7 +99,7 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
         };
         IntentFilter filter = new IntentFilter();
         filter.addAction(Pairings.ON_DEVICE_LOG_ACTION);
-        context.registerReceiver(onDeviceLogReceiver, filter);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(onDeviceLogReceiver, filter);
         Silo.shared(getContext()).pairings().registerOnSharedPreferenceChangedListener(this);
 
         populateDevices();
@@ -116,7 +117,7 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
     public void onDestroyView() {
         Silo.shared(getContext()).pairings().unregisterOnSharedPreferenceChangedListener(this);
         if (attachedContext != null && onDeviceLogReceiver != null) {
-            attachedContext.unregisterReceiver(onDeviceLogReceiver);
+            LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(onDeviceLogReceiver);
         }
         attachedContext = null;
         onDeviceLogReceiver = null;

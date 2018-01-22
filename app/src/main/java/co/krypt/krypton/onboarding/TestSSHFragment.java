@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,13 +69,13 @@ public class TestSSHFragment extends Fragment {
         super.onAttach(context);
         IntentFilter sshMeFilter = new IntentFilter();
         sshMeFilter.addAction(SSH_ME_ACTION);
-        context.registerReceiver(sshMeReceiver, sshMeFilter);
+        LocalBroadcastManager.getInstance(context).registerReceiver(sshMeReceiver, sshMeFilter);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        getContext().unregisterReceiver(sshMeReceiver);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(sshMeReceiver);
     }
 
     @Override

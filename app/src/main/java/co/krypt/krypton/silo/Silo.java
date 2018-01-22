@@ -2,6 +2,7 @@ package co.krypt.krypton.silo;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 
@@ -418,7 +419,7 @@ public class Silo {
                             Notifications.notifySuccess(context, pairing, request, log);
                             if (signRequest.verifiedHostNameOrDefault("unknown host").equals("me.krypt.co")) {
                                 Intent sshMeIntent = new Intent(TestSSHFragment.SSH_ME_ACTION);
-                                context.sendBroadcast(sshMeIntent);
+                                LocalBroadcastManager.getInstance(context).sendBroadcast(sshMeIntent);
                             }
                             if (signRequest.hostAuth == null) {
                                 new Analytics(context).postEvent("host", "unknown", null, null, false);
@@ -642,7 +643,7 @@ public class Silo {
 
     private void broadcastKnownHostsChanged() {
         Intent intent = new Intent(KNOWN_HOSTS_CHANGED_ACTION);
-        context.sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
 }

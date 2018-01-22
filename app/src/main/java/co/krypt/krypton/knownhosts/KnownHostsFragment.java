@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -84,13 +85,13 @@ public class KnownHostsFragment extends Fragment {
         };
         IntentFilter filter = new IntentFilter();
         filter.addAction(Silo.KNOWN_HOSTS_CHANGED_ACTION);
-        context.registerReceiver(receiver, filter);
+        LocalBroadcastManager.getInstance(context).registerReceiver(receiver, filter);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        context.unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
         receiver = null;
         context = null;
     }

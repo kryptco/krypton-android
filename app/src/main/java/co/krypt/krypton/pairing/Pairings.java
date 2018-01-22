@@ -3,6 +3,7 @@ package co.krypt.krypton.pairing;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.ArraySet;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -191,7 +192,7 @@ public class Pairings {
             }
         }
         Intent onLog = new Intent(ON_DEVICE_LOG_ACTION);
-        context.sendBroadcast(onLog);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(onLog);
     }
 
     public HashSet<SSHSignatureLog> getSSHLogs(String pairingUUID) {
@@ -247,7 +248,7 @@ public class Pairings {
             }
         }
         Intent onLog = new Intent(ON_DEVICE_LOG_ACTION);
-        context.sendBroadcast(onLog);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(onLog);
     }
 
     public HashSet<GitTagSignatureLog> getTagLogs(String pairingUUID) {
@@ -275,7 +276,7 @@ public class Pairings {
             }
         }
         Intent onLog = new Intent(ON_DEVICE_LOG_ACTION);
-        context.sendBroadcast(onLog);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(onLog);
     }
 
     public List<Log> getAllLogsTimeDescending(String pairingUUID) {
