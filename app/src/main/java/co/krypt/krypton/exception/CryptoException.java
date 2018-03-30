@@ -5,8 +5,11 @@ package co.krypt.krypton.exception;
  * Copyright 2016. KryptCo, Inc.
  */
 
-public class CryptoException extends Exception {
+public class CryptoException extends Unrecoverable {
     public CryptoException(String message) {
         super(message);
+    }
+    public CryptoException(Throwable t) {
+        super(t);
     }
 }

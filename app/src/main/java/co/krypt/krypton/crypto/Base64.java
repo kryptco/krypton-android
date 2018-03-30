@@ -10,7 +10,14 @@ import co.krypt.krypton.exception.CryptoException;
 public class Base64 {
     public static byte[] decode(String s) throws CryptoException {
         try {
-            return com.amazonaws.util.Base64.decode(s);
+            return android.util.Base64.decode(s, android.util.Base64.DEFAULT);
+        } catch (IllegalArgumentException e) {
+            throw new CryptoException(e.getMessage());
+        }
+    }
+    public static byte[] decodeURLSafe(String s) throws CryptoException {
+        try {
+            return android.util.Base64.decode(s, android.util.Base64.URL_SAFE);
         } catch (IllegalArgumentException e) {
             throw new CryptoException(e.getMessage());
         }

@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/billingContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/top_bottom_border"
+    android:elevation="4dp"
+    android:clickable="false"
+    android:focusable="false"
+    android:padding="8dp"
+    android:layout_margin="8dp"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    android:paddingBottom="16dp"
+    android:layout_marginBottom="16dp"
+    >
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/headerRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_margin="8dp"
+        >
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/billingHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/billing_header"
+            android:textColor="@color/appBlack"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textSize="20sp"
+            android:fontFamily="@font/open_sans_bold"
+            android:background="@drawable/bottom_border"
+            android:paddingBottom="4dp"
+            />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/billingPlan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="STARTER"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:textAllCaps="true"
+            android:textColor="@color/appWarning"
+            android:background="@drawable/outline_button"
+            android:padding="4dp"
+            android:backgroundTint="@color/appWarning"
+            android:fontFamily="@font/open_sans_bold"
+            />
+    </android.support.constraint.ConstraintLayout>
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/membersUsageRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/headerRow"
+        android:layout_margin="8dp"
+        >
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans"
+            android:text="Team Members"
+            android:textColor="@color/appBlack"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/membersUsageLimit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans"
+            android:text="10"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintRight_toRightOf="parent"/>
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/slash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" / "
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/appGray"
+            android:textSize="16sp"
+            app:layout_constraintRight_toLeftOf="@id/membersUsageLimit"
+            />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/membersUsageCurrent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans"
+            android:text="1"
+            android:textColor="@color/appBlack"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintRight_toLeftOf="@id/slash"/>
+
+    </android.support.constraint.ConstraintLayout>
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/hostsUsageRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/membersUsageRow"
+        android:layout_margin="8dp"
+        >
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans"
+            android:text="Shared Known Hosts"
+            android:textColor="@color/appBlack"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/hostsUsageLimit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans"
+            android:text="10"
+            android:textColor="@color/appBlack"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintRight_toRightOf="parent"/>
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@id/slash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" / "
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/appGray"
+            android:textSize="16sp"
+            app:layout_constraintRight_toLeftOf="@id/hostsUsageLimit"
+            />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/hostsUsageCurrent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans"
+            android:text="1"
+            android:textColor="@color/appBlack"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintRight_toLeftOf="@id/slash"/>
+
+    </android.support.constraint.ConstraintLayout>
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/logsUsageRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/hostsUsageRow"
+        android:layout_margin="8dp"
+        >
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans"
+            android:text="Monthly Audit Logs"
+            android:textColor="@color/appBlack"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/logsUsageLimit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans"
+            android:text="1000"
+            android:textColor="@color/appBlack"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintRight_toRightOf="parent"/>
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@id/slash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" / "
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/appGray"
+            android:textSize="16sp"
+            app:layout_constraintRight_toLeftOf="@id/logsUsageLimit"
+            />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/logsUsageCurrent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans"
+            android:text="1"
+            android:textColor="@color/appBlack"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintRight_toLeftOf="@id/slash"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/manageBillingButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/action_button_small_rect"
+        android:backgroundTint="@color/appBlue"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:text="Upgrade"
+        android:textAlignment="center"
+        android:textColor="@color/appWhite"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logsUsageRow"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        android:fontFamily="@font/open_sans_bold"
+        />
+</android.support.constraint.ConstraintLayout>

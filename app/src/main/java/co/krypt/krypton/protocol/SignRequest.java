@@ -13,6 +13,7 @@ import java.io.IOException;
 import co.krypt.krypton.R;
 import co.krypt.krypton.crypto.SSHWireDataParser;
 import co.krypt.krypton.exception.ProtocolException;
+import co.krypt.krypton.uiutils.TimeUtils;
 
 /**
  * Created by Kevin King on 12/3/16.
@@ -191,18 +192,20 @@ public class SignRequest extends RequestBody {
         return sshView;
     }
 
-    public void fillRemoteViews(RemoteViews remoteViewsContainer, @javax.annotation.Nullable Boolean approved, @javax.annotation.Nullable String signature) {
-        fillShortRemoteViews(remoteViewsContainer, approved, signature);
+    public void fillRemoteViews(RemoteViews remoteViewsContainer, long unixSeconds, @javax.annotation.Nullable Boolean approved, @javax.annotation.Nullable String signature) {
+        fillShortRemoteViews(remoteViewsContainer, unixSeconds, approved, signature);
         remoteViewsContainer.setInt(R.id.message, "setMaxLines", Integer.MAX_VALUE);
     }
 
-    public void fillShortRemoteViews(RemoteViews remoteViewsContainer, @javax.annotation.Nullable Boolean approved, @javax.annotation.Nullable String signature) {
+    public void fillShortRemoteViews(RemoteViews remoteViewsContainer, long unixSeconds, @javax.annotation.Nullable Boolean approved, @javax.annotation.Nullable String signature) {
         remoteViewsContainer.removeAllViews(R.id.content);
         RemoteViews remoteViews = new RemoteViews(remoteViewsContainer.getPackage(), R.layout.ssh_short_remote);
 
         remoteViewsContainer.addView(R.id.content, remoteViews);
 
         remoteViews.setTextViewText(R.id.message, userOrInvalid() + " @ " + verifiedHostNameOrDefault("unknown host"));
+
+        remoteViews.setTextViewText(R.id.time, TimeUtils.formatDurationSeconds(System.currentTimeMillis()/1000 - unixSeconds) + " ago");
 
         if (approved != null && !approved) {
             remoteViews.setInt(R.id.label, "setBackgroundResource", R.drawable.hash_red_bg);

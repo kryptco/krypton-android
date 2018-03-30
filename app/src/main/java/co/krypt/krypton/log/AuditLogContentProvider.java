@@ -22,11 +22,11 @@ import co.krypt.krypton.db.OpenDatabaseHelper;
 
 /**
  * Created by Kevin King on 3/26/17.
- * Copyright 2016. KryptCo, Inc.
+ * Copyright 2018. KryptCo, Inc.
  */
 
 public class AuditLogContentProvider extends ContentProvider {
-    public static final String AUTHORITY = "co.krypt.kryptonite.log.AuditLogContentProvider";
+    public static final String AUTHORITY = "co.krypt.krypton.log.AuditLogContentProvider";
 
     private static String token = null;
     private final static String AUDIT_LOG_FILE_NAME = "kryptonite.sqlite3";
@@ -88,7 +88,6 @@ public class AuditLogContentProvider extends ContentProvider {
         switch (uriMatcher.match(uri)) {
             case 1:
                 List<String> segments = uri.getPathSegments();
-                Log.i("AuditLogContentProvider", "segments: " + segments.toString());
                 if (segments.size() < 2) {
                     return null;
                 }
@@ -107,7 +106,7 @@ public class AuditLogContentProvider extends ContentProvider {
         return null;
     }
 
-    public static String setAuditLogToken(Context context) throws IOException {
+    public static String setToken(Context context) throws IOException {
         String token = Base32.encodeAsString(SecureRandom.getSeed(16));
         setToken(token);
         return token;

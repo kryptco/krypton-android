@@ -1,8 +1,10 @@
 package co.krypt.krypton.protocol;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
 import co.krypt.krypton.BuildConfig;
+import co.krypt.krypton.team.Sigchain;
 
 /**
  * Created by Kevin King on 12/3/16.
@@ -27,6 +29,15 @@ public class Response {
 
     @SerializedName("hosts_response")
     public HostsResponse hostsResponse;
+
+    @SerializedName("read_team_response")
+    public SuccessOrTaggedErrorResult<JsonObject> readTeamResponse;
+
+    @SerializedName("log_decryption_response")
+    public SuccessOrTaggedErrorResult<JsonObject> logDecryptionResponse;
+
+    @SerializedName("team_operation_response")
+    public SuccessOrTaggedErrorResult<Sigchain.TeamOperationResponse> teamOperationResponse;
 
     @SerializedName("ack_response")
     public AckResponse ackResponse;

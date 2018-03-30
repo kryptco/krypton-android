@@ -67,7 +67,7 @@ public class EdKeyManager implements KeyManagerI {
         }
     }
 
-    public void deleteKeyPair(String tag) throws Exception {
+    public void deleteKeyPair(String tag) throws CryptoException {
         synchronized (lock) {
             preferences.edit()
                     .putString(SSH_KEYPAIR_KEY + "." + tag, null)

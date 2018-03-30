@@ -6,8 +6,10 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
 import co.krypt.krypton.exception.TransportException;
+import co.krypt.krypton.utils.Services;
 
 public class FirebaseInstanceIDService extends FirebaseInstanceIdService {
+    private static final Services services = new Services();
     private static final String TAG = "FirebaseInstanceID";
 
     public FirebaseInstanceIDService() {

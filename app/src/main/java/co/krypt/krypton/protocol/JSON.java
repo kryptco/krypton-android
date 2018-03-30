@@ -32,6 +32,15 @@ import co.krypt.krypton.git.TagInfo;
  */
 
 public class JSON {
+
+    public static <T> T fromJson(byte[] json, Type classOfT) throws JsonSyntaxException {
+        try {
+            return gson.fromJson(new String(json, "UTF-8"), classOfT);
+        } catch (UnsupportedEncodingException e) {
+            throw new JsonSyntaxException(e.getMessage());
+        }
+    }
+
     public static <T> T fromJson(byte[] json, Class<T> classOfT) throws JsonSyntaxException {
         try {
             return gson.fromJson(new String(json, "UTF-8"), classOfT);
@@ -41,6 +50,10 @@ public class JSON {
     }
 
     public static <T> T fromJson(String json, Class<T> classOfT) throws JsonSyntaxException {
+        return gson.fromJson(json, classOfT);
+    }
+
+    public static <T> T fromJson(String json, Type classOfT) throws JsonSyntaxException {
         return gson.fromJson(json, classOfT);
     }
 

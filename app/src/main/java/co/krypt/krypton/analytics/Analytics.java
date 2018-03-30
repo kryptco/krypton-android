@@ -16,6 +16,8 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import co.krypt.krypton.BuildConfig;
 
@@ -30,6 +32,8 @@ public class Analytics {
     public static final String PUBLISHED_EMAIL_KEY = "PUBLISHED_EMAIL";
     private static final Object lock = new Object();
     private SharedPreferences preferences;
+
+    private static final ExecutorService threadPool = Executors.newSingleThreadExecutor();
 
     private static final String TRACKING_ID() {
         if (BuildConfig.DEBUG) {
@@ -60,27 +64,24 @@ public class Analytics {
                 return;
             }
             if (!email.equals(getPublishedEmail())) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Uri.Builder uri = new Uri.Builder().scheme("https").authority("teams.krypt.co")
-                                .appendQueryParameter("id", getClientID())
-                                .appendQueryParameter("email", email);
+                threadPool.submit(() -> {
+                    Uri.Builder uri = new Uri.Builder().scheme("https").authority("teams.krypt.co")
+                            .appendQueryParameter("id", getClientID())
+                            .appendQueryParameter("email", email);
+                    try {
+                        URL url = new URL(uri.toString());
+                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                        connection.setRequestMethod("PUT");
                         try {
-                            URL url = new URL(uri.toString());
-                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                            connection.setRequestMethod("PUT");
-                            try {
-                                InputStream in = new BufferedInputStream(connection.getInputStream());
-                                preferences.edit().putString(PUBLISHED_EMAIL_KEY, email).apply();
-                            } finally {
-                                connection.disconnect();
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            InputStream in = new BufferedInputStream(connection.getInputStream());
+                            preferences.edit().putString(PUBLISHED_EMAIL_KEY, email).apply();
+                        } finally {
+                            connection.disconnect();
                         }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                }).start();
+                });
             }
         }
     }
@@ -108,22 +109,19 @@ public class Analytics {
         for (Map.Entry<String, String> param: defaultParams.entrySet()) {
             uri.appendQueryParameter(param.getKey(), param.getValue());
         }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+        threadPool.submit(() -> {
+            try {
+                URL url = new URL(uri.build().toString());
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 try {
-                    URL url = new URL(uri.build().toString());
-                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                    try {
-                        InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                    } finally {
-                        urlConnection.disconnect();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                } finally {
+                    urlConnection.disconnect();
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }).start();
+        });
     }
 
     public void postPageView(String page) {

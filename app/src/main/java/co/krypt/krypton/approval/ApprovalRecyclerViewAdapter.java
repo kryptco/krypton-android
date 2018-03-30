@@ -41,7 +41,7 @@ public class ApprovalRecyclerViewAdapter extends RecyclerView.Adapter<ApprovalRe
         holder.item = item;
 
         holder.approvalText.setText(item.display());
-        holder.timeRemaining.setText(item.timeRemaining(Policy.TEMPORARY_APPROVAL_SECONDS));
+        holder.timeRemaining.setText(item.timeRemaining(Policy.temporaryApprovalSeconds(holder.mView.getContext(), holder.item)));
         holder.deleteButton.setOnClickListener(v -> {
             try {
                 item.delete(v.getContext());

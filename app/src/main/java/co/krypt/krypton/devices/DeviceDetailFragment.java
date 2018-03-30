@@ -95,7 +95,7 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         TextView deviceName = (TextView) deviceCardView.findViewById(R.id.deviceName);
         deviceName.setText(pairing.workstationName);
 
-        manualButton = (RadioButton) deviceCardView.findViewById(R.id.manualApprovalButton);
+        manualButton = (RadioButton) deviceCardView.findViewById(R.id.alwaysAsk);
         automaticButton = (RadioButton) deviceCardView.findViewById(R.id.automaticApprovalButton);
 
         viewTemporaryApprovalsButton = deviceCardView.findViewById(R.id.temporaryApprovalsViewButton);
@@ -197,7 +197,7 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
 
         if (attachedContext != null) {
             try {
-                boolean hasApprovals = Approval.hasTemporaryApprovals(Silo.shared(attachedContext).pairings().dbHelper.getApprovalDao(), Policy.TEMPORARY_APPROVAL_SECONDS, UUID.fromString(pairingUUID));
+                boolean hasApprovals = Approval.hasTemporaryApprovals(Silo.shared(attachedContext).pairings().dbHelper.getApprovalDao(), Policy.temporaryApprovalSeconds(getContext(), Approval.ApprovalType.SSH_USER_HOST), UUID.fromString(pairingUUID));
                 new Handler(Looper.getMainLooper()).post(() -> {
                     if (hasApprovals) {
                         for (int i = 0; i < temporaryApprovalsContainer.getChildCount(); i++) {

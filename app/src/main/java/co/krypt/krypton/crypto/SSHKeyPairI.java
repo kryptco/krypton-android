@@ -25,11 +25,11 @@ public interface SSHKeyPairI {
 
     byte[] publicKeySSHWireFormat() throws InvalidKeyException, IOException;
 
-    byte[] publicKeyFingerprint() throws IOException, InvalidKeyException, CryptoException;
+    byte[] publicKeyFingerprint() throws CryptoException;
 
     byte[] signDigest(String digest, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, CryptoException, NoSuchProviderException, InvalidKeySpecException;
 
-    byte[] signDigestAppendingPubkey(byte[] data, String algo) throws SignatureException, IOException, InvalidKeyException, NoSuchAlgorithmException, CryptoException, NoSuchProviderException, InvalidKeySpecException;
+    byte[] signDigestAppendingPubkey(byte[] data, String algo) throws CryptoException;
 
     boolean verifyDigest(String digest, byte[] signature, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, CryptoException, InvalidKeySpecException, NoSuchProviderException;
 

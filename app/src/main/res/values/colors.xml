@@ -7,11 +7,13 @@
     <color name="colorDestructive">#e4113c</color>
 
     <color name="appGreen">#5bc894</color>
-    <color name="appWhite">#ffffff</color>
+    <color name="appWhite">#FFFFFF</color>
     <color name="appGray">#AAAAAA</color>
     <color name="appBlack">#343434</color>
+    <color name="appBlue">#666ee8</color>
     <color name="appShadowGray">#38aaaaaa</color>
-
-    <color name="reject">#FF6361</color>
+    <color name="appBlackTransparent">#cc000000</color>
+    <color name="appReject">#FF6361</color>
+    <color name="appWarning">#F8A843</color>
 
 </resources>

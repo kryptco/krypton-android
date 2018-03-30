@@ -33,11 +33,12 @@ import co.krypt.krypton.uiutils.TimeUtils;
 
 @DatabaseTable(tableName = "approvals")
 public class Approval {
-    enum ApprovalType {
+    public enum ApprovalType {
         SSH_USER_HOST,
         SSH_ANY_HOST,
         GIT_COMMIT_SIGNATURES,
         GIT_TAG_SIGNATURES,
+        READ_TEAM_DATA, //  Includes decrypting log encryption keys
     }
 
     @DatabaseField(generatedId = true)
@@ -130,10 +131,32 @@ public class Approval {
         db.getApprovalDao().create(approval);
     }
 
+    public static synchronized void approveReadTeamData(OpenDatabaseHelper db, UUID pairingUUID) throws CryptoException, IOException, SQLException {
+        Approval approval = new Approval(ApprovalType.READ_TEAM_DATA, pairingUUID, new Date());
+        DeleteBuilder deleteExisting = db.getApprovalDao().deleteBuilder();
+        deleteExisting.where()
+                .eq("pairing_uuid", pairingUUID)
+                .and()
+                .eq("type", ApprovalType.READ_TEAM_DATA);
+        deleteExisting.delete();
+
+        db.getApprovalDao().create(approval);
+    }
+
     public static synchronized void deleteExpiredApprovals(Dao<Approval, Long> db, Long temporaryApprovalSeconds) throws SQLException {
-        DeleteBuilder deleteBuilder = db.deleteBuilder();
-        deleteBuilder.where().lt("approved_at", new Date(System.currentTimeMillis() - temporaryApprovalSeconds * 1000));
-        deleteBuilder.delete();
+        DeleteBuilder deleteExpiredPolicyAffectedApprovals = db.deleteBuilder();
+        deleteExpiredPolicyAffectedApprovals.where()
+                .notIn("type", ApprovalType.READ_TEAM_DATA)
+                .and()
+                .le("approved_at", new Date(System.currentTimeMillis() - temporaryApprovalSeconds * 1000));
+        deleteExpiredPolicyAffectedApprovals.delete();
+
+        DeleteBuilder deleteExpiredReadTeamApprovals = db.deleteBuilder();
+        deleteExpiredReadTeamApprovals.where()
+                .eq("type", ApprovalType.READ_TEAM_DATA) //  Always 6 hours
+                .and()
+                .le("approved_at", new Date(System.currentTimeMillis() - (Policy.READ_TEAM_TEMPORARY_APPROVAL_SECONDS) * 1000));
+        deleteExpiredReadTeamApprovals.delete();
     }
 
     public static synchronized void deleteApprovalsForPairing(Dao<Approval, Long> db, UUID pairingUUID) throws SQLException {
@@ -176,6 +199,15 @@ public class Approval {
                 .eq("pairing_uuid", pairingUUID)
                 .and()
                 .eq("type", ApprovalType.GIT_TAG_SIGNATURES).countOf() > 0;
+    }
+
+    public static synchronized boolean isReadTeamDataApproved(Dao<Approval, Long> db, UUID pairingUUID, Long temporaryApprovalSeconds) throws SQLException {
+        deleteExpiredApprovals(db, temporaryApprovalSeconds);
+        QueryBuilder query = db.queryBuilder();
+        return query.where()
+                .eq("pairing_uuid", pairingUUID)
+                .and()
+                .eq("type", ApprovalType.READ_TEAM_DATA).countOf() > 0;
     }
 
     private static String hashSSHUserHost(String user, String host) throws CryptoException, IOException {

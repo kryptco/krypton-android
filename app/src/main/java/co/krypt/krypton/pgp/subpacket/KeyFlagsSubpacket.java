@@ -89,7 +89,7 @@ public class KeyFlagsSubpacket extends Subpacket {
                 }
             }
         }
-        return flagList.toArray(null);
+        return flagList.toArray(new Flag[0]);
     }
 
     @Override

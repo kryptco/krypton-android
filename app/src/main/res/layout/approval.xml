@@ -45,7 +45,7 @@
         android:fontFamily="@font/open_sans_bold"
         android:text="Delete"
         android:textAllCaps="true"
-        android:textColor="@color/reject"
+        android:textColor="@color/appReject"
         app:layout_constraintBottom_toBottomOf="@+id/approvalTimeRemaining"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/approvalText" />

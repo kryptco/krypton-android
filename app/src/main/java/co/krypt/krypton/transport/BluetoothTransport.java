@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -50,6 +52,7 @@ import co.krypt.krypton.exception.TransportException;
 import co.krypt.krypton.pairing.Pairing;
 import co.krypt.krypton.protocol.NetworkMessage;
 import co.krypt.krypton.silo.Silo;
+import co.krypt.krypton.utils.CrashReporting;
 
 /**
  * Created by Kevin King on 12/20/16.
@@ -89,7 +92,10 @@ public class BluetoothTransport extends BroadcastReceiver {
 
     private final BluetoothManager manager;
 
+    private static final ExecutorService sendThreadPool = Executors.newSingleThreadExecutor();
+
     private BluetoothTransport(Context context, BluetoothManager manager, BluetoothAdapter adapter) {
+        CrashReporting.startANRReporting();
         this.context = context;
         this.adapter = adapter;
         this.manager = manager;
@@ -397,11 +403,12 @@ public class BluetoothTransport extends BroadcastReceiver {
             Log.v(TAG, "split " + String.valueOf(n) + " from " + characteristic.toString());
             ByteArrayOutputStream messageSplit = new ByteArrayOutputStream();
             messageSplit.write(value, 1, value.length - 1);
-            ByteArrayOutputStream newMessageBuffer = new ByteArrayOutputStream();
+            final ByteArrayOutputStream newMessageBuffer;
 
             Pair<Byte, ByteArrayOutputStream> lastNAndBuffer = incomingMessageBuffersByCharacteristic.get(characteristic);
             try {
                 if (lastNAndBuffer != null) {
+                    newMessageBuffer = new ByteArrayOutputStream();
                     if (lastNAndBuffer.first == n + 1) {
                         newMessageBuffer.write(lastNAndBuffer.second.toByteArray());
                     }
@@ -416,19 +423,30 @@ public class BluetoothTransport extends BroadcastReceiver {
             if (n == 0) {
                 Log.v(TAG, "received message of length " + String.valueOf(newMessageBuffer.toByteArray().length));
                 incomingMessageBuffersByCharacteristic.remove(characteristic);
-                Silo.shared(context).onMessage(uuid, newMessageBuffer.toByteArray(), "bluetooth");
+                new Thread(() -> Silo.shared(context).onMessage(uuid, newMessageBuffer.toByteArray(), "bluetooth")).start();
             } else {
                 incomingMessageBuffersByCharacteristic.put(characteristic, new Pair<>(n, newMessageBuffer));
             }
         }
     }
 
-    public synchronized void send(Pairing pairing, NetworkMessage message) throws TransportException {
-        lastOutgoingMessages.put(pairing.uuid, message);
+    public void send(Pairing pairing, NetworkMessage message) throws TransportException {
         send(pairing.uuid, message);
     }
 
-    private synchronized void send(UUID serviceUUID, NetworkMessage message) throws TransportException {
+    public void send(UUID serviceUUID, NetworkMessage message) throws TransportException {
+        sendThreadPool.submit(() -> {
+            try {
+                sendJob(serviceUUID, message);
+            } catch (TransportException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private synchronized void sendJob(UUID serviceUUID, NetworkMessage message) throws TransportException {
+        lastOutgoingMessages.put(serviceUUID, message);
+
         BluetoothGattCharacteristic characteristic = characteristicsByUUID.get(serviceUUID);
         if (characteristic == null) {
             return;

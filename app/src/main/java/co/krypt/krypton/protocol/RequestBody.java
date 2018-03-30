@@ -23,6 +23,9 @@ public abstract class RequestBody {
         public abstract T visit(GitSignRequest gitSignRequest) throws E;
         public abstract T visit(UnpairRequest unpairRequest) throws E;
         public abstract T visit(HostsRequest hostsRequest) throws E;
+        public abstract T visit(ReadTeamRequest readTeamRequest) throws E;
+        public abstract T visit(LogDecryptionRequest logDecryptionRequest) throws E;
+        public abstract T visit(TeamOperationRequest teamOperationRequest) throws E;
     }
 
     public static class Deserializer implements JsonDeserializer<RequestBody> {
@@ -47,6 +50,15 @@ public abstract class RequestBody {
             }
             if (o.has(HostsRequest.FIELD_NAME)) {
                 parsedVariants.add(JSON.gson.fromJson(o.get(HostsRequest.FIELD_NAME), HostsRequest.class));
+            }
+            if (o.has(ReadTeamRequest.FIELD_NAME)) {
+                parsedVariants.add(JSON.gson.fromJson(o.get(ReadTeamRequest.FIELD_NAME), ReadTeamRequest.class));
+            }
+            if (o.has(LogDecryptionRequest.FIELD_NAME)) {
+                parsedVariants.add(JSON.gson.fromJson(o.get(LogDecryptionRequest.FIELD_NAME), LogDecryptionRequest.class));
+            }
+            if (o.has(TeamOperationRequest.FIELD_NAME)) {
+                parsedVariants.add(JSON.gson.fromJson(o.get(TeamOperationRequest.FIELD_NAME), TeamOperationRequest.class));
             }
             if (parsedVariants.size() != 1) {
                 throw new JsonParseException("wrong number of enum variants: " + parsedVariants.size());

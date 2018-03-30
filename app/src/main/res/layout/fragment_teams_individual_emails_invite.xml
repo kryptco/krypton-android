@@ -1,0 +1,172 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_teams_create"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/appWhite"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context="co.krypt.krypton.teams.IndividualEmailInviteFragment">
+
+    <android.support.v7.widget.ListViewCompat
+        android:id="@+id/emailResultsList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:padding="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/createIndividualLink"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/listLabel"
+        app:layout_constraintTop_toBottomOf="@+id/listLabel" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/listLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/open_sans_semibold"
+        android:text="CHOSEN EMAILS"
+        android:textColor="@color/appGreen"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/teamInfoCell"
+        app:layout_constraintTop_toBottomOf="@+id/teamInfoCell" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/cancelIndividualLinkButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@android:color/transparent"
+        android:fontFamily="@font/open_sans_bold"
+        android:text="Cancel"
+        android:textAllCaps="false"
+        android:textColor="@color/appGray"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/teamInfoCell"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/top_bottom_border"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/addEmailButton"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/flat_button"
+            android:backgroundTint="@color/enabled_green"
+            android:padding="3dp"
+            android:scaleType="fitCenter"
+            android:tint="@color/enabled_green"
+            app:layout_constraintBottom_toBottomOf="@+id/emailAddInput"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/emailAddInput"
+            app:srcCompat="@drawable/add_button" />
+
+        <View
+            android:id="@+id/view3"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="4dp"
+            android:background="@color/appGreen"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/emailAddInput"
+            app:layout_constraintStart_toStartOf="@+id/emailAddInput"
+            app:layout_constraintTop_toBottomOf="@+id/emailAddInput" />
+
+        <android.support.v7.widget.AppCompatEditText
+            android:id="@+id/emailAddInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:fontFamily="@font/open_sans_bold"
+            android:hint="alice@acme.co"
+            android:inputType="textEmailAddress"
+            android:textAlignment="textStart"
+            android:textColor="@color/appGreen"
+            android:textColorHint="@color/appGray"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toStartOf="@id/addEmailButton"
+            app:layout_constraintStart_toStartOf="@+id/textView24"
+            app:layout_constraintTop_toBottomOf="@+id/textView24" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/textView20"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans"
+            android:text="Add emails of users to invite. Note: members must sign-up with one of the emails you specify."
+            android:textColor="@color/appBlack"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/textView30"
+            app:layout_constraintStart_toStartOf="@+id/textView30"
+            app:layout_constraintTop_toBottomOf="@+id/textView30"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/textView24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:fontFamily="@font/open_sans"
+            android:text="ADD EMAILS"
+            android:textColor="@color/appBlack"
+            android:textSize="8sp"
+            app:layout_constraintStart_toStartOf="@+id/textView20"
+            app:layout_constraintTop_toBottomOf="@+id/textView20"
+            app:textAllCaps="true" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/textView30"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="Invite by email address"
+            android:textColor="@color/appBlack"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/createIndividualLink"
+        style="@style/TeamOnboardingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="70dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        android:selectAllOnFocus="true"
+        android:text="Create Link"
+        android:backgroundTint="@color/enabled_green"
+        app:layout_constraintBottom_toTopOf="@+id/cancelIndividualLinkButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

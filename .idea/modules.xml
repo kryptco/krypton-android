@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Kryptonite-android.iml" filepath="$PROJECT_DIR$/Kryptonite-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/krypton-android.iml" filepath="$PROJECT_DIR$/krypton-android.iml" />
+      <module fileurl="file://D:\Users\kcking\ws\krypton-android-private\krypton-android.iml" filepath="D:\Users\kcking\ws\krypton-android-private\krypton-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/krypton-android-private.iml" filepath="$PROJECT_DIR$/krypton-android-private.iml" />
       <module fileurl="file://$PROJECT_DIR$/libsodium-jni-release/libsodium-jni-release.iml" filepath="$PROJECT_DIR$/libsodium-jni-release/libsodium-jni-release.iml" />
     </modules>
   </component>

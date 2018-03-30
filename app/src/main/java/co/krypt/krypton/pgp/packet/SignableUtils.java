@@ -58,14 +58,18 @@ public class SignableUtils {
         return new DataInputStream(new ByteArrayInputStream(hashSignable(hash, s))).readShort();
     }
 
-    public static byte[] signBinaryDocument(BinarySignable bs, SSHKeyPairI key, HashAlgorithm hash) throws IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchProviderException, SignatureException, PGPException, CryptoException, InvalidKeySpecException {
-        UnsignedBinaryDocument unsignedBinary = new UnsignedBinaryDocument(
-                SignableUtils.binarySignableBytes(bs),
-                key,
-                hash
-        );
-        return unsignedBinary.sign(
-                key.pgpSign(hash, SignableUtils.signableBytes(unsignedBinary))
-        ).serializedBytes();
+    public static byte[] signBinaryDocument(BinarySignable bs, SSHKeyPairI key, HashAlgorithm hash) throws PGPException {
+        try {
+            UnsignedBinaryDocument unsignedBinary = new UnsignedBinaryDocument(
+                    SignableUtils.binarySignableBytes(bs),
+                    key,
+                    hash
+            );
+            return unsignedBinary.sign(
+                    key.pgpSign(hash, SignableUtils.signableBytes(unsignedBinary))
+            ).serializedBytes();
+        } catch (IOException | NoSuchAlgorithmException | SignatureException | InvalidKeyException | NoSuchProviderException | CryptoException | InvalidKeySpecException e) {
+            throw new PGPException(e.getMessage(), e);
+        }
     }
 }

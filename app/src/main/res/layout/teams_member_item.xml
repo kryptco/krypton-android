@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="20dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="20dp"
+    android:background="@color/appWhite"
+    android:clickable="false"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="7dp">
+
+    <android.support.v7.widget.AppCompatImageButton
+        android:id="@+id/infoButton3"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:tint="@color/appGray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/right_chevron" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/adminLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/admin_badge_bg"
+        android:fontFamily="@font/open_sans_bold"
+        android:padding="4dp"
+        android:paddingBottom="4dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:text="ADMIN"
+        android:textColor="@color/appBlack"
+        android:textSize="8sp"
+        app:layout_constraintBottom_toBottomOf="@+id/infoButton3"
+        app:layout_constraintEnd_toStartOf="@+id/infoButton3"
+        app:layout_constraintTop_toTopOf="@+id/infoButton3" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/memberEmail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:text="alice@acme.co"
+        android:singleLine="true"
+        android:textColor="@color/appBlack"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/memberIndex"
+        app:layout_constraintEnd_toStartOf="@id/adminLabel"
+        app:layout_constraintStart_toEndOf="@+id/memberIndex"
+        app:layout_constraintTop_toTopOf="@+id/memberIndex" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/memberIndex"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:text="1."
+        android:textColor="@color/appGreen"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

@@ -58,7 +58,7 @@ public class AsciiArmor {
             "Comment", "Created with Kryptonite"
     ));
     public static final List<Pair<String, String>> KRYPTON_DEFAULT_HEADERS = Collections.singletonList(new Pair<String, String>(
-            "Comment", "Created with Kryptonite"
+            "Comment", "Created with Krypton"
     ));
 
     public final HeaderLine headerLine;

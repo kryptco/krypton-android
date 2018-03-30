@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="20dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="20dp"
+    android:background="@color/appWhite"
+    android:clickable="false"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="7dp">
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/pinUnpinButton"
+        android:layout_width="60dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/outline_button_reject"
+        android:elevation="0dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:padding="0dp"
+        android:selectAllOnFocus="true"
+        android:text="Unpin"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@color/appReject"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/detailsButton"
+        app:layout_constraintTop_toTopOf="@id/detailsButton"/>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/detailsButton"
+        android:layout_width="60dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/outline_button"
+        android:elevation="0dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:padding="0dp"
+        android:selectAllOnFocus="true"
+        android:text="Details"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@color/appGreen"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/hostname"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:text="github.com"
+        android:textColor="@color/appBlack"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@id/detailsButton"
+        app:layout_constraintEnd_toStartOf="@+id/pinUnpinButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/detailsButton"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/detailsContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailsButton">
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/copyButton"
+            android:layout_width="60dp"
+            android:layout_height="36dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/outline_button"
+            android:elevation="0dp"
+            android:fontFamily="@font/open_sans_bold"
+            android:padding="0dp"
+            android:selectAllOnFocus="true"
+            android:text="Copy"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/appGreen"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fullKey"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/fullKey"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/code"
+            android:text="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 "
+            android:textAlignment="viewStart"
+            android:textColor="@color/appBlack"
+            android:textSize="6sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/memberEmail8" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/memberEmail8"
+            android:layout_width="0dp"
+            android:layout_height="17dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="PUBLIC KEY"
+            android:textColor="@color/appGray"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/keyFingerprint" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/keyFingerprint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/code_bold"
+            android:singleLine="true"
+            android:text="SHA256:Xc4MD22hj1ZwA9bSSZE1wB05yTRnpVtxuWQI3fyT/jc= "
+            android:textColor="@color/appBlack"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/memberEmail5"
+            app:layout_constraintTop_toBottomOf="@+id/memberEmail5"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/memberEmail5"
+            android:layout_width="0dp"
+            android:layout_height="17dp"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="FINGERPRINT"
+            android:textColor="@color/appGray"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.constraint.ConstraintLayout>

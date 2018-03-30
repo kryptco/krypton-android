@@ -5,7 +5,7 @@ package co.krypt.krypton.exception;
  * Copyright 2016. KryptCo, Inc.
  */
 
-public class TransportException extends Exception {
+public class TransportException extends Unrecoverable {
     public TransportException(String message) {
         super(message);
     }

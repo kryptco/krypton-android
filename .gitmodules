@@ -4,9 +4,9 @@
 [submodule "zxing"]
 	path = zxing
 	url = https://github.com/zxing/zxing
-[submodule "identicon"]
-	path = identicon
-	url = https://github.com/KryptCo/identicon
 [submodule "ssh-wire"]
 	path = ssh-wire
 	url = git@github.com:kryptco/ssh-wire
+[submodule "sigchain"]
+	path = sigchain
+	url = git@github.com:kryptco/sigchain

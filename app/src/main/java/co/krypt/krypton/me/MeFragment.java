@@ -10,14 +10,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Button;
 import android.widget.TextView;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.protocol.Profile;
+import co.krypt.krypton.silo.IdentityService;
 import co.krypt.krypton.silo.Silo;
 
 public class MeFragment extends Fragment {
@@ -43,6 +48,8 @@ public class MeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_me, container, false);
         profileEmail = (EditText) v.findViewById(R.id.profileEmail);
+        profileEmail.setText("loading...");
+        profileEmail.setTextColor(getResources().getColor(R.color.appGray, null));
         profileEmail.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int keyCode, KeyEvent event) {
@@ -53,22 +60,12 @@ public class MeFragment extends Fragment {
                 return false;
             }
         });
-        profileEmail.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    EditText editText = (EditText) v;
-                    onEmailChanged(editText.getText().toString());
-                }
+        profileEmail.setOnFocusChangeListener((v1, hasFocus) -> {
+            if (!hasFocus) {
+                EditText editText = (EditText) v1;
+                new Thread(() -> onEmailChanged(editText.getText().toString())).start();
             }
         });
-
-        final Profile me = Silo.shared(getContext()).meStorage().load();
-        if (me != null) {
-            profileEmail.setText(me.email);
-        } else {
-            Log.e(TAG, "no me profile");
-        }
 
         githubButton = v.findViewById(R.id.githubButton);
         digitaloceanButton = v.findViewById(R.id.digitaloceanButton);
@@ -116,26 +113,37 @@ public class MeFragment extends Fragment {
 
 
         shareButton = (ImageButton) v.findViewById(R.id.shareButton);
-        shareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+
+        EventBus.getDefault().register(this);
+        EventBus.getDefault().post(new IdentityService.GetProfile(getContext()));
+        return v;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void updateUI(IdentityService.GetProfileResult r) {
+        Profile me = r.profile;
+        if (me != null) {
+            profileEmail.setText(me.email);
+            profileEmail.setTextColor(getResources().getColor(R.color.appBlack, null));
+
+            shareButton.setOnClickListener(v -> {
                 if (me != null) {
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
                     sendIntent.putExtra(Intent.EXTRA_TEXT, me.shareText());
                     sendIntent.setType("text/plain");
-                    startActivity(Intent.createChooser(sendIntent, "Share your Kryptonite SSH Public Key"));
+                    startActivity(Intent.createChooser(sendIntent, "Share your Krypton SSH Public Key"));
                 }
-            }
-        });
-
-        return v;
+            });
+        } else {
+            Log.e(TAG, "no profile");
+        }
     }
 
     private void onEmailChanged(String email) {
         Profile me = Silo.shared(getContext()).meStorage().load();
         if (me == null) {
-            me = new Profile(email, null, null);
+            me = new Profile(email, null, null, null);
         }
         me.email = email;
         Silo.shared(getContext()).meStorage().set(me);
@@ -143,13 +151,9 @@ public class MeFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onDestroyView() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroyView();
     }
 
     @Override

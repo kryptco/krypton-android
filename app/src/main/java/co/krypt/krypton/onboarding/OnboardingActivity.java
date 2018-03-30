@@ -24,6 +24,7 @@ import co.krypt.krypton.approval.ApprovalDialog;
 import co.krypt.krypton.pairing.Pairing;
 import co.krypt.krypton.policy.LocalAuthentication;
 import co.krypt.krypton.silo.Silo;
+import co.krypt.krypton.utils.Services;
 
 import static co.krypt.kryptonite.MainActivity.CAMERA_PERMISSION_GRANTED_ACTION;
 import static co.krypt.kryptonite.MainActivity.CAMERA_PERMISSION_REQUEST;
@@ -33,8 +34,11 @@ public class OnboardingActivity extends FragmentActivity {
 
     private static final String TAG = "Onboarding";
 
+    private static final Services services = new Services();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
 

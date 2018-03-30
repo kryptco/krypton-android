@@ -1,0 +1,513 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:id="@+id/fragment_teams_home"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent"
+                                             android:background="@color/appWhite"
+                                             android:clickable="true"
+                                             android:focusable="true"
+                                             android:focusableInTouchMode="true"
+                                             tools:context="co.krypt.krypton.team.home.HomeFragment">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <ScrollView
+            android:id="@+id/scrollView2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="48dp"
+                android:clipToPadding="false"
+                android:clipChildren="false"
+                >
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/teamInfoCell"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/top_bottom_border"
+                    android:elevation="4dp"
+                    android:paddingBottom="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/textView44"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:text="TEAM"
+                        android:textColor="@color/appGray"
+                        android:textSize="10sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <android.support.v7.widget.AppCompatEditText
+                        android:id="@+id/teamName"
+                        android:inputType="textNoSuggestions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:text="acme-dev"
+                        android:textColor="@color/appBlack"
+                        android:textSize="22sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/textView44"
+                        app:layout_constraintTop_toBottomOf="@+id/textView44"/>
+
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/textView46"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="24dp"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:text="ME"
+                        android:textColor="@color/appGray"
+                        android:textSize="10sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/teamName"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/email"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:text="alice@acme.co"
+                        android:textColor="@color/appBlack"
+                        android:textSize="22sp"
+                        android:singleLine="true"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/adminLabel"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/textView46"
+                        app:layout_constraintTop_toBottomOf="@+id/textView46"
+                        app:layout_constraintVertical_bias="0.0"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/adminLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/admin_badge_bg"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:padding="4dp"
+                        android:paddingBottom="4dp"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:text="ADMIN"
+                        android:textColor="@color/appBlack"
+                        android:textSize="8sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/email"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/email"/>
+
+                </android.support.constraint.ConstraintLayout>
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/inviteContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/teamInfoCell"
+                    >
+
+                    <android.support.v7.widget.AppCompatButton
+                        android:id="@+id/inviteButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="24dp"
+                        android:background="@drawable/corners_bg_green"
+                        android:backgroundTint="@color/appGreen"
+                        android:elevation="10dp"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:padding="16dp"
+                        android:selectAllOnFocus="true"
+                        android:text="Add a team member"
+                        android:textAlignment="center"
+                        android:textAllCaps="false"
+                        android:textColor="@color/appWhite"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        />
+
+                    <android.support.v7.widget.AppCompatButton
+                        android:id="@+id/cancelInvitesButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@null"
+                        android:elevation="0dp"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:selectAllOnFocus="true"
+                        android:text="Close Active Invitations"
+                        android:textAlignment="center"
+                        android:textAllCaps="false"
+                        android:textColor="@color/appReject"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/inviteButton"/>
+
+                </android.support.constraint.ConstraintLayout>
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/membersContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    app:layout_constraintEnd_toEndOf="@+id/teamInfoCell"
+                    app:layout_constraintStart_toStartOf="@+id/teamInfoCell"
+                    app:layout_constraintTop_toBottomOf="@id/inviteContainer">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/membersContainerHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:text="Team"
+                        android:textColor="@color/appBlack"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/membersContainerText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/open_sans_semibold"
+                        android:text="16 members"
+                        android:textColor="@color/appGreen"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toTopOf="@+id/membersContainerLine"
+                        app:layout_constraintTop_toBottomOf="@+id/membersContainerHeader"
+                        />
+
+                    <View
+                        android:id="@+id/membersContainerLine"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:background="@color/appShadowGray"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"/>
+
+                    <android.support.v7.widget.AppCompatImageButton
+                        android:id="@+id/membersContainerButton"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@android:color/transparent"
+                        android:scaleType="fitCenter"
+                        android:tint="@color/appGray"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/right_chevron"/>
+
+                </android.support.constraint.ConstraintLayout>
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/pinnedHostsCell"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="@+id/teamInfoCell"
+                    app:layout_constraintStart_toStartOf="@+id/teamInfoCell"
+                    app:layout_constraintTop_toBottomOf="@+id/membersContainer">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/pinnedHostsHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:text="Pinned Hosts"
+                        android:textColor="@color/appBlack"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/pinnedHostsText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/open_sans_semibold"
+                        android:text="47 pinned hosts"
+                        android:textColor="@color/appGreen"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toTopOf="@+id/pinnedHostsLine"
+                        app:layout_constraintTop_toBottomOf="@+id/pinnedHostsHeader"
+                        />
+
+                    <android.support.v7.widget.AppCompatImageButton
+                        android:id="@+id/pinnedHostsButton"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@android:color/transparent"
+                        android:scaleType="fitCenter"
+                        android:tint="@color/appGray"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/right_chevron"/>
+
+                    <View
+                        android:id="@+id/pinnedHostsLine"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:background="@color/appShadowGray"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"/>
+                </android.support.constraint.ConstraintLayout>
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/activityCell"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="@+id/pinnedHostsCell"
+                    app:layout_constraintStart_toStartOf="@+id/pinnedHostsCell"
+                    app:layout_constraintTop_toBottomOf="@+id/pinnedHostsCell">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/activiityHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:text="Activity"
+                        android:textColor="@color/appBlack"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/activityText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/open_sans_semibold"
+                        android:text="24 events"
+                        android:textColor="@color/appGreen"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toTopOf="@+id/activityLine"
+                        app:layout_constraintTop_toBottomOf="@+id/activiityHeader"
+                        />
+
+                    <android.support.v7.widget.AppCompatImageButton
+                        android:id="@+id/activityButton"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@android:color/transparent"
+                        android:scaleType="fitCenter"
+                        android:tint="@color/appGray"
+                        app:layout_constraintBottom_toTopOf="@+id/activityLine"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/right_chevron"/>
+
+                    <View
+                        android:id="@+id/activityLine"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:background="@color/appShadowGray"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"/>
+
+                </android.support.constraint.ConstraintLayout>
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/temporaryApprovalCell"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    app:layout_constraintEnd_toEndOf="@+id/pinnedHostsCell"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/pinnedHostsCell"
+                    app:layout_constraintTop_toBottomOf="@+id/activityCell">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/tempTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:text="TEMPORARY AUTO-APPROVAL WINDOW"
+                        android:textColor="@color/appGray"
+                        android:textSize="10sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/tempApproveLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:text="1 Hour"
+                        android:textColor="@color/appBlack"
+                        android:textSize="20sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/tempApprovalButton"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tempTitle"
+                        />
+
+                    <android.support.v7.widget.AppCompatImageButton
+                        android:id="@+id/tempApprovalButton"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="8dp"
+                        android:padding="3dp"
+                        android:backgroundTint="@color/appBlack"
+                        android:background="@drawable/ic_create_black_24dp"
+                        android:scaleType="centerCrop"
+                        android:tint="@color/appBlack"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                </android.support.constraint.ConstraintLayout>
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/auditLogCell"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintEnd_toEndOf="@id/temporaryApprovalCell"
+                    app:layout_constraintStart_toStartOf="@id/temporaryApprovalCell"
+                    app:layout_constraintTop_toBottomOf="@id/temporaryApprovalCell">
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/auditLogSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:thumbTint="@color/appGreen"
+                        android:trackTint="@color/appGray"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        />
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/auditLogLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:text="Enabled"
+                        android:textColor="@color/appBlack"
+                        android:textSize="20sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/auditLogSwitch"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/auditLogTitle"
+                        />
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/auditLogTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:text="TEAM AUDIT LOGGING"
+                        android:textColor="@color/appGray"
+                        android:textSize="10sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                </android.support.constraint.ConstraintLayout>
+
+                <View
+                    android:id="@+id/separatorLineTeams"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@color/appShadowGray"
+                    app:layout_constraintEnd_toEndOf="@+id/auditLogCell"
+                    app:layout_constraintStart_toStartOf="@+id/auditLogCell"
+                    app:layout_constraintTop_toBottomOf="@+id/auditLogCell"/>
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/moreSettingsButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="32dp"
+                    android:background="@null"
+                    android:elevation="0dp"
+                    android:fontFamily="@font/open_sans_bold"
+                    android:selectAllOnFocus="true"
+                    android:text="Leave Team"
+                    android:textAlignment="center"
+                    android:textAllCaps="false"
+                    android:textColor="@color/appReject"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@id/auditLogCell"
+                    app:layout_constraintTop_toBottomOf="@id/auditLogCell"/>
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/billingOuterContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/moreSettingsButton"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    >
+
+                    <include layout="@layout/teams_billing"/>
+                </android.support.constraint.ConstraintLayout>
+
+            </android.support.constraint.ConstraintLayout>
+
+        </ScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+</android.support.constraint.ConstraintLayout>

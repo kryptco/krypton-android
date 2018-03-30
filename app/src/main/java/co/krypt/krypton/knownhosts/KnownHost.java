@@ -57,4 +57,10 @@ public class KnownHost {
         });
         return sortedHosts;
     }
+
+    public static List<KnownHost> sortByHostAscending(List<KnownHost> knownHosts) {
+        List<KnownHost> sortedHosts = new ArrayList<>(knownHosts);
+        java.util.Collections.sort(sortedHosts, (lhs, rhs) -> lhs.hostName.compareTo(rhs.hostName));
+        return sortedHosts;
+    }
 }

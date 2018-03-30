@@ -6,8 +6,11 @@ import android.os.IBinder;
 import android.util.Log;
 
 import co.krypt.krypton.silo.Silo;
+import co.krypt.krypton.utils.Services;
 
 public class BluetoothService extends Service {
+    private static final Services services = new Services();
+
     private static final String TAG = "BluetoothService";
     private Silo silo;
     public BluetoothService() {

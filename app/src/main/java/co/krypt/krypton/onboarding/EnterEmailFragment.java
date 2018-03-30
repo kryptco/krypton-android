@@ -21,8 +21,10 @@ import android.widget.TextView;
 
 import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
+import co.krypt.krypton.exception.CryptoException;
 import co.krypt.krypton.me.MeStorage;
 import co.krypt.krypton.protocol.Profile;
+import co.krypt.krypton.uiutils.Error;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -101,7 +103,14 @@ public class EnterEmailFragment extends Fragment {
         }
         analytics.publishEmailToTeamsIfNeeded(email);
 
-        new MeStorage(getContext()).setEmail(email);
+        try {
+            new MeStorage(getContext()).setEmail(email);
+        } catch (CryptoException e) {
+            e.printStackTrace();
+            Error.shortToast(getContext(), "Failed to set email: " + e.getMessage());
+            return;
+        }
+
         final OnboardingProgress progress = new OnboardingProgress(getContext());
         progress.setStage(OnboardingStage.FIRST_PAIR);
         FirstPairFragment firstPairFragment = new FirstPairFragment();

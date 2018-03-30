@@ -12,5 +12,5 @@ public interface KeyManagerI {
 
     boolean keyExists(String tag) throws CryptoException;
 
-    void deleteKeyPair(String tag) throws Exception;
+    void deleteKeyPair(String tag) throws CryptoException;
 }

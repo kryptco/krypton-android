@@ -5,7 +5,7 @@ package co.krypt.krypton.exception;
  * Copyright 2016. KryptCo, Inc.
  */
 
-public class UnhandledKeyTypeException extends IllegalStateException {
+public class UnhandledKeyTypeException extends Unrecoverable {
     public UnhandledKeyTypeException(String message) {
         super(message);
     }

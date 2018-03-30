@@ -59,8 +59,13 @@ public class EdSSHKeyPair implements SSHKeyPairI {
         return out.toByteArray();
     }
 
-    public byte[] publicKeyFingerprint() throws IOException, InvalidKeyException, CryptoException {
-        return SHA256.digest(publicKeySSHWireFormat());
+    public byte[] publicKeyFingerprint() throws CryptoException {
+        try {
+            return SHA256.digest(publicKeySSHWireFormat());
+        } catch (InvalidKeyException | IOException e) {
+            e.printStackTrace();
+            throw new CryptoException(e);
+        }
     }
 
     @Override
@@ -70,14 +75,19 @@ public class EdSSHKeyPair implements SSHKeyPairI {
     }
 
     @Override
-    public byte[] signDigestAppendingPubkey(byte[] data, String algo) throws SignatureException, IOException, InvalidKeyException, NoSuchAlgorithmException, CryptoException, NoSuchProviderException, InvalidKeySpecException {
-        ByteArrayOutputStream dataWithPubkey = new ByteArrayOutputStream();
-        dataWithPubkey.write(data);
-        dataWithPubkey.write(SSHWire.encode(publicKeySSHWireFormat()));
+    public byte[] signDigestAppendingPubkey(byte[] data, String algo) throws CryptoException {
+        try {
+            ByteArrayOutputStream dataWithPubkey = new ByteArrayOutputStream();
+            dataWithPubkey.write(data);
+            dataWithPubkey.write(SSHWire.encode(publicKeySSHWireFormat()));
 
-        byte[] signaturePayload = dataWithPubkey.toByteArray();
+            byte[] signaturePayload = dataWithPubkey.toByteArray();
 
-        return signDigest(signaturePayload);
+            return signDigest(signaturePayload);
+        } catch (IOException | SignatureException | InvalidKeyException e) {
+            e.printStackTrace();
+            throw new CryptoException(e);
+        }
     }
 
     @Override

@@ -1,0 +1,96 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent"
+                                             android:background="@color/appWhite"
+                                             android:clickable="true"
+                                             android:focusable="true"
+                                             android:focusableInTouchMode="true">
+
+    <android.support.v7.widget.ListViewCompat
+        android:id="@+id/hostsList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:padding="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/krHeader"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteY="170dp"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/krHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/appCompatTextView4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/terminal_bg_bottom"
+            android:fontFamily="@font/code"
+            android:paddingBottom="6dp"
+            android:paddingLeft="6dp"
+            android:paddingTop="0dp"
+            android:shadowColor="@color/appBlack"
+            android:shadowRadius="4"
+            android:text='$ kr team pin --host "github.com"'
+            android:textColor="@color/appWhite"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:fontFamily="@font/code"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/appCompatTextView2"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/appCompatTextView2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/terminal_bg_top"
+            android:fontFamily="@font/open_sans"
+            android:lineSpacingExtra="18sp"
+            android:paddingBottom="0dp"
+            android:paddingLeft="8dp"
+            android:paddingTop="8dp"
+            android:shadowColor="@color/appBlack"
+            android:text="PIN A NEW HOST"
+            android:textColor="@color/appWhite"
+            android:textSize="8sp"
+            app:fontFamily="@font/open_sans"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/appCompatTextView"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/appCompatTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="Protect your team against Man-in-the-middle attacks"
+            android:textColor="@color/appBlack"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.constraint.ConstraintLayout>

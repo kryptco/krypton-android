@@ -18,9 +18,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.IOException;
 
-import co.krypt.kryptonite.MainActivity;
 import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.crypto.KeyManager;
@@ -30,6 +31,12 @@ import co.krypt.krypton.me.MeStorage;
 import co.krypt.krypton.onboarding.OnboardingActivity;
 import co.krypt.krypton.policy.LocalAuthentication;
 import co.krypt.krypton.silo.Silo;
+import co.krypt.krypton.team.Sigchain;
+import co.krypt.krypton.team.TeamService;
+import co.krypt.krypton.team.TeamService.C;
+import co.krypt.krypton.team.onboarding.create.CreateTeamProgress;
+import co.krypt.krypton.team.onboarding.join.JoinTeamProgress;
+import co.krypt.kryptonite.MainActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -69,26 +76,25 @@ public class SettingsFragment extends Fragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LocalAuthentication.requestAuthentication(getActivity(), "Destroy key pair permanently?", "You will have to generate a new key pair and re-add it to services like GitHub. Enter your device password or pattern to confirm.",
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            new Analytics(getContext()).postEvent("keypair", "destroy", null, null, false);
-                                            Silo.shared(getContext()).unpairAll();
-                                            KeyManager.deleteAllMeKeyPairs(getContext());
-                                            new MeStorage(getContext()).delete();
-                                            startActivity(new Intent(getContext(), OnboardingActivity.class));
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }).start();
+                LocalAuthentication.requestAuthentication(getActivity(), "Destroy key pair permanently?", "You will have to generate a new key pair and re-add it to services like GitHub.",
+                        () -> new Thread(() -> {
+                            try {
+                                new Analytics(getContext()).postEvent("keypair", "destroy", null, null, false);
+                                EventBus.getDefault().post(new TeamService.RequestTeamOperation(
+                                                Sigchain.RequestableTeamOperation.leave(),
+                                                C.background(getContext())
+                                        )
+                                );
+                                Silo.shared(getContext()).unpairAll();
+                                KeyManager.deleteAllMeKeyPairs(getContext());
+                                new MeStorage(getContext()).delete();
+                                new JoinTeamProgress(getContext()).resetAndDeleteTeam(getContext());
+                                new CreateTeamProgress(getContext()).reset();
+                                startActivity(new Intent(getContext(), OnboardingActivity.class));
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-                        });
+                        }).start());
             }
         });
 
@@ -153,7 +159,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
-                    String token = AuditLogContentProvider.setAuditLogToken(v.getContext());
+                    String token = AuditLogContentProvider.setToken(v.getContext());
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
                     sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Krypton Audit Log");

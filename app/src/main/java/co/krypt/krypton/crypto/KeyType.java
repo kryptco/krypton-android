@@ -2,6 +2,7 @@ package co.krypt.krypton.crypto;
 
 import android.content.Context;
 
+import co.krypt.krypton.exception.CryptoException;
 import co.krypt.krypton.exception.UnhandledKeyTypeException;
 
 
@@ -21,13 +22,13 @@ public enum KeyType {
         return keyTag("me");
     }
 
-    public KeyManagerI keyManager(Context context) {
+    public KeyManagerI keyManager(Context context) throws CryptoException {
         switch (this) {
             case RSA:
                 return new RSAKeyManager(context);
             case Ed25519:
                 return new EdKeyManager(context);
         }
-        throw new UnhandledKeyTypeException(this.name());
+        throw new CryptoException(new UnhandledKeyTypeException(this.name()));
     }
 }

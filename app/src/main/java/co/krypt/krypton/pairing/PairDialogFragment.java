@@ -9,10 +9,13 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import java.util.HashSet;
+
 import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.onboarding.OnboardingActivity;
 import co.krypt.krypton.policy.LocalAuthentication;
 import co.krypt.krypton.protocol.PairingQR;
+import co.krypt.krypton.silo.Silo;
 
 public class PairDialogFragment extends DialogFragment {
     private static final String TAG = "PairDialogFragment";
@@ -57,15 +60,22 @@ public class PairDialogFragment extends DialogFragment {
     private Dialog createPairingDialog(final PairFragment pairFragment) {
         final Analytics analytics = new Analytics(getActivity());
 
+        final String workstationName = pairFragment.getPendingPairingQR().workstationName;
         AlertDialog.Builder builder = new AlertDialog.Builder(getTargetFragment().getContext());
-        builder.setMessage("Pair with " + pairFragment.getPendingPairingQR().workstationName + "?")
+        builder.setMessage("Pair with " + workstationName + "?")
                 .setPositiveButton("Pair", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         if (getTargetFragment() instanceof PairListener) {
                             Runnable onPair = new Runnable() {
                                 @Override
                                 public void run() {
-                                    //TODO: detect existing pairings
+                                    HashSet<Pairing> existingPairings = Silo.shared(getContext()).pairings().loadAll();
+                                    for (Pairing existingPairing: existingPairings) {
+                                        if (existingPairing.workstationName.equals(workstationName)) {
+                                            Silo.shared(getContext()).pairings().unpair(existingPairing);
+                                        }
+                                    }
+
                                     final PairListener listener = (PairListener) getTargetFragment();
                                     analytics.postEvent("device", "pair", "new", null, false);
                                     listener.pair();
@@ -78,7 +88,7 @@ public class PairDialogFragment extends DialogFragment {
                                 LocalAuthentication.requestAuthentication(
                                         getActivity(),
                                         "Pair Device Confirmation",
-                                        "Pair with " + pairFragment.getPendingPairingQR().workstationName + "?\nThis device will be able to request SSH operations. Enter your device password or pattern to confirm.",
+                                        "Pair with " + pairFragment.getPendingPairingQR().workstationName + "?\nThis device will be able to request SSH operations.",
                                         onPair);
                             }
                         }

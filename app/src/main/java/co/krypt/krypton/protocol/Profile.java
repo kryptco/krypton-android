@@ -1,9 +1,13 @@
 package co.krypt.krypton.protocol;
 
-import com.amazonaws.util.Base64;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.IOException;
+
 import javax.annotation.Nullable;
+
+import co.krypt.krypton.ssh.Wire;
+import co.krypt.krypton.team.Sigchain;
 
 /**
  * Created by Kevin King on 12/3/16.
@@ -19,19 +23,29 @@ public class Profile {
     @Nullable
     public byte[] pgpPublicKey;
 
+    @SerializedName("team_checkpoint")
+    @Nullable
+    public Sigchain.TeamCheckpoint teamCheckpoint;
+
     public Profile() { }
 
-    public Profile(String email, byte[] sshWirePublicKey, @Nullable byte[] pgpPublicKey) {
+    public Profile(String email, byte[] sshWirePublicKey, @Nullable byte[] pgpPublicKey, @Nullable Sigchain.TeamCheckpoint teamCheckpoint) {
         this.email = email;
         this.sshWirePublicKey = sshWirePublicKey;
         this.pgpPublicKey = pgpPublicKey;
+        this.teamCheckpoint = teamCheckpoint;
     }
 
     public String authorizedKeysFormat() {
         if (sshWirePublicKey == null) {
             return "";
         }
-        return "ssh-rsa " + Base64.encodeAsString(sshWirePublicKey) + " " + email;
+        try {
+            return Wire.publicKeyBytesToAuthorizedKeysFormat(sshWirePublicKey) + " " + email;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "failed to export public key";
+        }
     }
 
     public String shareText() {

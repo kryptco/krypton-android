@@ -35,7 +35,7 @@ public class KeyManager {
         throw new CryptoException("no key pair exists");
     }
 
-    public static synchronized void deleteKeyPair(Context context, KeyType type, String tag) throws Exception {
+    public static synchronized void deleteKeyPair(Context context, KeyType type, String tag) throws CryptoException {
         type.keyManager(context).deleteKeyPair(tag);
     }
 }

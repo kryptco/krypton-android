@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--https://android.jlelse.eu/the-complete-android-splash-screen-guide-c7db82bce565-->
+<!-- The android:opacity=”opaque” line — this is critical in preventing a flash of black as your theme transitions. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" android:opacity="opaque">
+
+    <item android:drawable="@color/appGreen"/>
+
+    <item
+        android:width="106dp"
+        android:height="120dp"
+        android:gravity="center"
+        >
+
+        <bitmap
+            android:src="@drawable/app_icon_white"
+            />
+
+    </item>
+
+    <item
+        android:gravity="center_horizontal|top"
+        android:top = "61dp"
+        android:width="303dp"
+        android:height="48dp"
+        >
+        <bitmap android:src="@drawable/splash_text_krypton_core"/>
+    </item>
+
+    <item
+        android:gravity="center_horizontal|bottom"
+        android:bottom = "102dp"
+        android:width="129dp"
+        android:height="35dp"
+        >
+        <bitmap android:src="@drawable/splash_text_kryptco"/>
+    </item>
+
+    <item
+        android:gravity="center_horizontal|bottom"
+        android:bottom = "82dp"
+        android:width="103dp"
+        android:height="11dp"
+        >
+        <bitmap android:src="@drawable/splash_text_made_in_boston"/>
+    </item>
+
+</layer-list>

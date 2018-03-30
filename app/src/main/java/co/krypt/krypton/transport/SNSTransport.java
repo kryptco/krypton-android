@@ -15,6 +15,8 @@ import com.amazonaws.services.sns.model.SetEndpointAttributesRequest;
 import java.util.HashMap;
 
 import co.krypt.krypton.exception.TransportException;
+import co.krypt.krypton.team.Native;
+import co.krypt.krypton.team.TeamDataProvider;
 
 /**
  * Created by Kevin King on 12/5/16.
@@ -77,6 +79,7 @@ public class SNSTransport {
         Log.i(TAG, "refreshed device token: " + token);
         setToken(token);
         registerWithAWS();
+        registerWithTeamServer();
     }
 
     public synchronized void registerWithAWS() throws TransportException {
@@ -96,6 +99,17 @@ public class SNSTransport {
             client.setEndpointAttributes(enableRequest);
         } catch (AmazonClientException e) {
             throw new TransportException(e.getMessage());
+        }
+    }
+
+    public synchronized void registerWithTeamServer() {
+        String token = getToken();
+        if (token != null) {
+            try {
+                TeamDataProvider.subscribeToPushNotifications(context, token);
+            } catch (Native.NotLinked notLinked) {
+                notLinked.printStackTrace();
+            }
         }
     }
 }

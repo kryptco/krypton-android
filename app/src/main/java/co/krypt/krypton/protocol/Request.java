@@ -71,7 +71,7 @@ public class Request {
 
             @Override
             public Void visit(SignRequest signRequest) throws RuntimeException {
-                signRequest.fillRemoteViews(remoteViewsContainer, approved, signature);
+                signRequest.fillRemoteViews(remoteViewsContainer, unixSeconds, approved, signature);
                 return null;
             }
 
@@ -90,6 +90,21 @@ public class Request {
             public Void visit(HostsRequest hostsRequest) throws RuntimeException {
                 return null;
             }
+
+            @Override
+            public Void visit(ReadTeamRequest readTeamRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(LogDecryptionRequest logDecryptionRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
+                return null;
+            }
         });
     }
 
@@ -103,7 +118,7 @@ public class Request {
 
             @Override
             public Void visit(SignRequest signRequest) throws RuntimeException {
-                signRequest.fillShortRemoteViews(remoteViewsContainer, approved, signature);
+                signRequest.fillShortRemoteViews(remoteViewsContainer, unixSeconds, approved, signature);
                 return null;
             }
 
@@ -120,6 +135,21 @@ public class Request {
 
             @Override
             public Void visit(HostsRequest hostsRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(ReadTeamRequest readTeamRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(LogDecryptionRequest logDecryptionRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
                 return null;
             }
         });
@@ -153,6 +183,24 @@ public class Request {
             public Void visit(HostsRequest hostsRequest) throws RuntimeException {
                 return null;
             }
+
+            @Override
+            public Void visit(ReadTeamRequest readTeamRequest) throws RuntimeException {
+                readTeamRequest.fillView(content);
+                return null;
+            }
+
+            @Override
+            public Void visit(LogDecryptionRequest logDecryptionRequest) throws RuntimeException {
+                logDecryptionRequest.fillView(content);
+                return null;
+            }
+
+            @Override
+            public Void visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
+                teamOperationRequest.fillView(content);
+                return null;
+            }
         });
     }
 
@@ -181,6 +229,21 @@ public class Request {
             @Override
             public String visit(HostsRequest hostsRequest) throws RuntimeException {
                 return "hosts";
+            }
+
+            @Override
+            public String visit(ReadTeamRequest readTeamRequest) throws RuntimeException {
+                return "read_team_request";
+            }
+
+            @Override
+            public String visit(LogDecryptionRequest logDecryptionRequest) throws RuntimeException {
+                return "log_decryption_request";
+            }
+
+            @Override
+            public String visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
+                return "team_operation_request";
             }
         });
     }
@@ -220,6 +283,24 @@ public class Request {
                     o.add(HostsRequest.FIELD_NAME, context.serialize(hostsRequest));
                     return null;
                 }
+
+                @Override
+                public Void visit(ReadTeamRequest readTeamRequest) throws RuntimeException {
+                    o.add(ReadTeamRequest.FIELD_NAME, context.serialize(readTeamRequest));
+                    return null;
+                }
+
+                @Override
+                public Void visit(LogDecryptionRequest logDecryptionRequest) throws RuntimeException {
+                    o.add(LogDecryptionRequest.FIELD_NAME, context.serialize(logDecryptionRequest));
+                    return null;
+                }
+
+                @Override
+                public Void visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
+                    o.add(TeamOperationRequest.FIELD_NAME, context.serialize(teamOperationRequest));
+                    return null;
+                }
             });
             return o;
         }
@@ -229,7 +310,6 @@ public class Request {
         @Override
         public Request deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             Request request = JSON.gsonWithoutRequiredFields.fromJson(json, typeOfT);
-            //TODO: does not use correct deserializer for gitsignrequestbody
             request.body = new RequestBody.Deserializer().deserialize(json, typeOfT, context);
             JSON.checkPojoRecursively(request);
             return request;

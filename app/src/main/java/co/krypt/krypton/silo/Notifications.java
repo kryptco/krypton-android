@@ -1,11 +1,13 @@
 package co.krypt.krypton.silo;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -13,11 +15,15 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
 import android.widget.RemoteViews;
+
+import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.Nullable;
 
-import co.krypt.kryptonite.MainActivity;
 import co.krypt.krypton.R;
 import co.krypt.krypton.log.Log;
 import co.krypt.krypton.onboarding.OnboardingActivity;
@@ -30,12 +36,19 @@ import co.krypt.krypton.policy.Policy;
 import co.krypt.krypton.policy.UnlockScreenDummyActivity;
 import co.krypt.krypton.protocol.GitSignRequest;
 import co.krypt.krypton.protocol.HostsRequest;
+import co.krypt.krypton.protocol.LogDecryptionRequest;
 import co.krypt.krypton.protocol.MeRequest;
+import co.krypt.krypton.protocol.ReadTeamRequest;
 import co.krypt.krypton.protocol.Request;
 import co.krypt.krypton.protocol.RequestBody;
 import co.krypt.krypton.protocol.SignRequest;
+import co.krypt.krypton.protocol.TeamOperationRequest;
 import co.krypt.krypton.protocol.UnpairRequest;
 import co.krypt.krypton.settings.Settings;
+import co.krypt.krypton.team.Native;
+import co.krypt.krypton.team.Sigchain;
+import co.krypt.krypton.team.TeamDataProvider;
+import co.krypt.kryptonite.MainActivity;
 
 /**
  * Created by Kevin King on 12/5/16.
@@ -43,36 +56,80 @@ import co.krypt.krypton.settings.Settings;
  */
 
 public class Notifications {
-    private static final String ACTION_REQUIRED_CHANNEL_ID = "action-required";
-    private static final String APPROVED_CHANNEL_ID = "approved";
+    private static final ExecutorService threadPool = Executors.newSingleThreadExecutor();
+    private static final String ACTION_REQUIRED_CHANNEL_ID = "action-required  ";
+    private static final String APPROVED_CHANNEL_ID = "approved  ";
     public static void setupNotificationChannels(Context context) {
+        final String ACTION_REQUIRED_SILENT_CHANNEL_ID = ACTION_REQUIRED_CHANNEL_ID + "silent";
+        final String APPROVED_SILENT_CHANNEL_ID = APPROVED_CHANNEL_ID + "silent";
         if (Build.VERSION.SDK_INT >= 26) {
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            NotificationChannel actionRequiredChannel = new NotificationChannel(ACTION_REQUIRED_CHANNEL_ID,
-                    "Action Required",
-                    NotificationManager.IMPORTANCE_HIGH);
-            actionRequiredChannel.setDescription("Requests that require your explicit approval.");
-            notificationManager.createNotificationChannel(actionRequiredChannel);
+            Uri defaultNotificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-            NotificationChannel approvedChannel = new NotificationChannel(APPROVED_CHANNEL_ID,
-                    "Approved",
-                    NotificationManager.IMPORTANCE_HIGH);
-            approvedChannel.setDescription("Automatically approved requests.");
-            notificationManager.createNotificationChannel(approvedChannel);
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            // Delete old notification channels
+            notificationManager.deleteNotificationChannel("action-required");
+            notificationManager.deleteNotificationChannel("approved");
+
+            {
+                NotificationChannel actionRequiredChannel = new NotificationChannel(ACTION_REQUIRED_CHANNEL_ID,
+                        "Action Required",
+                        NotificationManager.IMPORTANCE_HIGH);
+                actionRequiredChannel.setDescription("Requests that require your explicit approval.");
+                actionRequiredChannel.setSound(defaultNotificationSound, new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_REQUEST).build());
+                actionRequiredChannel.setVibrationPattern(new long[]{0, 100, 100, 100});
+                notificationManager.createNotificationChannel(actionRequiredChannel);
+            }
+
+            {
+                NotificationChannel actionRequiredSilentChannel = new NotificationChannel(ACTION_REQUIRED_SILENT_CHANNEL_ID,
+                        "Action Required Silent",
+                        NotificationManager.IMPORTANCE_HIGH);
+                actionRequiredSilentChannel.setDescription("Requests that require your explicit approval.");
+                actionRequiredSilentChannel.setSound(null, null);
+                actionRequiredSilentChannel.enableVibration(false);
+                notificationManager.createNotificationChannel(actionRequiredSilentChannel);
+            }
+
+            {
+                NotificationChannel approvedChannel = new NotificationChannel(APPROVED_CHANNEL_ID,
+                        "Approved",
+                        NotificationManager.IMPORTANCE_HIGH);
+                approvedChannel.setDescription("Automatically approved requests.");
+                approvedChannel.setSound(defaultNotificationSound, new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_REQUEST).build());
+                approvedChannel.setVibrationPattern(new long[]{0, 100});
+                notificationManager.createNotificationChannel(approvedChannel);
+            }
+
+            {
+                NotificationChannel approvedSilentChannel = new NotificationChannel(APPROVED_SILENT_CHANNEL_ID,
+                        "Approved Silent",
+                        NotificationManager.IMPORTANCE_HIGH);
+                approvedSilentChannel.setDescription("Automatically approved requests.");
+                approvedSilentChannel.setSound(null, null);
+                approvedSilentChannel.enableVibration(false);
+                notificationManager.createNotificationChannel(approvedSilentChannel);
+            }
+
         }
     }
     private static NotificationCompat.Builder buildNotification(Context context, String channelId) {
+        if (new Settings(context).silenceNotifications()) {
+            channelId += "silent";
+        }
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context, channelId)
                         .setSmallIcon(R.drawable.ic_notification_white);
         return mBuilder;
     }
+
     public static void notifySuccess(Context context, Pairing pairing, Request request, @Nullable Log log) {
+        threadPool.execute(() -> notifySuccessJob(context, pairing, request, log));
+    }
+    private static void notifySuccessJob(Context context, Pairing pairing, Request request, @Nullable Log log) {
         if (!new Settings(context).approvedNotificationsEnabled()) {
             return;
         }
         Intent resultIntent = new Intent(context, MainActivity.class);
-        Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mBuilder =
                 buildNotification(context, APPROVED_CHANNEL_ID)
                         .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
@@ -81,7 +138,7 @@ public class Notifications {
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         if (!new Settings(context).silenceNotifications()) {
-            mBuilder.setSound(notificationSound)
+            mBuilder.setDefaults(Notification.DEFAULT_SOUND)
                     .setVibrate(new long[]{0, 100});
         }
         request.body.visit(new RequestBody.Visitor<Void, RuntimeException>() {
@@ -129,6 +186,21 @@ public class Notifications {
             public Void visit(HostsRequest hostsRequest) throws RuntimeException {
                 return null;
             }
+
+            @Override
+            public Void visit(ReadTeamRequest readTeamRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(LogDecryptionRequest logDecryptionRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
+                return null;
+            }
         });
 
         // The stack builder object will contain an artificial back stack for the
@@ -148,15 +220,19 @@ public class Notifications {
         mBuilder.setContentIntent(resultPendingIntent);
 
         NotificationManagerCompat mNotifyMgr = NotificationManagerCompat.from(context);
+        mNotifyMgr.cancel(0);
         mNotifyMgr.notify(0, mBuilder.build());
+
     }
 
     public static void notifyReject(Context context, Pairing pairing, Request request, String title) {
+        threadPool.execute(() -> notifyRejectJob(context, pairing, request, title));
+    }
+    private static void notifyRejectJob(Context context, Pairing pairing, Request request, String title) {
         if (!new Settings(context).approvedNotificationsEnabled()) {
             return;
         }
         Intent resultIntent = new Intent(context, MainActivity.class);
-        Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mBuilder =
                 buildNotification(context, APPROVED_CHANNEL_ID)
                         .setColor(Color.RED)
@@ -166,7 +242,7 @@ public class Notifications {
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         if (!new Settings(context).silenceNotifications()) {
-            mBuilder.setSound(notificationSound)
+            mBuilder.setDefaults(Notification.DEFAULT_SOUND)
                     .setVibrate(new long[]{0, 100, 100, 100});
         }
         request.body.visit(new RequestBody.Visitor<Void, RuntimeException>() {
@@ -210,6 +286,21 @@ public class Notifications {
             public Void visit(HostsRequest hostsRequest) throws RuntimeException {
                 return null;
             }
+
+            @Override
+            public Void visit(ReadTeamRequest readTeamRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(LogDecryptionRequest logDecryptionRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
+                return null;
+            }
         });
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
@@ -227,6 +318,13 @@ public class Notifications {
     }
 
     public static void requestApproval(Context context, Pairing pairing, Request request) {
+        threadPool.execute(() -> requestApprovalJob(context, pairing, request));
+    }
+    private static void requestApprovalJob(Context context, Pairing pairing, Request request) {
+        long temporaryApprovalSeconds = Policy.temporaryApprovalSeconds(context, request);
+        boolean temporaryApprovalEnabled = temporaryApprovalSeconds > 0;
+        String temporaryApprovalDuration = Policy.temporaryApprovalDuration(context, request);
+
         Intent approveOnceIntent = new Intent(context, UnlockScreenDummyActivity.class);
         approveOnceIntent.setAction(Policy.APPROVE_ONCE + "-" + request.requestID);
         approveOnceIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -236,6 +334,10 @@ public class Notifications {
         NotificationCompat.Action.Builder approveOnceBuilder = new NotificationCompat.Action.Builder(
                 R.drawable.ic_notification_checkmark, "Once", approveOncePendingIntent);
 
+        //  Same as appoveOnceBuilder but shows text as "Approve"
+        NotificationCompat.Action.Builder approveOnceTextApproveBuilder = new NotificationCompat.Action.Builder(
+                R.drawable.ic_notification_checkmark, "Approve", approveOncePendingIntent);
+
         Intent approveTemporarilyIntent = new Intent(context, UnlockScreenDummyActivity.class);
         approveTemporarilyIntent.setAction(Policy.APPROVE_THIS_TEMPORARILY + "-" + request.requestID);
         approveTemporarilyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -243,7 +345,7 @@ public class Notifications {
         approveTemporarilyIntent.putExtra("requestID", request.requestID);
         PendingIntent approveTemporarilyPendingIntent = PendingIntent.getActivity(context, (Policy.APPROVE_THIS_TEMPORARILY + "-" + request.requestID).hashCode(), approveTemporarilyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Action.Builder approveTemporarilyBuilder = new NotificationCompat.Action.Builder(
-                R.drawable.ic_notification_stopwatch, "This host for " + Policy.temporaryApprovalDuration(), approveTemporarilyPendingIntent);
+                R.drawable.ic_notification_stopwatch, "This host for " + temporaryApprovalDuration, approveTemporarilyPendingIntent);
 
         Intent approveAllTemporarilyIntent = new Intent(context, UnlockScreenDummyActivity.class);
         approveAllTemporarilyIntent.setAction(Policy.APPROVE_ALL_TEMPORARILY + "-" + request.requestID);
@@ -252,7 +354,7 @@ public class Notifications {
         approveAllTemporarilyIntent.putExtra("requestID", request.requestID);
         PendingIntent approveAllTemporarilyPendingIntent = PendingIntent.getActivity(context, (Policy.APPROVE_ALL_TEMPORARILY + "-" + request.requestID).hashCode(), approveAllTemporarilyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Action.Builder approveAllTemporarilyBuilder = new NotificationCompat.Action.Builder(
-                R.drawable.ic_notification_stopwatch, "All for " + Policy.temporaryApprovalDuration(), approveAllTemporarilyPendingIntent);
+                R.drawable.ic_notification_stopwatch, "All for " + temporaryApprovalDuration, approveAllTemporarilyPendingIntent);
 
         Intent rejectIntent = new Intent(context, NoAuthReceiver.class);
         rejectIntent.setAction(Policy.REJECT + "-" + request.requestID);
@@ -270,18 +372,28 @@ public class Notifications {
         clickIntent.putExtra("requestID", request.requestID);
         PendingIntent clickPendingIntent = PendingIntent.getActivity(context, ("CLICK-" + request.requestID).hashCode(), clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mBuilder =
                 buildNotification(context, ACTION_REQUIRED_CHANNEL_ID)
                         .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                         .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                        .addAction(approveOnceBuilder.build())
                         .setDeleteIntent(rejectPendingIntent)
                         .setContentIntent(clickPendingIntent)
                         .setAutoCancel(true)
                 ;
+
+        RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.request_remote);
+        remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
+        request.fillRemoteViews(remoteViewsBig, null, null);
+        remoteViewsBig.setOnClickPendingIntent(R.id.allowOnce, approveOncePendingIntent);
+        remoteViewsBig.setTextViewText(R.id.allowAllTemporarily, "All for " + temporaryApprovalDuration);
+        remoteViewsBig.setOnClickPendingIntent(R.id.allowAllTemporarily, approveAllTemporarilyPendingIntent);
+        if (!temporaryApprovalEnabled) {
+            remoteViewsBig.setViewVisibility(R.id.allowTemporarily, View.INVISIBLE);
+            remoteViewsBig.setViewVisibility(R.id.allowAllTemporarily, View.INVISIBLE);
+        }
+
         request.body.visit(new RequestBody.Visitor<Void, RuntimeException>() {
             @Override
             public Void visit(MeRequest meRequest) throws RuntimeException {
@@ -290,7 +402,6 @@ public class Notifications {
 
             @Override
             public Void visit(SignRequest signRequest) throws RuntimeException {
-                mBuilder.addAction(approveTemporarilyBuilder.build());
                 mBuilder
                         .setContentTitle("Allow SSH Login?")
                         .setContentText(pairing.workstationName + ": " + signRequest.display());
@@ -299,17 +410,17 @@ public class Notifications {
                 request.fillShortRemoteViews(remoteViewsSmall, null, null);
                 mBuilder.setContent(remoteViewsSmall);
 
-                RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.request_remote);
-                remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
-                request.fillRemoteViews(remoteViewsBig, null, null);
-                remoteViewsBig.setOnClickPendingIntent(R.id.allowOnce, approveOncePendingIntent);
-                remoteViewsBig.setTextViewText(R.id.allowAllTemporarily, "All for " + Policy.temporaryApprovalDuration());
-                remoteViewsBig.setOnClickPendingIntent(R.id.allowAllTemporarily, approveAllTemporarilyPendingIntent);
 
                 remoteViewsBig.setOnClickPendingIntent(R.id.allowTemporarily, approveTemporarilyPendingIntent);
-                remoteViewsBig.setTextViewText(R.id.allowTemporarily, "This host for " + Policy.temporaryApprovalDuration());
+                remoteViewsBig.setTextViewText(R.id.allowTemporarily, "This host for " + temporaryApprovalDuration);
 
                 mBuilder.setCustomBigContentView(remoteViewsBig);
+
+                mBuilder.addAction(approveOnceBuilder.build());
+                if (temporaryApprovalEnabled) {
+                        mBuilder.addAction(approveTemporarilyBuilder.build())
+                                .addAction(approveAllTemporarilyBuilder.build());
+                }
                 return null;
             }
 
@@ -323,16 +434,14 @@ public class Notifications {
                 gitSignRequest.fillShortRemoteViews(remoteViewsSmall, null, null);
                 mBuilder.setContent(remoteViewsSmall);
 
-                RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.request_remote);
-                remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
-                gitSignRequest.fillRemoteViews(remoteViewsBig, null, null);
-                remoteViewsBig.setOnClickPendingIntent(R.id.allowOnce, approveOncePendingIntent);
-                remoteViewsBig.setTextViewText(R.id.allowAllTemporarily, "All for " + Policy.temporaryApprovalDuration());
-                remoteViewsBig.setOnClickPendingIntent(R.id.allowAllTemporarily, approveAllTemporarilyPendingIntent);
-
                 remoteViewsBig.setTextViewText(R.id.allowTemporarily, "");
 
                 mBuilder.setCustomBigContentView(remoteViewsBig);
+
+                mBuilder.addAction(approveOnceBuilder.build());
+                if (temporaryApprovalEnabled) {
+                    mBuilder.addAction(approveAllTemporarilyBuilder.build());
+                }
                 return null;
             }
 
@@ -345,21 +454,61 @@ public class Notifications {
             public Void visit(HostsRequest hostsRequest) throws RuntimeException {
                 mBuilder.setContentTitle("Send user@hostname records?")
                         .setContentText(pairing.workstationName + " is requesting your SSH login records.");
+                mBuilder.addAction(approveOnceBuilder.build());
+                if (temporaryApprovalEnabled) {
+                    mBuilder.addAction(approveAllTemporarilyBuilder.build());
+                }
+                return null;
+            }
+
+            @Override
+            public Void visit(ReadTeamRequest readTeamRequest) throws RuntimeException {
+                mBuilder.setContentTitle("Load team data?")
+                        .setContentText(pairing.workstationName + " is requesting to load team data.");
+                mBuilder.addAction(approveAllTemporarilyBuilder.build());
+                return null;
+            }
+
+            @Override
+            public Void visit(LogDecryptionRequest logDecryptionRequest) throws RuntimeException {
+                mBuilder.setContentTitle("Decrypt team logs?")
+                        .setContentText(pairing.workstationName + " is requesting to decrypt team logs.");
+                mBuilder.addAction(approveAllTemporarilyBuilder.build());
+                return null;
+            }
+
+            @Override
+            public Void visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
+                try {
+                    Sigchain.NativeResult<Sigchain.FormattedRequestableOp> format = TeamDataProvider.formatRequestableOp(context, teamOperationRequest.operation);
+                    if (format.success != null) {
+                        mBuilder.setContentTitle(format.success.header)
+                                .setContentText(format.success.body + "?");
+                        mBuilder.addAction(approveOnceTextApproveBuilder.build());
+                    } else {
+                        mBuilder.setContentTitle("Invalid team operation request.");
+                    }
+                } catch (Native.NotLinked notLinked) {
+                    notLinked.printStackTrace();
+                    mBuilder.setContentTitle("Teams not supported on this phone");
+                }
                 return null;
             }
         });
         if (!new Settings(context).silenceNotifications()) {
-            mBuilder.setSound(notificationSound)
+            mBuilder.setDefaults(Notification.DEFAULT_SOUND)
                     .setVibrate(new long[]{0, 100, 100, 100});
         }
 
-        mBuilder.addAction(approveAllTemporarilyBuilder.build());
 
         NotificationManagerCompat mNotifyMgr = NotificationManagerCompat.from(context);
         mNotifyMgr.notify(request.requestID, 0, mBuilder.build());
     }
 
     public static void notifyPGPKeyExport(Context context, PGPPublicKey pubkey) {
+        threadPool.execute(() -> notifyPGPKeyExportJob(context, pubkey));
+    }
+    private static void notifyPGPKeyExportJob(Context context, PGPPublicKey pubkey) {
         Intent clickIntent = new Intent(context, MainActivity.class);
         if (new OnboardingProgress(context).inProgress()) {
             clickIntent.setClass(context, OnboardingActivity.class);
@@ -367,7 +516,6 @@ public class Notifications {
         clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent clickPendingIntent = PendingIntent.getActivity(context, ("CLICK-PGPPUBKEY").hashCode(), clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         String userIDs = "";
         for (SignedPublicKeySelfCertification signedIdentity : pubkey.signedIdentities) {
             userIDs += signedIdentity.certification.userIDPacket.userID.toString() + "\n";
@@ -393,7 +541,7 @@ public class Notifications {
                         .setStyle(inboxStyle)
                 ;
         if (!new Settings(context).silenceNotifications()) {
-            mBuilder.setSound(notificationSound)
+            mBuilder.setDefaults(Notification.DEFAULT_SOUND)
                     .setVibrate(new long[]{0, 100, 100, 100});
         }
 
@@ -404,5 +552,36 @@ public class Notifications {
     public static void clearRequest(Context context, Request request) {
         NotificationManagerCompat mNotifyMgr = NotificationManagerCompat.from(context);
         mNotifyMgr.cancel(request.requestID, 0);
+    }
+
+    public static void notifyTeamUpdate(Context context, String teamName, Sigchain.FormattedBlock block) {
+        threadPool.execute(() -> notifyTeamUpdateJob(context, teamName, block));
+    }
+    private static void notifyTeamUpdateJob(Context context, String teamName, Sigchain.FormattedBlock block) {
+        Intent clickIntent = new Intent(context, MainActivity.class);
+        if (new OnboardingProgress(context).inProgress()) {
+            clickIntent.setClass(context, OnboardingActivity.class);
+        }
+        clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(context, ("CLICK-TEAM-UPDATE").hashCode(), clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder mBuilder =
+                buildNotification(context, APPROVED_CHANNEL_ID)
+                        .setContentTitle("[" + teamName + "] " + block.header)
+                        .setContentText(block.body)
+                        .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
+                        .setPriority(NotificationCompat.PRIORITY_MAX)
+                        .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        .setContentIntent(clickPendingIntent)
+                        .setAutoCancel(true)
+                ;
+        if (!new Settings(context).silenceNotifications()) {
+            mBuilder.setDefaults(Notification.DEFAULT_SOUND)
+                    .setVibrate(new long[]{0, 100, 100, 100});
+        }
+
+        NotificationManagerCompat mNotifyMgr = NotificationManagerCompat.from(context);
+        mNotifyMgr.notify(Arrays.hashCode(block.hash), mBuilder.build());
     }
 }

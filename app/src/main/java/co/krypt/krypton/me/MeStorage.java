@@ -9,13 +9,13 @@ import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.Nullable;
 
 import co.krypt.krypton.crypto.KeyManager;
 import co.krypt.krypton.crypto.SSHKeyPairI;
 import co.krypt.krypton.exception.CryptoException;
-import co.krypt.krypton.pairing.Pairing;
 import co.krypt.krypton.pgp.PGPException;
 import co.krypt.krypton.pgp.PGPManager;
 import co.krypt.krypton.pgp.PGPPublicKey;
@@ -23,6 +23,9 @@ import co.krypt.krypton.pgp.UserID;
 import co.krypt.krypton.protocol.JSON;
 import co.krypt.krypton.protocol.Profile;
 import co.krypt.krypton.silo.Notifications;
+import co.krypt.krypton.team.Native;
+import co.krypt.krypton.team.TeamDataProvider;
+import co.krypt.krypton.uiutils.Email;
 
 /**
  * Created by Kevin King on 12/3/16.
@@ -41,12 +44,21 @@ public class MeStorage {
         this.context = context;
     }
 
+    private static final AtomicReference<SSHKeyPairI> keyPair = new AtomicReference<>(null);
 
-    public Profile load() {
-        return loadWithUserID(null, null, null);
+    @Nullable
+    public static SSHKeyPairI getOrLoadKeyPair(Context context) throws CryptoException {
+        if (keyPair.get() == null) {
+            keyPair.compareAndSet(null, KeyManager.loadMeRSAOrEdKeyPair(context));
+        }
+        return keyPair.get();
     }
 
-    public Profile loadWithUserID(@Nullable SSHKeyPairI kp, @Nullable UserID userID, @Nullable Pairing pairing) {
+    public Profile load() {
+        return loadWithUserID(null);
+    }
+
+    public Profile loadWithUserID(@Nullable UserID userID) {
         synchronized (lock) {
             String meJSON = preferences.getString("ME", null);
             if (meJSON == null) {
@@ -59,32 +71,41 @@ public class MeStorage {
                 return null;
             }
             try {
-                me.sshWirePublicKey = KeyManager.loadMeRSAOrEdKeyPair(context).publicKeySSHWireFormat();
+                SSHKeyPairI kp = getOrLoadKeyPair(context);
+                if (kp != null) {
+                    me.sshWirePublicKey = kp.publicKeySSHWireFormat();
+
+                    if (userID != null) {
+                        try {
+                            List<UserID> userIDs = getUserIDs();
+                            //  keep USER_ID_LIMIT most recent UserIDs
+                            if (userIDs.remove(userID)) {
+                                userIDs.add(userID);
+                            } else {
+                                if (userIDs.size() >= USER_ID_LIMIT) {
+                                    userIDs.remove(0);
+                                }
+                                userIDs.add(userID);
+                                PGPPublicKey pgpPublicKey = PGPManager.publicKeyWithIdentities(kp, userIDs);
+                                me.pgpPublicKey = pgpPublicKey.serializedBytes();
+                                if (userIDs.size() == USER_ID_LIMIT) {
+                                    //  detect abuse of exporting PGP userIDs
+                                    Notifications.notifyPGPKeyExport(context, pgpPublicKey);
+                                }
+                            }
+                            set(me, userIDs);
+                        } catch (PGPException | IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             } catch (InvalidKeyException | IOException | CryptoException e) {
                 e.printStackTrace();
             }
-            if (kp != null && userID != null) {
-                try {
-                    List<UserID> userIDs = getUserIDs();
-                    //  keep USER_ID_LIMIT most recent UserIDs
-                    if (userIDs.remove(userID)) {
-                        userIDs.add(userID);
-                    } else {
-                        if (userIDs.size() >= USER_ID_LIMIT) {
-                            userIDs.remove(0);
-                        }
-                        userIDs.add(userID);
-                        PGPPublicKey pgpPublicKey = PGPManager.publicKeyWithIdentities(kp, userIDs);
-                        me.pgpPublicKey = pgpPublicKey.serializedBytes();
-                        if (userIDs.size() == USER_ID_LIMIT) {
-                            //  detect abuse of exporting PGP userIDs
-                            Notifications.notifyPGPKeyExport(context, pgpPublicKey);
-                        }
-                    }
-                    set(me, userIDs);
-                } catch (PGPException | IOException e) {
-                    e.printStackTrace();
-                }
+            try {
+                me.teamCheckpoint = TeamDataProvider.getTeamCheckpoint(context).success;
+            } catch (Native.NotLinked notLinked) {
+                notLinked.printStackTrace();
             }
             return me;
         }
@@ -92,6 +113,7 @@ public class MeStorage {
 
     public void delete() {
         synchronized (lock) {
+            keyPair.set(null);
             preferences.edit()
                     .remove("ME")
                     .remove("ME.USER_IDS").apply();
@@ -128,9 +150,12 @@ public class MeStorage {
         return userIDs;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(String email) throws CryptoException {
         synchronized (lock) {
-            Profile me = load();
+            if (!Email.verifyEmailPattern.matcher(email).matches()) {
+                return;
+            }
+            Profile me = loadWithUserID(UserID.parse(" <" + email + ">"));
             if (me == null) {
                 me = new Profile();
             }

@@ -5,7 +5,7 @@ package co.krypt.krypton.exception;
  * Copyright 2016. KryptCo, Inc.
  */
 
-public class ProtocolException extends Exception {
+public class ProtocolException extends Unrecoverable {
     public ProtocolException(String message) {
         super(message);
     }

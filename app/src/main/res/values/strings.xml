@@ -9,4 +9,6 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="exampleUserID"><![CDATA[Kevin King <kevin @ krypt.co>]]></string>
+    <string name="teams_invite_template"><![CDATA[<p>You\'re invited to join TEAM_NAME on APP_NAME!</p><p>Step 1. Install the Krypton app: https://get.krypt.co</p><p>Step 2. Accept Invite: TAP the link below or COPY this message (including the link) into Krypton.</p><p>INVITE_LINK</p>]]></string>
+    <string name="billing_header"><![CDATA[Billing & Plan]]></string>
 </resources>

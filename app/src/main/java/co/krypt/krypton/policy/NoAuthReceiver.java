@@ -14,6 +14,6 @@ public class NoAuthReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String requestID = intent.getStringExtra("requestID");
         String action = intent.getStringExtra("action");
-        Policy.onAction(context, requestID, action);
+        new Thread(() -> Policy.onAction(context, requestID, action)).start();
     }
 }

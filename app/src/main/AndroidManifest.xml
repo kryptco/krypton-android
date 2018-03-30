@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="co.krypt.krypton">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="co.krypt.krypton">
 
-    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CAMERA"/>
 
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature android:name="android.hardware.camera"/>
+    <uses-feature android:name="android.hardware.camera.autofocus"/>
 
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
-        android:required="false" />
+        android:required="false"/>
 
     <application
         android:allowBackup="false"
@@ -22,63 +24,102 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
-        <activity android:name=".MeActivity" />
-        <!--Note: MainActivity kept the legacy package so that launch icons on the home screen remained. -->
+        <activity android:name=".MeActivity"/>
+        <!-- Note: MainActivity kept the legacy package so that launch icons on the home screen remained. -->
         <activity
             android:name="co.krypt.kryptonite.MainActivity"
             android:label="Krypton"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppTheme.Launcher"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
-            android:name="co.krypt.krypton.policy.UnlockScreenDummyActivity"
+            android:name=".policy.UnlockScreenDummyActivity"
             android:launchMode="singleInstance"
             android:taskAffinity=""
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
         <service
-            android:name="co.krypt.krypton.transport.FirebaseMessagingService"
+            android:name=".transport.FirebaseMessagingService"
             android:enabled="true">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
         <service
-            android:name="co.krypt.krypton.transport.FirebaseInstanceIDService"
+            android:name=".transport.FirebaseInstanceIDService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
 
         <receiver
-            android:name="co.krypt.krypton.policy.NoAuthReceiver"
+            android:name=".policy.NoAuthReceiver"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"/>
 
         <service
-            android:name="co.krypt.krypton.transport.BluetoothService"
+            android:name=".transport.BluetoothService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"/>
 
         <activity
-            android:name="co.krypt.krypton.onboarding.OnboardingActivity"
+            android:name=".onboarding.OnboardingActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
+            android:theme="@style/AppTheme.Launcher"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".team.onboarding.TeamOnboardingActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing"
+            android:theme="@style/AppTheme.Launcher"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data
+                    android:host="verify_email"
+                    android:scheme="krypton"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data
+                    android:host="krypt.co"
+                    android:path="/app/verify_email.html"
+                    android:scheme="https"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data
+                    android:host="join_team"
+                    android:scheme="krypton"/>
+            </intent-filter>
+        </activity>
 
         <provider
-            android:name="co.krypt.krypton.log.AuditLogContentProvider"
+            android:name=".log.AuditLogContentProvider"
             android:authorities="co.krypt.krypton.log.AuditLogContentProvider"
-            android:exported="true" />
-
+            android:exported="true"/>
     </application>
 
 </manifest>

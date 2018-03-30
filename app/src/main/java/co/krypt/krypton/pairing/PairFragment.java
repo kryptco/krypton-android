@@ -91,7 +91,7 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
 
     public PairFragment() {
         // 1 core thread, 1 max thread, 60 second timeout.
-        threadPool = new ThreadPoolExecutor(1, 1, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+        threadPool = new ThreadPoolExecutor(1, 1, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     }
 
     public void onPairingScanned(PairingQR pairingQR) {

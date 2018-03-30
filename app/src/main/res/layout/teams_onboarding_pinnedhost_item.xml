@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:id="@+id/root"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="wrap_content"
+                                             android:layout_marginBottom="10dp"
+                                             android:layout_marginTop="10dp"
+                                             android:background="@color/appWhite"
+                                             android:clickable="false"
+                                             app:cardCornerRadius="8dp"
+                                             app:cardElevation="7dp">
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/appGreen"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/toggleButton"
+        app:layout_constraintStart_toStartOf="@+id/hostKeyFingerprintText"
+        app:layout_constraintTop_toBottomOf="@+id/hostKeyFingerprintText"/>
+
+    <android.support.v7.widget.AppCompatCheckBox
+        android:id="@+id/toggleButton"
+        android:layout_width="30dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="8dp"
+        android:button="@color/appGray"
+        android:buttonTint="@color/appGray"
+        android:checked="true"
+        android:drawableTop="?android:attr/listChoiceIndicatorSingle"
+        android:shadowColor="@color/appGray"
+        android:textColorHighlight="@color/appGray"
+        android:textColorHint="@color/appGray"
+        android:textColorLink="@color/appGray"
+        android:theme="@style/AppRadioButton"
+        app:layout_constraintBottom_toBottomOf="@+id/hostKeyFingerprintText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/hostNameText"/>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/hostNameText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:text="me.krypt.co"
+        android:textColor="@color/appBlack"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/toggleButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/hostKeyFingerprintText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="@font/code"
+        android:text="d80eb9035ba631226e0e43f3819f29a4745048f95c4e86d337a14df44e7c4d5f "
+        android:textAlignment="viewStart"
+        android:textColor="@color/appBlack"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toStartOf="@+id/toggleButton"
+        app:layout_constraintStart_toStartOf="@+id/hostNameText"
+        app:layout_constraintTop_toBottomOf="@+id/hostNameText"/>
+</android.support.constraint.ConstraintLayout>

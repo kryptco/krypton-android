@@ -19,6 +19,9 @@ import java.security.SignatureException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import co.krypt.krypton.exception.CryptoException;
 import co.krypt.krypton.pgp.PGPException;
@@ -38,6 +41,11 @@ import co.krypt.krypton.pgp.publickey.RSAPublicKeyData;
 
 public class RSASSHKeyPair implements SSHKeyPairI {
     private static final String TAG = "RSASSHKeyPair";
+
+    // Prevent too many concurrent Keystore operations from happening at one time
+    // (hard limit is 15 https://android.googlesource.com/platform/system/security/+/1f76969bd8b6179f256dafb938bb458bc997c23d%5E!/ )
+    private static ExecutorService threadPool = Executors.newFixedThreadPool(4);
+
     private final @NonNull KeyPair keyPair;
 
     //  PGP public key attribute
@@ -67,11 +75,24 @@ public class RSASSHKeyPair implements SSHKeyPairI {
         return out.toByteArray();
     }
 
-    public byte[] publicKeyFingerprint() throws IOException, InvalidKeyException, CryptoException {
-        return SHA256.digest(publicKeySSHWireFormat());
+    public byte[] publicKeyFingerprint() throws CryptoException {
+        try {
+            return SHA256.digest(publicKeySSHWireFormat());
+        } catch (InvalidKeyException | IOException e) {
+            e.printStackTrace();
+            throw new CryptoException(e);
+        }
     }
 
     public byte[] signDigest(String digest, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, CryptoException, NoSuchProviderException, InvalidKeySpecException {
+        try {
+            return threadPool.submit(() -> signDigestJob(digest, data)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new CryptoException(e);
+        }
+    }
+
+    private byte[] signDigestJob(String digest, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, CryptoException, NoSuchProviderException, InvalidKeySpecException {
         long start = System.currentTimeMillis();
         byte[] signature;
         Pair<Signature, byte[]> signerAndData = getSignerAndPrepareData(digest, data);
@@ -87,15 +108,20 @@ public class RSASSHKeyPair implements SSHKeyPairI {
         return signature;
     }
 
-    public byte[] signDigestAppendingPubkey(byte[] data, String algo) throws SignatureException, IOException, InvalidKeyException, NoSuchAlgorithmException, CryptoException, NoSuchProviderException, InvalidKeySpecException {
-        ByteArrayOutputStream dataWithPubkey = new ByteArrayOutputStream();
-        dataWithPubkey.write(data);
-        dataWithPubkey.write(SSHWire.encode(publicKeySSHWireFormat()));
+    public byte[] signDigestAppendingPubkey(byte[] data, String algo) throws CryptoException {
+        try {
+            ByteArrayOutputStream dataWithPubkey = new ByteArrayOutputStream();
+            dataWithPubkey.write(data);
+            dataWithPubkey.write(SSHWire.encode(publicKeySSHWireFormat()));
 
-        byte[] signaturePayload = dataWithPubkey.toByteArray();
+            byte[] signaturePayload = dataWithPubkey.toByteArray();
 
-        String digest = getDigestForAlgo(algo);
-        return signDigest(digest, signaturePayload);
+            String digest = getDigestForAlgo(algo);
+            return signDigest(digest, signaturePayload);
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeyException | NoSuchProviderException | SignatureException | InvalidKeySpecException e) {
+            e.printStackTrace();
+            throw new CryptoException(e);
+        }
     }
 
     private String getDigestForAlgo(String algo) throws CryptoException {

@@ -1,0 +1,232 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:id="@+id/fragment_teams_invite_modal"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent"
+                                             android:clickable="true"
+                                             android:focusable="true"
+                                             android:focusableInTouchMode="true"
+                                             tools:context="co.krypt.krypton.team.InviteModalFragment">
+
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/appBlackTransparent"
+        >
+
+    </android.support.constraint.ConstraintLayout>
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/corners_bg_white_top"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/teamEmailLinkDetail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/open_sans"
+            android:text="Anyone with @acme.co email address"
+            android:textAlignment="center"
+            android:textColor="@color/appBlack"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@+id/textView50"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView39"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/textView39"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="Team Link"
+            android:textAlignment="center"
+            android:textColor="@color/appBlack"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="@+id/teamEmailLinkDetail"
+            app:layout_constraintStart_toStartOf="@+id/teamEmailLinkDetail"
+            app:layout_constraintTop_toBottomOf="@+id/teamLinkButton"/>
+
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/teamLinkButton"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/flat_button"
+            android:backgroundTint="@color/appGreen"
+            android:padding="3dp"
+            android:scaleType="fitCenter"
+            android:tint="@color/appGreen"
+            app:layout_constraintEnd_toEndOf="@+id/textView39"
+            app:layout_constraintStart_toStartOf="@+id/textView39"
+            app:layout_constraintTop_toBottomOf="@+id/textView34"
+            app:srcCompat="@drawable/team_link"/>
+
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/individualsLinkButton"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@drawable/flat_button"
+            android:backgroundTint="@color/appGreen"
+            android:padding="3dp"
+            android:scaleType="fitCenter"
+            android:tint="@color/appGreen"
+            app:layout_constraintEnd_toEndOf="@+id/textView48"
+            app:layout_constraintStart_toStartOf="@+id/textView48"
+            app:layout_constraintTop_toTopOf="@+id/teamLinkButton"
+            app:srcCompat="@drawable/email_link"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/textView48"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="Individual Link"
+            android:textAlignment="center"
+            android:textColor="@color/appBlack"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="@+id/textView50"
+            app:layout_constraintStart_toStartOf="@+id/textView50"
+            app:layout_constraintTop_toBottomOf="@+id/individualsLinkButton"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/textView50"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/open_sans"
+            android:text="Specify only certain email address"
+            android:textAlignment="center"
+            android:textColor="@color/appBlack"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/teamEmailLinkDetail"
+            app:layout_constraintTop_toBottomOf="@+id/textView48"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/textView42"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="In Person"
+            android:textAlignment="center"
+            android:textColor="@color/appBlack"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="@+id/textView43"
+            app:layout_constraintStart_toStartOf="@+id/textView43"
+            app:layout_constraintTop_toBottomOf="@+id/inPersonButton"/>
+
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/inPersonButton"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/flat_button"
+            android:backgroundTint="@color/appGreen"
+            android:padding="3dp"
+            android:scaleType="fitCenter"
+            android:tint="@color/appGreen"
+            app:layout_constraintEnd_toEndOf="@+id/textView42"
+            app:layout_constraintStart_toStartOf="@+id/textView42"
+            app:layout_constraintTop_toBottomOf="@+id/teamEmailLinkDetail"
+            app:srcCompat="@drawable/in_person_qr"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/textView43"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/open_sans"
+            android:text="Scan a peer's phone"
+            android:textAlignment="center"
+            android:textColor="@color/appBlack"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView42"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/textView34"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans"
+            android:text="how would you like to invite your team?"
+            android:textAlignment="center"
+            android:textColor="@color/appBlack"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="@+id/textView35"
+            app:layout_constraintStart_toStartOf="@+id/textView35"
+            app:layout_constraintTop_toBottomOf="@+id/textView35"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/textView35"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="Add new team members"
+            android:textAlignment="center"
+            android:textColor="@color/appBlack"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/constraintLayout5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/corners_bg_gray_bottom"
+            android:backgroundTint="@color/appBlack"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView43">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/textView36"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/open_sans_bold"
+                android:text="Tip"
+                android:textAlignment="viewStart"
+                android:textColor="@color/appGray"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/textView37"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/open_sans"
+                android:text="You can post an open invite link to a dev slack channel or email it directly to your team."
+                android:textAlignment="viewStart"
+                android:textColor="@color/appBlack"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/textView36"
+                app:layout_constraintTop_toBottomOf="@+id/textView36"/>
+        </android.support.constraint.ConstraintLayout>
+    </android.support.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>

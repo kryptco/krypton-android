@@ -75,10 +75,10 @@ public class ApprovalsFragment extends Fragment{
 
     private void refreshAdapters() {
         try {
-            List<Approval> approvedRequestTypes = Approval.getRequestTypeApprovals(getApprovalDao(), Policy.TEMPORARY_APPROVAL_SECONDS, pairingUUID);
+            List<Approval> approvedRequestTypes = Approval.getRequestTypeApprovals(getApprovalDao(), Policy.temporaryApprovalSeconds(getContext(), Approval.ApprovalType.SSH_USER_HOST), pairingUUID);
             approvedRequestTypesAdapter.setItems(approvedRequestTypes);
 
-            List<Approval> approvedSSHHosts = Approval.getSSHHostApprovals(getApprovalDao(), Policy.TEMPORARY_APPROVAL_SECONDS, pairingUUID);
+            List<Approval> approvedSSHHosts = Approval.getSSHHostApprovals(getApprovalDao(), Policy.temporaryApprovalSeconds(getContext(), Approval.ApprovalType.SSH_USER_HOST), pairingUUID);
             approvedSSHHostsAdapter.setItems(approvedSSHHosts);
 
             new Handler(Looper.getMainLooper()).post(() -> {

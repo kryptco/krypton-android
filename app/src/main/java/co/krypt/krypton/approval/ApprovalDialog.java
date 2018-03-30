@@ -1,7 +1,6 @@
 package co.krypt.krypton.approval;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
@@ -12,9 +11,16 @@ import android.widget.TextView;
 import co.krypt.krypton.R;
 import co.krypt.krypton.pairing.Pairing;
 import co.krypt.krypton.policy.Policy;
+import co.krypt.krypton.protocol.GitSignRequest;
 import co.krypt.krypton.protocol.HostsRequest;
+import co.krypt.krypton.protocol.LogDecryptionRequest;
+import co.krypt.krypton.protocol.MeRequest;
+import co.krypt.krypton.protocol.ReadTeamRequest;
 import co.krypt.krypton.protocol.Request;
+import co.krypt.krypton.protocol.RequestBody;
 import co.krypt.krypton.protocol.SignRequest;
+import co.krypt.krypton.protocol.TeamOperationRequest;
+import co.krypt.krypton.protocol.UnpairRequest;
 
 /**
  * Created by Kevin King on 5/5/17.
@@ -37,39 +43,90 @@ public class ApprovalDialog {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setIcon(R.mipmap.ic_launcher);
-        String allowText = "Once";
-        if (request.body instanceof HostsRequest) {
-            allowText = "Allow";
-        }
-        //  right button
-        builder.setPositiveButton(allowText,
-                new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ONCE);
-                    }
-                });
 
-        //  left button
-        builder.setNeutralButton("All for " + Policy.temporaryApprovalDuration(),
-                new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ALL_TEMPORARILY);
-                    }
-                });
+        // setPositiveButton: right button
+        // setNeutralButton: left button
+        // setNegativeButton: middle button
 
-        //  middle button
-        if (request.body instanceof SignRequest) {
-            if (((SignRequest)request.body).hostNameVerified) {
-                builder.setNegativeButton("This host for " + Policy.temporaryApprovalDuration(),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_THIS_TEMPORARILY);
-                            }
-                        });
+        long temporaryApprovalSeconds = Policy.temporaryApprovalSeconds(activity, request);
+        boolean temporaryApprovalEnabled = temporaryApprovalSeconds > 0;
+        String temporaryApprovalDuration = Policy.temporaryApprovalDuration(activity, request);
+
+        request.body.visit(new RequestBody.Visitor<Void, RuntimeException>() {
+            @Override
+            public Void visit(MeRequest meRequest) throws RuntimeException {
+                return null;
             }
-        }
+
+            @Override
+            public Void visit(SignRequest signRequest) throws RuntimeException {
+                builder.setPositiveButton("Once",
+                        (dialog, id) -> Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ONCE));
+
+                if (temporaryApprovalEnabled) {
+                    builder.setNeutralButton("All for " + temporaryApprovalDuration,
+                            (dialog, id) -> Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ALL_TEMPORARILY));
+
+                    if (signRequest.hostNameVerified) {
+                        builder.setNegativeButton("This host for " + temporaryApprovalDuration,
+                                (dialog, id) -> Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_THIS_TEMPORARILY));
+                    }
+                }
+
+                return null;
+            }
+
+            @Override
+            public Void visit(GitSignRequest gitSignRequest) throws RuntimeException {
+                builder.setPositiveButton("Once",
+                        (dialog, id) -> Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ONCE));
+
+                if (temporaryApprovalEnabled) {
+                    builder.setNeutralButton("All for " + temporaryApprovalDuration,
+                            (dialog, id) -> Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ALL_TEMPORARILY));
+                }
+                return null;
+            }
+
+            @Override
+            public Void visit(UnpairRequest unpairRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(HostsRequest hostsRequest) throws RuntimeException {
+                builder.setPositiveButton("Allow",
+                        (dialog, id) -> Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ONCE));
+
+                if (temporaryApprovalEnabled) {
+                    builder.setNeutralButton("All for " + temporaryApprovalDuration,
+                            (dialog, id) -> Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ALL_TEMPORARILY));
+                }
+                return null;
+            }
+
+            @Override
+            public Void visit(ReadTeamRequest readTeamRequest) throws RuntimeException {
+                builder.setPositiveButton("Allow for " + temporaryApprovalDuration,
+                        (dialog, id) -> Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ALL_TEMPORARILY));
+                return null;
+            }
+
+            @Override
+            public Void visit(LogDecryptionRequest logDecryptionRequest) throws RuntimeException {
+                builder.setPositiveButton("Allow for " + temporaryApprovalDuration,
+                        (dialog, id) -> Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ALL_TEMPORARILY));
+                return null;
+            }
+
+            @Override
+            public Void visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
+                builder.setPositiveButton("Allow",
+                        (dialog, id) -> Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ONCE));
+                return null;
+            }
+        });
+
         builder.setOnDismissListener(dialogInterface -> {
             Policy.onAction(activity.getApplicationContext(), requestID, Policy.REJECT);
         });

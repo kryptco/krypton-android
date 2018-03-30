@@ -184,11 +184,16 @@ public class RSAKeyManager implements KeyManagerI {
         }
     }
 
-    public void deleteKeyPair(String tag) throws Exception {
-        synchronized (lock) {
-            KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
-            keyStore.load(null);
-            keyStore.deleteEntry(tag);
+    public void deleteKeyPair(String tag) throws CryptoException {
+        try {
+            synchronized (lock) {
+                KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+                keyStore.load(null);
+                keyStore.deleteEntry(tag);
+            }
+        } catch (CertificateException | NoSuchAlgorithmException | IOException | KeyStoreException e) {
+            e.printStackTrace();
+            throw new CryptoException(e);
         }
     }
 

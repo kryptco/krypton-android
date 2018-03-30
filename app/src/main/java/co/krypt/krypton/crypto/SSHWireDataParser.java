@@ -12,8 +12,11 @@ import java.nio.charset.StandardCharsets;
 
 public class SSHWireDataParser {
     private final DataInputStream dataInputStream;
+    final long inputLength;
+
     public SSHWireDataParser(byte[] bytes) {
         dataInputStream = new DataInputStream(new ByteArrayInputStream(bytes));
+        inputLength = bytes.length;
     }
 
     public byte popByte() throws IOException {
@@ -26,6 +29,9 @@ public class SSHWireDataParser {
 
     public byte[] popByteArray() throws IOException {
         int len = dataInputStream.readInt();
+        if (len > inputLength) {
+            throw new IOException("Invalid length");
+        }
         byte[] buf = new byte[len];
         dataInputStream.readFully(buf);
         return buf;
