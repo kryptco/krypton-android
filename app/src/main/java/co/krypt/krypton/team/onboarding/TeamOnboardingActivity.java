@@ -118,7 +118,17 @@ public class TeamOnboardingActivity extends FragmentActivity {
             Uri data = intent.getData();
             if ((data.getScheme().equals("krypton") && data.getHost().equals("verify_email")) ||
                     (data.getScheme().equals("https") && data.getHost().equals("krypt.co") && data.getPath().equals("/app/verify_email.html"))) {
-                String nonce = data.getQueryParameter("nonce");
+
+                final String nonce;
+                // Handle https:// link
+                String queryParam = data.getQueryParameter("nonce");
+                if (queryParam != null) {
+                    nonce = queryParam;
+                } else {
+                    // Handle krypton:// link
+                    nonce = data.getLastPathSegment();
+                }
+
                 Log.i(TAG, "received VERIFY_EMAIL intent");
                 CreateTeamProgress createTeamProgress = new CreateTeamProgress(this);
                 JoinTeamProgress joinTeamProgress = new JoinTeamProgress(this);
