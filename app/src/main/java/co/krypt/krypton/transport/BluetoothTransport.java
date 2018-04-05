@@ -273,7 +273,12 @@ public class BluetoothTransport extends BroadcastReceiver {
 
     public synchronized void stop() {
         if (initialized.getAndSet(false)) {
-            context.unregisterReceiver(bluetoothStateReceiver);
+            try {
+                context.unregisterReceiver(bluetoothStateReceiver);
+            } catch (IllegalArgumentException e) {
+                // Thrown by java.lang.IllegalArgumentException: Receiver not registered: co.krypt.krypton.transport.BluetoothTransport
+                // https://stackoverflow.com/questions/2682043/how-to-check-if-receiver-is-registered-in-android
+            }
         }
     }
 
