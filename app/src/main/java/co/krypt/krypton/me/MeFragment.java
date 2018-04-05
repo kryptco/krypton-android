@@ -63,7 +63,7 @@ public class MeFragment extends Fragment {
         profileEmail.setOnFocusChangeListener((v1, hasFocus) -> {
             if (!hasFocus) {
                 EditText editText = (EditText) v1;
-                new Thread(() -> onEmailChanged(editText.getText().toString())).start();
+                onEmailChanged(editText.getText().toString());
             }
         });
 
@@ -141,6 +141,11 @@ public class MeFragment extends Fragment {
     }
 
     private void onEmailChanged(String email) {
+        Context context = getContext();
+        if (context == null){
+            return;
+        }
+
         Profile me = Silo.shared(getContext()).meStorage().load();
         if (me == null) {
             me = new Profile(email, null, null, null);
