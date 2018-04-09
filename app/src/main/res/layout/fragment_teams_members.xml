@@ -22,6 +22,26 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/appCompatTextView5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/terminal_bg_bottom"
+            android:fontFamily="@font/code"
+            android:paddingBottom="10dp"
+            android:paddingLeft="6dp"
+            android:paddingTop="0dp"
+            android:shadowColor="@color/appBlack"
+            android:shadowRadius="4"
+            android:text="$ kr team invite"
+            android:textColor="@color/appWhite"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:fontFamily="@font/code"
+            app:layout_constraintEnd_toEndOf="@+id/appCompatTextView3"
+            app:layout_constraintStart_toStartOf="@+id/appCompatTextView3"
+            app:layout_constraintTop_toBottomOf="@+id/appCompatTextView3"/>
+
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/appCompatTextView3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -61,28 +81,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/appCompatTextView2" />
-
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/appCompatTextView5"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/terminal_bg_bottom"
-            android:fontFamily="@font/code"
-            android:paddingBottom="10dp"
-            android:paddingLeft="6dp"
-            android:paddingTop="0dp"
-            android:shadowColor="@color/appBlack"
-            android:shadowRadius="4"
-            android:text="$ kr team invite"
-            android:textColor="@color/appWhite"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:fontFamily="@font/code"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/appCompatTextView3"
-            app:layout_constraintStart_toStartOf="@+id/appCompatTextView3"
-            app:layout_constraintTop_toBottomOf="@+id/appCompatTextView3" />
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/appCompatTextView2"
