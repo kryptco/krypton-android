@@ -10,7 +10,9 @@ import java.io.IOException;
 
 public enum PublicKeyAlgorithm {
     RSA_ENCRYPT_OR_SIGN(1),
+    @Deprecated
     RSA_ENCRYPT_ONLY(2),
+    @Deprecated
     RSA_SIGN_ONLY(3),
     ED25519(22);
 
