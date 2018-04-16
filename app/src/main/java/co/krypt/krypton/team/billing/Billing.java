@@ -2,6 +2,8 @@ package co.krypt.krypton.team.billing;
 
 import com.google.gson.annotations.SerializedName;
 
+import javax.annotation.Nullable;
+
 import co.krypt.krypton.protocol.JSON;
 
 /**
@@ -18,9 +20,9 @@ public class Billing {
         @JSON.JsonRequired
         public long price;
 
+        @Nullable
         @SerializedName("limit")
-        @JSON.JsonRequired
-        public Usage limit;
+        public Limit limit;
     }
     public static class Usage {
         @SerializedName("members")
@@ -34,6 +36,20 @@ public class Billing {
         @SerializedName("logs_last_30_days")
         @JSON.JsonRequired
         public long logsLast30Days;
+    }
+
+    public static class Limit {
+        @Nullable
+        @SerializedName("members")
+        public Long members;
+
+        @Nullable
+        @SerializedName("hosts")
+        public Long hosts;
+
+        @Nullable
+        @SerializedName("logs_last_30_days")
+        public Long logsLast30Days;
     }
 
     @SerializedName("current_tier")

@@ -343,13 +343,31 @@ public class HomeFragment extends Fragment {
         Billing billing = r.r.success;
 
         memberUsageCurrent.setText(String.valueOf(billing.usage.members));
-        memberUsageLimit.setText(String.valueOf(billing.currentTier.limit.members));
-
         hostsUsageCurrent.setText(String.valueOf(billing.usage.hosts));
-        hostsUsageLimit.setText(String.valueOf(billing.currentTier.limit.hosts));
-
         logsUsageCurrent.setText(String.valueOf(billing.usage.logsLast30Days));
-        logsUsageLimit.setText(String.valueOf(billing.currentTier.limit.logsLast30Days));
+
+        if (billing.currentTier.limit != null) {
+            Billing.Limit limit = billing.currentTier.limit;
+            if (limit.members == null) {
+                memberUsageLimit.setText("∞");
+            } else {
+                memberUsageLimit.setText(String.valueOf(limit.members));
+            }
+            if (limit.hosts == null) {
+                hostsUsageLimit.setText("∞");
+            } else {
+                hostsUsageLimit.setText(String.valueOf(limit.hosts));
+            }
+            if (limit.logsLast30Days == null) {
+                logsUsageLimit.setText("∞");
+            } else {
+                logsUsageLimit.setText(String.valueOf(limit.logsLast30Days));
+            }
+        } else {
+            memberUsageLimit.setText("∞");
+            hostsUsageLimit.setText("∞");
+            logsUsageLimit.setText("∞");
+        }
 
         if (teamHomeData.billingUrl != null) {
             manageBillingButton.setOnClickListener(v -> {
