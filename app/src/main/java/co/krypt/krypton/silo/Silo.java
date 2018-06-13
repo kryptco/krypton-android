@@ -108,6 +108,7 @@ public class Silo {
     private Map<UUID, Pairing> activePairingsByUUID = new HashMap<>();
     private Map<Pairing, SQSPoller> pollers = new HashMap<>();
 
+    @Nullable
     private final BluetoothTransport bluetoothTransport;
     public final Context context;
     private final Map<Pairing, Long> lastRequestTimeSeconds = Collections.synchronizedMap(new HashMap<Pairing, Long>());
@@ -184,7 +185,9 @@ public class Silo {
     }
 
     public synchronized void exit() {
-        bluetoothTransport.stop();
+        if (bluetoothTransport != null) {
+            bluetoothTransport.stop();
+        }
         if (responseDiskCacheByRequestID != null && responseDiskCacheByRequestID.isClosed()) {
             try {
                 responseDiskCacheByRequestID.close();
@@ -234,7 +237,9 @@ public class Silo {
             if (poller != null) {
                 poller.stop();
             }
-            bluetoothTransport.remove(pairing);
+            if (bluetoothTransport != null) {
+                bluetoothTransport.remove(pairing);
+            }
         }
     }
 
@@ -285,7 +290,9 @@ public class Silo {
     }
 
     private void send(final Pairing pairing, final NetworkMessage message) throws TransportException {
-        bluetoothTransport.send(pairing, message);
+        if (bluetoothTransport != null) {
+            bluetoothTransport.send(pairing, message);
+        }
         SQSTransport.sendMessage(pairing, message);
     }
 
