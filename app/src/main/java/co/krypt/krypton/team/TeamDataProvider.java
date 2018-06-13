@@ -31,6 +31,11 @@ public class TeamDataProvider {
         }
     }
 
+    public static void deleteDB(Context context) throws Native.NotLinked {
+        tryNativeCall(context, new TypeToken<Sigchain.NativeResult<JsonObject>>(){},
+                () -> Native.deleteDB(context.getApplicationContext().getFilesDir().getAbsolutePath()));
+    }
+
     public static Sigchain.NativeResult<Sigchain.TeamHomeData> getTeamHomeData(Context context) throws Native.NotLinked {
         return tryNativeCall(context, new TypeToken<Sigchain.NativeResult<Sigchain.TeamHomeData>>(){},
                 () -> Native.getTeam(context.getApplicationContext().getFilesDir().getAbsolutePath()));

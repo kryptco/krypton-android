@@ -6,6 +6,7 @@ import android.util.Log;
 
 import co.krypt.krypton.protocol.JSON;
 import co.krypt.krypton.team.Native;
+import co.krypt.krypton.team.TeamDataProvider;
 
 /**
  * Created by Kevin King on 1/11/17.
@@ -39,7 +40,11 @@ public class JoinTeamProgress {
         synchronized (lock) {
             setTeamOnboardingData(new JoinTeamData());
             setStage(JoinStage.NONE);
-            Native.deleteDB(context.getApplicationContext().getFilesDir().getAbsolutePath());
+            try {
+                TeamDataProvider.deleteDB(context);
+            } catch (Native.NotLinked notLinked) {
+                notLinked.printStackTrace();
+            }
         }
     }
 
