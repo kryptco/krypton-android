@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 public class Settings {
     public static final String ENABLE_APPROVED_NOTIFICATIONS_KEY = "ENABLE_APPROVED_NOTIFICATIONS";
     public static final String SILENCE_NOTIFICATIONS_KEY = "SILENCE_NOTIFICATIONS";
+    public static final String ONE_TOUCH_LOGIN_KEY = "ONE_TOUCH_LOGIN";
 
     private static Object lock = new Object();
     private SharedPreferences preferences;
@@ -40,6 +41,18 @@ public class Settings {
     public void setSilenceNotifications(boolean b) {
         synchronized (lock) {
             preferences.edit().putBoolean(SILENCE_NOTIFICATIONS_KEY, b).apply();
+        }
+    }
+
+    public boolean oneTouchLogin() {
+        synchronized (lock) {
+            return preferences.getBoolean(ONE_TOUCH_LOGIN_KEY, false);
+        }
+    }
+
+    public void setOneTouchLogin(boolean b) {
+        synchronized (lock) {
+            preferences.edit().putBoolean(ONE_TOUCH_LOGIN_KEY, b).apply();
         }
     }
 

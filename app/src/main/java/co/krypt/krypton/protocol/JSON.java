@@ -62,6 +62,7 @@ public class JSON {
     }
 
     static final Gson gson = new GsonBuilder()
+            .disableHtmlEscaping()
             .registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter())
             .registerTypeAdapter(Request.class, new Request.Deserializer())
             .registerTypeAdapter(Request.class, new Request.Serializer())
@@ -77,6 +78,7 @@ public class JSON {
             .create();
 
     static final Gson gsonWithoutRequiredFields = new GsonBuilder()
+            .disableHtmlEscaping()
             .registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter())
             .create();
 

@@ -148,7 +148,7 @@ public class MeFragment extends Fragment {
 
         Profile me = Silo.shared(getContext()).meStorage().load();
         if (me == null) {
-            me = new Profile(email, null, null, null);
+            me = new Profile(email, null, null, null, null);
         }
         me.email = email;
         Silo.shared(getContext()).meStorage().set(me);

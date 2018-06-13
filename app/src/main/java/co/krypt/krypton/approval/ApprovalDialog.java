@@ -20,6 +20,8 @@ import co.krypt.krypton.protocol.Request;
 import co.krypt.krypton.protocol.RequestBody;
 import co.krypt.krypton.protocol.SignRequest;
 import co.krypt.krypton.protocol.TeamOperationRequest;
+import co.krypt.krypton.protocol.U2FAuthenticateRequest;
+import co.krypt.krypton.protocol.U2FRegisterRequest;
 import co.krypt.krypton.protocol.UnpairRequest;
 
 /**
@@ -121,6 +123,20 @@ public class ApprovalDialog {
 
             @Override
             public Void visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
+                builder.setPositiveButton("Allow",
+                        (dialog, id) -> Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ONCE));
+                return null;
+            }
+
+            @Override
+            public Void visit(U2FRegisterRequest u2FRegisterRequest) throws RuntimeException {
+                builder.setPositiveButton("Allow",
+                        (dialog, id) -> Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ONCE));
+                return null;
+            }
+
+            @Override
+            public Void visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws RuntimeException {
                 builder.setPositiveButton("Allow",
                         (dialog, id) -> Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ONCE));
                 return null;

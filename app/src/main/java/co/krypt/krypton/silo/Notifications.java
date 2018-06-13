@@ -43,11 +43,14 @@ import co.krypt.krypton.protocol.Request;
 import co.krypt.krypton.protocol.RequestBody;
 import co.krypt.krypton.protocol.SignRequest;
 import co.krypt.krypton.protocol.TeamOperationRequest;
+import co.krypt.krypton.protocol.U2FAuthenticateRequest;
+import co.krypt.krypton.protocol.U2FRegisterRequest;
 import co.krypt.krypton.protocol.UnpairRequest;
 import co.krypt.krypton.settings.Settings;
 import co.krypt.krypton.team.Native;
 import co.krypt.krypton.team.Sigchain;
 import co.krypt.krypton.team.TeamDataProvider;
+import co.krypt.krypton.u2f.KnownAppIds;
 import co.krypt.kryptonite.MainActivity;
 
 /**
@@ -201,6 +204,18 @@ public class Notifications {
             public Void visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
                 return null;
             }
+
+            @Override
+            public Void visit(U2FRegisterRequest u2FRegisterRequest) throws RuntimeException {
+                mBuilder.setContentTitle("Registered with " + KnownAppIds.displayAppId(u2FRegisterRequest.appId));
+                return null;
+            }
+
+            @Override
+            public Void visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws RuntimeException {
+                mBuilder.setContentTitle("Signed in to " + KnownAppIds.displayAppId(u2FAuthenticateRequest.appId));
+                return null;
+            }
         });
 
         // The stack builder object will contain an artificial back stack for the
@@ -299,6 +314,18 @@ public class Notifications {
 
             @Override
             public Void visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(U2FRegisterRequest u2FRegisterRequest) throws RuntimeException {
+                mBuilder.setContentTitle("Registration with " + u2FRegisterRequest.appId + " rejected");
+                return null;
+            }
+
+            @Override
+            public Void visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws RuntimeException {
+                mBuilder.setContentTitle("Sign in to " + u2FAuthenticateRequest.appId + " rejected");
                 return null;
             }
         });
@@ -492,6 +519,20 @@ public class Notifications {
                     notLinked.printStackTrace();
                     mBuilder.setContentTitle("Teams not supported on this phone");
                 }
+                return null;
+            }
+
+            @Override
+            public Void visit(U2FRegisterRequest u2FRegisterRequest) throws RuntimeException {
+                mBuilder.setContentTitle("Register with " + u2FRegisterRequest.appId + "?");
+                mBuilder.addAction(approveOnceTextApproveBuilder.build());
+                return null;
+            }
+
+            @Override
+            public Void visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws RuntimeException {
+                mBuilder.setContentTitle("Sign in to " + u2FAuthenticateRequest.appId + "?");
+                mBuilder.addAction(approveOnceTextApproveBuilder.build());
                 return null;
             }
         });

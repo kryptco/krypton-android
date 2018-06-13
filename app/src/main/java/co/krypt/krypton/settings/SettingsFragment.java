@@ -127,6 +127,17 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        Settings settings = new Settings(getContext());
+
+        SwitchCompat oneTouchLoginSwitch = root.findViewById(R.id.oneTouchLoginToggle);
+        oneTouchLoginSwitch.setChecked(settings.oneTouchLogin());
+        oneTouchLoginSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                settings.setOneTouchLogin(isChecked);
+            }
+        });
+
         SwitchCompat disableAnalyticsSwitch = (SwitchCompat) root.findViewById(R.id.disableAnalyticsSwitch);
         disableAnalyticsSwitch.setChecked(new Analytics(getContext()).isDisabled());
         disableAnalyticsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -137,20 +148,20 @@ public class SettingsFragment extends Fragment {
         });
 
         SwitchCompat enableApprovedNotifications = (SwitchCompat) root.findViewById(R.id.enableAutoApproveNotificationsSwitch);
-        enableApprovedNotifications.setChecked(new Settings(getContext()).approvedNotificationsEnabled());
+        enableApprovedNotifications.setChecked(settings.approvedNotificationsEnabled());
         enableApprovedNotifications.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                new Settings(getContext()).setApprovedNotificationsEnabled(isChecked);
+                settings.setApprovedNotificationsEnabled(isChecked);
             }
         });
 
         SwitchCompat silenceNotifications = (SwitchCompat) root.findViewById(R.id.silenceNotificationsSwitch);
-        silenceNotifications.setChecked(new Settings(getContext()).silenceNotifications());
+        silenceNotifications.setChecked(settings.silenceNotifications());
         silenceNotifications.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                new Settings(getContext()).setSilenceNotifications(isChecked);
+                settings.setSilenceNotifications(isChecked);
             }
         });
 

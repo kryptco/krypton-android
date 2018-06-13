@@ -89,6 +89,7 @@ public class Analytics {
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 try {
                     InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    in.close();
                 } finally {
                     urlConnection.disconnect();
                 }
@@ -108,7 +109,10 @@ public class Analytics {
         post(getClientID(), params, false);
     }
 
-    public void postEvent(String category, String action, @Nullable String label, @Nullable Integer value, boolean force) {
+    public void postEvent(@Nullable String category, String action, @Nullable String label, @Nullable Integer value, boolean force) {
+        if (category == null) {
+            return;
+        }
         HashMap<String, String> params = new HashMap<>();
         params.put("t", "event");
         params.put("ec", category);

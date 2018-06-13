@@ -10,7 +10,6 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +22,7 @@ import co.krypt.krypton.log.GitCommitSignatureLog;
 import co.krypt.krypton.log.GitTagSignatureLog;
 import co.krypt.krypton.log.Log;
 import co.krypt.krypton.log.SSHSignatureLog;
+import co.krypt.krypton.log.U2FSignatureLog;
 import co.krypt.krypton.protocol.JSON;
 
 /**
@@ -279,22 +279,43 @@ public class Pairings {
         LocalBroadcastManager.getInstance(context).sendBroadcast(onLog);
     }
 
+    public void appendToU2FLog(U2FSignatureLog log) {
+        synchronized (lock) {
+            try {
+                dbHelper.getU2FSignatureLogDao().create(log);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        Intent onLog = new Intent(ON_DEVICE_LOG_ACTION);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(onLog);
+    }
+
+    public HashSet<U2FSignatureLog> getU2FLogs(String pairingUUID) {
+        synchronized (lock) {
+            try {
+                List<U2FSignatureLog> logs = dbHelper.getU2FSignatureLogDao().queryForEq("pairing_uuid", pairingUUID);
+                return new HashSet<>(logs);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return new HashSet<>();
+        }
+    }
+
     public List<Log> getAllLogsTimeDescending(String pairingUUID) {
         synchronized (lock) {
             List<SSHSignatureLog> sshLogs = new LinkedList<>(getSSHLogs(pairingUUID));
             List<GitCommitSignatureLog> commitLogs = new LinkedList<>(getCommitLogs(pairingUUID));
             List<GitTagSignatureLog> tagLogs = new LinkedList<>(getTagLogs(pairingUUID));
+            List<U2FSignatureLog> u2fLogs = new LinkedList<>(getU2FLogs(pairingUUID));
 
             List<Log> logs = new LinkedList<>();
             logs.addAll(sshLogs);
             logs.addAll(commitLogs);
             logs.addAll(tagLogs);
-            java.util.Collections.sort(logs, new Comparator<Log>() {
-                @Override
-                public int compare(Log lhs, Log rhs) {
-                    return Long.compare(rhs.unixSeconds(), lhs.unixSeconds());
-                }
-            });
+            logs.addAll(u2fLogs);
+            java.util.Collections.sort(logs, (lhs, rhs) -> Long.compare(rhs.unixSeconds(), lhs.unixSeconds()));
             return logs;
         }
     }

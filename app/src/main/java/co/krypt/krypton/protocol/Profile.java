@@ -15,8 +15,10 @@ import co.krypt.krypton.team.Sigchain;
  */
 
 public class Profile {
+    @Nullable
     @SerializedName("email")
     public String email;
+    @Nullable
     @SerializedName("public_key_wire")
     public byte[] sshWirePublicKey;
     @SerializedName("pgp_pk")
@@ -27,11 +29,15 @@ public class Profile {
     @Nullable
     public Sigchain.TeamCheckpoint teamCheckpoint;
 
+    @SerializedName("device_identifier")
+    public byte[] deviceIdentifier;
+
     public Profile() { }
 
-    public Profile(String email, byte[] sshWirePublicKey, @Nullable byte[] pgpPublicKey, @Nullable Sigchain.TeamCheckpoint teamCheckpoint) {
+    public Profile(String email, byte[] sshWirePublicKey, byte[] deviceIdentifier, @Nullable byte[] pgpPublicKey, @Nullable Sigchain.TeamCheckpoint teamCheckpoint) {
         this.email = email;
         this.sshWirePublicKey = sshWirePublicKey;
+        this.deviceIdentifier = deviceIdentifier;
         this.pgpPublicKey = pgpPublicKey;
         this.teamCheckpoint = teamCheckpoint;
     }

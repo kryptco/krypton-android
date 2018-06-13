@@ -18,6 +18,10 @@ public class MeRequest extends RequestBody {
     @Nullable
     public String pgpUserID;
 
+    @SerializedName("u2f_only")
+    @Nullable
+    public Boolean u2fOnly;
+
     @Nullable
     public UserID userID() {
         if (pgpUserID == null) {

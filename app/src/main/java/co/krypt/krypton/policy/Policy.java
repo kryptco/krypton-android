@@ -26,7 +26,10 @@ import co.krypt.krypton.protocol.Request;
 import co.krypt.krypton.protocol.RequestBody;
 import co.krypt.krypton.protocol.SignRequest;
 import co.krypt.krypton.protocol.TeamOperationRequest;
+import co.krypt.krypton.protocol.U2FAuthenticateRequest;
+import co.krypt.krypton.protocol.U2FRegisterRequest;
 import co.krypt.krypton.protocol.UnpairRequest;
+import co.krypt.krypton.settings.Settings;
 import co.krypt.krypton.silo.Notifications;
 import co.krypt.krypton.silo.Silo;
 import co.krypt.krypton.team.Native;
@@ -115,6 +118,7 @@ public class Policy {
 
     public static synchronized boolean isApprovedNow(Silo silo, Context context, Pairing pairing, Request request) {
         try {
+            Settings settings = new Settings(context);
             Dao<Approval, Long> db = silo.pairings().dbHelper.getApprovalDao();
             boolean neverAskAndTeamPolicyUnset = silo.pairings().getApproved(pairing) && !teamPolicySet(context);
             return request.body.visit(new RequestBody.Visitor<Boolean, Unrecoverable>() {
@@ -199,6 +203,16 @@ public class Policy {
                 @Override
                 public Boolean visit(TeamOperationRequest teamOperationRequest) throws Unrecoverable {
                     return false;
+                }
+
+                @Override
+                public Boolean visit(U2FRegisterRequest u2FRegisterRequest) throws Unrecoverable {
+                    return !settings.oneTouchLogin();
+                }
+
+                @Override
+                public Boolean visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws Unrecoverable {
+                    return !settings.oneTouchLogin();
                 }
             });
         } catch (Exception e) {
@@ -315,6 +329,16 @@ public class Policy {
                         public Void visit(TeamOperationRequest teamOperationRequest) throws Unrecoverable {
                             return null;
                         }
+
+                        @Override
+                        public Void visit(U2FRegisterRequest u2FRegisterRequest) throws Unrecoverable {
+                            return null;
+                        }
+
+                        @Override
+                        public Void visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws Unrecoverable {
+                            return null;
+                        }
                     });
                     silo.respondToRequest(pairingAndRequest.first, pairingAndRequest.second, true);
                     new Analytics(context).postEvent(pairingAndRequest.second.analyticsCategory(), "background approve", "time", (int) temporaryApprovalSeconds(context, pairingAndRequest.second), false);
@@ -370,6 +394,16 @@ public class Policy {
 
                         @Override
                         public Void visit(TeamOperationRequest teamOperationRequest) throws Unrecoverable {
+                            return null;
+                        }
+
+                        @Override
+                        public Void visit(U2FRegisterRequest u2FRegisterRequest) throws Unrecoverable {
+                            return null;
+                        }
+
+                        @Override
+                        public Void visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws Unrecoverable {
                             return null;
                         }
                     });

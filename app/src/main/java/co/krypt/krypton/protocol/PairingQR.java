@@ -1,7 +1,14 @@
 package co.krypt.krypton.protocol;
 
+import android.net.Uri;
+
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
+
+import javax.annotation.Nullable;
+
+import co.krypt.krypton.crypto.Base64;
+import co.krypt.krypton.exception.CryptoException;
 
 /**
  * Created by Kevin King on 12/2/16.
@@ -9,10 +16,19 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class PairingQR {
+    @JSON.JsonRequired
     @SerializedName("pk")
     public byte[] workstationPublicKey;
+    @JSON.JsonRequired
     @SerializedName("n")
     public String workstationName;
+
+    @SerializedName("d")
+    @Nullable
+    public byte[] deviceId;
+    @SerializedName("b")
+    @Nullable
+    String browser;
 
     //  version null in kr version < 2.0.0
     @SerializedName("v")
@@ -21,13 +37,14 @@ public class PairingQR {
     private PairingQR() {
     }
 
-    public static PairingQR parseJson(String json) throws JsonParseException {
-        PairingQR pairingQR = JSON.fromJson(json, PairingQR.class);
-        if (
-                pairingQR.workstationPublicKey == null ||
-                pairingQR.workstationName == null) {
-            throw new JsonParseException(json + " INVALID: missing one or more fields");
+    public static PairingQR parseJson(String jsonOrLink) throws JsonParseException {
+        if (jsonOrLink.startsWith("https://get.krypt.co")) {
+            try {
+                return JSON.fromJson(Base64.decodeURLSafe(Uri.parse(jsonOrLink).getFragment()), PairingQR.class);
+            } catch (CryptoException e) {
+                throw new JsonParseException(e);
+            }
         }
-        return pairingQR;
+        return JSON.fromJson(jsonOrLink, PairingQR.class);
     }
 }

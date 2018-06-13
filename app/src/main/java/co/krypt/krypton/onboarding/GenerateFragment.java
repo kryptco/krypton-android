@@ -18,6 +18,7 @@ import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.crypto.KeyManager;
 import co.krypt.krypton.crypto.KeyType;
 import co.krypt.krypton.crypto.SSHKeyPairI;
+import co.krypt.krypton.crypto.U2F;
 import co.krypt.krypton.exception.CryptoException;
 import co.krypt.krypton.me.MeStorage;
 import co.krypt.krypton.protocol.Profile;
@@ -103,7 +104,14 @@ public class GenerateFragment extends Fragment {
                     }
 
                     SSHKeyPairI pair = KeyManager.loadOrGenerateKeyPair(context, finalKeyType, KeyManager.ME_TAG);
-                    new MeStorage(context).set(new Profile("", pair.publicKeySSHWireFormat(), null, null));
+                    byte[] deviceIdentifier = new byte[]{};
+                    try {
+                        deviceIdentifier = U2F.loadOrGenerateDeviceIdentifier();
+                    } catch (CryptoException e){
+                        e.printStackTrace();
+                    }
+
+                    new MeStorage(context).set(new Profile("", pair.publicKeySSHWireFormat(), deviceIdentifier, null, null));
 
                     final long genTime = System.currentTimeMillis() - start;
                     new Analytics(context).postEvent("keypair", "generate", null, (int) (genTime / 1000), false);

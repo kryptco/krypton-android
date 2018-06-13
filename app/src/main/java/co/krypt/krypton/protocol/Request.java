@@ -105,6 +105,16 @@ public class Request {
             public Void visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
                 return null;
             }
+
+            @Override
+            public Void visit(U2FRegisterRequest u2FRegisterRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws RuntimeException {
+                return null;
+            }
         });
     }
 
@@ -150,6 +160,16 @@ public class Request {
 
             @Override
             public Void visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(U2FRegisterRequest u2FRegisterRequest) throws RuntimeException {
+                return null;
+            }
+
+            @Override
+            public Void visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws RuntimeException {
                 return null;
             }
         });
@@ -201,14 +221,26 @@ public class Request {
                 teamOperationRequest.fillView(content);
                 return null;
             }
+
+            @Override
+            public Void visit(U2FRegisterRequest u2FRegisterRequest) throws RuntimeException {
+                u2FRegisterRequest.fillView(content);
+                return null;
+            }
+
+            @Override
+            public Void visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws RuntimeException {
+                u2FAuthenticateRequest.fillView(content);
+                return null;
+            }
         });
     }
 
-    public String analyticsCategory() {
+    @Nullable public String analyticsCategory() {
         return body.visit(new RequestBody.Visitor<String, RuntimeException>() {
             @Override
             public String visit(MeRequest meRequest) throws RuntimeException {
-                return "me";
+                return null;
             }
 
             @Override
@@ -238,12 +270,22 @@ public class Request {
 
             @Override
             public String visit(LogDecryptionRequest logDecryptionRequest) throws RuntimeException {
-                return "log_decryption_request";
+                return "log-decryption";
             }
 
             @Override
             public String visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
-                return "team_operation_request";
+                return "team-operation";
+            }
+
+            @Override
+            public String visit(U2FRegisterRequest u2FRegisterRequest) throws RuntimeException {
+                return "u2f-register";
+            }
+
+            @Override
+            public String visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws RuntimeException {
+                return "u2f-authenticate";
             }
         });
     }
@@ -299,6 +341,18 @@ public class Request {
                 @Override
                 public Void visit(TeamOperationRequest teamOperationRequest) throws RuntimeException {
                     o.add(TeamOperationRequest.FIELD_NAME, context.serialize(teamOperationRequest));
+                    return null;
+                }
+
+                @Override
+                public Void visit(U2FRegisterRequest u2FRegisterRequest) throws RuntimeException {
+                    o.add(U2FRegisterRequest.FIELD_NAME, context.serialize(u2FRegisterRequest));
+                    return null;
+                }
+
+                @Override
+                public Void visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws RuntimeException {
+                    o.add(U2FAuthenticateRequest.FIELD_NAME, context.serialize(u2FAuthenticateRequest));
                     return null;
                 }
             });

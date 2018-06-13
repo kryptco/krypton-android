@@ -1,9 +1,12 @@
 package co.krypt.krypton.silo;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.util.LruCache;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.amazonaws.util.Base64;
@@ -34,6 +37,7 @@ import javax.annotation.Nullable;
 import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.crypto.RSASSHKeyPair;
 import co.krypt.krypton.crypto.SSHKeyPairI;
+import co.krypt.krypton.crypto.U2F;
 import co.krypt.krypton.db.OpenDatabaseHelper;
 import co.krypt.krypton.exception.CryptoException;
 import co.krypt.krypton.exception.MismatchedHostKeyException;
@@ -46,6 +50,7 @@ import co.krypt.krypton.knownhosts.KnownHost;
 import co.krypt.krypton.log.GitCommitSignatureLog;
 import co.krypt.krypton.log.GitTagSignatureLog;
 import co.krypt.krypton.log.SSHSignatureLog;
+import co.krypt.krypton.log.U2FSignatureLog;
 import co.krypt.krypton.me.MeStorage;
 import co.krypt.krypton.onboarding.TestSSHFragment;
 import co.krypt.krypton.pairing.Pairing;
@@ -75,6 +80,10 @@ import co.krypt.krypton.protocol.SignRequest;
 import co.krypt.krypton.protocol.SignResponse;
 import co.krypt.krypton.protocol.SuccessOrTaggedErrorResult;
 import co.krypt.krypton.protocol.TeamOperationRequest;
+import co.krypt.krypton.protocol.U2FAuthenticateRequest;
+import co.krypt.krypton.protocol.U2FAuthenticateResponse;
+import co.krypt.krypton.protocol.U2FRegisterRequest;
+import co.krypt.krypton.protocol.U2FRegisterResponse;
 import co.krypt.krypton.protocol.UnpairRequest;
 import co.krypt.krypton.protocol.UnpairResponse;
 import co.krypt.krypton.protocol.UserAndHost;
@@ -362,6 +371,7 @@ public class Silo {
 
         if (Policy.isApprovedNow(this, context, pairing, request)) {
                 respondToRequest(pairing, request, true);
+                new Analytics(context).postEvent(request.analyticsCategory(), "automatic approval", communicationMedium, null, false);
         } else {
             if (Policy.requestApproval(context, pairing, request)) {
                 new Analytics(context).postEvent(request.analyticsCategory(), "requires approval", communicationMedium, null, false);
@@ -396,6 +406,18 @@ public class Silo {
                 @Override
                 public Void visit(MeRequest meRequest) throws CryptoException {
                     response.meResponse = new MeResponse(meStorage.loadWithUserID(meRequest.userID()));
+                    if (meRequest.u2fOnly != null && meRequest.u2fOnly) {
+                        response.meResponse.me.pgpPublicKey = null;
+                        response.meResponse.me.teamCheckpoint = null;
+                        BluetoothAdapter bt = BluetoothAdapter.getDefaultAdapter();
+                        if (bt != null) {
+                            String deviceName = Settings.Secure.getString(context.getContentResolver(), "bluetooth_name");
+                            if (!TextUtils.isEmpty(deviceName)) {
+                                response.meResponse.me.email = deviceName;
+                            }
+                        }
+                        response.meResponse.me.deviceIdentifier = U2F.loadOrGenerateDeviceIdentifier();
+                    }
                     return null;
                 }
 
@@ -768,6 +790,45 @@ public class Silo {
                         }
                     } else {
                         response.teamOperationResponse.error = "rejected";
+                    }
+                    return null;
+                }
+
+                @Override
+                public Void visit(U2FRegisterRequest u2FRegisterRequest) throws Unrecoverable {
+                    SuccessOrTaggedErrorResult<U2FRegisterResponse> result = new SuccessOrTaggedErrorResult<>();
+                    response.u2fRegisterResponse = result;
+                    if (requestAllowed) {
+
+                        U2F.KeyPair keyPair = U2F.KeyManager.generateAccountKeyPair(context, u2FRegisterRequest.appId);
+
+                        result.success = keyPair.signU2FRegisterRequest(u2FRegisterRequest);
+                        Notifications.notifySuccess(context, pairing, request, null);
+
+                        U2FSignatureLog log = new U2FSignatureLog(u2FRegisterRequest, pairing);
+                        pairingStorage.appendToU2FLog(log);
+
+                    } else {
+                        response.u2fRegisterResponse.error = "rejected";
+                    }
+                    return null;
+                }
+
+                @Override
+                public Void visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws Unrecoverable {
+                    SuccessOrTaggedErrorResult<U2FAuthenticateResponse> result = new SuccessOrTaggedErrorResult<>();
+                    response.u2fAuthenticateResponse = result;
+                    if (requestAllowed) {
+
+                        U2F.KeyPair keyPair = U2F.KeyManager.loadAccountKeyPair(context, u2FAuthenticateRequest.keyHandle);
+
+                        result.success = keyPair.signU2FAuthenticateRequest(u2FAuthenticateRequest);
+                        Notifications.notifySuccess(context, pairing, request, null);
+
+                        U2FSignatureLog log = new U2FSignatureLog(u2FAuthenticateRequest, pairing);
+                        pairingStorage.appendToU2FLog(log);
+                    } else {
+                        response.u2fRegisterResponse.error = "rejected";
                     }
                     return null;
                 }

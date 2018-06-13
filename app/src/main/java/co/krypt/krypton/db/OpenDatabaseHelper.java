@@ -15,6 +15,7 @@ import co.krypt.krypton.knownhosts.KnownHost;
 import co.krypt.krypton.log.GitCommitSignatureLog;
 import co.krypt.krypton.log.GitTagSignatureLog;
 import co.krypt.krypton.log.SSHSignatureLog;
+import co.krypt.krypton.log.U2FSignatureLog;
 import co.krypt.krypton.policy.Approval;
 
 
@@ -26,7 +27,7 @@ import co.krypt.krypton.policy.Approval;
 public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     public static final String DATABASE_NAME = "kryptonite";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     /**
      * The data access object used to interact with the Sqlite database to do C.R.U.D operations.
@@ -34,6 +35,7 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<SSHSignatureLog, Long> sshSignatureLogDao;
     private Dao<GitCommitSignatureLog, Long> gitCommitSignatureLogDao;
     private Dao<GitTagSignatureLog, Long> gitTagSignatureLogDao;
+    private Dao<U2FSignatureLog, Long> u2FSignatureLogDao;
     private Dao<Approval, Long> approvalDao;
 
     private final Context context;
@@ -53,6 +55,7 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, GitCommitSignatureLog.class);
             TableUtils.createTable(connectionSource, GitTagSignatureLog.class);
             TableUtils.createTable(connectionSource, Approval.class);
+            TableUtils.createTable(connectionSource, U2FSignatureLog.class);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -80,6 +83,10 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
 
             if (oldVersion < 6 && newVersion >= 6) {
                 TableUtils.createTable(connectionSource, Approval.class);
+            }
+
+            if (oldVersion < 7 && newVersion >= 7) {
+                TableUtils.createTable(connectionSource, U2FSignatureLog.class);
             }
 
         } catch (SQLException e) {
@@ -112,6 +119,13 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
             gitTagSignatureLogDao = getDao(GitTagSignatureLog.class);
         }
         return gitTagSignatureLogDao;
+    }
+
+    public Dao<U2FSignatureLog, Long> getU2FSignatureLogDao() throws SQLException {
+        if(u2FSignatureLogDao == null) {
+            u2FSignatureLogDao = getDao(U2FSignatureLog.class);
+        }
+        return u2FSignatureLogDao;
     }
 
     public Dao<KnownHost, Long> getKnownHostDao() throws SQLException {

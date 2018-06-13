@@ -39,6 +39,12 @@ public class Response {
     @SerializedName("team_operation_response")
     public SuccessOrTaggedErrorResult<Sigchain.TeamOperationResponse> teamOperationResponse;
 
+    @SerializedName("u2f_register_response")
+    public SuccessOrTaggedErrorResult<U2FRegisterResponse> u2fRegisterResponse;
+
+    @SerializedName("u2f_authenticate_response")
+    public SuccessOrTaggedErrorResult<U2FAuthenticateResponse> u2fAuthenticateResponse;
+
     @SerializedName("ack_response")
     public AckResponse ackResponse;
 
