@@ -152,7 +152,6 @@ public class MeFragment extends Fragment {
         }
         me.email = email;
         Silo.shared(getContext()).meStorage().set(me);
-        new Analytics(getContext()).publishEmailToTeamsIfNeeded(email);
     }
 
     @Override

@@ -58,34 +58,6 @@ public class Analytics {
         }
     }
 
-    public void publishEmailToTeamsIfNeeded(final String email) {
-        synchronized (lock) {
-            if (isDisabled()) {
-                return;
-            }
-            if (!email.equals(getPublishedEmail())) {
-                threadPool.submit(() -> {
-                    Uri.Builder uri = new Uri.Builder().scheme("https").authority("teams.krypt.co")
-                            .appendQueryParameter("id", getClientID())
-                            .appendQueryParameter("email", email);
-                    try {
-                        URL url = new URL(uri.toString());
-                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                        connection.setRequestMethod("PUT");
-                        try {
-                            InputStream in = new BufferedInputStream(connection.getInputStream());
-                            preferences.edit().putString(PUBLISHED_EMAIL_KEY, email).apply();
-                        } finally {
-                            connection.disconnect();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-        }
-    }
-
     private void post(String clientID, HashMap<String, String> params, boolean force) {
         if (isDisabled() && !force) {
             return;
@@ -101,6 +73,8 @@ public class Analytics {
         defaultParams.put("cd6", DeviceName.getDeviceName());
         defaultParams.put("cd7", clientID);
         defaultParams.put("cd9", BuildConfig.VERSION_NAME);
+        //  anonymize IP address
+        defaultParams.put("aip", "1");
 
         defaultParams.putAll(params);
 

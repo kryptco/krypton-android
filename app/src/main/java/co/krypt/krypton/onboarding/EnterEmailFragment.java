@@ -101,7 +101,6 @@ public class EnterEmailFragment extends Fragment {
             analytics.postEvent("email", "typed", null, null, false);
             email = email.trim();
         }
-        analytics.publishEmailToTeamsIfNeeded(email);
 
         try {
             new MeStorage(getContext()).setEmail(email);
