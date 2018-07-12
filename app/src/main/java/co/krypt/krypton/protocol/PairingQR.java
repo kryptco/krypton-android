@@ -23,6 +23,7 @@ public class PairingQR {
     @SerializedName("n")
     public String workstationName;
 
+    // TODO: use deviceId to invalidate existing pairings
     @SerializedName("d")
     @Nullable
     public byte[] deviceId;

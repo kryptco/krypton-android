@@ -79,13 +79,12 @@ public class Pairings {
         return pairings;
     }
 
-    private HashSet<Pairing> setAllLocked(HashSet<Pairing> pairings) {
+    private void setAllLocked(HashSet<Pairing> pairings) {
         Set<String> jsonPairings = new ArraySet<>();
         for (Pairing pairing : pairings) {
             jsonPairings.add(JSON.toJson(pairing));
         }
         preferences.edit().putStringSet(PAIRINGS_KEY, jsonPairings).apply();
-        return pairings;
     }
 
     public HashSet<Pairing> loadAll() {

@@ -367,7 +367,7 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
                     // This part contains crypto, so we run on a background thread. If the crypto
                     // is proven to be fast enough for the UI thread on slower devices, then this
                     // thread should be removed to greatly simplify the code.
-                    final Pairing pairing = Pairing.generate(qr);
+                    final Pairing pairing = Pairing.generate(getContext(), qr);
                     Silo.shared(getContext()).pair(pairing);
 
                     pairingStatusView.post(new Runnable() {

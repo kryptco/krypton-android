@@ -5,6 +5,8 @@ package co.krypt.krypton.pairing;
  * Copyright 2016. KryptCo, Inc.
  */
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import org.libsodium.jni.Sodium;
@@ -17,6 +19,7 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.UUID;
 
+import co.krypt.krypton.crypto.Base64;
 import co.krypt.krypton.crypto.SHA256;
 import co.krypt.krypton.exception.CryptoException;
 import co.krypt.krypton.exception.SodiumException;
@@ -51,18 +54,32 @@ public class Pairing {
         this.uuid = new UUID(msb, lsb);
     }
 
-    public static Pairing generate(@NonNull byte[] workstationPublicKey, String workstationName) throws CryptoException {
+    private static String cachedPairingSeedKey(byte[] workstationPublicKey) {
+       return "CACHED_PAIRING." + Base64.encode(workstationPublicKey);
+    }
+
+    public static synchronized Pairing generate(Context context, @NonNull byte[] workstationPublicKey, String workstationName) throws CryptoException {
         byte[] enclavePublicKey = new byte[Sodium.crypto_box_publickeybytes()];
         byte[] enclaveSecretKey = new byte[Sodium.crypto_box_secretkeybytes()];
-        if (0 != Sodium.crypto_box_keypair(enclavePublicKey, enclaveSecretKey)) {
+
+        SharedPreferences pairingCache = context.getSharedPreferences("CACHED_PAIRINGS_PREFERENCES", Context.MODE_PRIVATE);
+        byte[] pairingSeed;
+        if (!pairingCache.contains(cachedPairingSeedKey(workstationPublicKey))) {
+            pairingSeed = SecureRandom.getSeed(Sodium.crypto_box_seedbytes());
+            pairingCache.edit().putString(cachedPairingSeedKey(workstationPublicKey), Base64.encode(pairingSeed)).commit();
+        } else {
+            pairingSeed = Base64.decode(pairingCache.getString(cachedPairingSeedKey(workstationPublicKey), null));
+        }
+
+        if (0 != Sodium.crypto_box_seed_keypair(enclavePublicKey, enclaveSecretKey, pairingSeed)) {
             throw new SodiumException("keypair generate failed");
         }
 
         return new Pairing(workstationPublicKey, enclaveSecretKey, enclavePublicKey, workstationName);
     }
 
-    public static Pairing generate(PairingQR pairingQR) throws CryptoException {
-        return Pairing.generate(pairingQR.workstationPublicKey, pairingQR.workstationName);
+    public static Pairing generate(Context context, PairingQR pairingQR) throws CryptoException {
+        return Pairing.generate(context, pairingQR.workstationPublicKey, pairingQR.workstationName);
     }
 
     public byte[] wrapKey() throws CryptoException {
