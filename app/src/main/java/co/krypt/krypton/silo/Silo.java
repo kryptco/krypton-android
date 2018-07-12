@@ -3,7 +3,6 @@ package co.krypt.krypton.silo;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.util.LruCache;
 import android.text.TextUtils;
@@ -411,7 +410,7 @@ public class Silo {
                         response.meResponse.me.teamCheckpoint = null;
                         BluetoothAdapter bt = BluetoothAdapter.getDefaultAdapter();
                         if (bt != null) {
-                            String deviceName = Settings.Secure.getString(context.getContentResolver(), "bluetooth_name");
+                            String deviceName = bt.getName();
                             if (!TextUtils.isEmpty(deviceName)) {
                                 response.meResponse.me.email = deviceName;
                             }
