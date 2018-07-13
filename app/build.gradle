@@ -6,8 +6,8 @@ android {
     defaultConfig {
         applicationId "co.krypt.kryptonite"
         minSdkVersion 23
-        targetSdkVersion 24
-        versionCode 47
+        targetSdkVersion 26
+        versionCode 48
         versionName "2.5.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
@@ -54,7 +54,6 @@ dependencies {
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    // Optional -- Mockito framework
     implementation project(':libsodium-jni-release')
     testImplementation project(':libsodium-jni-release')
     implementation 'org.cache2k:cache2k-api:0.19.1'
