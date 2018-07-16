@@ -134,23 +134,7 @@ public class RSAKeyManager implements KeyManagerI {
                 long genStop = System.currentTimeMillis();
                 Log.i(LOG_TAG, "KeyGen took " + String.valueOf((genStop - genStart)));
                 return new RSASSHKeyPair(keyPair, 0);
-            } catch (CertificateException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (InvalidAlgorithmParameterException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (IOException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (KeyStoreException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (NoSuchAlgorithmException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (NoSuchProviderException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (ProviderException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (UnrecoverableEntryException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (UnsupportedOperationException e) {
+            } catch (CertificateException | UnsupportedOperationException | UnrecoverableEntryException | ProviderException | NoSuchProviderException | NoSuchAlgorithmException | KeyStoreException | IOException | InvalidAlgorithmParameterException e) {
                 throw new CryptoException(e.getMessage());
             }
         }
@@ -165,19 +149,7 @@ public class RSAKeyManager implements KeyManagerI {
                 if (privateKeyEntry instanceof KeyStore.PrivateKeyEntry) {
                     return true;
                 }
-            } catch (CertificateException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (IOException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (KeyStoreException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (NoSuchAlgorithmException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (ProviderException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (UnrecoverableEntryException e) {
-                throw new CryptoException(e.getMessage());
-            } catch (UnsupportedOperationException e) {
+            } catch (CertificateException | IOException | KeyStoreException | ProviderException | NoSuchAlgorithmException | UnrecoverableEntryException | UnsupportedOperationException e) {
                 throw new CryptoException(e.getMessage());
             }
             return false;
@@ -197,7 +169,7 @@ public class RSAKeyManager implements KeyManagerI {
         }
     }
 
-    public void logKeyInfo(PrivateKey sk) {
+    public static void logKeyInfo(PrivateKey sk) {
         try {
             KeyInfo keyInfo;
             KeyFactory factory = KeyFactory.getInstance(sk.getAlgorithm(), "AndroidKeyStore");
