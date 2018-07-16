@@ -16,4 +16,8 @@
     <color name="appReject">#FF6361</color>
     <color name="appWarning">#F8A843</color>
 
+    <color name="appBrightGreen">#11C56F</color>
+    <color name="appBrightPink">#F71871</color>
+    <color name="appBrightBlue">#2E81EF</color>
+
 </resources>

@@ -6,151 +6,272 @@
     tools:context="co.krypt.krypton.onboarding.GenerateFragment">
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/taglineContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/generateButton"
+        app:layout_constraintTop_toBottomOf="@+id/topImage">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tagline1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="Zero Touch Login"
+            android:textAlignment="center"
+            android:textColor="@color/appBrightBlue"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/tagline2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tagline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="No Passwords or Codes"
+            android:textAlignment="center"
+            android:textColor="@color/appBrightGreen"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/tagline3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tagline1"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tagline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/open_sans_bold"
+            android:text="Impossible to Phish"
+            android:textAlignment="center"
+            android:textColor="@color/appBrightPink"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/taglinePicContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tagline2"/>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/taglinePicContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tagline3"
+            app:layout_constraintVertical_bias="0.6">
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/imageView6"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toStartOf="@+id/textView40"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/chrome"/>
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/imageView7"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textView40"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/git"/>
+
+            <TextView
+                android:id="@+id/textView40"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/appBlack"
+                android:padding="8dp"
+                android:text="> ~"
+                android:textColor="@color/appWhite"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toStartOf="@+id/imageView7"
+                app:layout_constraintStart_toEndOf="@+id/imageView6"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/textView41"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/open_sans_bold"
+                android:text="Web"
+                android:textAlignment="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/imageView6"
+                app:layout_constraintStart_toStartOf="@+id/imageView6"
+                app:layout_constraintTop_toBottomOf="@+id/imageView6"/>
+
+            <TextView
+                android:id="@+id/textView45"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/open_sans_bold"
+                android:text="SSH"
+                android:textAlignment="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/textView40"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/textView40"
+                app:layout_constraintTop_toBottomOf="@+id/textView40"/>
+
+            <TextView
+                android:id="@+id/textView47"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/open_sans_bold"
+                android:text="Git"
+                android:textAlignment="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/imageView7"
+                app:layout_constraintStart_toStartOf="@+id/imageView7"
+                app:layout_constraintTop_toBottomOf="@+id/imageView7"/>
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/topText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:text="The new home for your SSH private key"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textColor="@color/appWhite"
+        android:textSize="20sp"
+        app:fontFamily="@font/text"
+        app:layout_constraintBottom_toTopOf="@+id/keyTypeContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/topImage"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="32dp"
+        android:tint="@color/appGreen"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/krypton_icon_transparent_circle"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/keyTypeContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/keyTypeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/rounded_button"
+            android:elevation="4dp"
+            android:fontFamily="code_bold"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:paddingBottom="2dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="2dp"
+            android:text="@string/rsa_key_type"
+            android:textAllCaps="false"
+            android:textColor="@color/appWhite"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/code"
+            android:text="key type"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textColor="@color/appGray"
+            app:fontFamily="@font/code"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/keyTypeButton"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/generateButton"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:backgroundTint="@color/appGreen"
+        android:elevation="10dp"
+        android:fontFamily="@font/open_sans_semibold"
+        android:padding="20dp"
+        android:selectAllOnFocus="true"
+        android:text="GET STARTED"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@color/appWhite"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/keyTypeContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/topHalf"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/colorPrimary"
-        app:layout_constraintBottom_toTopOf="@+id/bottomHalf"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <android.support.v7.widget.AppCompatImageView
-            android:id="@+id/topImage"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:layout_marginTop="32dp"
-            android:tint="@color/appWhite"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/krypton_icon_transparent_circle" />
-
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/topText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginStart="30dp"
-            android:fontFamily="@font/open_sans_bold"
-            android:text="The new home for your SSH private key"
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:textColor="@color/appWhite"
-            android:textSize="20sp"
-            app:fontFamily="@font/text"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-    </android.support.constraint.ConstraintLayout>
-
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:id="@+id/bottomHalf"
-        app:layout_constraintTop_toBottomOf="@+id/topHalf"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        >
-
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/generateButton"
-            android:layout_width="wrap_content"
-            android:layout_height="80dp"
-            android:layout_marginBottom="32dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="@color/appGreen"
-            android:elevation="10dp"
-            android:fontFamily="@font/open_sans_semibold"
-            android:padding="20dp"
-            android:selectAllOnFocus="true"
-            android:text="GENERATE KEY PAIR"
-            android:textAlignment="center"
-            android:textAllCaps="false"
-            android:textColor="@color/appWhite"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bottomText"
-            app:layout_constraintVertical_bias="0.576" />
-
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/bottomText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="30dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="32dp"
-            android:fontFamily="@font/open_sans_bold"
-            android:text="Let's get started by generating a new key pair"
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:textColor="@color/appBlack"
-            android:textSize="20sp"
-            app:fontFamily="@font/text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/keyTypeContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
-            android:layout_marginRight="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent">
-
-            <android.support.v7.widget.AppCompatButton
-                android:id="@+id/keyTypeButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginRight="2dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_button"
-                android:elevation="4dp"
-                android:fontFamily="code_bold"
-                android:minHeight="0dp"
-                android:minWidth="0dp"
-                android:paddingBottom="2dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="2dp"
-                android:text="@string/rsa_key_type"
-                android:textAllCaps="false"
-                android:textColor="@color/appWhite"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/textView7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/code"
-                android:text="key type"
-                android:textAppearance="@style/TextAppearance.AppCompat"
-                android:textColor="@color/appGray"
-                app:fontFamily="@font/code"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/keyTypeButton"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </android.support.constraint.ConstraintLayout>
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>
