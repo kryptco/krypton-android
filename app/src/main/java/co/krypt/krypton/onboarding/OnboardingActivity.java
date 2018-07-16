@@ -48,7 +48,7 @@ public class OnboardingActivity extends FragmentActivity {
 
         OnboardingProgress progress = new OnboardingProgress(getApplicationContext());
         GenerateFragment generateFragment;
-        EnterEmailFragment enterEmailFragment;
+        FirstPairExtFragment firstPairExtFragment;
         FirstPairCliFragment firstPairCliFragment;
         TestSSHFragment testSSHFragment;
         switch (progress.currentStage()) {
@@ -65,9 +65,9 @@ public class OnboardingActivity extends FragmentActivity {
                 generateFragment = new GenerateFragment();
                 fragmentTransaction.add(R.id.activity_onboarding, generateFragment).commit();
                 break;
-            case ENTER_EMAIL:
-                enterEmailFragment = new EnterEmailFragment();
-                fragmentTransaction.add(R.id.activity_onboarding, enterEmailFragment).commit();
+            case FIRST_PAIR_EXT:
+                firstPairExtFragment = new FirstPairExtFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, firstPairExtFragment).commit();
                 break;
             case FIRST_PAIR_CLI:
                 firstPairCliFragment = new FirstPairCliFragment();
@@ -80,8 +80,8 @@ public class OnboardingActivity extends FragmentActivity {
                     fragmentTransaction.add(R.id.activity_onboarding, testSSHFragment).commit();
                 } else {
                     //  revert to FirstPair stage
-                    firstPairCliFragment = new FirstPairCliFragment();
-                    fragmentTransaction.add(R.id.activity_onboarding, firstPairCliFragment).commit();
+                    firstPairExtFragment = new FirstPairExtFragment();
+                    fragmentTransaction.add(R.id.activity_onboarding, firstPairExtFragment).commit();
                 }
                 break;
         }
@@ -146,12 +146,9 @@ public class OnboardingActivity extends FragmentActivity {
                 break;
             case GENERATING:
                 break;
-            case ENTER_EMAIL:
+            case FIRST_PAIR_EXT:
                 break;
             case FIRST_PAIR_CLI:
-                progress.setStage(OnboardingStage.ENTER_EMAIL);
-                EnterEmailFragment enterEmailFragment = new EnterEmailFragment();
-                fragmentTransaction.add(R.id.activity_onboarding, enterEmailFragment).commit();
                 break;
             case TEST_SSH:
                 break;

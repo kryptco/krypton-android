@@ -4,6 +4,7 @@ package co.krypt.krypton.onboarding;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -111,7 +112,7 @@ public class GenerateFragment extends Fragment {
                         e.printStackTrace();
                     }
 
-                    new MeStorage(context).set(new Profile("", pair.publicKeySSHWireFormat(), deviceIdentifier, null, null));
+                    new MeStorage(context).set(new Profile(MeStorage.getDeviceName(), pair.publicKeySSHWireFormat(), deviceIdentifier, null, null));
 
                     final long genTime = System.currentTimeMillis() - start;
                     new Analytics(context).postEvent("keypair", "generate", null, (int) (genTime / 1000), false);
@@ -129,16 +130,15 @@ public class GenerateFragment extends Fragment {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    progress.setStage(OnboardingStage.ENTER_EMAIL);
-                    EnterEmailFragment enterEmailFragment = new EnterEmailFragment();
+                    progress.setStage(OnboardingStage.FIRST_PAIR_EXT);
                     final FragmentActivity activity = context;
                     if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
-                        activity.getSupportFragmentManager().beginTransaction()
+                        FirstPairExtFragment firstPairExtFragment = new FirstPairExtFragment();
+                        FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction
                                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
-                                .hide(generatingFragment)
-                                .add(R.id.activity_onboarding, enterEmailFragment)
-                                .show(enterEmailFragment)
-                                .commitAllowingStateLoss();
+                                .add(R.id.activity_onboarding, firstPairExtFragment)
+                                .hide(generatingFragment).show(firstPairExtFragment).commit();
                     }
                 } catch (InvalidKeyException | IOException | CryptoException | UnsupportedOperationException | IllegalArgumentException e) {
                     e.printStackTrace();

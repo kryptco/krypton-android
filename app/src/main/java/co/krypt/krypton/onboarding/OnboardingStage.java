@@ -6,5 +6,5 @@ package co.krypt.krypton.onboarding;
  */
 
 public enum OnboardingStage {
-    NONE, GENERATE, GENERATING, ENTER_EMAIL, FIRST_PAIR_EXT, FIRST_PAIR_CLI, TEST_SSH
+    NONE, GENERATE, GENERATING, FIRST_PAIR_EXT, FIRST_PAIR_CLI, TEST_SSH
 }
