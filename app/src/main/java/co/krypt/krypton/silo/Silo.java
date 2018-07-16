@@ -794,7 +794,6 @@ public class Silo {
                     SuccessOrTaggedErrorResult<U2FRegisterResponse> result = new SuccessOrTaggedErrorResult<>();
                     response.u2fRegisterResponse = result;
                     if (requestAllowed) {
-
                         U2F.KeyPair keyPair = U2F.KeyManager.generateAccountKeyPair(context, u2FRegisterRequest.appId);
 
                         result.success = keyPair.signU2FRegisterRequest(u2FRegisterRequest);
@@ -802,7 +801,6 @@ public class Silo {
 
                         U2FSignatureLog log = new U2FSignatureLog(u2FRegisterRequest, pairing);
                         pairingStorage.appendToU2FLog(log);
-
                     } else {
                         response.u2fRegisterResponse.error = "rejected";
                     }
@@ -814,7 +812,6 @@ public class Silo {
                     SuccessOrTaggedErrorResult<U2FAuthenticateResponse> result = new SuccessOrTaggedErrorResult<>();
                     response.u2fAuthenticateResponse = result;
                     if (requestAllowed) {
-
                         U2F.KeyPair keyPair = U2F.KeyManager.loadAccountKeyPair(context, u2FAuthenticateRequest.keyHandle);
 
                         result.success = keyPair.signU2FAuthenticateRequest(u2FAuthenticateRequest);

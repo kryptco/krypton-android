@@ -23,7 +23,7 @@ import co.krypt.krypton.pairing.PairFragment;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FirstPairFragment extends Fragment {
+public class FirstPairCliFragment extends Fragment {
 
 
     private Button curlButton;
@@ -52,7 +52,7 @@ public class FirstPairFragment extends Fragment {
         }
     };
 
-    public FirstPairFragment() {
+    public FirstPairCliFragment() {
     }
 
     @Override
@@ -86,14 +86,9 @@ public class FirstPairFragment extends Fragment {
                              Bundle savedInstanceState) {
         getChildFragmentManager().beginTransaction().add(R.id.pairLayout, pairFragment).commit();
 
-        View root = inflater.inflate(R.layout.fragment_first_pair, container, false);
-        Button nextButton = (Button) root.findViewById(R.id.nextButton);
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                skip();
-            }
-        });
+        View root = inflater.inflate(R.layout.fragment_first_pair_cli, container, false);
+        Button nextButton = root.findViewById(R.id.nextButton);
+        nextButton.setOnClickListener(v -> skip());
 
 
         curlButton = root.findViewById(R.id.curlButton);
@@ -103,52 +98,40 @@ public class FirstPairFragment extends Fragment {
 
         installCommand = root.findViewById(R.id.installCommand);
 
-        curlButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                installCommand.setText("$ curl https://krypt.co/kr | sh");
+        curlButton.setOnClickListener(v -> {
+            installCommand.setText("$ curl https://krypt.co/kr | sh");
 
-                resetButtons();
-                curlButton.setTextColor(getResources().getColor(R.color.appGreen));
+            resetButtons();
+            curlButton.setTextColor(getResources().getColor(R.color.appGreen));
 
-                new Analytics(getContext()).postEvent("onboard_install", "curl", null, null, false);
-            }
+            new Analytics(getContext()).postEvent("onboard_install", "curl", null, null, false);
         });
 
-        brewButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                installCommand.setText("$ brew install kryptco/tap/kr");
+        brewButton.setOnClickListener(v -> {
+            installCommand.setText("$ brew install kryptco/tap/kr");
 
-                resetButtons();
-                brewButton.setTextColor(getResources().getColor(R.color.appGreen));
+            resetButtons();
+            brewButton.setTextColor(getResources().getColor(R.color.appGreen));
 
-                new Analytics(getContext()).postEvent("onboard_install", "brew", null, null, false);
-            }
+            new Analytics(getContext()).postEvent("onboard_install", "brew", null, null, false);
         });
 
-        npmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                installCommand.setText("$ npm install -g krd # mac only");
+        npmButton.setOnClickListener(v -> {
+            installCommand.setText("$ npm install -g krd # mac only");
 
-                resetButtons();
-                npmButton.setTextColor(getResources().getColor(R.color.appGreen));
+            resetButtons();
+            npmButton.setTextColor(getResources().getColor(R.color.appGreen));
 
-                new Analytics(getContext()).postEvent("onboard_install", "npm", null, null, false);
-            }
+            new Analytics(getContext()).postEvent("onboard_install", "npm", null, null, false);
         });
 
-        moreButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                installCommand.setText("# go to https://krypt.co/install");
+        moreButton.setOnClickListener(v -> {
+            installCommand.setText("# go to https://krypt.co/install");
 
-                resetButtons();
-                moreButton.setTextColor(getResources().getColor(R.color.appGreen));
+            resetButtons();
+            moreButton.setTextColor(getResources().getColor(R.color.appGreen));
 
-                new Analytics(getContext()).postEvent("onboard_install", "more", null, null, false);
-            }
+            new Analytics(getContext()).postEvent("onboard_install", "more", null, null, false);
         });
 
 

@@ -49,7 +49,7 @@ public class OnboardingActivity extends FragmentActivity {
         OnboardingProgress progress = new OnboardingProgress(getApplicationContext());
         GenerateFragment generateFragment;
         EnterEmailFragment enterEmailFragment;
-        FirstPairFragment firstPairFragment;
+        FirstPairCliFragment firstPairCliFragment;
         TestSSHFragment testSSHFragment;
         switch (progress.currentStage()) {
             case NONE:
@@ -69,9 +69,9 @@ public class OnboardingActivity extends FragmentActivity {
                 enterEmailFragment = new EnterEmailFragment();
                 fragmentTransaction.add(R.id.activity_onboarding, enterEmailFragment).commit();
                 break;
-            case FIRST_PAIR:
-                firstPairFragment = new FirstPairFragment();
-                fragmentTransaction.add(R.id.activity_onboarding, firstPairFragment).commit();
+            case FIRST_PAIR_CLI:
+                firstPairCliFragment = new FirstPairCliFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, firstPairCliFragment).commit();
                 break;
             case TEST_SSH:
                 Iterator<Pairing> pairings = Silo.shared(getApplicationContext()).pairings().loadAll().iterator();
@@ -80,8 +80,8 @@ public class OnboardingActivity extends FragmentActivity {
                     fragmentTransaction.add(R.id.activity_onboarding, testSSHFragment).commit();
                 } else {
                     //  revert to FirstPair stage
-                    firstPairFragment = new FirstPairFragment();
-                    fragmentTransaction.add(R.id.activity_onboarding, firstPairFragment).commit();
+                    firstPairCliFragment = new FirstPairCliFragment();
+                    fragmentTransaction.add(R.id.activity_onboarding, firstPairCliFragment).commit();
                 }
                 break;
         }
@@ -148,7 +148,7 @@ public class OnboardingActivity extends FragmentActivity {
                 break;
             case ENTER_EMAIL:
                 break;
-            case FIRST_PAIR:
+            case FIRST_PAIR_CLI:
                 progress.setStage(OnboardingStage.ENTER_EMAIL);
                 EnterEmailFragment enterEmailFragment = new EnterEmailFragment();
                 fragmentTransaction.add(R.id.activity_onboarding, enterEmailFragment).commit();

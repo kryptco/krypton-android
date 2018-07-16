@@ -1,0 +1,121 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="co.krypt.krypton.onboarding.FirstPairCliFragment">
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/installCommand"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/terminal_bg_top"
+        android:fontFamily="@font/code"
+        android:paddingBottom="2dp"
+        android:paddingLeft="6dp"
+        android:paddingTop="10dp"
+        android:shadowColor="@color/appBlack"
+        android:shadowRadius="4"
+        android:text="krypt.co/start"
+        android:textAlignment="center"
+        android:textColor="@color/appWhite"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:fontFamily="@font/code"
+        app:layout_constraintEnd_toEndOf="@+id/header1"
+        app:layout_constraintStart_toStartOf="@+id/header1"
+        app:layout_constraintTop_toBottomOf="@+id/header1"/>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/installCommandSubtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/terminal_bg_bottom"
+        android:fontFamily="@font/code"
+        android:paddingBottom="8dp"
+        android:paddingLeft="6dp"
+        android:paddingTop="10dp"
+        android:shadowColor="@color/appBlack"
+        android:shadowRadius="4"
+        android:text="go to this link on your computer"
+        android:textAlignment="center"
+        android:textColor="@color/appGray"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        app:fontFamily="@font/code"
+        app:layout_constraintEnd_toEndOf="@+id/header1"
+        app:layout_constraintStart_toStartOf="@+id/header1"
+        app:layout_constraintTop_toBottomOf="@id/installCommand"
+        app:textAllCaps="true"/>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/nextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:fontFamily="@font/open_sans_bold"
+        android:text="SKIP"
+        android:textColor="@color/appGray"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/header1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:text="1. Install the Krypton browser extension"
+        android:textColor="@color/appBlack"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/imageView"
+        android:layout_width="32dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/nextButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/nextButton"
+        app:srcCompat="@drawable/krypton_icon_transparent_circle" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/header2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:text="2. Scan the QR code on the screen"
+        android:textColor="@color/appBlack"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/header1"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/header1"
+        app:layout_constraintTop_toBottomOf="@+id/installCommandSubtitle"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/pairLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header2"></android.support.constraint.ConstraintLayout>
+
+</android.support.constraint.ConstraintLayout>

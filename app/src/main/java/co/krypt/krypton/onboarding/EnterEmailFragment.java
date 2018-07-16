@@ -110,13 +110,13 @@ public class EnterEmailFragment extends Fragment {
         }
 
         final OnboardingProgress progress = new OnboardingProgress(getContext());
-        progress.setStage(OnboardingStage.FIRST_PAIR);
-        FirstPairFragment firstPairFragment = new FirstPairFragment();
+        progress.setStage(OnboardingStage.FIRST_PAIR_EXT);
+        FirstPairExtFragment firstPairExtFragment = new FirstPairExtFragment();
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         fragmentTransaction
                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
-                .add(R.id.activity_onboarding, firstPairFragment)
-                .hide(this).show(firstPairFragment).commit();
+                .add(R.id.activity_onboarding, firstPairExtFragment)
+                .hide(this).show(firstPairExtFragment).commit();
 
     }
 
