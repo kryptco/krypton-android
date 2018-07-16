@@ -1,7 +1,10 @@
 package co.krypt.krypton.me;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.IOException;
@@ -152,15 +155,29 @@ public class MeStorage {
 
     public void setEmail(String email) throws CryptoException {
         synchronized (lock) {
-            if (!Email.verifyEmailPattern.matcher(email).matches()) {
-                return;
+            Profile me;
+            if (Email.verifyEmailPattern.matcher(email).matches()) {
+                me = loadWithUserID(UserID.parse(" <" + email + ">"));
+            } else {
+                me = loadWithUserID(null);
             }
-            Profile me = loadWithUserID(UserID.parse(" <" + email + ">"));
             if (me == null) {
                 me = new Profile();
             }
             me.email = email;
             set(me);
         }
+    }
+
+    public static String getDeviceName() {
+        String deviceName = null;
+        BluetoothAdapter bt = BluetoothAdapter.getDefaultAdapter();
+        if (bt != null) {
+             deviceName = bt.getName();
+        }
+        if (TextUtils.isEmpty(deviceName)) {
+            deviceName = Build.MODEL;
+        }
+        return deviceName;
     }
 }

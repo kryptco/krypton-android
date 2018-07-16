@@ -2,7 +2,6 @@ package co.krypt.krypton.onboarding;
 
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -96,7 +95,7 @@ public class EnterEmailFragment extends Fragment {
         String email = profileEmail.getText().toString();
         if (email == null || email.trim().equals("")) {
             analytics.postEvent("email", "skipped", null, null, false);
-            email = Build.MODEL;
+            email = MeStorage.getDeviceName();
         } else {
             analytics.postEvent("email", "typed", null, null, false);
             email = email.trim();

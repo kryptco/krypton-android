@@ -95,7 +95,12 @@ public class MainActivity extends AppCompatActivity {
         Notifications.setupNotificationChannels(getApplicationContext());
 
         silo = Silo.shared(getApplicationContext());
-        startService(new Intent(this, BluetoothService.class));
+        try {
+            startService(new Intent(this, BluetoothService.class));
+        } catch (IllegalStateException e) {
+            //  thrown when starting a service is not allowed
+            e.printStackTrace();
+        }
         OnboardingProgress progress = new OnboardingProgress(getApplicationContext());
         if (new MeStorage(getApplicationContext()).load() == null || progress.inProgress()) {
             startActivity(new Intent(this, OnboardingActivity.class));

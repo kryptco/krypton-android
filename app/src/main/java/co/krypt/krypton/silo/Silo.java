@@ -1,6 +1,5 @@
 package co.krypt.krypton.silo;
 
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
@@ -408,12 +407,9 @@ public class Silo {
                     if (meRequest.u2fOnly != null && meRequest.u2fOnly) {
                         response.meResponse.me.pgpPublicKey = null;
                         response.meResponse.me.teamCheckpoint = null;
-                        BluetoothAdapter bt = BluetoothAdapter.getDefaultAdapter();
-                        if (bt != null) {
-                            String deviceName = bt.getName();
-                            if (!TextUtils.isEmpty(deviceName)) {
-                                response.meResponse.me.email = deviceName;
-                            }
+                        String deviceName = MeStorage.getDeviceName();
+                        if (!TextUtils.isEmpty(deviceName)) {
+                            response.meResponse.me.email = deviceName;
                         }
                         response.meResponse.me.deviceIdentifier = U2F.loadOrGenerateDeviceIdentifier();
                     }
