@@ -306,7 +306,10 @@ public class BluetoothTransport extends BroadcastReceiver {
         advertisingOrder = new LinkedList<>(Sets.difference(allServiceUUIDS, subscribedDevicesByUUID.keySet()));
         subscribedDevicesByUUID.remove(pairing.uuid);
         if (servicesByUUID.containsKey(pairing.uuid)) {
-            gattServer.get().removeService(servicesByUUID.get(pairing.uuid));
+            BluetoothGattServer gs = gattServer.get();
+            if (gs != null) {
+                gs.removeService(servicesByUUID.get(pairing.uuid));
+            }
             servicesByUUID.remove(pairing.uuid);
             characteristicsByUUID.remove(pairing.uuid);
         }
