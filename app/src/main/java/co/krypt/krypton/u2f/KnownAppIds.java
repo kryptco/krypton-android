@@ -25,6 +25,7 @@ public class KnownAppIds {
         knownAppIdToSite.put("https://id.fedoraproject.org/u2f-origins.json", "Fedora");
         knownAppIdToSite.put("https://bitbucket.org", "BitBucket");
         knownAppIdToSite.put("https://sentry.io/auth/2fa/u2fappid.json", "Sentry");
+        knownAppIdToSite.put("https://twitter.com/account/login_verification/u2f_trusted_facets.json", "Twitter");
     }
 
     public static String displayAppId(String appId) {
