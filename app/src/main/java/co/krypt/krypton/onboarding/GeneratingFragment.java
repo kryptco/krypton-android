@@ -35,27 +35,14 @@ public class GeneratingFragment extends Fragment {
         final View animationContainer = root.findViewById(R.id.animationContainer);
         this.anim = (VideoView) root.findViewById(R.id.generateAnimation);
         final VideoView anim = this.anim;
-        anim.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                anim.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        anim.start();
-                    }
-                });
+        anim.setOnPreparedListener(mp -> anim.post(() -> anim.start()));
+        anim.setOnInfoListener((mp, what, extra) -> {
+            if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
+                // video started
+                animationContainer.setVisibility(View.VISIBLE);
+                return true;
             }
-        });
-        anim.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-            @Override
-            public boolean onInfo(MediaPlayer mp, int what, int extra) {
-                if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
-                    // video started
-                    animationContainer.setVisibility(View.VISIBLE);
-                    return true;
-                }
-                return false;
-            }
+            return false;
         });
         anim.setVideoURI(Uri.parse("android.resource://"+getActivity().getPackageName()+"/"+R.raw.generate_animation));
         anim.seekTo(0);
@@ -64,15 +51,12 @@ public class GeneratingFragment extends Fragment {
     }
 
     public void onGenerate() {
-        anim.post(new Runnable() {
-            @Override
-            public void run() {
-                final int duration = 500;
-                ColorDrawable[] color = {new ColorDrawable(Color.TRANSPARENT), new ColorDrawable(Color.WHITE)};
-                TransitionDrawable transition = new TransitionDrawable(color);
-                anim.setBackground(transition);
-                transition.startTransition(duration);
-            }
+        anim.post(() -> {
+            final int duration = 500;
+            ColorDrawable[] color = {new ColorDrawable(Color.TRANSPARENT), new ColorDrawable(Color.WHITE)};
+            TransitionDrawable transition = new TransitionDrawable(color);
+            anim.setBackground(transition);
+            transition.startTransition(duration);
         });
     }
 
@@ -84,7 +68,6 @@ public class GeneratingFragment extends Fragment {
     @Override
     public void onStop() {
         anim.setVisibility(View.GONE);
-//        anim.setBackgroundColor(Color.WHITE);
         super.onStop();
     }
 }

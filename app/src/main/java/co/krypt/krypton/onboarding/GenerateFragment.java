@@ -116,9 +116,10 @@ public class GenerateFragment extends Fragment {
 
                     final long genTime = System.currentTimeMillis() - start;
                     new Analytics(context).postEvent("keypair", "generate", null, (int) (genTime / 1000), false);
-                    if (genTime < 5000) {
+                    final long minAnimTime = 2000;
+                    if (genTime < minAnimTime) {
                         try {
-                            Thread.sleep(5000 - genTime);
+                            Thread.sleep(minAnimTime - genTime);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
