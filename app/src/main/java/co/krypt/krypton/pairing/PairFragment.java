@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -59,8 +58,6 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
     // This threadpool should only contain one thread. It is used to perform background tasks
     // synchronized amongst each other.
     private ThreadPoolExecutor threadPool;
-
-    private Camera mCamera;
 
     private AtomicBoolean fragmentVisible = new AtomicBoolean();
 
