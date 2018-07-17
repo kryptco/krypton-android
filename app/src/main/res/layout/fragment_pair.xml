@@ -16,11 +16,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
         tools:layout_constraintBottom_creator="1"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
@@ -29,21 +27,25 @@
     </com.journeyapps.barcodescanner.BarcodeView>
 
     <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/crosshair"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:srcCompat="@drawable/crosshair"
-        android:id="@+id/crosshair"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintRight_toRightOf="@+id/camera_preview"
-        app:layout_constraintLeft_toLeftOf="@+id/camera_preview"
-        app:layout_constraintTop_toTopOf="@+id/camera_preview"
-        app:layout_constraintBottom_toBottomOf="@+id/camera_preview"
-        android:padding="10dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
         android:alpha=".5"
-        tools:layout_constraintRight_creator="1"
+        android:padding="10dp"
+        android:tint="@color/appGreen"
+        app:layout_constraintBottom_toBottomOf="@+id/camera_preview"
+        app:layout_constraintLeft_toLeftOf="@+id/camera_preview"
+        app:layout_constraintRight_toRightOf="@+id/camera_preview"
+        app:layout_constraintTop_toTopOf="@+id/camera_preview"
+        app:srcCompat="@drawable/crosshair"
         tools:layout_constraintBottom_creator="1"
-        android:tint="@color/appGreen" />
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1"/>
 
     <android.support.constraint.ConstraintLayout
         android:layout_height="wrap_content"

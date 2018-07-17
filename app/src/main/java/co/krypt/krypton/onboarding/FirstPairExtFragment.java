@@ -16,7 +16,6 @@ import android.widget.Button;
 
 import co.krypt.krypton.R;
 import co.krypt.krypton.pairing.PairFragment;
-import co.krypt.kryptonite.MainActivity;
 
 public class FirstPairExtFragment extends Fragment {
 
@@ -72,7 +71,7 @@ public class FirstPairExtFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_first_pair_ext, container, false);
         Button nextButton = root.findViewById(R.id.nextButton);
-        nextButton.setOnClickListener(v -> skip());
+        nextButton.setOnClickListener(v -> next());
 
         return root;
     }
@@ -96,15 +95,4 @@ public class FirstPairExtFragment extends Fragment {
                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
                 .hide(this).add(R.id.activity_onboarding, firstPairCliFragment).show(firstPairCliFragment).commitAllowingStateLoss();
     }
-
-    private synchronized void skip() {
-        if (proceeding) {
-            return;
-        }
-        proceeding = true;
-        new OnboardingProgress(getContext()).reset();
-        startActivity(new Intent(getActivity(), MainActivity.class));
-        getActivity().finish();
-    }
-
 }
