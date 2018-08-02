@@ -10,7 +10,6 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <uses-feature
@@ -24,7 +23,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
-        <activity android:name=".MeActivity"/>
         <!-- Note: MainActivity kept the legacy package so that launch icons on the home screen remained. -->
         <activity
             android:name="co.krypt.kryptonite.MainActivity"
@@ -44,6 +42,18 @@
             android:launchMode="singleInstance"
             android:taskAffinity=""
             android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+
+        <activity
+            android:name="co.krypt.krypton.u2f.U2FAuthenticateActivity"
+            android:launchMode="standard"
+            android:theme="@style/AppTheme.Launcher"
+            >
+            <intent-filter>
+                <action android:name="com.google.android.apps.authenticator.AUTHENTICATE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".transport.FirebaseMessagingService"
@@ -74,15 +84,14 @@
         <activity
             android:name=".onboarding.OnboardingActivity"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.Launcher"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Launcher"/>
         <activity
             android:name=".team.onboarding.TeamOnboardingActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing"
             android:theme="@style/AppTheme.Launcher"
-            >
+            android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 
@@ -120,6 +129,7 @@
             android:name=".log.AuditLogContentProvider"
             android:authorities="co.krypt.krypton.log.AuditLogContentProvider"
             android:exported="true"/>
+
     </application>
 
 </manifest>

@@ -304,6 +304,12 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "resume");
         silo.start();
 
+        //TODO move to separate activity?
+        Intent intent = getIntent();
+        if (intent != null) {
+            onNewIntent(intent);
+        }
+
         new Thread(this::checkForTeamThenClipboard).start();
     }
 
@@ -436,8 +442,12 @@ public class MainActivity extends AppCompatActivity {
         if (intent.getStringExtra("requestID") != null) {
             final String requestID = intent.getStringExtra("requestID");
             ApprovalDialog.showApprovalDialog(this, requestID);
+        } else if ("com.google.android.apps.authenticator.AUTHENTICATE".equals(intent.getAction())){
+            Log.d(TAG, "U2F intent: " + intent.getDataString());
         } else {
             Log.d(TAG, "empty intent");
         }
+        Log.d(TAG, "intent: " + intent.toString());
+        setIntent(null);
     }
 }
