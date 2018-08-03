@@ -1,16 +1,26 @@
 package co.krypt.krypton.u2f;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 
 import co.krypt.krypton.R;
 import co.krypt.krypton.crypto.Base64;
@@ -39,7 +49,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
                         ChromeU2FAuthenticateRequest chromeRequest = JSON.fromJson(requestJSON, ChromeU2FAuthenticateRequest.class);
                         U2FAuthenticateRequest request = new U2FAuthenticateRequest();
                         request.appId = chromeRequest.appId;
-                        String clientData = ClientData.create(chromeRequest.challenge, getCallingPackage());
+                        String clientData = ClientData.create(this, chromeRequest.challenge, getCallingPackage());
                         request.challenge = SHA256.digest(clientData.getBytes("UTF-8"));
                         byte[] keyHandle = null;
                         for (RegisteredKey key: chromeRequest.registeredKeys) {
@@ -75,8 +85,8 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
 
                         Log.d(TAG, requestJSON);
                         Log.d(TAG, JSON.toJson(chromeResponse));
-                        intent.putExtra("response", JSON.toJson(chromeResponse));
-//                        setResult(RESULT_OK, intent);
+                        intent.putExtra("resultData", JSON.toJson(chromeResponse));
+                        setResult(RESULT_OK, intent);
                         finish();
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
@@ -122,14 +132,38 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         @Nullable public String origin;
         public String cid_pubkey;
 
-        public static String create(String challenge, @Nullable String callingPackage) {
+        public static String create(Context context, String challenge, @Nullable String callingPackage) {
             ClientData cd = new ClientData();
             cd.typ = "navigator.id.getAssertion";
             cd.challenge = challenge;
-            cd.origin = callingPackage;
+            cd.origin = computeFacetId(context, callingPackage);
             cd.cid_pubkey = "unused";
 
             return JSON.toJson(cd);
+        }
+
+        private static String computeFacetId(Context context, String callingPackage) {
+            if (callingPackage == null) {
+                return null;
+            }
+            try {
+                PackageInfo info = context.getPackageManager().getPackageInfo(callingPackage, PackageManager.GET_SIGNATURES);
+
+                byte[] cert = info.signatures[0].toByteArray();
+                InputStream input = new ByteArrayInputStream(cert);
+
+                CertificateFactory cf = CertificateFactory.getInstance("X509");
+                X509Certificate c = (X509Certificate) cf.generateCertificate(input);
+
+                MessageDigest md = MessageDigest.getInstance("SHA1");
+
+                return "android:apk-key-hash:" +
+                        android.util.Base64.encodeToString(md.digest(c.getEncoded()), android.util.Base64.NO_WRAP | android.util.Base64.NO_PADDING);
+            }
+            catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException | CertificateException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
     }
 
