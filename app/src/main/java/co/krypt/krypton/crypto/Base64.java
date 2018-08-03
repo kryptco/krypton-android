@@ -25,4 +25,7 @@ public class Base64 {
     public static String encode(byte[] b) {
         return com.amazonaws.util.Base64.encodeAsString(b);
     }
+    public static String encodeURLSafe(byte[] b) {
+        return com.google.crypto.tink.subtle.Base64.urlSafeEncode(b);
+    }
 }

@@ -261,6 +261,13 @@ public class U2F {
         }
     }
 
+    public static boolean keyHandleMatches(byte[] keyHandle, String appId) throws CryptoException {
+        byte[] r = Arrays.copyOfRange(keyHandle, KRYPTON_U2F_MAGIC.length, KRYPTON_U2F_MAGIC.length + 32);
+        byte[] correctKeyHandle = KeyManager.formatKeyHandle(loadOrGenerateDeviceIdentifier(), r, appId);
+        return Bytes.equal(correctKeyHandle, keyHandle);
+    }
+
+
 
     //  synchronize access with U2F.class
     private static SharedPreferences u2fPrefs(Context context) {
@@ -367,9 +374,7 @@ public class U2F {
 
         public U2FAuthenticateResponse signU2FAuthenticateRequest(U2FAuthenticateRequest u2FAuthenticateRequest) throws CryptoException {
 
-            byte[] r = Arrays.copyOfRange(keyHandle, KRYPTON_U2F_MAGIC.length, KRYPTON_U2F_MAGIC.length + 32);
-            byte[] correctKeyHandle = KeyManager.formatKeyHandle(loadOrGenerateDeviceIdentifier(), r, u2FAuthenticateRequest.appId);
-            if (!Bytes.equal(correctKeyHandle, u2FAuthenticateRequest.keyHandle)) {
+            if (!keyHandleMatches(u2FAuthenticateRequest.keyHandle, u2FAuthenticateRequest.appId)) {
                 throw new CryptoException("incorrect appId");
             }
 
