@@ -256,7 +256,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
             ClientData cd = new ClientData();
             cd.typ = "navigator.id.getAssertion";
             cd.challenge = challenge;
-            cd.origin = computeFacetId(context, callingPackage) + "bad";
+            cd.origin = computeFacetId(context, callingPackage);
             cd.cid_pubkey = "unused";
 
             return JSON.toJson(cd);
