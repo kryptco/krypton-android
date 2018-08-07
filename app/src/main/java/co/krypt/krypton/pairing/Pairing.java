@@ -8,6 +8,7 @@ package co.krypt.krypton.pairing;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.libsodium.jni.Sodium;
 
@@ -29,10 +30,12 @@ public class Pairing {
     public final byte[] workstationPublicKey;
     final byte[] enclaveSecretKey;
     final byte[] enclavePublicKey;
+    @Nullable
+    public final byte[] workstationDeviceIdentifier;
     public final String workstationName;
     public final UUID uuid;
 
-    public Pairing(@NonNull byte[] workstationPublicKey, @NonNull byte[] enclaveSecretKey, @NonNull byte[] enclavePublicKey, String workstationName) throws CryptoException {
+    public Pairing(@NonNull byte[] workstationPublicKey, @NonNull byte[] enclaveSecretKey, @NonNull byte[] enclavePublicKey, String workstationName, @Nullable byte[] workstationDeviceIdentifier) throws CryptoException {
         if (workstationPublicKey.length != Sodium.crypto_box_publickeybytes()) {
             throw new SodiumException("workstation public key invalid");
         }
@@ -40,6 +43,7 @@ public class Pairing {
         this.enclaveSecretKey = enclaveSecretKey;
         this.enclavePublicKey = enclavePublicKey;
         this.workstationName = workstationName;
+        this.workstationDeviceIdentifier = workstationDeviceIdentifier;
 
         byte[] hash = SHA256.digest(workstationPublicKey);
         DataInputStream bytes = new DataInputStream(new ByteArrayInputStream(hash));
@@ -58,7 +62,7 @@ public class Pairing {
        return "CACHED_PAIRING." + Base64.encode(workstationPublicKey);
     }
 
-    public static synchronized Pairing generate(Context context, @NonNull byte[] workstationPublicKey, String workstationName) throws CryptoException {
+    public static synchronized Pairing generate(Context context, @NonNull byte[] workstationPublicKey, String workstationName, @Nullable byte[] workstationDeviceIdentifier) throws CryptoException {
         byte[] enclavePublicKey = new byte[Sodium.crypto_box_publickeybytes()];
         byte[] enclaveSecretKey = new byte[Sodium.crypto_box_secretkeybytes()];
 
@@ -75,11 +79,11 @@ public class Pairing {
             throw new SodiumException("keypair generate failed");
         }
 
-        return new Pairing(workstationPublicKey, enclaveSecretKey, enclavePublicKey, workstationName);
+        return new Pairing(workstationPublicKey, enclaveSecretKey, enclavePublicKey, workstationName, workstationDeviceIdentifier);
     }
 
     public static Pairing generate(Context context, PairingQR pairingQR) throws CryptoException {
-        return Pairing.generate(context, pairingQR.workstationPublicKey, pairingQR.workstationName);
+        return Pairing.generate(context, pairingQR.workstationPublicKey, pairingQR.workstationName, pairingQR.deviceId);
     }
 
     public byte[] wrapKey() throws CryptoException {

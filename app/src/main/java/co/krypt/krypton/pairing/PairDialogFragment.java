@@ -9,6 +9,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import co.krypt.krypton.analytics.Analytics;
@@ -60,7 +61,8 @@ public class PairDialogFragment extends DialogFragment {
     private Dialog createPairingDialog(final PairFragment pairFragment) {
         final Analytics analytics = new Analytics(getActivity());
 
-        final String workstationName = pairFragment.getPendingPairingQR().workstationName;
+        final PairingQR incomingPairingQR = pairFragment.getPendingPairingQR();
+        final String workstationName = incomingPairingQR.workstationName;
         AlertDialog.Builder builder = new AlertDialog.Builder(getTargetFragment().getContext());
         builder.setMessage("Pair with " + workstationName + "?")
                 .setPositiveButton("Pair", new DialogInterface.OnClickListener() {
@@ -71,7 +73,12 @@ public class PairDialogFragment extends DialogFragment {
                                 public void run() {
                                     HashSet<Pairing> existingPairings = Silo.shared(getContext()).pairings().loadAll();
                                     for (Pairing existingPairing: existingPairings) {
-                                        if (existingPairing.workstationName.equals(workstationName)) {
+                                        //  dedup by workstationDeviceIdentifier, falling back to workstation name
+                                        if (incomingPairingQR.deviceId != null) {
+                                            if (Arrays.equals(existingPairing.workstationDeviceIdentifier, incomingPairingQR.deviceId)) {
+                                                Silo.shared(getContext()).pairings().unpair(existingPairing);
+                                            }
+                                        } else if (existingPairing.workstationName.equals(workstationName)) {
                                             Silo.shared(getContext()).pairings().unpair(existingPairing);
                                         }
                                     }
