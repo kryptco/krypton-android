@@ -2,8 +2,6 @@ package co.krypt.krypton.u2f;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -14,18 +12,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.List;
 
 import co.krypt.krypton.R;
@@ -49,7 +40,8 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         setContentView(R.layout.activity_u2f_authenticate);
 
         List<String> allowedCallingPackages = Lists.newArrayList(
-                "com.android.chrome"
+                "com.android.chrome",
+                "com.chrome.canary"
         );
 
         String callingPackage = getCallingPackage();
@@ -63,6 +55,15 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             if ("com.google.android.apps.authenticator.AUTHENTICATE".equals(intent.getAction())) {
+                //TODO: use referrer extra to verify appId
+                String facetId = intent.getStringExtra("referrer");
+                if (facetId == null) {
+                    Log.e(TAG, "no referrer");
+                    finish();
+                    return;
+                }
+                facetId = facetId.replaceAll("/+$", "");
+
                 if (intent.getStringExtra("request") != null) {
                     try {
                         String requestJSON = URLDecoder.decode(intent.getStringExtra("request"), "UTF-8");
@@ -77,12 +78,12 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
                         }
                         if ("u2f_register_request".equals(type.getAsString())) {
                             ChromeU2FRegisterRequest chromeRequest = JSON.fromJson(requestJSON, ChromeU2FRegisterRequest.class);
-                            handleU2FRegister(intent, chromeRequest, callingPackage);
+                            handleU2FRegister(intent, chromeRequest, facetId);
                             finish();
                             return;
                         } else if ("u2f_sign_request".equals(type.getAsString())){
                             ChromeU2FAuthenticateRequest chromeRequest = JSON.fromJson(requestJSON, ChromeU2FAuthenticateRequest.class);
-                            handleU2FAuthenticate(intent, chromeRequest, callingPackage);
+                            handleU2FAuthenticate(intent, chromeRequest, facetId);
                             finish();
                             return;
                         }
@@ -99,10 +100,10 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         finish();
     }
 
-    private void handleU2FAuthenticate(Intent intent, ChromeU2FAuthenticateRequest chromeRequest, String callingPackage) throws CryptoException, IOException {
+    private void handleU2FAuthenticate(Intent intent, ChromeU2FAuthenticateRequest chromeRequest, String facetId) throws CryptoException, IOException {
         U2FAuthenticateRequest request = new U2FAuthenticateRequest();
         request.appId = chromeRequest.appId;
-        String clientData = ClientData.createAuthenticate(this, chromeRequest.challenge, callingPackage);
+        String clientData = ClientData.createAuthenticate(this, chromeRequest.challenge, facetId);
         request.challenge = SHA256.digest(clientData.getBytes("UTF-8"));
         byte[] keyHandle = null;
         for (RegisteredKey key: chromeRequest.registeredKeys) {
@@ -143,7 +144,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
 
     }
 
-    private void handleU2FRegister(Intent intent, ChromeU2FRegisterRequest chromeRequest, String callingPackage) throws CryptoException, IOException {
+    private void handleU2FRegister(Intent intent, ChromeU2FRegisterRequest chromeRequest, String facetId) throws CryptoException, IOException {
         U2FRegisterRequest request = new U2FRegisterRequest();
         for (RegisteredKey registeredKey: chromeRequest.registeredKeys) {
             if (U2F.keyHandleMatches(Base64.decodeURLSafe(registeredKey.keyHandle), chromeRequest.appId)) {
@@ -155,7 +156,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
             Log.e(TAG, "no register requests");
             return;
         }
-        String clientData = ClientData.createRegister(this, chromeRequest.registerRequests[0].challenge, callingPackage);
+        String clientData = ClientData.createRegister(this, chromeRequest.registerRequests[0].challenge, facetId);
         request.challenge = SHA256.digest(clientData.getBytes("UTF-8"));
         request.appId = chromeRequest.appId;
         U2F.KeyPair keyPair = U2F.KeyManager.generateAccountKeyPair(this, request.appId);
@@ -239,54 +240,29 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
     public static class ClientData {
         public String typ;
         public String challenge;
-        @Nullable public String origin;
+        public String origin;
         public String cid_pubkey;
 
-        public static String createRegister(Context context, String challenge, @Nullable String callingPackage) {
+        public static String createRegister(Context context, String challenge, String facetId) {
             ClientData cd = new ClientData();
             cd.typ = "navigator.id.finishEnrollment";
             cd.challenge = challenge;
-            cd.origin = computeFacetId(context, callingPackage);
+            cd.origin = facetId;
             cd.cid_pubkey = "unused";
 
             return JSON.toJson(cd);
         }
 
-        public static String createAuthenticate(Context context, String challenge, @Nullable String callingPackage) {
+        public static String createAuthenticate(Context context, String challenge, String facetId) {
             ClientData cd = new ClientData();
             cd.typ = "navigator.id.getAssertion";
             cd.challenge = challenge;
-            cd.origin = computeFacetId(context, callingPackage);
+            cd.origin = facetId;
             cd.cid_pubkey = "unused";
 
             return JSON.toJson(cd);
         }
-
-        private static String computeFacetId(Context context, String callingPackage) {
-            if (callingPackage == null) {
-                return null;
-            }
-            try {
-                PackageInfo info = context.getPackageManager().getPackageInfo(callingPackage, PackageManager.GET_SIGNATURES);
-
-                byte[] cert = info.signatures[0].toByteArray();
-                InputStream input = new ByteArrayInputStream(cert);
-
-                CertificateFactory cf = CertificateFactory.getInstance("X509");
-                X509Certificate c = (X509Certificate) cf.generateCertificate(input);
-
-                MessageDigest md = MessageDigest.getInstance("SHA1");
-
-                return "android:apk-key-hash:" +
-                        android.util.Base64.encodeToString(md.digest(c.getEncoded()), android.util.Base64.NO_WRAP | android.util.Base64.NO_PADDING);
-            }
-            catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException | CertificateException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
     }
-
 
     public static class RegisteredKey {
         @JSON.JsonRequired
