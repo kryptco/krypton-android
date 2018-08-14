@@ -122,28 +122,6 @@
         app:layout_constraintStart_toStartOf="@+id/textView14"
         app:layout_constraintTop_toBottomOf="@+id/textView14" />
 
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/textView2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:background="@drawable/terminal_bg_bottom"
-        android:fontFamily="@font/code"
-        android:paddingBottom="10dp"
-        android:paddingLeft="6dp"
-        android:paddingTop="6dp"
-        android:shadowColor="@color/appBlack"
-        android:shadowRadius="4"
-        android:text="$ kr me"
-        android:textColor="@color/appWhite"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:fontFamily="@font/code"
-        app:layout_constraintEnd_toStartOf="@+id/shareButton"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="103dp"/>
-
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/textView13"
@@ -164,21 +142,6 @@
         app:layout_constraintEnd_toEndOf="@+id/textView11"
         app:layout_constraintStart_toStartOf="@+id/textView11"
         app:layout_constraintTop_toBottomOf="@+id/textView11" />
-
-    <android.support.v7.widget.AppCompatImageButton
-        android:id="@+id/shareButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/flat_button"
-        android:backgroundTint="@color/appGreen"
-        android:padding="3dp"
-        android:scaleType="fitCenter"
-        android:tint="@color/appGreen"
-        app:layout_constraintBottom_toBottomOf="@+id/textView2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="?attr/actionModeShareDrawable"/>
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/githubButton"
