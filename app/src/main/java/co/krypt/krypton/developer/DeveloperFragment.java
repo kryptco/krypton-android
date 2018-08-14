@@ -2,6 +2,8 @@ package co.krypt.krypton.developer;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.AppCompatTextView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 
 import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
+import co.krypt.krypton.knownhosts.KnownHostsFragment;
 
 public class DeveloperFragment extends Fragment {
     private static final String TAG = DeveloperFragment.class.getName();
@@ -74,6 +77,16 @@ public class DeveloperFragment extends Fragment {
 
                 new Analytics(getContext()).postEvent("add key", "AWS", null, null, false);
             }
+        });
+
+        AppCompatTextView editKnownHosts = v.findViewById(R.id.editKnownHostsText);
+        editKnownHosts.setOnClickListener(v1 -> {
+            getView().setTranslationZ(0);
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            KnownHostsFragment knownHostsFragment = new KnownHostsFragment();
+            transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.delayed)
+                    .replace(R.id.fragmentOverlay, knownHostsFragment).commit();
+            new Analytics(getActivity().getApplicationContext()).postPageView("KnownHostsEdit");
         });
         return v;
     }

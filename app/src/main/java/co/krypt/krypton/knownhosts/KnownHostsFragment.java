@@ -20,8 +20,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import co.krypt.krypton.R;
-import co.krypt.krypton.analytics.Analytics;
-import co.krypt.krypton.settings.SettingsFragment;
 import co.krypt.krypton.silo.Silo;
 
 /**
@@ -53,10 +51,8 @@ public class KnownHostsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                SettingsFragment settingsFragment = new SettingsFragment();
                 transaction.setCustomAnimations(R.anim.instant, R.anim.exit_to_bottom)
-                        .replace(R.id.fragmentOverlay, settingsFragment).commit();
-                new Analytics(getContext()).postPageView("About");
+                        .remove(KnownHostsFragment.this).commit();
             }
         });
 
