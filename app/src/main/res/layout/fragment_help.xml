@@ -59,117 +59,6 @@
         app:layout_constraintTop_toBottomOf="@id/installCommand"
         app:textAllCaps="true"/>
 
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/addKeyTextView5"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/terminal_bg_bottom"
-        android:fontFamily="@font/code"
-        android:paddingBottom="10dp"
-        android:paddingLeft="6dp"
-        android:paddingTop="2dp"
-        android:shadowColor="@color/appBlack"
-        android:shadowRadius="4"
-        android:text="$ kr pair"
-        android:textColor="@color/appWhite"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:fontFamily="@font/code"
-        app:layout_constraintEnd_toEndOf="@+id/installCommandHelp"
-        app:layout_constraintStart_toStartOf="@+id/installCommandHelp"
-        app:layout_constraintTop_toBottomOf="@+id/installCommandHelp" />
-
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/npmHelp"
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="8dp"
-        android:background="@null"
-        android:fontFamily="@font/code_bold"
-        android:text="NPM"
-        android:textAlignment="center"
-        android:textAllCaps="false"
-        android:textColor="@color/appGray"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@+id/moreHelp"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/brewHelp"
-        app:layout_constraintTop_toTopOf="@+id/brewHelp"/>
-
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/curlHelp"
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:background="@null"
-        android:fontFamily="@font/code_bold"
-        android:text="CURL"
-        android:textAlignment="center"
-        android:textAllCaps="false"
-        android:textColor="@color/appGreen"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@+id/brewHelp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cliHeader"/>
-
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/installCommandHelp"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/terminal_bg_top"
-        android:fontFamily="@font/code"
-        android:paddingBottom="2dp"
-        android:paddingLeft="6dp"
-        android:paddingTop="10dp"
-        android:shadowColor="@color/appBlack"
-        android:shadowRadius="4"
-        android:text="$ curl https://krypt.co/kr | sh"
-        android:textColor="@color/appWhite"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:fontFamily="@font/code"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/curlHelp" />
-
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/brewHelp"
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="8dp"
-        android:background="@null"
-        android:fontFamily="@font/code_bold"
-        android:text="BREW"
-        android:textAlignment="center"
-        android:textAllCaps="false"
-        android:textColor="@color/appGray"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@+id/npmHelp"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/curlHelp"
-        app:layout_constraintTop_toTopOf="@+id/curlHelp"/>
-
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/moreHelp"
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@null"
-        android:fontFamily="@font/code_bold"
-        android:text="MORE"
-        android:textAlignment="center"
-        android:textAllCaps="false"
-        android:textColor="@color/appGray"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/npmHelp"
-        app:layout_constraintTop_toTopOf="@+id/npmHelp"/>
-
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/doneButton"
         android:layout_width="wrap_content"
@@ -198,17 +87,16 @@
         android:layout_height="50dp"
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
         android:background="@drawable/flat_button"
         android:backgroundTint="@color/appGreen"
+        android:fontFamily="@font/open_sans_bold"
         android:text="Pair with a new Device"
         android:textAllCaps="false"
         android:textColor="@color/appGreen"
         android:textSize="16sp"
-        android:fontFamily="@font/open_sans_bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addKeyTextView5" />
+        tools:layout_editor_absoluteY="404dp"/>
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/extHeader"
@@ -222,18 +110,5 @@
         app:fontFamily="@font/open_sans_bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView5"/>
-
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/cliHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="24dp"
-        android:text="Install the kr command-line tool"
-        android:textColor="@color/appBlack"
-        android:textSize="18sp"
-        app:fontFamily="@font/open_sans_bold"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/installCommandSubtitle"/>
 
 </android.support.constraint.ConstraintLayout>

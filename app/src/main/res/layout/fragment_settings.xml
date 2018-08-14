@@ -137,74 +137,14 @@
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/knownHostsContainer"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
-                android:background="@color/appWhite"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/oneTouchLoginContainer">
-
-                <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/editKnownHostsButton"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/flat_button"
-                    android:backgroundTint="@color/appGreen"
-                    android:padding="3dp"
-                    android:scaleType="fitCenter"
-                    android:text="Edit"
-                    android:textColor="@color/appGreen"
-                    android:fontFamily="@font/open_sans_bold"
-                    android:tint="@color/appGreen"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    />
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/knownHostsHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="4dp"
-                    android:text="Known Hosts"
-                    android:fontFamily="@font/open_sans_bold"
-                    android:textColor="@color/appBlack"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@+id/editKnownHostsButton"
-                    app:layout_constraintTop_toTopOf="parent"/>
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/editKnownHostsText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="2dp"
-                    android:fontFamily="@font/open_sans"
-                    android:textColor="@color/appBlack"
-                    android:text="Remove pinned host public keys if a server key was purposefully changed."
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@+id/editKnownHostsButton"
-                    app:layout_constraintTop_toBottomOf="@+id/knownHostsHeader"/>
-
-            </android.support.constraint.ConstraintLayout>
-
-            <android.support.constraint.ConstraintLayout
                 android:id="@+id/disableAnalyticsContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
                 android:background="@color/appWhite"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/knownHostsContainer">
+                app:layout_constraintTop_toBottomOf="@id/oneTouchLoginContainer"
+                tools:layout_editor_absoluteY="145dp">
 
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/disableAnalyticsSwitch"
@@ -222,8 +162,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="4dp"
-                    android:text="Disable Google Analytics"
                     android:fontFamily="@font/open_sans_bold"
+                    android:text="Disable Google Analytics"
                     android:textColor="@color/appBlack"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -237,14 +177,65 @@
                     android:layout_marginBottom="4dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="2dp"
-                    android:text="Analytics data is used to improve the quality of our technology."
                     android:fontFamily="@font/open_sans"
+                    android:text="Analytics data is used to improve the quality of our technology."
                     android:textColor="@color/appBlack"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toLeftOf="@+id/disableAnalyticsSwitch"
                     app:layout_constraintTop_toBottomOf="@+id/disableAnalyticsHeader"/>
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/developerModeContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/appWhite"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/disableAnalyticsContainer">
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/developerModeSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text=""
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/developerModeHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/open_sans_bold"
+                    android:text="Developer Mode"
+                    android:textColor="@color/appBlack"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/developerModeSwitch"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/developerModeText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="@font/open_sans"
+                    android:text="Use Krypton to store SSH and Git-PGP key pairs"
+                    android:textColor="@color/appBlack"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/developerModeSwitch"
+                    app:layout_constraintTop_toBottomOf="@+id/developerModeHeader"/>
 
             </android.support.constraint.ConstraintLayout>
 
@@ -256,7 +247,7 @@
                 android:background="@color/appWhite"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/disableAnalyticsContainer">
+                app:layout_constraintTop_toBottomOf="@id/developerModeContainer">
 
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/enableAutoApproveNotificationsSwitch"
@@ -308,6 +299,7 @@
                 android:background="@color/appWhite"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/enableAutoApproveNotificationsContainer">
 
                 <android.support.v7.widget.SwitchCompat
@@ -342,71 +334,12 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="2dp"
                     android:text="Notifications will no longer make sound or vibrate."
-                    app:layout_constraintBottom_toBottomOf="parent"
                     android:fontFamily="@font/open_sans"
                     android:textColor="@color/appBlack"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toLeftOf="@+id/silenceNotificationsSwitch"
                     app:layout_constraintTop_toBottomOf="@+id/silenceNotificationsHeader"/>
-
-            </android.support.constraint.ConstraintLayout>
-
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/exportLogsContainer"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
-                android:background="@color/appWhite"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/silenceNotificationsContainer">
-
-                <android.support.v7.widget.AppCompatImageButton
-                    android:id="@+id/exportLogsButton"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/flat_button"
-                    android:backgroundTint="@color/appGreen"
-                    android:padding="3dp"
-                    android:scaleType="fitCenter"
-                    android:text="Export"
-                    android:tint="@color/appGreen"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="?attr/actionModeShareDrawable"/>
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/exportLogsHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="4dp"
-                    android:text="Export Audit Log"
-                    android:fontFamily="@font/open_sans_bold"
-                    android:textColor="@color/appBlack"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@+id/exportLogsButton"
-                    app:layout_constraintTop_toTopOf="parent"/>
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/exportLogsText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="2dp"
-                    android:text="Export entire SSH authentication history."
-                    android:fontFamily="@font/open_sans"
-                    android:textColor="@color/appBlack"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@+id/exportLogsButton"
-                    app:layout_constraintTop_toBottomOf="@+id/exportLogsHeader"/>
 
             </android.support.constraint.ConstraintLayout>
 

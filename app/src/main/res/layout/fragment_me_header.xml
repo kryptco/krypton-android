@@ -1,0 +1,36 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="16dp">
+
+    <EditText
+        android:id="@+id/profileEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:inputType="textEmailAddress"
+        android:maxLines="1"
+        android:nextFocusLeft="@+id/dummy"
+        android:nextFocusUp="@+id/dummy"
+        android:text="kevin@krypt.co"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="@color/appBlack"
+        />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/authenticatorNameHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Authenticator Name"
+        android:textSize="12sp"
+        app:fontFamily="@font/open_sans"
+        />
+</LinearLayout>

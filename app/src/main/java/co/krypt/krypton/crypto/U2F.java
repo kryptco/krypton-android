@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.crypto.tink.subtle.Bytes;
@@ -20,7 +21,9 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.greenrobot.eventbus.EventBus;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -38,11 +41,16 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPublicKey;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -51,13 +59,16 @@ import co.krypt.krypton.protocol.U2FAuthenticateRequest;
 import co.krypt.krypton.protocol.U2FAuthenticateResponse;
 import co.krypt.krypton.protocol.U2FRegisterRequest;
 import co.krypt.krypton.protocol.U2FRegisterResponse;
+import co.krypt.krypton.silo.IdentityService;
+import co.krypt.krypton.u2f.KnownAppIds;
 
 /**
  * Created by Kevin King on 5/23/18.
  * Copyright 2018. KryptCo, Inc.
  */
 public class U2F {
-    private static String LOG_TAG = "U2F";
+    private static final String LOG_TAG = "U2F";
+    private static final String U2F_ACCOUNT_ALIAS_PREFIX = "U2F.ACCOUNT.";
 
     private static byte[] KRYPTON_U2F_MAGIC = new byte[]{
             (byte) 0x2c, (byte) 0xe5, (byte) 0xc8, (byte) 0xdf, (byte) 0x17, (byte) 0xe2, (byte) 0x2e, (byte) 0xf2,
@@ -71,7 +82,72 @@ public class U2F {
         return SHA256.digest(rawPublicKey(sk));
     }
 
+    public static List<KeyManager.Account> getAccounts() throws CryptoException {
+        List<KeyManager.Account> accounts = KeyManager.getAccounts();
+        Collections.sort(accounts, (a,b) -> {
+            if (b.added != null) {
+                return b.added.compareTo(a.added);
+            }
+            return a.name.compareTo(b.name);
+        });
+        return accounts;
+    }
+
     public static class KeyManager {
+        public static class Account {
+            public Account(String name, int logo, boolean secured, @Nullable Date added, String keyHandleHash) {
+                this.name = name;
+                this.logo = logo;
+                this.secured = secured;
+                this.added = added;
+                this.keyHandleHash = keyHandleHash;
+            }
+
+            public final String name;
+            public final int logo;
+            public final boolean secured;
+            @Nullable public final Date added;
+            public final String keyHandleHash;
+        }
+
+        public static List<Account> getAccounts() throws CryptoException {
+            try {
+                KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+                keyStore.load(null);
+                List<Account> accounts = new ArrayList<>();
+                Enumeration<String> storedAliases = keyStore.aliases();
+
+                final CertificateFactory certFactory;
+
+                certFactory = CertificateFactory.getInstance("X509");
+                if (certFactory == null) {
+                    return accounts;
+                }
+
+                while (storedAliases.hasMoreElements()) {
+                    String alias = storedAliases.nextElement();
+                    if (alias.startsWith(U2F_ACCOUNT_ALIAS_PREFIX)) {
+                        KeyStore.PrivateKeyEntry kp = loadKeyPair(alias);
+
+                        final X509Certificate x509Cert = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(kp.getCertificate().getEncoded()));
+                        //  extract CN=<appid>
+                        String appId = x509Cert.getSubjectX500Principal().getName().substring(3);
+                        accounts.add(
+                                new Account(KnownAppIds.displayAppId(appId),
+                                        KnownAppIds.displayAppLogo(appId),
+                                        true,
+                                        x509Cert.getNotBefore(),
+                                        alias.substring(U2F_ACCOUNT_ALIAS_PREFIX.length())));
+                    }
+                }
+
+                return accounts;
+            } catch (NullPointerException | NoSuchAlgorithmException | KeyStoreException | CertificateException | IOException e) {
+                e.printStackTrace();
+                throw new CryptoException(e);
+            }
+        }
+
         public static KeyPair loadAccountKeyPair(Context context, byte[] keyHandle) throws CryptoException {
             return new KeyPair(
                     context,
@@ -81,11 +157,13 @@ public class U2F {
 
         public static KeyPair generateAccountKeyPair(Context context, String appId) throws CryptoException {
             byte[] keyHandle = newKeyHandle(appId);
-            return new KeyPair(
+            KeyPair kp = new KeyPair(
                     context,
                     loadOrGenerateKeyPair(keyHandleToTag(keyHandle), appId),
                     keyHandle
             );
+            EventBus.getDefault().post(new IdentityService.AccountsUpdated());
+            return kp;
         }
 
         private static byte[] newKeyHandle(String appId) throws CryptoException {
@@ -93,7 +171,7 @@ public class U2F {
         }
 
         private static String keyHandleToTag(byte[] keyHandle) throws CryptoException {
-            return "U2F.ACCOUNT." + Base64.encode(SHA256.digest(keyHandle));
+            return U2F_ACCOUNT_ALIAS_PREFIX + Base64.encode(SHA256.digest(keyHandle));
         }
 
         // KeyHandle: 80 bytes

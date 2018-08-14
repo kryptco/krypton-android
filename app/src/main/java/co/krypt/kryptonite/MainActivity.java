@@ -33,6 +33,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.approval.ApprovalDialog;
+import co.krypt.krypton.developer.DeveloperFragment;
 import co.krypt.krypton.devices.DevicesFragment;
 import co.krypt.krypton.help.HelpFragment;
 import co.krypt.krypton.me.MeFragment;
@@ -41,6 +42,7 @@ import co.krypt.krypton.onboarding.OnboardingActivity;
 import co.krypt.krypton.onboarding.OnboardingProgress;
 import co.krypt.krypton.pairing.PairFragment;
 import co.krypt.krypton.policy.LocalAuthentication;
+import co.krypt.krypton.settings.Settings;
 import co.krypt.krypton.settings.SettingsFragment;
 import co.krypt.krypton.silo.Notifications;
 import co.krypt.krypton.silo.Silo;
@@ -57,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int ME_FRAGMENT_POSITION = 0;
     public static final int PAIR_FRAGMENT_POSITION = 1;
     public static final int DEVICES_FRAGMENT_POSITION = 2;
-    public static final int TEAM_FRAGMENT_POSITION = 3;
+    public static final int DEVELOPER_FRAGMENT_POSITION = 3;
+    public static final int TEAM_FRAGMENT_POSITION = 4;
 
     public static final int CAMERA_PERMISSION_REQUEST = 0;
     public static final int USER_AUTHENTICATION_REQUEST = 2;
@@ -66,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String ACTION_VIEW_TEAMS_TAB = "co.krypt.android.action.VIEW_TEAMS_TAB";
 
+    @SuppressWarnings("unused")
     private static final Services services = new Services();
 
     /**
@@ -120,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setOffscreenPageLimit(4);
+        mViewPager.setOffscreenPageLimit(5);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -167,6 +171,10 @@ public class MainActivity extends AppCompatActivity {
                     LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(cameraIntent);
                 }
         }
+    }
+
+    public void relayoutTabs() {
+        mViewPager.setAdapter(mSectionsPagerAdapter);
     }
 
     public void setActiveTab(int position) {
@@ -218,6 +226,7 @@ public class MainActivity extends AppCompatActivity {
         private MeFragment meFragment = new MeFragment();
         private PairFragment pairFragment = PairFragment.newInstance();
         private DevicesFragment devicesFragment = DevicesFragment.newInstance(1);
+        private DeveloperFragment developerFragment = new DeveloperFragment();
         private TeamFragment teamFragment = new TeamFragment();
 
         @Override
@@ -230,6 +239,8 @@ public class MainActivity extends AppCompatActivity {
                     return pairFragment;
                 case DEVICES_FRAGMENT_POSITION:
                     return devicesFragment;
+                case DEVELOPER_FRAGMENT_POSITION:
+                    return developerFragment;
                 case TEAM_FRAGMENT_POSITION:
                     return teamFragment;
             }
@@ -238,22 +249,29 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            if (Native.linked.get()) {
-                return 4;
-            } else {
-                return 3;
+            //  default Accounts, Pair, Devices
+            int numTabs = 3;
+            if (new Settings(getApplicationContext()).developerMode()) {
+                //  developer tab
+                numTabs += 1;
             }
+            if (TeamDataProvider.shouldShowTeamsTab(getApplicationContext())) {
+                numTabs += 1;
+            }
+            return numTabs;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case ME_FRAGMENT_POSITION:
-                    return "Me";
+                    return "Accounts";
                 case PAIR_FRAGMENT_POSITION:
                     return "Pair";
                 case DEVICES_FRAGMENT_POSITION:
-                    return "Devices";
+                    return "Computers";
+                case DEVELOPER_FRAGMENT_POSITION:
+                    return "Developer";
                 case TEAM_FRAGMENT_POSITION:
                     return "Team";
 

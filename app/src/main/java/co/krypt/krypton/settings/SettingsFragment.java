@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,17 +15,12 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
-
-import java.io.IOException;
 
 import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.crypto.KeyManager;
-import co.krypt.krypton.knownhosts.KnownHostsFragment;
-import co.krypt.krypton.log.AuditLogContentProvider;
 import co.krypt.krypton.me.MeStorage;
 import co.krypt.krypton.onboarding.OnboardingActivity;
 import co.krypt.krypton.policy.LocalAuthentication;
@@ -147,6 +141,14 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        SwitchCompat developerMode = root.findViewById(R.id.developerModeSwitch);
+        developerMode.setChecked(settings.developerMode());
+        developerMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            settings.setDeveloperMode(isChecked);
+            ((MainActivity) getActivity()).relayoutTabs();
+            // TODO: start dev onboarding if no SSH key exists
+        });
+
         SwitchCompat enableApprovedNotifications = (SwitchCompat) root.findViewById(R.id.enableAutoApproveNotificationsSwitch);
         enableApprovedNotifications.setChecked(settings.approvedNotificationsEnabled());
         enableApprovedNotifications.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -162,42 +164,6 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 settings.setSilenceNotifications(isChecked);
-            }
-        });
-
-        ImageButton exportLogsButton = (ImageButton) root.findViewById(R.id.exportLogsButton);
-        exportLogsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    String token = AuditLogContentProvider.setToken(v.getContext());
-                    Intent sendIntent = new Intent();
-                    sendIntent.setAction(Intent.ACTION_SEND);
-                    sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Krypton Audit Log");
-                    sendIntent.setType("application/x-sqlite3");
-                    Uri auditLogUriWithToken = AuditLogContentProvider.getAuditLogURIWithToken();
-                    if (auditLogUriWithToken == null) {
-                        return;
-                    }
-                    sendIntent.putExtra(Intent.EXTRA_STREAM, auditLogUriWithToken);
-                    startActivity(sendIntent);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Toast.makeText(v.getContext(), "Error exporting audit log: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-        Button editKnownHostsButton = (Button) root.findViewById(R.id.editKnownHostsButton);
-        editKnownHostsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getView().setTranslationZ(0);
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                KnownHostsFragment knownHostsFragment = new KnownHostsFragment();
-                transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.delayed)
-                        .replace(R.id.fragmentOverlay, knownHostsFragment).commit();
-                new Analytics(getActivity().getApplicationContext()).postPageView("KnownHostsEdit");
             }
         });
 

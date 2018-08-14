@@ -12,6 +12,7 @@ public class Settings {
     public static final String ENABLE_APPROVED_NOTIFICATIONS_KEY = "ENABLE_APPROVED_NOTIFICATIONS";
     public static final String SILENCE_NOTIFICATIONS_KEY = "SILENCE_NOTIFICATIONS";
     public static final String ONE_TOUCH_LOGIN_KEY = "ONE_TOUCH_LOGIN";
+    public static final String DEVELOPER_MODE_KEY = "DEVELOPER_MODE";
 
     private static Object lock = new Object();
     private SharedPreferences preferences;
@@ -53,6 +54,18 @@ public class Settings {
     public void setOneTouchLogin(boolean b) {
         synchronized (lock) {
             preferences.edit().putBoolean(ONE_TOUCH_LOGIN_KEY, b).apply();
+        }
+    }
+
+    public boolean developerMode() {
+        synchronized (lock) {
+            return preferences.getBoolean(DEVELOPER_MODE_KEY, false);
+        }
+    }
+
+    public void setDeveloperMode(boolean b) {
+        synchronized (lock) {
+            preferences.edit().putBoolean(DEVELOPER_MODE_KEY, b).apply();
         }
     }
 

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:id="@+id/root"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="wrap_content"
+                                             android:layout_marginBottom="20dp"
+                                             android:layout_marginLeft="8dp"
+                                             android:layout_marginRight="8dp"
+                                             android:layout_marginTop="20dp"
+                                             android:background="@drawable/teams_loader_bg"
+                                             android:clickable="false"
+                                             android:padding="8dp"
+                                             app:cardCornerRadius="8dp"
+                                             app:cardElevation="7dp">
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/accountName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:singleLine="true"
+        android:text="Google"
+        android:textColor="@color/appBlack"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@id/securedIcon"
+        app:layout_constraintStart_toEndOf="@+id/logo"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/chrome"
+        tools:layout_editor_absoluteY="2dp"/>
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/securedIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:tint="@color/appBrightGreen"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_check_circle_white_48dp"/>
+
+    <TextView
+        android:id="@+id/dateAdded"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:lines="1"
+        android:text="Added 3:59pm 12/12/2012"
+        app:layout_constraintEnd_toStartOf="@+id/securedIcon"
+        app:layout_constraintStart_toStartOf="@+id/accountName"
+        app:layout_constraintTop_toBottomOf="@+id/accountName"/>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/fixText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/flat_button"
+        android:backgroundTint="@color/appWarning"
+        android:fontFamily="@font/code_bold"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp"
+        android:text="Fix"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/appWarning"
+        app:layout_constraintBottom_toBottomOf="@id/securedIcon"
+        app:layout_constraintEnd_toEndOf="@id/securedIcon"
+        app:layout_constraintStart_toStartOf="@id/securedIcon"
+        app:layout_constraintTop_toTopOf="@id/securedIcon"/>
+
+</android.support.constraint.ConstraintLayout>

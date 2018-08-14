@@ -5,10 +5,11 @@
     <!--<color name="colorAccent">#11A9E4</color>-->
     <color name="colorAccent">#5BC894</color>
     <color name="colorDestructive">#e4113c</color>
+    <color name="appBlueGrayBackground">#27272780</color>
 
     <color name="appGreen">#5bc894</color>
     <color name="appWhite">#FFFFFF</color>
-    <color name="appGray">#AAAAAA</color>
+    <color name="appGray">#aaaaaa</color>
     <color name="appBlack">#343434</color>
     <color name="appBlue">#666ee8</color>
     <color name="appShadowGray">#38aaaaaa</color>
@@ -16,7 +17,7 @@
     <color name="appReject">#FF6361</color>
     <color name="appWarning">#F8A843</color>
 
-    <color name="appBrightGreen">#11C56F</color>
+    <color name="appBrightGreen">#11c56f</color>
     <color name="appBrightPink">#F71871</color>
     <color name="appBrightBlue">#2E81EF</color>
 
