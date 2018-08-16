@@ -160,7 +160,7 @@ public class SettingsFragment extends Fragment {
         developerMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
             settings.setDeveloperMode(isChecked);
             updateDeleteButton.run();
-            new Handler(Looper.getMainLooper()).post(() -> ((MainActivity) getActivity()).relayoutTabs());
+            new Handler(Looper.getMainLooper()).post(() -> ((MainActivity) getActivity()).mSectionsPagerAdapter.notifyDataSetChanged());
             if (isChecked && new DevopsOnboardingProgress(getContext()).inProgress()) {
                 startActivity(new Intent(getContext(), OnboardingActivity.class));
                 getActivity().finish();
