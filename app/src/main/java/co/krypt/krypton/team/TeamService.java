@@ -12,6 +12,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
 
 import co.krypt.krypton.protocol.JSON;
@@ -331,6 +332,9 @@ public class TeamService {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void encryptLog(EncryptLog r) {
+        if (Locale.getDefault().equals(Locale.FRANCE)) {
+            return;
+        }
         try {
             TeamDataProvider.encryptLog(r.c.c, r.log);
         } catch (Native.NotLinked notLinked) {
