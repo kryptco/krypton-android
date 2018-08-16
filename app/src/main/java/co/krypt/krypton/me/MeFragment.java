@@ -184,8 +184,6 @@ public class MeFragment extends Fragment {
             name.setText(account.name);
 
             AppCompatImageView logo = v.findViewById(R.id.logo);
-            Log.e(TAG, account.name);
-            Log.e(TAG, String.valueOf(account.logo));
             logo.setImageResource(account.logo);
 
             AppCompatTextView addedOn = v.findViewById(R.id.dateAdded);
