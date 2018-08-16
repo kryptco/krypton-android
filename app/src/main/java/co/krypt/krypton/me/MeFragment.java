@@ -93,10 +93,11 @@ public class MeFragment extends Fragment {
         Profile me = r.profile;
         if (me != null) {
             profileEmail.setText(me.email);
-            profileEmail.setTextColor(getResources().getColor(R.color.appBlack, null));
         } else {
-            Log.e(TAG, "no profile");
+            profileEmail.setText(MeStorage.getDeviceName());
+            Log.i(TAG, "no profile");
         }
+        profileEmail.setTextColor(getResources().getColor(R.color.appBlack, null));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
