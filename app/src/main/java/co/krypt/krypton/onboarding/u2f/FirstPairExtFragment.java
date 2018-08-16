@@ -1,4 +1,4 @@
-package co.krypt.krypton.onboarding;
+package co.krypt.krypton.onboarding.u2f;
 
 
 import android.content.BroadcastReceiver;
@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +15,7 @@ import android.widget.Button;
 
 import co.krypt.krypton.R;
 import co.krypt.krypton.pairing.PairFragment;
+import co.krypt.kryptonite.MainActivity;
 
 public class FirstPairExtFragment extends Fragment {
 
@@ -88,11 +88,9 @@ public class FirstPairExtFragment extends Fragment {
             return;
         }
         proceeding = true;
-        new OnboardingProgress(getContext()).setStage(OnboardingStage.FIRST_PAIR_CLI);
-        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-        FirstPairCliFragment firstPairCliFragment = new FirstPairCliFragment();
-        fragmentTransaction
-                .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
-                .hide(this).add(R.id.activity_onboarding, firstPairCliFragment).show(firstPairCliFragment).commitAllowingStateLoss();
+        final U2FOnboardingProgress progress = new U2FOnboardingProgress(getContext());
+        progress.setStage(U2FOnboardingStage.DONE);
+        startActivity(new Intent(getContext(), MainActivity.class));
+        getActivity().finish();
     }
 }

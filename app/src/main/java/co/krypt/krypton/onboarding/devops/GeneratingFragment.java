@@ -1,4 +1,4 @@
-package co.krypt.krypton.onboarding;
+package co.krypt.krypton.onboarding.devops;
 
 
 import android.graphics.Color;

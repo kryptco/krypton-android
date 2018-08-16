@@ -38,8 +38,8 @@ import co.krypt.krypton.devices.DevicesFragment;
 import co.krypt.krypton.help.HelpFragment;
 import co.krypt.krypton.me.MeFragment;
 import co.krypt.krypton.me.MeStorage;
-import co.krypt.krypton.onboarding.OnboardingActivity;
-import co.krypt.krypton.onboarding.OnboardingProgress;
+import co.krypt.krypton.onboarding.u2f.OnboardingActivity;
+import co.krypt.krypton.onboarding.u2f.U2FOnboardingProgress;
 import co.krypt.krypton.pairing.PairFragment;
 import co.krypt.krypton.policy.LocalAuthentication;
 import co.krypt.krypton.settings.Settings;
@@ -105,12 +105,17 @@ public class MainActivity extends AppCompatActivity {
             //  thrown when starting a service is not allowed
             e.printStackTrace();
         }
-        OnboardingProgress progress = new OnboardingProgress(getApplicationContext());
-        if (new MeStorage(getApplicationContext()).load() == null || progress.inProgress()) {
+        U2FOnboardingProgress progress = new U2FOnboardingProgress(getApplicationContext());
+        if (progress.inProgress()) {
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
             return;
         }
+
+        if (new Settings(getApplicationContext()).developerMode() && new MeStorage(getApplicationContext()).load() == null) {
+            //TODO: start dev onboarding
+        }
+
 
         if (ConnectionResult.SUCCESS != GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getApplicationContext())) {
             //  TODO: warn about no push notifications, prompt to install google play services

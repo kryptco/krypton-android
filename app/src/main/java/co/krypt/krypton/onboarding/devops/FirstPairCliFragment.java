@@ -1,4 +1,4 @@
-package co.krypt.krypton.onboarding;
+package co.krypt.krypton.onboarding.devops;
 
 
 import android.content.BroadcastReceiver;
@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import co.krypt.krypton.onboarding.u2f.U2FOnboardingProgress;
+import co.krypt.krypton.onboarding.u2f.U2FOnboardingStage;
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
@@ -158,7 +160,7 @@ public class FirstPairCliFragment extends Fragment {
             return;
         }
         proceeding = true;
-        new OnboardingProgress(getContext()).setStage(OnboardingStage.TEST_SSH);
+        new U2FOnboardingProgress(getContext()).setStage(U2FOnboardingStage.TEST_SSH);
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         TestSSHFragment testSSHFragment = TestSSHFragment.newInstance(deviceName);
         fragmentTransaction
@@ -171,7 +173,7 @@ public class FirstPairCliFragment extends Fragment {
             return;
         }
         proceeding = true;
-        new OnboardingProgress(getContext()).reset();
+        new U2FOnboardingProgress(getContext()).reset();
         startActivity(new Intent(getActivity(), MainActivity.class));
         getActivity().finish();
     }

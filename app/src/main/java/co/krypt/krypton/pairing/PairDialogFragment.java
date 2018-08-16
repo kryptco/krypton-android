@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import co.krypt.krypton.analytics.Analytics;
-import co.krypt.krypton.onboarding.OnboardingActivity;
+import co.krypt.krypton.onboarding.u2f.OnboardingActivity;
 import co.krypt.krypton.policy.LocalAuthentication;
 import co.krypt.krypton.protocol.PairingQR;
 import co.krypt.krypton.silo.Silo;

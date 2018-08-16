@@ -1,4 +1,4 @@
-package co.krypt.krypton.onboarding;
+package co.krypt.krypton.onboarding.devops;
 
 
 import android.os.Bundle;
@@ -83,8 +83,8 @@ public class GenerateFragment extends Fragment {
         final KeyType finalKeyType = keyType;
 
         final FragmentActivity context = getActivity();
-        final OnboardingProgress progress = new OnboardingProgress(getContext());
-        progress.setStage(OnboardingStage.GENERATING);
+        final DevopsOnboardingProgress progress = new DevopsOnboardingProgress(getContext());
+        progress.setStage(DevopsOnboardingStage.GENERATING);
         new Analytics(context).postEvent("onboard", "generate tapped", null, null, false);
         final long startMillis = System.currentTimeMillis();
         final GeneratingFragment generatingFragment = new GeneratingFragment();
@@ -131,15 +131,15 @@ public class GenerateFragment extends Fragment {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    progress.setStage(OnboardingStage.FIRST_PAIR_EXT);
+                    progress.setStage(DevopsOnboardingStage.FIRST_PAIR_CLI);
                     final FragmentActivity activity = context;
                     if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
-                        FirstPairExtFragment firstPairExtFragment = new FirstPairExtFragment();
+                        FirstPairCliFragment firstPairCliFragment = new FirstPairCliFragment();
                         FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager().beginTransaction();
                         fragmentTransaction
                                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
-                                .add(R.id.activity_onboarding, firstPairExtFragment)
-                                .hide(generatingFragment).show(firstPairExtFragment).commit();
+                                .add(R.id.activity_onboarding, firstPairCliFragment)
+                                .hide(generatingFragment).show(firstPairCliFragment).commit();
                     }
                 } catch (InvalidKeyException | IOException | CryptoException | UnsupportedOperationException | IllegalArgumentException e) {
                     e.printStackTrace();

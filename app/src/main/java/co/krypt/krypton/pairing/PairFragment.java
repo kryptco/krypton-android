@@ -40,7 +40,7 @@ import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.exception.CryptoException;
 import co.krypt.krypton.exception.TransportException;
-import co.krypt.krypton.onboarding.OnboardingActivity;
+import co.krypt.krypton.onboarding.u2f.OnboardingActivity;
 import co.krypt.krypton.protocol.PairingQR;
 import co.krypt.krypton.silo.Silo;
 import co.krypt.kryptonite.MainActivity;

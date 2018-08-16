@@ -50,7 +50,7 @@ import co.krypt.krypton.log.GitTagSignatureLog;
 import co.krypt.krypton.log.SSHSignatureLog;
 import co.krypt.krypton.log.U2FSignatureLog;
 import co.krypt.krypton.me.MeStorage;
-import co.krypt.krypton.onboarding.TestSSHFragment;
+import co.krypt.krypton.onboarding.devops.TestSSHFragment;
 import co.krypt.krypton.pairing.Pairing;
 import co.krypt.krypton.pairing.Pairings;
 import co.krypt.krypton.pgp.UserID;

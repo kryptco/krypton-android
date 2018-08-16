@@ -1,4 +1,4 @@
-package co.krypt.krypton.onboarding;
+package co.krypt.krypton.onboarding.u2f;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +21,8 @@ import java.util.Iterator;
 import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.approval.ApprovalDialog;
+import co.krypt.krypton.onboarding.devops.FirstPairCliFragment;
+import co.krypt.krypton.onboarding.devops.TestSSHFragment;
 import co.krypt.krypton.pairing.Pairing;
 import co.krypt.krypton.policy.LocalAuthentication;
 import co.krypt.krypton.silo.Silo;
@@ -46,24 +48,24 @@ public class OnboardingActivity extends FragmentActivity {
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
-        OnboardingProgress progress = new OnboardingProgress(getApplicationContext());
-        GenerateFragment generateFragment;
+        U2FOnboardingProgress progress = new U2FOnboardingProgress(getApplicationContext());
+        WelcomeFragment welcomeFragment;
         FirstPairExtFragment firstPairExtFragment;
         FirstPairCliFragment firstPairCliFragment;
         TestSSHFragment testSSHFragment;
         switch (progress.currentStage()) {
             case NONE:
-                generateFragment = new GenerateFragment();
-                fragmentTransaction.add(R.id.activity_onboarding, generateFragment).commit();
+                welcomeFragment = new WelcomeFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, welcomeFragment).commit();
                 break;
             case GENERATE:
-                generateFragment = new GenerateFragment();
-                fragmentTransaction.add(R.id.activity_onboarding, generateFragment).commit();
+                welcomeFragment = new WelcomeFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, welcomeFragment).commit();
                 break;
             case GENERATING:
                 //  generation must have failed, start from beginning
-                generateFragment = new GenerateFragment();
-                fragmentTransaction.add(R.id.activity_onboarding, generateFragment).commit();
+                welcomeFragment = new WelcomeFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, welcomeFragment).commit();
                 break;
             case FIRST_PAIR_EXT:
                 firstPairExtFragment = new FirstPairExtFragment();
@@ -132,7 +134,7 @@ public class OnboardingActivity extends FragmentActivity {
     public void onBackPressed() {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right);
-        OnboardingProgress progress = new OnboardingProgress(getApplicationContext());
+        U2FOnboardingProgress progress = new U2FOnboardingProgress(getApplicationContext());
 
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.activity_onboarding);
         if (currentFragment != null) {

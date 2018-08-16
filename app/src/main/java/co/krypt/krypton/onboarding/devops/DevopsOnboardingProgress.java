@@ -1,50 +1,52 @@
-package co.krypt.krypton.onboarding;
+package co.krypt.krypton.onboarding.devops;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import co.krypt.krypton.onboarding.u2f.U2FOnboardingStage;
 
 /**
  * Created by Kevin King on 1/11/17.
  * Copyright 2016. KryptCo, Inc.
  */
 
-public class OnboardingProgress {
+public class DevopsOnboardingProgress {
     private static final String CURRENT_STAGE_KEY = "CURRENT_STAGE";
 
     private static Object lock = new Object();
     private SharedPreferences preferences;
 
-    public OnboardingProgress(Context context) {
-        preferences = context.getSharedPreferences("ONBOARDING_PROGRESS_PREFERENCES", Context.MODE_PRIVATE);
-    }
+    public DevopsOnboardingProgress(Context context) {
+        preferences = context.getSharedPreferences("DEVOPS_ONBOARDING_PROGRESS_PREFERENCES", Context.MODE_PRIVATE);
+}
 
     public void reset() {
         synchronized (lock) {
-            setStage(OnboardingStage.NONE);
+            setStage(DevopsOnboardingStage.NONE);
         }
     }
 
     public boolean inProgress() {
         synchronized (lock) {
-            return !currentStage().equals(OnboardingStage.NONE);
+            return !currentStage().equals(U2FOnboardingStage.DONE);
         }
     }
 
-    public OnboardingStage currentStage() {
+    public DevopsOnboardingStage currentStage() {
         synchronized (lock) {
             try {
                 String stage = preferences.getString(CURRENT_STAGE_KEY, null);
                 if (stage == null) {
-                    return OnboardingStage.NONE;
+                    return DevopsOnboardingStage.NONE;
                 }
-                return OnboardingStage.valueOf(stage);
+                return DevopsOnboardingStage.valueOf(stage);
             } catch(Exception e) {
-                return OnboardingStage.NONE;
+                return DevopsOnboardingStage.NONE;
             }
         }
     }
 
-    public void setStage(OnboardingStage stage) {
+    public void setStage(DevopsOnboardingStage stage) {
         synchronized (lock) {
             preferences.edit().putString(CURRENT_STAGE_KEY, stage.toString()).apply();
         }

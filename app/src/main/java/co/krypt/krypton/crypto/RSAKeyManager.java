@@ -63,7 +63,7 @@ public class RSAKeyManager implements KeyManagerI {
                     //  java.security.KeyStore.getEntry (KeyStore.java:645)
                     //  co.krypt.krypton.crypto.RSAKeyManager.loadOrGenerateKeyPair (RSAKeyManager.java:58)
                     //  co.krypt.krypton.crypto.KeyManager.loadOrGenerateKeyPair (KeyManager.java:16)
-                    //  co.krypt.krypton.onboarding.GenerateFragment$3.run (GenerateFragment.java:105)
+                    //  co.krypt.krypton.onboarding.WelcomeFragment$3.run (WelcomeFragment.java:105)
                     //  java.lang.Thread.run (Thread.java:818)
                     privateKeyEntry = keyStore.getEntry(tag, null);
                 } catch (NullPointerException npe) {

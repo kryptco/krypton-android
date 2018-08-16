@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="co.krypt.krypton.onboarding.TestSSHFragment">
+    tools:context="co.krypt.krypton.onboarding.devops.TestSSHFragment">
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/skipButton"

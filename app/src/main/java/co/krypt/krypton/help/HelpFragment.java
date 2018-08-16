@@ -8,11 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
-import co.krypt.kryptonite.MainActivity;
 import co.krypt.krypton.R;
-import co.krypt.krypton.analytics.Analytics;
+import co.krypt.kryptonite.MainActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,14 +20,6 @@ public class HelpFragment extends Fragment {
 
     public HelpFragment() {
     }
-
-    private Button curlButton;
-    private Button brewButton;
-    private Button npmButton;
-    private Button moreButton;
-
-    private TextView installCommand;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,69 +54,8 @@ public class HelpFragment extends Fragment {
             }
         });
 
-        curlButton = root.findViewById(R.id.curlHelp);
-        brewButton = root.findViewById(R.id.brewHelp);
-        npmButton = root.findViewById(R.id.npmHelp);
-        moreButton = root.findViewById(R.id.moreHelp);
-
-        installCommand = root.findViewById(R.id.installCommandHelp);
-
-        curlButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                installCommand.setText("$ curl https://krypt.co/kr | sh");
-
-                resetButtons();
-                curlButton.setTextColor(getResources().getColor(R.color.appGreen));
-
-                new Analytics(getContext()).postEvent("help_install", "curl", null, null, false);
-            }
-        });
-
-        brewButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                installCommand.setText("$ brew install kryptco/tap/kr");
-
-                resetButtons();
-                brewButton.setTextColor(getResources().getColor(R.color.appGreen));
-
-                new Analytics(getContext()).postEvent("help_install", "brew", null, null, false);
-            }
-        });
-
-        npmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                installCommand.setText("$ npm install -g krd # mac only");
-
-                resetButtons();
-                npmButton.setTextColor(getResources().getColor(R.color.appGreen));
-
-                new Analytics(getContext()).postEvent("help_install", "npm", null, null, false);
-            }
-        });
-
-        moreButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                installCommand.setText("# go to https://krypt.co/install");
-
-                resetButtons();
-                moreButton.setTextColor(getResources().getColor(R.color.appGreen));
-
-                new Analytics(getContext()).postEvent("help_install", "more", null, null, false);
-            }
-        });
 
         return root;
-    }
-
-    private void resetButtons() {
-        curlButton.setTextColor(getResources().getColor(R.color.appGray));
-        brewButton.setTextColor(getResources().getColor(R.color.appGray));
-        npmButton.setTextColor(getResources().getColor(R.color.appGray));
-        moreButton.setTextColor(getResources().getColor(R.color.appGray));
     }
 
 }

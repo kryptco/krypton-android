@@ -1,4 +1,4 @@
-package co.krypt.krypton.onboarding;
+package co.krypt.krypton.onboarding.devops;
 
 
 import android.content.BroadcastReceiver;
@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import co.krypt.krypton.onboarding.u2f.U2FOnboardingProgress;
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.krypton.R;
 
@@ -114,7 +115,7 @@ public class TestSSHFragment extends Fragment {
     }
 
     private void next() {
-        final OnboardingProgress progress = new OnboardingProgress(getContext());
+        final U2FOnboardingProgress progress = new U2FOnboardingProgress(getContext());
         progress.reset();
         startActivity(new Intent(getContext(), MainActivity.class));
         getActivity().finish();
