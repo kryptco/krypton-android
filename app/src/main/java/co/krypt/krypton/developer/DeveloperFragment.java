@@ -21,6 +21,12 @@ public class DeveloperFragment extends Fragment {
     private Button digitaloceanButton;
     private Button awsButton;
 
+    private Button curlButton;
+    private Button brewButton;
+    private Button npmButton;
+    private Button moreButton;
+    private TextView installCommand;
+
     private TextView addKeyCommandTextView;
 
     public DeveloperFragment() { }
@@ -39,6 +45,60 @@ public class DeveloperFragment extends Fragment {
         digitaloceanButton = v.findViewById(R.id.digitaloceanButton);
         awsButton = v.findViewById(R.id.awsButton);
         addKeyCommandTextView = v.findViewById(R.id.addKeyTextView);
+
+        curlButton = v.findViewById(R.id.curlHelp);
+        brewButton = v.findViewById(R.id.brewHelp);
+        npmButton = v.findViewById(R.id.npmHelp);
+        moreButton = v.findViewById(R.id.moreHelp);
+        installCommand = v.findViewById(R.id.installCommandHelp);
+
+        curlButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                installCommand.setText("$ curl https://krypt.co/kr | sh");
+
+                resetButtons();
+                curlButton.setTextColor(getResources().getColor(R.color.appGreen));
+
+                new Analytics(getContext()).postEvent("help_install", "curl", null, null, false);
+            }
+        });
+
+        brewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                installCommand.setText("$ brew install kryptco/tap/kr");
+
+                resetButtons();
+                brewButton.setTextColor(getResources().getColor(R.color.appGreen));
+
+                new Analytics(getContext()).postEvent("help_install", "brew", null, null, false);
+            }
+        });
+
+        npmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                installCommand.setText("$ npm install -g krd # mac only");
+
+                resetButtons();
+                npmButton.setTextColor(getResources().getColor(R.color.appGreen));
+
+                new Analytics(getContext()).postEvent("help_install", "npm", null, null, false);
+            }
+        });
+
+        moreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                installCommand.setText("# go to https://krypt.co/install");
+
+                resetButtons();
+                moreButton.setTextColor(getResources().getColor(R.color.appGreen));
+
+                new Analytics(getContext()).postEvent("help_install", "more", null, null, false);
+            }
+        });
 
         githubButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,6 +149,13 @@ public class DeveloperFragment extends Fragment {
             new Analytics(getActivity().getApplicationContext()).postPageView("KnownHostsEdit");
         });
         return v;
+    }
+
+    private void resetButtons() {
+        curlButton.setTextColor(getResources().getColor(R.color.appGray));
+        brewButton.setTextColor(getResources().getColor(R.color.appGray));
+        npmButton.setTextColor(getResources().getColor(R.color.appGray));
+        moreButton.setTextColor(getResources().getColor(R.color.appGray));
     }
 
 
