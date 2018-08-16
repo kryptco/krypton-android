@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 
 import co.krypt.krypton.R;
 import co.krypt.krypton.log.Log;
-import co.krypt.krypton.onboarding.u2f.OnboardingActivity;
+import co.krypt.krypton.onboarding.OnboardingActivity;
 import co.krypt.krypton.onboarding.u2f.U2FOnboardingProgress;
 import co.krypt.krypton.pairing.Pairing;
 import co.krypt.krypton.pgp.PGPPublicKey;

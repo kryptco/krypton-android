@@ -37,8 +37,8 @@ import co.krypt.krypton.developer.DeveloperFragment;
 import co.krypt.krypton.devices.DevicesFragment;
 import co.krypt.krypton.help.HelpFragment;
 import co.krypt.krypton.me.MeFragment;
-import co.krypt.krypton.me.MeStorage;
-import co.krypt.krypton.onboarding.u2f.OnboardingActivity;
+import co.krypt.krypton.onboarding.OnboardingActivity;
+import co.krypt.krypton.onboarding.devops.DevopsOnboardingProgress;
 import co.krypt.krypton.onboarding.u2f.U2FOnboardingProgress;
 import co.krypt.krypton.pairing.PairFragment;
 import co.krypt.krypton.policy.LocalAuthentication;
@@ -105,17 +105,14 @@ public class MainActivity extends AppCompatActivity {
             //  thrown when starting a service is not allowed
             e.printStackTrace();
         }
-        U2FOnboardingProgress progress = new U2FOnboardingProgress(getApplicationContext());
-        if (progress.inProgress()) {
+        U2FOnboardingProgress u2fProgress = new U2FOnboardingProgress(getApplicationContext());
+        DevopsOnboardingProgress devopsProgress = new DevopsOnboardingProgress(getApplicationContext());
+        if (u2fProgress.inProgress()
+                || (new Settings(getApplicationContext()).developerMode() && devopsProgress.inProgress())) {
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
             return;
         }
-
-        if (new Settings(getApplicationContext()).developerMode() && new MeStorage(getApplicationContext()).load() == null) {
-            //TODO: start dev onboarding
-        }
-
 
         if (ConnectionResult.SUCCESS != GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getApplicationContext())) {
             //  TODO: warn about no push notifications, prompt to install google play services

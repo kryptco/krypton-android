@@ -6,5 +6,5 @@ package co.krypt.krypton.onboarding.u2f;
  */
 
 public enum U2FOnboardingStage {
-    NONE, GENERATE, GENERATING, FIRST_PAIR_EXT, FIRST_PAIR_CLI, TEST_SSH, DONE
+    NONE, FIRST_PAIR_EXT, DONE
 }

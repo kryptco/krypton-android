@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import co.krypt.krypton.onboarding.u2f.U2FOnboardingProgress;
 import co.krypt.kryptonite.MainActivity;
 import co.krypt.krypton.R;
 
@@ -115,8 +114,8 @@ public class TestSSHFragment extends Fragment {
     }
 
     private void next() {
-        final U2FOnboardingProgress progress = new U2FOnboardingProgress(getContext());
-        progress.reset();
+        final DevopsOnboardingProgress progress = new DevopsOnboardingProgress(getContext());
+        progress.setStage(DevopsOnboardingStage.DONE);
         startActivity(new Intent(getContext(), MainActivity.class));
         getActivity().finish();
     }

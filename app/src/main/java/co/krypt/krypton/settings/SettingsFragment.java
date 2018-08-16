@@ -22,7 +22,7 @@ import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.crypto.KeyManager;
 import co.krypt.krypton.me.MeStorage;
-import co.krypt.krypton.onboarding.u2f.OnboardingActivity;
+import co.krypt.krypton.onboarding.OnboardingActivity;
 import co.krypt.krypton.policy.LocalAuthentication;
 import co.krypt.krypton.silo.Silo;
 import co.krypt.krypton.team.Sigchain;

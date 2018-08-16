@@ -1,4 +1,4 @@
-package co.krypt.krypton.onboarding.u2f;
+package co.krypt.krypton.onboarding;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,11 +6,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -20,9 +18,12 @@ import java.util.Iterator;
 
 import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
-import co.krypt.krypton.approval.ApprovalDialog;
+import co.krypt.krypton.onboarding.devops.DevopsOnboardingProgress;
 import co.krypt.krypton.onboarding.devops.FirstPairCliFragment;
 import co.krypt.krypton.onboarding.devops.TestSSHFragment;
+import co.krypt.krypton.onboarding.u2f.FirstPairExtFragment;
+import co.krypt.krypton.onboarding.u2f.U2FOnboardingProgress;
+import co.krypt.krypton.onboarding.u2f.WelcomeFragment;
 import co.krypt.krypton.pairing.Pairing;
 import co.krypt.krypton.policy.LocalAuthentication;
 import co.krypt.krypton.silo.Silo;
@@ -55,8 +56,16 @@ public class OnboardingActivity extends FragmentActivity {
         TestSSHFragment testSSHFragment;
         switch (progress.currentStage()) {
             case NONE:
-                welcomeFragment = new WelcomeFragment();
-                fragmentTransaction.add(R.id.activity_onboarding, welcomeFragment).commit();
+                break;
+            case FIRST_PAIR_EXT:
+                firstPairExtFragment = new FirstPairExtFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, firstPairExtFragment).commit();
+                break;
+        }
+
+        DevopsOnboardingProgress devopsProgress = new DevopsOnboardingProgress(getApplicationContext());
+        switch(devopsProgress.currentStage()) {
+            case NONE:
                 break;
             case GENERATE:
                 welcomeFragment = new WelcomeFragment();
@@ -66,10 +75,6 @@ public class OnboardingActivity extends FragmentActivity {
                 //  generation must have failed, start from beginning
                 welcomeFragment = new WelcomeFragment();
                 fragmentTransaction.add(R.id.activity_onboarding, welcomeFragment).commit();
-                break;
-            case FIRST_PAIR_EXT:
-                firstPairExtFragment = new FirstPairExtFragment();
-                fragmentTransaction.add(R.id.activity_onboarding, firstPairExtFragment).commit();
                 break;
             case FIRST_PAIR_CLI:
                 firstPairCliFragment = new FirstPairCliFragment();
@@ -86,10 +91,6 @@ public class OnboardingActivity extends FragmentActivity {
                     fragmentTransaction.add(R.id.activity_onboarding, firstPairExtFragment).commit();
                 }
                 break;
-        }
-
-        if (getIntent() != null) {
-            onNewIntent(getIntent());
         }
     }
 
@@ -131,31 +132,7 @@ public class OnboardingActivity extends FragmentActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right);
-        U2FOnboardingProgress progress = new U2FOnboardingProgress(getApplicationContext());
-
-        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.activity_onboarding);
-        if (currentFragment != null) {
-            fragmentTransaction.remove(currentFragment);
-        }
-
-        switch (progress.currentStage()) {
-            case NONE:
-                break;
-            case GENERATE:
-                break;
-            case GENERATING:
-                break;
-            case FIRST_PAIR_EXT:
-                break;
-            case FIRST_PAIR_CLI:
-                break;
-            case TEST_SSH:
-                break;
-        }
-    }
+    public void onBackPressed() { }
 
     @Override
     protected void onResume() {
@@ -167,15 +144,5 @@ public class OnboardingActivity extends FragmentActivity {
     protected void onPause() {
         Silo.shared(getApplicationContext()).stop();
         super.onPause();
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        if (intent.getStringExtra("requestID") != null) {
-            final String requestID = intent.getStringExtra("requestID");
-            ApprovalDialog.showApprovalDialog(this, requestID);
-        } else {
-            Log.d(TAG, "empty intent");
-        }
     }
 }
