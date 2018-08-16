@@ -3,8 +3,6 @@ package co.krypt.krypton.onboarding.devops;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import co.krypt.krypton.onboarding.u2f.U2FOnboardingStage;
-
 /**
  * Created by Kevin King on 1/11/17.
  * Copyright 2016. KryptCo, Inc.
@@ -28,7 +26,7 @@ public class DevopsOnboardingProgress {
 
     public boolean inProgress() {
         synchronized (lock) {
-            return !currentStage().equals(U2FOnboardingStage.DONE);
+            return !currentStage().equals(DevopsOnboardingStage.DONE);
         }
     }
 

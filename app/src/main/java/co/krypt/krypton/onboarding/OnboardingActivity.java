@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -20,6 +21,7 @@ import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.onboarding.devops.DevopsOnboardingProgress;
 import co.krypt.krypton.onboarding.devops.FirstPairCliFragment;
+import co.krypt.krypton.onboarding.devops.GenerateFragment;
 import co.krypt.krypton.onboarding.devops.TestSSHFragment;
 import co.krypt.krypton.onboarding.u2f.FirstPairExtFragment;
 import co.krypt.krypton.onboarding.u2f.U2FOnboardingProgress;
@@ -50,36 +52,45 @@ public class OnboardingActivity extends FragmentActivity {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
         U2FOnboardingProgress progress = new U2FOnboardingProgress(getApplicationContext());
+        DevopsOnboardingProgress devopsProgress = new DevopsOnboardingProgress(getApplicationContext());
+
+        Log.d(TAG, "U2FProgress: " + progress.currentStage().name() + " DevopsProgress: " + devopsProgress.currentStage().name());
+        GenerateFragment generateFragment;
         WelcomeFragment welcomeFragment;
         FirstPairExtFragment firstPairExtFragment;
         FirstPairCliFragment firstPairCliFragment;
         TestSSHFragment testSSHFragment;
         switch (progress.currentStage()) {
             case NONE:
-                break;
+                welcomeFragment = new WelcomeFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, welcomeFragment).commit();
+                return;
             case FIRST_PAIR_EXT:
                 firstPairExtFragment = new FirstPairExtFragment();
                 fragmentTransaction.add(R.id.activity_onboarding, firstPairExtFragment).commit();
+                return;
+            case DONE:
                 break;
         }
 
-        DevopsOnboardingProgress devopsProgress = new DevopsOnboardingProgress(getApplicationContext());
         switch(devopsProgress.currentStage()) {
             case NONE:
-                break;
+                generateFragment = new GenerateFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, generateFragment).commit();
+                return;
             case GENERATE:
-                welcomeFragment = new WelcomeFragment();
-                fragmentTransaction.add(R.id.activity_onboarding, welcomeFragment).commit();
-                break;
+                generateFragment = new GenerateFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, generateFragment).commit();
+                return;
             case GENERATING:
                 //  generation must have failed, start from beginning
-                welcomeFragment = new WelcomeFragment();
-                fragmentTransaction.add(R.id.activity_onboarding, welcomeFragment).commit();
-                break;
+                generateFragment = new GenerateFragment();
+                fragmentTransaction.add(R.id.activity_onboarding, generateFragment).commit();
+                return;
             case FIRST_PAIR_CLI:
                 firstPairCliFragment = new FirstPairCliFragment();
                 fragmentTransaction.add(R.id.activity_onboarding, firstPairCliFragment).commit();
-                break;
+                return;
             case TEST_SSH:
                 Iterator<Pairing> pairings = Silo.shared(getApplicationContext()).pairings().loadAll().iterator();
                 if (pairings.hasNext()) {
@@ -90,7 +101,7 @@ public class OnboardingActivity extends FragmentActivity {
                     firstPairExtFragment = new FirstPairExtFragment();
                     fragmentTransaction.add(R.id.activity_onboarding, firstPairExtFragment).commit();
                 }
-                break;
+                return;
         }
     }
 
