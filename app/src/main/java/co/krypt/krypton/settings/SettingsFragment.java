@@ -6,6 +6,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
@@ -23,6 +25,7 @@ import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.crypto.KeyManager;
 import co.krypt.krypton.me.MeStorage;
 import co.krypt.krypton.onboarding.OnboardingActivity;
+import co.krypt.krypton.onboarding.devops.DevopsOnboardingProgress;
 import co.krypt.krypton.policy.LocalAuthentication;
 import co.krypt.krypton.silo.Silo;
 import co.krypt.krypton.team.Sigchain;
@@ -46,6 +49,9 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_settings, container, false);
+
+        Settings settings = new Settings(getContext());
+
         Button doneButton = (Button) root.findViewById(R.id.doneButton);
         final Fragment self = this;
         doneButton.setOnClickListener(new View.OnClickListener() {
@@ -84,6 +90,7 @@ public class SettingsFragment extends Fragment {
                                 new MeStorage(getContext()).delete();
                                 new JoinTeamProgress(getContext()).resetAndDeleteTeam(getContext());
                                 new CreateTeamProgress(getContext()).reset();
+                                new DevopsOnboardingProgress(getContext()).reset();
                                 startActivity(new Intent(getContext(), OnboardingActivity.class));
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -91,6 +98,15 @@ public class SettingsFragment extends Fragment {
                         }).start());
             }
         });
+        Runnable updateDeleteButton = () -> {
+            deleteButton.setEnabled(settings.developerMode());
+            if (settings.developerMode()) {
+                deleteButton.setVisibility(View.VISIBLE);
+            } else {
+                deleteButton.setVisibility(View.INVISIBLE);
+            }
+        };
+        updateDeleteButton.run();
 
         Button contactButton = (Button) root.findViewById(R.id.contactUsButton);
         contactButton.setOnClickListener(new View.OnClickListener() {
@@ -121,8 +137,6 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        Settings settings = new Settings(getContext());
-
         SwitchCompat oneTouchLoginSwitch = root.findViewById(R.id.oneTouchLoginToggle);
         oneTouchLoginSwitch.setChecked(settings.oneTouchLogin());
         oneTouchLoginSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -145,8 +159,12 @@ public class SettingsFragment extends Fragment {
         developerMode.setChecked(settings.developerMode());
         developerMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
             settings.setDeveloperMode(isChecked);
-            ((MainActivity) getActivity()).relayoutTabs();
-            // TODO: start dev onboarding if no SSH key exists
+            updateDeleteButton.run();
+            new Handler(Looper.getMainLooper()).post(() -> ((MainActivity) getActivity()).relayoutTabs());
+            if (isChecked && new DevopsOnboardingProgress(getContext()).inProgress()) {
+                startActivity(new Intent(getContext(), OnboardingActivity.class));
+                getActivity().finish();
+            }
         });
 
         SwitchCompat enableApprovedNotifications = (SwitchCompat) root.findViewById(R.id.enableAutoApproveNotificationsSwitch);

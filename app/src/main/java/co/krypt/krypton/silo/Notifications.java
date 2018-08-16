@@ -26,8 +26,6 @@ import javax.annotation.Nullable;
 
 import co.krypt.krypton.R;
 import co.krypt.krypton.log.Log;
-import co.krypt.krypton.onboarding.OnboardingActivity;
-import co.krypt.krypton.onboarding.u2f.U2FOnboardingProgress;
 import co.krypt.krypton.pairing.Pairing;
 import co.krypt.krypton.pgp.PGPPublicKey;
 import co.krypt.krypton.pgp.publickey.SignedPublicKeySelfCertification;
@@ -391,9 +389,6 @@ public class Notifications {
         PendingIntent rejectPendingIntent = PendingIntent.getBroadcast(context, (Policy.REJECT + "-" + request.requestID).hashCode(), rejectIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent clickIntent = new Intent(context, MainActivity.class);
-        if (new U2FOnboardingProgress(context).inProgress()) {
-            clickIntent.setClass(context, OnboardingActivity.class);
-        }
         clickIntent.setAction("CLICK-" + request.requestID);
         clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         clickIntent.putExtra("requestID", request.requestID);
@@ -551,9 +546,6 @@ public class Notifications {
     }
     private static void notifyPGPKeyExportJob(Context context, PGPPublicKey pubkey) {
         Intent clickIntent = new Intent(context, MainActivity.class);
-        if (new U2FOnboardingProgress(context).inProgress()) {
-            clickIntent.setClass(context, OnboardingActivity.class);
-        }
         clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent clickPendingIntent = PendingIntent.getActivity(context, ("CLICK-PGPPUBKEY").hashCode(), clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -600,9 +592,6 @@ public class Notifications {
     }
     private static void notifyTeamUpdateJob(Context context, String teamName, Sigchain.FormattedBlock block) {
         Intent clickIntent = new Intent(context, MainActivity.class);
-        if (new U2FOnboardingProgress(context).inProgress()) {
-            clickIntent.setClass(context, OnboardingActivity.class);
-        }
         clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent clickPendingIntent = PendingIntent.getActivity(context, ("CLICK-TEAM-UPDATE").hashCode(), clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
