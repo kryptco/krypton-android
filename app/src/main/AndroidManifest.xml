@@ -46,7 +46,7 @@
         <activity
             android:name="co.krypt.krypton.u2f.U2FAuthenticateActivity"
             android:launchMode="standard"
-            android:theme="@style/AppTheme.Launcher"
+            android:theme="@style/Theme.Transparent"
             >
             <intent-filter>
                 <action android:name="com.google.android.apps.authenticator.AUTHENTICATE"/>
