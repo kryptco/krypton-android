@@ -820,7 +820,7 @@ public class Silo {
                         U2FSignatureLog log = new U2FSignatureLog(u2FAuthenticateRequest, pairing);
                         pairingStorage.appendToU2FLog(log);
                     } else {
-                        response.u2fRegisterResponse.error = "rejected";
+                        response.u2fAuthenticateResponse.error = "rejected";
                     }
                     return null;
                 }
