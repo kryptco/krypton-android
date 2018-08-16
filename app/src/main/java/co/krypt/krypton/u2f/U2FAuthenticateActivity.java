@@ -36,6 +36,8 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
 
     private static final String TAG = U2FAuthenticateActivity.class.getName();
 
+    private AlertDialog dialog = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +103,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
     }
 
     private void handleU2FAuthenticate(Intent intent, String callingPackage, ChromeU2FAuthenticateRequest chromeRequest, String facetId) throws CryptoException, IOException {
-        U2FAuthenticateRequest request = new U2FAuthenticateRequest();
+        final U2FAuthenticateRequest request = new U2FAuthenticateRequest();
         request.appId = chromeRequest.appId;
         String clientData = ClientData.createAuthenticate(this, chromeRequest.challenge, facetId);
         request.challenge = SHA256.digest(clientData.getBytes("UTF-8"));
@@ -115,33 +117,54 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         }
         if (keyHandle == null) {
             Log.e(TAG, "no matching key");
+            finish();
             return;
         }
         request.keyHandle = keyHandle;
-        U2F.KeyPair keyPair = U2F.KeyManager.loadAccountKeyPair(this, keyHandle);
-        U2FAuthenticateResponse response = keyPair.signU2FAuthenticateRequest(request);
 
-        ChromeU2FResponse chromeResponse = new ChromeU2FResponse();
-        chromeResponse.requestId = chromeRequest.requestId;
-        chromeResponse.type = "u2f_sign_response";
-        ChromeU2FResponse.SignResponseData responseData = new ChromeU2FResponse.SignResponseData();
-        chromeResponse.responseData = responseData;
-        responseData.clientData = Base64.encodeURLSafe(clientData.getBytes("UTF-8"));
-        responseData.keyHandle = Base64.encodeURLSafe(keyHandle);
+        dialog = new AlertDialog.Builder(this)
+                .setIcon(R.mipmap.ic_launcher)
+                .setTitle("Krypton Authenticator")
+                .setMessage("Sign-in to " + KnownAppIds.displayAppId(request.appId) + "?")
+                .setPositiveButton("YES", (d, v) -> {
+                    try {
 
-        ByteArrayOutputStream signatureData = new ByteArrayOutputStream();
-        DataOutputStream signatureDataFmt = new DataOutputStream(signatureData);
-        signatureDataFmt.writeByte(0x01);
-        signatureDataFmt.writeInt((int) response.counter);
-        signatureDataFmt.write(response.signature);
-        signatureDataFmt.close();
+                        U2F.KeyPair keyPair = U2F.KeyManager.loadAccountKeyPair(this, request.keyHandle);
+                        U2FAuthenticateResponse response = keyPair.signU2FAuthenticateRequest(request);
 
-        responseData.signatureData = Base64.encodeURLSafe(signatureData.toByteArray());
+                        ChromeU2FResponse chromeResponse = new ChromeU2FResponse();
+                        chromeResponse.requestId = chromeRequest.requestId;
+                        chromeResponse.type = "u2f_sign_response";
+                        ChromeU2FResponse.SignResponseData responseData = new ChromeU2FResponse.SignResponseData();
+                        chromeResponse.responseData = responseData;
+                        responseData.clientData = Base64.encodeURLSafe(clientData.getBytes("UTF-8"));
+                        responseData.keyHandle = Base64.encodeURLSafe(request.keyHandle);
 
-        Log.d(TAG, JSON.toJson(chromeResponse));
-        intent.putExtra("resultData", JSON.toJson(chromeResponse));
-        setResult(RESULT_OK, intent);
-        finish();
+                        ByteArrayOutputStream signatureData = new ByteArrayOutputStream();
+                        DataOutputStream signatureDataFmt = new DataOutputStream(signatureData);
+                        signatureDataFmt.writeByte(0x01);
+                        signatureDataFmt.writeInt((int) response.counter);
+                        signatureDataFmt.write(response.signature);
+                        signatureDataFmt.close();
+
+                        responseData.signatureData = Base64.encodeURLSafe(signatureData.toByteArray());
+
+                        Log.d(TAG, JSON.toJson(chromeResponse));
+                        intent.putExtra("resultData", JSON.toJson(chromeResponse));
+                        setResult(RESULT_OK, intent);
+                    } catch (IOException | CryptoException e) {
+                        Error.longToast(U2FAuthenticateActivity.this, e.getLocalizedMessage());
+                    }
+                    finish();
+                })
+                .setNegativeButton("NO", (d, v) -> {
+                    finish();
+                })
+                .setOnCancelListener((v) -> {
+                    finish();
+                })
+                .create();
+        dialog.show();
     }
 
     private void handleU2FRegister(Intent intent, String callingPackage, ChromeU2FRegisterRequest chromeRequest, String facetId) throws CryptoException, IOException {
@@ -149,18 +172,20 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         for (RegisteredKey registeredKey: chromeRequest.registeredKeys) {
             if (U2F.keyHandleMatches(Base64.decodeURLSafe(registeredKey.keyHandle), chromeRequest.appId)) {
                 Log.e(TAG, "already registered");
+                finish();
                 return;
             }
         }
         if (chromeRequest.registerRequests.length < 1) {
             Log.e(TAG, "no register requests");
+            finish();
             return;
         }
         String clientData = ClientData.createRegister(this, chromeRequest.registerRequests[0].challenge, facetId);
         request.challenge = SHA256.digest(clientData.getBytes("UTF-8"));
         request.appId = chromeRequest.appId;
 
-        new AlertDialog.Builder(this)
+        dialog = new AlertDialog.Builder(this)
                 .setIcon(R.mipmap.ic_launcher)
                 .setTitle("Krypton Authenticator")
                 .setMessage("Register with " + KnownAppIds.displayAppId(request.appId) + "?")
@@ -202,7 +227,11 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
                     //TODO: send error code
                     finish();
                 })
-                .create().show();
+                .setOnCancelListener((v) -> {
+                    finish();
+                })
+                .create();
+        dialog.show();
     }
 
     public static class ChromeU2FRegisterRequest {
@@ -288,7 +317,16 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
 
     @Override
     public void finish() {
+        if (dialog != null) {
+            dialog.dismiss();
+        }
         super.finish();
         overridePendingTransition(0, android.R.anim.fade_out);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (!hasFocus) finish();
     }
 }
