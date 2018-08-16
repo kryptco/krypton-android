@@ -41,8 +41,13 @@ import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.exception.CryptoException;
 import co.krypt.krypton.exception.TransportException;
 import co.krypt.krypton.onboarding.OnboardingActivity;
+import co.krypt.krypton.protocol.JSON;
 import co.krypt.krypton.protocol.PairingQR;
 import co.krypt.krypton.silo.Silo;
+import co.krypt.krypton.team.Sigchain;
+import co.krypt.krypton.team.invite.inperson.member.MemberEnterEmail;
+import co.krypt.krypton.team.invite.inperson.member.MemberScan;
+import co.krypt.krypton.uiutils.Transitions;
 import co.krypt.kryptonite.MainActivity;
 
 
@@ -162,10 +167,25 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
             @Override
             public void barcodeResult(BarcodeResult result) {
                 if (result.getText() != null) {
+                    //  handle in-person team invite
+                    try {
+                        Sigchain.QRPayload qr = JSON.fromJson(result.getText(), Sigchain.QRPayload.class);
+                        if (qr != null && qr.adminQRPayload != null && MemberScan.lastScannedPayload.compareAndSet(null, qr.adminQRPayload)) {
+                            Transitions.beginFade(PairFragment.this)
+                                    .addToBackStack(null)
+                                    .replace(R.id.fragmentOverlay, new MemberEnterEmail())
+                                    .commitAllowingStateLoss();
+                            return;
+                        }
+                    } catch (JsonParseException e) {
+
+                    }
                     try {
                         PairingQR pairingQR = PairingQR.parseJson(result.getText());
-                        Log.i(TAG, "found pairingQR: " + Base64.encodeToString(pairingQR.workstationPublicKey, Base64.DEFAULT));
-                        onPairingScanned(pairingQR);
+                        if(pairingQR != null && pairingQR.workstationPublicKey != null) {
+                            Log.i(TAG, "found pairingQR: " + Base64.encodeToString(pairingQR.workstationPublicKey, Base64.DEFAULT));
+                            onPairingScanned(pairingQR);
+                        }
                     } catch (JsonParseException e) {
                         Log.e(TAG, "could not parse QR code", e);
                     }
