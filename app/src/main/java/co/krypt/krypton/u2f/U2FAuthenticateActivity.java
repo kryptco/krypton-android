@@ -161,6 +161,8 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         request.appId = chromeRequest.appId;
 
         new AlertDialog.Builder(this)
+                .setIcon(R.mipmap.ic_launcher)
+                .setTitle("Krypton Authenticator")
                 .setMessage("Register with " + KnownAppIds.displayAppId(request.appId) + "?")
                 .setPositiveButton("YES", (d, v) -> {
                     try {
