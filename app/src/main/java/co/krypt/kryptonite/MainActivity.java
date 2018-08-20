@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         }
         U2FOnboardingProgress u2fProgress = new U2FOnboardingProgress(getApplicationContext());
         DevopsOnboardingProgress devopsProgress = new DevopsOnboardingProgress(getApplicationContext());
-        if (u2fProgress.inProgress()
+        if ((u2fProgress.inProgress() && silo.pairings().loadAll().size() == 0)
                 || (new Settings(getApplicationContext()).developerMode() && devopsProgress.inProgress())) {
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
