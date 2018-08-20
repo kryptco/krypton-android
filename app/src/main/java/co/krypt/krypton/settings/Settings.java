@@ -3,6 +3,9 @@ package co.krypt.krypton.settings;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import co.krypt.krypton.me.MeStorage;
+import co.krypt.krypton.protocol.Profile;
+
 /**
  * Created by Kevin King on 1/9/17.
  * Copyright 2016. KryptCo, Inc.
@@ -15,10 +18,12 @@ public class Settings {
     public static final String DEVELOPER_MODE_KEY = "DEVELOPER_MODE";
 
     private static Object lock = new Object();
-    private SharedPreferences preferences;
+    private final SharedPreferences preferences;
+    private final Context context;
 
     public Settings(Context context) {
         preferences = context.getSharedPreferences("SETTINGS_PREFERENCES", Context.MODE_PRIVATE);
+        this.context = context;
     }
 
     public boolean approvedNotificationsEnabled() {
@@ -58,8 +63,9 @@ public class Settings {
     }
 
     public boolean developerMode() {
+        Profile profile = new MeStorage(context).load();
         synchronized (lock) {
-            return preferences.getBoolean(DEVELOPER_MODE_KEY, false);
+            return preferences.getBoolean(DEVELOPER_MODE_KEY, profile != null && profile.sshWirePublicKey != null);
         }
     }
 
