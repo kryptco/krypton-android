@@ -118,6 +118,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         }
         if (keyHandle == null) {
             Log.e(TAG, "no matching key");
+            Error.longToast(U2FAuthenticateActivity.this, "Krypton not added to this account");
             finish();
             return;
         }
@@ -317,9 +318,16 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
+    }
+
+    @Override
     public void finish() {
         if (dialog != null) {
             dialog.dismiss();
+            dialog = null;
         }
         super.finish();
         overridePendingTransition(0, android.R.anim.fade_out);
