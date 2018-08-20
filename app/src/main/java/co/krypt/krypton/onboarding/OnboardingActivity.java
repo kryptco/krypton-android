@@ -103,6 +103,7 @@ public class OnboardingActivity extends FragmentActivity {
                 }
                 return;
         }
+        finish();
     }
 
     @Override

@@ -39,7 +39,9 @@ import co.krypt.krypton.help.HelpFragment;
 import co.krypt.krypton.me.MeFragment;
 import co.krypt.krypton.onboarding.OnboardingActivity;
 import co.krypt.krypton.onboarding.devops.DevopsOnboardingProgress;
+import co.krypt.krypton.onboarding.devops.DevopsOnboardingStage;
 import co.krypt.krypton.onboarding.u2f.U2FOnboardingProgress;
+import co.krypt.krypton.onboarding.u2f.U2FOnboardingStage;
 import co.krypt.krypton.pairing.PairFragment;
 import co.krypt.krypton.policy.LocalAuthentication;
 import co.krypt.krypton.settings.Settings;
@@ -107,7 +109,13 @@ public class MainActivity extends AppCompatActivity {
         }
         U2FOnboardingProgress u2fProgress = new U2FOnboardingProgress(getApplicationContext());
         DevopsOnboardingProgress devopsProgress = new DevopsOnboardingProgress(getApplicationContext());
-        if ((u2fProgress.inProgress() && silo.pairings().loadAll().size() == 0)
+        if (silo.pairings().loadAll().size() > 0) {
+            u2fProgress.setStage(U2FOnboardingStage.DONE);
+        }
+        if (silo.meStorage().load() != null) {
+            devopsProgress.setStage(DevopsOnboardingStage.DONE);
+        }
+        if (u2fProgress.inProgress()
                 || (new Settings(getApplicationContext()).developerMode() && devopsProgress.inProgress())) {
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
