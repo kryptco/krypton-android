@@ -83,11 +83,11 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
                         }
                         if ("u2f_register_request".equals(type.getAsString())) {
                             ChromeU2FRegisterRequest chromeRequest = JSON.fromJson(requestJSON, ChromeU2FRegisterRequest.class);
-                            handleU2FRegister(intent, callingPackage, chromeRequest, facetId);
+                            handleU2FRegister(intent, chromeRequest, facetId);
                             return;
                         } else if ("u2f_sign_request".equals(type.getAsString())){
                             ChromeU2FAuthenticateRequest chromeRequest = JSON.fromJson(requestJSON, ChromeU2FAuthenticateRequest.class);
-                            handleU2FAuthenticate(intent, callingPackage, chromeRequest, facetId);
+                            handleU2FAuthenticate(intent, chromeRequest, facetId);
                             return;
                         }
                     } catch (UnsupportedEncodingException e) {
@@ -103,7 +103,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         finish();
     }
 
-    private void handleU2FAuthenticate(Intent intent, String callingPackage, ChromeU2FAuthenticateRequest chromeRequest, String facetId) throws CryptoException, IOException {
+    private void handleU2FAuthenticate(Intent intent, ChromeU2FAuthenticateRequest chromeRequest, String facetId) throws CryptoException, IOException {
         final U2FAuthenticateRequest request = new U2FAuthenticateRequest();
         request.appId = chromeRequest.appId;
         String clientData = ClientData.createAuthenticate(this, chromeRequest.challenge, facetId);
@@ -169,7 +169,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void handleU2FRegister(Intent intent, String callingPackage, ChromeU2FRegisterRequest chromeRequest, String facetId) throws CryptoException, IOException {
+    private void handleU2FRegister(Intent intent, ChromeU2FRegisterRequest chromeRequest, String facetId) throws CryptoException, IOException {
         U2FRegisterRequest request = new U2FRegisterRequest();
         for (RegisteredKey registeredKey: chromeRequest.registeredKeys) {
             if (U2F.keyHandleMatches(Base64.decodeURLSafe(registeredKey.keyHandle), chromeRequest.appId)) {
