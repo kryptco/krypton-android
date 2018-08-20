@@ -25,6 +25,10 @@ public class Profile {
     @Nullable
     public byte[] pgpPublicKey;
 
+    @SerializedName("u2f_accounts")
+    @Nullable
+    public String[] u2fAccounts;
+
     @SerializedName("team_checkpoint")
     @Nullable
     public Sigchain.TeamCheckpoint teamCheckpoint;

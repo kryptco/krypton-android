@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.amazonaws.util.Base64;
+import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.jakewharton.disklrucache.DiskLruCache;
@@ -22,6 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -412,6 +414,13 @@ public class Silo {
                             response.meResponse.me.email = deviceName;
                         }
                         response.meResponse.me.deviceIdentifier = U2F.loadOrGenerateDeviceIdentifier();
+                        HashSet<String> u2fAccounts = new HashSet<>();
+                        for (U2F.KeyManager.Account account: U2F.getAccounts()) {
+                            if (account.shortName != null) {
+                                u2fAccounts.add(account.shortName);
+                            }
+                        }
+                        response.meResponse.me.u2fAccounts = Lists.newArrayList(u2fAccounts).toArray(new String[]{});
                     }
                     return null;
                 }

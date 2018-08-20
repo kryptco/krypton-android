@@ -95,12 +95,13 @@ public class U2F {
 
     public static class KeyManager {
         public static class Account {
-            public Account(String name, int logo, boolean secured, @Nullable Date added, String keyHandleHash) {
+            public Account(String name, int logo, boolean secured, @Nullable Date added, String keyHandleHash, @Nullable String shortName) {
                 this.name = name;
                 this.logo = logo;
                 this.secured = secured;
                 this.added = added;
                 this.keyHandleHash = keyHandleHash;
+                this.shortName = shortName;
             }
 
             public final String name;
@@ -108,6 +109,7 @@ public class U2F {
             public final boolean secured;
             @Nullable public final Date added;
             public final String keyHandleHash;
+            @Nullable public final String shortName;
         }
 
         public static List<Account> getAccounts() throws CryptoException {
@@ -137,7 +139,8 @@ public class U2F {
                                         KnownAppIds.displayAppLogo(appId),
                                         true,
                                         x509Cert.getNotBefore(),
-                                        alias.substring(U2F_ACCOUNT_ALIAS_PREFIX.length())));
+                                        alias.substring(U2F_ACCOUNT_ALIAS_PREFIX.length()),
+                                        KnownAppIds.shortName(appId)));
                     }
                 }
 

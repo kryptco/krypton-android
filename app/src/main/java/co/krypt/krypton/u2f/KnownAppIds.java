@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 import co.krypt.krypton.R;
 
 /**
@@ -15,19 +17,19 @@ import co.krypt.krypton.R;
  */
 public class KnownAppIds {
 
-    static final KnownAppId DROPBOX = new KnownAppId("Dropbox", R.drawable.dropbox);
-    static final KnownAppId GOOGLE = new KnownAppId("Google", R.drawable.google);
-    static final KnownAppId STRIPE = new KnownAppId("Stripe", R.drawable.stripe);
-    static final KnownAppId GITHUB = new KnownAppId("GitHub", R.drawable.github);
-    static final KnownAppId GITLAB = new KnownAppId("GitLab", R.drawable.gitlab);
-    static final KnownAppId YUBICO = new KnownAppId("Yubico Demo", R.drawable.login);
-    static final KnownAppId DUO = new KnownAppId("Duo Demo", R.drawable.duo);
-    static final KnownAppId KEEPER = new KnownAppId("Keeper", R.drawable.keeper);
-    static final KnownAppId FEDORA = new KnownAppId("Fedora", R.drawable.fedora);
-    static final KnownAppId BITBUCKET = new KnownAppId("BitBucket", R.drawable.bitbucket);
-    static final KnownAppId SENTRY = new KnownAppId("Sentry", R.drawable.sentry);
-    static final KnownAppId TWITTER = new KnownAppId("Twitter", R.drawable.twitter);
-    static final KnownAppId FACEBOOK = new KnownAppId("Facebook", R.drawable.facebook);
+    static final KnownAppId DROPBOX = new KnownAppId("Dropbox", R.drawable.dropbox, "d");
+    static final KnownAppId GOOGLE = new KnownAppId("Google", R.drawable.google, "g");
+    static final KnownAppId STRIPE = new KnownAppId("Stripe", R.drawable.stripe, "s");
+    static final KnownAppId GITHUB = new KnownAppId("GitHub", R.drawable.github, "gh");
+    static final KnownAppId GITLAB = new KnownAppId("GitLab", R.drawable.gitlab, "gl");
+    static final KnownAppId YUBICO = new KnownAppId("Yubico Demo", R.drawable.login, null);
+    static final KnownAppId DUO = new KnownAppId("Duo Demo", R.drawable.duo, "dd");
+    static final KnownAppId KEEPER = new KnownAppId("Keeper", R.drawable.keeper, "kp");
+    static final KnownAppId FEDORA = new KnownAppId("Fedora", R.drawable.fedora, "fd");
+    static final KnownAppId BITBUCKET = new KnownAppId("BitBucket", R.drawable.bitbucket, "b");
+    static final KnownAppId SENTRY = new KnownAppId("Sentry", R.drawable.sentry, "sy");
+    static final KnownAppId TWITTER = new KnownAppId("Twitter", R.drawable.twitter, "tw");
+    static final KnownAppId FACEBOOK = new KnownAppId("Facebook", R.drawable.facebook, "f");
 
     public static final List<KnownAppId> COMMON_APP_IDS;
     static {
@@ -72,6 +74,16 @@ public class KnownAppIds {
         return appId.replaceFirst("^https://", "");
     }
 
+    @Nullable
+    public static String shortName(String appId) {
+        KnownAppId knownAppId = getKnownAppId(appId);
+        if (knownAppId != null) {
+            return knownAppId.shortName;
+        }
+
+        return null;
+    }
+
     public static @javax.annotation.Nullable KnownAppId getKnownAppId(String appId) {
         if (knownAppIdToSite.containsKey(appId)) {
             return knownAppIdToSite.get(appId);
@@ -94,9 +106,13 @@ public class KnownAppIds {
         public final String site;
         public final int logoSrc;
 
-        public KnownAppId(String site, Integer logoSrc) {
+        @Nullable
+        public final String shortName;
+
+        public KnownAppId(String site, Integer logoSrc, String shortName) {
             this.site = site;
             this.logoSrc = logoSrc;
+            this.shortName = shortName;
         }
 
         @Override

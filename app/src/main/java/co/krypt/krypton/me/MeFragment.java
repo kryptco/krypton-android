@@ -126,7 +126,7 @@ public class MeFragment extends Fragment {
             List<U2F.KeyManager.Account> displayAccounts = new ArrayList<>();
             for (KnownAppIds.KnownAppId unsecuredAppId: unsecuredAppIds) {
                 if (!hiddenAccounts.contains(unsecuredAppId.site)) {
-                    displayAccounts.add(new U2F.KeyManager.Account(unsecuredAppId.site, unsecuredAppId.logoSrc,false, null, null));
+                    displayAccounts.add(new U2F.KeyManager.Account(unsecuredAppId.site, unsecuredAppId.logoSrc,false, null, null, unsecuredAppId.shortName));
                 }
             }
             displayAccounts.addAll(filteredAccounts);
