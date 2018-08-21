@@ -9,6 +9,8 @@ import android.util.Log;
 
 import com.google.crypto.tink.subtle.Bytes;
 import com.google.crypto.tink.subtle.EllipticCurves;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.UpdateBuilder;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -44,6 +46,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPublicKey;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -54,6 +57,7 @@ import java.util.List;
 
 import javax.security.auth.x500.X500Principal;
 
+import co.krypt.krypton.db.OpenDatabaseHelper;
 import co.krypt.krypton.exception.CryptoException;
 import co.krypt.krypton.protocol.U2FAuthenticateRequest;
 import co.krypt.krypton.protocol.U2FAuthenticateResponse;
@@ -61,6 +65,7 @@ import co.krypt.krypton.protocol.U2FRegisterRequest;
 import co.krypt.krypton.protocol.U2FRegisterResponse;
 import co.krypt.krypton.silo.IdentityService;
 import co.krypt.krypton.u2f.KnownAppIds;
+import co.krypt.krypton.u2f.RegisteredAccount;
 
 /**
  * Created by Kevin King on 5/23/18.
@@ -82,8 +87,8 @@ public class U2F {
         return SHA256.digest(rawPublicKey(sk));
     }
 
-    public static List<KeyManager.Account> getAccounts() throws CryptoException {
-        List<KeyManager.Account> accounts = KeyManager.getAccounts();
+    public static List<KeyManager.Account> getAccounts(Context context) throws CryptoException {
+        List<KeyManager.Account> accounts = KeyManager.getAccounts(context);
         Collections.sort(accounts, (a,b) -> {
             if (b.added != null) {
                 return b.added.compareTo(a.added);
@@ -95,11 +100,12 @@ public class U2F {
 
     public static class KeyManager {
         public static class Account {
-            public Account(String name, int logo, boolean secured, @Nullable Date added, String keyHandleHash, @Nullable String shortName) {
+            public Account(String name, int logo, boolean secured, @Nullable Date added, @Nullable Date lastUsed, String keyHandleHash, @Nullable String shortName) {
                 this.name = name;
                 this.logo = logo;
                 this.secured = secured;
                 this.added = added;
+                this.lastUsed = lastUsed;
                 this.keyHandleHash = keyHandleHash;
                 this.shortName = shortName;
             }
@@ -108,22 +114,28 @@ public class U2F {
             public final int logo;
             public final boolean secured;
             @Nullable public final Date added;
+            @Nullable public final Date lastUsed;
             public final String keyHandleHash;
             @Nullable public final String shortName;
         }
 
-        public static List<Account> getAccounts() throws CryptoException {
-            try {
+        private static void migrateAccountsToDbOnce(Context context) throws SQLException, CryptoException, CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException {
+            final String MIGRATED_KEY = "U2F.MIGRATED_ACCOUNTS_TO_DB";
+
+            SharedPreferences prefs = u2fPrefs(context);
+            if (!prefs.getBoolean(MIGRATED_KEY, false)) {
+                Dao<RegisteredAccount, String> db = new OpenDatabaseHelper(context).getRegisteredAccountDao();
+
                 KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
                 keyStore.load(null);
-                List<Account> accounts = new ArrayList<>();
                 Enumeration<String> storedAliases = keyStore.aliases();
+
 
                 final CertificateFactory certFactory;
 
                 certFactory = CertificateFactory.getInstance("X509");
                 if (certFactory == null) {
-                    return accounts;
+                    return;
                 }
 
                 while (storedAliases.hasMoreElements()) {
@@ -134,20 +146,54 @@ public class U2F {
                         final X509Certificate x509Cert = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(kp.getCertificate().getEncoded()));
                         //  extract CN=<appid>
                         String appId = x509Cert.getSubjectX500Principal().getName().substring(3);
-                        accounts.add(
-                                new Account(KnownAppIds.displayAppId(appId),
-                                        KnownAppIds.displayAppLogo(appId),
-                                        true,
-                                        x509Cert.getNotBefore(),
-                                        alias.substring(U2F_ACCOUNT_ALIAS_PREFIX.length()),
-                                        KnownAppIds.shortName(appId)));
+                        String keyHandleHash = alias.substring(U2F_ACCOUNT_ALIAS_PREFIX.length());
+                        try {
+                            db.create(new RegisteredAccount(
+                                    keyHandleHash,
+                                    appId,
+                                    x509Cert.getNotBefore().getTime() / 1000
+                            ));
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 
-                return accounts;
-            } catch (NullPointerException | NoSuchAlgorithmException | KeyStoreException | CertificateException | IOException e) {
-                e.printStackTrace();
-                throw new CryptoException(e);
+                prefs.edit().putBoolean(MIGRATED_KEY, true).commit();
+            }
+        }
+
+        public static List<Account> getAccounts(Context context) throws CryptoException {
+            synchronized (U2F.class) {
+                try {
+                    try {
+                        migrateAccountsToDbOnce(context);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    List<Account> accounts = new ArrayList<>();
+
+                    Dao<RegisteredAccount, String> db = new OpenDatabaseHelper(context).getRegisteredAccountDao();
+
+                    for (RegisteredAccount registeredAccount: db.queryForAll()) {
+                        Date added = new Date(registeredAccount.added * 1000);
+                        accounts.add(
+                                new Account(
+                                       KnownAppIds.displayAppId(registeredAccount.appId),
+                                        KnownAppIds.displayAppLogo(registeredAccount.appId),
+                                        true,
+                                        added,
+                                        registeredAccount.lastUsed != null ? new Date(registeredAccount.lastUsed * 1000) : null,
+                                        registeredAccount.keyHandleHash,
+                                        KnownAppIds.shortName(registeredAccount.appId)
+                                )
+                        );
+                    }
+                    return accounts;
+                } catch (NullPointerException | NoSuchAlgorithmException | KeyStoreException | CertificateException | IOException | SQLException e) {
+                    e.printStackTrace();
+                    throw new CryptoException(e);
+                }
             }
         }
 
@@ -281,11 +327,13 @@ public class U2F {
         private final SharedPreferences prefs;
         final KeyStore.PrivateKeyEntry keyPair;
         final byte[] keyHandle;
+        final Context context;
 
         public KeyPair(Context context, KeyStore.PrivateKeyEntry keyPair, byte[] keyHandle) {
             prefs = u2fPrefs(context);
             this.keyPair = keyPair;
             this.keyHandle = keyHandle;
+            this.context = context;
         }
 
         private long getAndIncrementCounter() throws CryptoException {
@@ -364,6 +412,20 @@ public class U2F {
 
                 byte[] attestationCertificateBytes = attestationCert.getEncoded();
 
+                try {
+                    Dao<RegisteredAccount, String> db = new OpenDatabaseHelper(context).getRegisteredAccountDao();
+                    db.create(
+                            new RegisteredAccount(
+                                    Base64.encode(SHA256.digest(keyHandle)),
+                                    Base64.encode(keyHandle),
+                                    u2fRegisterRequest.appId,
+                                    System.currentTimeMillis() / 1000
+                            ));
+                    EventBus.getDefault().post(new IdentityService.AccountsUpdated());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
                 return new U2FRegisterResponse(
                         rawKeyBytes,
                         attestationCertificateBytes,
@@ -395,6 +457,17 @@ public class U2F {
                 byte[] toSignData = payloadOutput.toByteArray();
 
                 byte[] signature = signDigest(toSignData);
+
+                try {
+                    Dao<RegisteredAccount, String> db = new OpenDatabaseHelper(context).getRegisteredAccountDao();
+                    UpdateBuilder<RegisteredAccount, String> update = db.updateBuilder();
+                    update.where().eq("key_handle", Base64.encode(u2FAuthenticateRequest.keyHandle));
+                    update.updateColumnValue("last_used", System.currentTimeMillis() / 1000);
+                    update.update();
+                    EventBus.getDefault().post(new IdentityService.AccountsUpdated());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
 
                 return new U2FAuthenticateResponse(
                         rawPublicKey(this.keyPair),

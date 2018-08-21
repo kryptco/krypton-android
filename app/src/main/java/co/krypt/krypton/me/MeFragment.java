@@ -103,7 +103,7 @@ public class MeFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void updateAccounts(IdentityService.AccountsUpdated _) {
         try {
-            List<U2F.KeyManager.Account> securedAccounts = U2F.getAccounts();
+            List<U2F.KeyManager.Account> securedAccounts = U2F.getAccounts(getContext());
             List<U2F.KeyManager.Account> filteredAccounts = new ArrayList<>();
 
             List<KnownAppIds.KnownAppId> unsecuredAppIds = new ArrayList<>(KnownAppIds.COMMON_APP_IDS);
@@ -126,7 +126,7 @@ public class MeFragment extends Fragment {
             List<U2F.KeyManager.Account> displayAccounts = new ArrayList<>();
             for (KnownAppIds.KnownAppId unsecuredAppId: unsecuredAppIds) {
                 if (!hiddenAccounts.contains(unsecuredAppId.site)) {
-                    displayAccounts.add(new U2F.KeyManager.Account(unsecuredAppId.site, unsecuredAppId.logoSrc,false, null, null, unsecuredAppId.shortName));
+                    displayAccounts.add(new U2F.KeyManager.Account(unsecuredAppId.site, unsecuredAppId.logoSrc,false, null, null, null, unsecuredAppId.shortName));
                 }
             }
             displayAccounts.addAll(filteredAccounts);
@@ -187,7 +187,10 @@ public class MeFragment extends Fragment {
             logo.setImageResource(account.logo);
 
             AppCompatTextView addedOn = v.findViewById(R.id.dateAdded);
-            if (account.added != null) {
+            if (account.lastUsed != null) {
+                String timeAdded = DateUtils.getRelativeTimeSpanString(account.lastUsed.getTime(), System.currentTimeMillis(), 1000).toString();
+                addedOn.setText("logged in " + timeAdded);
+            } else if (account.added != null) {
                 String timeAdded = DateUtils.getRelativeTimeSpanString(account.added.getTime(), System.currentTimeMillis(), 1000).toString();
                 addedOn.setText("added " + timeAdded);
             } else {

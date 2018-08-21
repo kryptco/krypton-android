@@ -17,6 +17,7 @@ import co.krypt.krypton.log.GitTagSignatureLog;
 import co.krypt.krypton.log.SSHSignatureLog;
 import co.krypt.krypton.log.U2FSignatureLog;
 import co.krypt.krypton.policy.Approval;
+import co.krypt.krypton.u2f.RegisteredAccount;
 
 
 /**
@@ -27,7 +28,7 @@ import co.krypt.krypton.policy.Approval;
 public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     public static final String DATABASE_NAME = "kryptonite";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     /**
      * The data access object used to interact with the Sqlite database to do C.R.U.D operations.
@@ -37,6 +38,7 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<GitTagSignatureLog, Long> gitTagSignatureLogDao;
     private Dao<U2FSignatureLog, Long> u2FSignatureLogDao;
     private Dao<Approval, Long> approvalDao;
+    private Dao<RegisteredAccount, String> registeredAccountDao;
 
     private final Context context;
 
@@ -56,6 +58,7 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, GitTagSignatureLog.class);
             TableUtils.createTable(connectionSource, Approval.class);
             TableUtils.createTable(connectionSource, U2FSignatureLog.class);
+            TableUtils.createTable(connectionSource, RegisteredAccount.class);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -87,6 +90,10 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
 
             if (oldVersion < 7 && newVersion >= 7) {
                 TableUtils.createTable(connectionSource, U2FSignatureLog.class);
+            }
+
+            if (oldVersion < 8 && newVersion >= 8) {
+                TableUtils.createTable(connectionSource, RegisteredAccount.class);
             }
 
         } catch (SQLException e) {
@@ -139,5 +146,11 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
             approvalDao = getDao(Approval.class);
         }
         return approvalDao;
+    }
+    public Dao<RegisteredAccount, String> getRegisteredAccountDao() throws SQLException {
+        if(registeredAccountDao == null) {
+            registeredAccountDao = getDao(RegisteredAccount.class);
+        }
+        return registeredAccountDao;
     }
 }
