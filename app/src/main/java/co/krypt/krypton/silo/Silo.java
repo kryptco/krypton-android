@@ -72,6 +72,7 @@ import co.krypt.krypton.protocol.LogDecryptionRequest;
 import co.krypt.krypton.protocol.MeRequest;
 import co.krypt.krypton.protocol.MeResponse;
 import co.krypt.krypton.protocol.NetworkMessage;
+import co.krypt.krypton.protocol.Profile;
 import co.krypt.krypton.protocol.ReadTeamRequest;
 import co.krypt.krypton.protocol.Request;
 import co.krypt.krypton.protocol.RequestBody;
@@ -405,22 +406,22 @@ public class Silo {
             request.body.visit(new RequestBody.Visitor<Void, Unrecoverable>() {
                 @Override
                 public Void visit(MeRequest meRequest) throws CryptoException {
-                    response.meResponse = new MeResponse(meStorage.loadWithUserID(meRequest.userID()));
                     if (meRequest.u2fOnly != null && meRequest.u2fOnly) {
-                        response.meResponse.me.pgpPublicKey = null;
-                        response.meResponse.me.teamCheckpoint = null;
+                        response.meResponse = new MeResponse(new Profile());
                         String deviceName = MeStorage.getDeviceName();
                         if (!TextUtils.isEmpty(deviceName)) {
                             response.meResponse.me.email = deviceName;
                         }
                         response.meResponse.me.deviceIdentifier = U2F.loadOrGenerateDeviceIdentifier();
                         HashSet<String> u2fAccounts = new HashSet<>();
-                        for (U2F.KeyManager.Account account: U2F.getAccounts()) {
+                        for (U2F.KeyManager.Account account: U2F.getAccounts(context)) {
                             if (account.shortName != null) {
                                 u2fAccounts.add(account.shortName);
                             }
                         }
                         response.meResponse.me.u2fAccounts = Lists.newArrayList(u2fAccounts).toArray(new String[]{});
+                    } else {
+                        response.meResponse = new MeResponse(meStorage.loadWithUserID(meRequest.userID()));
                     }
                     return null;
                 }
