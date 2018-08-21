@@ -317,13 +317,13 @@ public class Notifications {
 
             @Override
             public Void visit(U2FRegisterRequest u2FRegisterRequest) throws RuntimeException {
-                mBuilder.setContentTitle("Registration with " + u2FRegisterRequest.appId + " rejected");
+                mBuilder.setContentTitle("Registration with " + KnownAppIds.displayAppId(u2FRegisterRequest.appId) + " rejected");
                 return null;
             }
 
             @Override
             public Void visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws RuntimeException {
-                mBuilder.setContentTitle("Sign in to " + u2FAuthenticateRequest.appId + " rejected");
+                mBuilder.setContentTitle("Sign-in to " + KnownAppIds.displayAppId(u2FAuthenticateRequest.appId) + " rejected");
                 return null;
             }
         });
@@ -519,14 +519,14 @@ public class Notifications {
 
             @Override
             public Void visit(U2FRegisterRequest u2FRegisterRequest) throws RuntimeException {
-                mBuilder.setContentTitle("Register with " + u2FRegisterRequest.appId + "?");
+                mBuilder.setContentTitle("Register with " + KnownAppIds.displayAppId(u2FRegisterRequest.appId) + "?");
                 mBuilder.addAction(approveOnceTextApproveBuilder.build());
                 return null;
             }
 
             @Override
             public Void visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws RuntimeException {
-                mBuilder.setContentTitle("Sign in to " + u2FAuthenticateRequest.appId + "?");
+                mBuilder.setContentTitle("Sign in to " + KnownAppIds.displayAppId(u2FAuthenticateRequest.appId) + "?");
                 mBuilder.addAction(approveOnceTextApproveBuilder.build());
                 return null;
             }
