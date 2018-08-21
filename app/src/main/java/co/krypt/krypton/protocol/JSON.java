@@ -12,6 +12,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.ElementType;
@@ -54,6 +55,13 @@ public class JSON {
     }
 
     public static <T> T fromJson(String json, Type classOfT) throws JsonSyntaxException {
+        return gson.fromJson(json, classOfT);
+    }
+
+    public static <T> T fromJson(JsonReader json, Class<T> classOfT) throws JsonSyntaxException {
+        return gson.fromJson(json, classOfT);
+    }
+    public static <T> T fromJson(JsonReader json, Type classOfT) throws JsonSyntaxException {
         return gson.fromJson(json, classOfT);
     }
 
