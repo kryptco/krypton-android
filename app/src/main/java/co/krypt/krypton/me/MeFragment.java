@@ -194,7 +194,7 @@ public class MeFragment extends Fragment {
                 String timeAdded = DateUtils.getRelativeTimeSpanString(account.added.getTime(), System.currentTimeMillis(), 1000).toString();
                 addedOn.setText("added " + timeAdded);
             } else {
-                addedOn.setText("not setup");
+                addedOn.setText("not set up");
             }
 
             AppCompatTextView fixText = v.findViewById(R.id.fixText);
