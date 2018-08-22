@@ -1,5 +1,7 @@
 package co.krypt.krypton;
 
+import android.telecom.InCallService;
+
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -8,6 +10,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
+import co.krypt.krypton.exception.InvalidAppIdException;
 import co.krypt.krypton.u2f.AppIdFacetFetcher;
 import co.krypt.krypton.u2f.FacetProvider;
 import co.krypt.krypton.u2f.U2FAppIdChecker;
@@ -28,7 +31,7 @@ public class U2fAppIdTest {
         FacetProvider fetcher = (String appId) -> new String[0];
         U2FAppIdChecker.verifyU2FAppId(fetcher, "https://example.com", "https://example.com");
     }
-    @Test(expected = SecurityException.class)
+    @Test(expected = InvalidAppIdException.class)
     public void differentLSPL_fails() throws Exception {
         FacetProvider fetcher = (String appId) -> new String[0];
         U2FAppIdChecker.verifyU2FAppId(fetcher, "https://example.com","https://acme.com");
@@ -38,7 +41,7 @@ public class U2fAppIdTest {
         FacetProvider fetcher = (String appId) -> new String[0];
         U2FAppIdChecker.verifyU2FAppId(fetcher, "https://com", "https://example.com");
     }
-    @Test(expected = SecurityException.class)
+    @Test(expected = InvalidAppIdException.class)
     public void httpFacet_fails() throws Exception {
         FacetProvider fetcher = (String appId) -> {
             String[] facets = new String[1];
@@ -48,7 +51,7 @@ public class U2fAppIdTest {
         U2FAppIdChecker.verifyU2FAppId(fetcher, "https://example.com", "https://example.com/appId.json");
     }
     @Test
-    public void multipleCorrectOrigins_works() {
+    public void multipleCorrectOrigins_works() throws Exception{
         FacetProvider fetcher = (String appId) -> {
             String[] facets = new String[5];
             facets[0] = "https://port-and-path.example.com:25565/index.html";
@@ -60,8 +63,8 @@ public class U2fAppIdTest {
         };
         U2FAppIdChecker.verifyU2FAppId(fetcher, "https://u2f.example.com", "https://u2f.example.com/appId.json");
     }
-    @Test(expected = SecurityException.class)
-    public void originNotInFacets_fails() {
+    @Test(expected = InvalidAppIdException.class)
+    public void originNotInFacets_fails() throws Exception{
         FacetProvider fetcher = (String appId) -> {
             String[] facets = new String[4];
             facets[0] = "https://port-and-path.example.com:25565/index.html";
@@ -73,7 +76,7 @@ public class U2fAppIdTest {
         U2FAppIdChecker.verifyU2FAppId(fetcher, "https://unprivileged-service.example.com", "https://u2f.example.com/appId.json");
     }
     @Test
-    public void caseInsensitive_works() {
+    public void caseInsensitive_works() throws Exception {
         FacetProvider fetcher = (String appId) -> {
             String[] facets = new String[1];
             facets[0] = "https://U2F.example.com";
@@ -85,7 +88,7 @@ public class U2fAppIdTest {
         U2FAppIdChecker.verifyU2FAppId(fetcher, "https://U2f.example.com", "https://u2F.example.com/appId.json");
     }
     @Test
-    public void differentSubdomainAppId_Works() {
+    public void differentSubdomainAppId_Works() throws Exception {
         FacetProvider fetcher = (String appId) -> {
             String[] facets = new String[1];
             facets[0] = "https://example.com";
@@ -93,8 +96,8 @@ public class U2fAppIdTest {
         };
         U2FAppIdChecker.verifyU2FAppId(fetcher, "https://example.com", "https://u2f.example.com/appId.json");
     }
-    @Test(expected = SecurityException.class)
-    public void fakeAppIdUrl_fails() {
+    @Test(expected = InvalidAppIdException.class)
+    public void fakeAppIdUrl_fails() throws Exception {
         FacetProvider fetcher = (String appId) -> {
             String[] facets = new String[1];
             facets[0] = "https://example.com";

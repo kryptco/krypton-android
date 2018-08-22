@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.krypt.krypton.exception.InvalidAppIdException;
 import co.krypt.krypton.protocol.JSON;
 
 /**
@@ -20,11 +21,11 @@ import co.krypt.krypton.protocol.JSON;
  */
 public class AppIdFacetFetcher implements FacetProvider {
     @Override
-    public String[] getFacetsFromAppId(String appId) {
+    public String[] getFacetsFromAppId(String appId) throws InvalidAppIdException {
         return getFacetsFromAppId(appId, 5);
     }
 
-    public static String[] getFacetsFromAppId(String appId, int remainingRetryAttempts) throws SecurityException {
+    public static String[] getFacetsFromAppId(String appId, int remainingRetryAttempts) throws InvalidAppIdException {
         // Sanity/safety checks
         {
             if (remainingRetryAttempts <= 0) {
@@ -35,7 +36,7 @@ public class AppIdFacetFetcher implements FacetProvider {
             }
 
             if (appId.startsWith("http://")) {
-                throw new SecurityException("http app ids not allowed");
+                throw new InvalidAppIdException("http app ids not allowed");
             }
 
             String origin;
@@ -65,20 +66,23 @@ public class AppIdFacetFetcher implements FacetProvider {
         String[] parsedFacets;
         try {
             AppIdContents appIdContents = JSON.fromJson(jr, AppIdContents.class);
-            parsedFacets = appIdContents.trustedFacets[0].ids;
+            parsedFacets = appIdContents.trustedFacets.length > 0 ? appIdContents.trustedFacets[0].ids : new String[0];
         } catch (JsonSyntaxException e) {
             //Attempt to parse using the old format where the content is just an array of facets
             parsedFacets = JSON.fromJson(jr, String[].class);
         }
         List<String> facets = new ArrayList<>();
         for (String facet : parsedFacets) {
+            if (facet == null) {
+                continue;
+            }
             try {
                 // FIDO AppID & Facet (v1.2) 3.1.2.13
                 String origin = U2FAppIdChecker.getOriginFromURL(facet);
                 if (origin != null) {
                     facets.add(origin);
                 }
-            } catch (Exception e) {
+            } catch (URISyntaxException e) {
                 //Continue
             }
         }

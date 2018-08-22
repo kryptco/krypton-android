@@ -25,6 +25,7 @@ import co.krypt.krypton.crypto.Base64;
 import co.krypt.krypton.crypto.SHA256;
 import co.krypt.krypton.crypto.U2F;
 import co.krypt.krypton.exception.CryptoException;
+import co.krypt.krypton.exception.InvalidAppIdException;
 import co.krypt.krypton.protocol.JSON;
 import co.krypt.krypton.protocol.U2FAuthenticateRequest;
 import co.krypt.krypton.protocol.U2FAuthenticateResponse;
@@ -96,6 +97,9 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
                         e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
+                    } catch (InvalidAppIdException e) {
+                        //TODO return error code for bad request
+                        e.printStackTrace();
                     }
                 }
             }
@@ -103,7 +107,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         finish();
     }
 
-    private void handleU2FAuthenticate(Intent intent, ChromeU2FAuthenticateRequest chromeRequest, String facetId) throws CryptoException, IOException {
+    private void handleU2FAuthenticate(Intent intent, ChromeU2FAuthenticateRequest chromeRequest, String facetId) throws InvalidAppIdException, CryptoException, IOException {
         U2FAppIdChecker.verifyU2FAppId(facetId, chromeRequest.appId);
         final U2FAuthenticateRequest request = new U2FAuthenticateRequest();
         request.appId = chromeRequest.appId;
@@ -170,7 +174,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void handleU2FRegister(Intent intent, ChromeU2FRegisterRequest chromeRequest, String facetId) throws CryptoException, IOException {
+    private void handleU2FRegister(Intent intent, ChromeU2FRegisterRequest chromeRequest, String facetId) throws InvalidAppIdException, CryptoException, IOException {
         U2FAppIdChecker.verifyU2FAppId(facetId, chromeRequest.appId);
         U2FRegisterRequest request = new U2FRegisterRequest();
         for (RegisteredKey registeredKey: chromeRequest.registeredKeys) {
