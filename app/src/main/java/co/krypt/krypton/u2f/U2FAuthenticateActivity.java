@@ -1,6 +1,5 @@
 package co.krypt.krypton.u2f;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -116,7 +115,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         U2FAppIdChecker.verifyU2FAppId(facetId, chromeRequest.appId);
         final U2FAuthenticateRequest request = new U2FAuthenticateRequest();
         request.appId = chromeRequest.appId;
-        String clientData = ClientData.createAuthenticate(this, chromeRequest.challenge, facetId);
+        String clientData = ClientData.createAuthenticate(chromeRequest.challenge, facetId);
         request.challenge = SHA256.digest(clientData.getBytes("UTF-8"));
         byte[] keyHandle = null;
         for (RegisteredKey key: chromeRequest.registeredKeys) {
@@ -195,7 +194,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
             finish();
             return;
         }
-        String clientData = ClientData.createRegister(this, chromeRequest.registerRequests[0].challenge, facetId);
+        String clientData = ClientData.createRegister(chromeRequest.registerRequests[0].challenge, facetId);
         request.challenge = SHA256.digest(clientData.getBytes("UTF-8"));
         request.appId = chromeRequest.appId;
 
@@ -304,7 +303,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         public String origin;
         public String cid_pubkey;
 
-        public static String createRegister(Context context, String challenge, String facetId) {
+        public static String createRegister(String challenge, String facetId) {
             ClientData cd = new ClientData();
             cd.typ = "navigator.id.finishEnrollment";
             cd.challenge = challenge;
@@ -314,7 +313,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
             return JSON.toJson(cd);
         }
 
-        public static String createAuthenticate(Context context, String challenge, String facetId) {
+        public static String createAuthenticate(String challenge, String facetId) {
             ClientData cd = new ClientData();
             cd.typ = "navigator.id.getAssertion";
             cd.challenge = challenge;
