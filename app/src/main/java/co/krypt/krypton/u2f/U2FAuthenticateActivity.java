@@ -61,53 +61,55 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         }
 
         Intent intent = getIntent();
-        if (intent != null) {
-            if ("com.google.android.apps.authenticator.AUTHENTICATE".equals(intent.getAction())) {
-                String facetId = intent.getStringExtra("referrer");
-                if (facetId == null) {
-                    Log.e(TAG, "no referrer");
-                    finish();
-                    return;
-                }
-
-                if (intent.getStringExtra("request") != null) {
-                    try {
-                        URI facetIdUri = new URI(facetId);
-                        facetId = facetIdUri.getScheme() + "://" + facetIdUri.getHost();
-
-                        String requestJSON = URLDecoder.decode(intent.getStringExtra("request"), "UTF-8");
-
-                        JsonObject obj = new JsonParser().parse(requestJSON).getAsJsonObject();
-                        JsonElement type = obj.get("type");
-                        if (type == null) {
-                            Log.e(TAG, "no type");
-                            finish();
-                            return;
-                        }
-                        if ("u2f_register_request".equals(type.getAsString())) {
-                            ChromeU2FRegisterRequest chromeRequest = JSON.fromJson(requestJSON, ChromeU2FRegisterRequest.class);
-                            handleU2FRegister(intent, chromeRequest, facetId);
-                            return;
-                        } else if ("u2f_sign_request".equals(type.getAsString())){
-                            ChromeU2FAuthenticateRequest chromeRequest = JSON.fromJson(requestJSON, ChromeU2FAuthenticateRequest.class);
-                            handleU2FAuthenticate(intent, chromeRequest, facetId);
-                            return;
-                        }
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    } catch (CryptoException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (InvalidAppIdException e) {
-                        //TODO return error code for bad request
-                    } catch (URISyntaxException e) {
-                        e.printStackTrace();
+        new Thread(() -> {
+            if (intent != null) {
+                if ("com.google.android.apps.authenticator.AUTHENTICATE".equals(intent.getAction())) {
+                    String facetId = intent.getStringExtra("referrer");
+                    if (facetId == null) {
+                        Log.e(TAG, "no referrer");
+                        finish();
+                        return;
                     }
+
+                    if (intent.getStringExtra("request") != null) {
+                        try {
+                            URI facetIdUri = new URI(facetId);
+                            facetId = facetIdUri.getScheme() + "://" + facetIdUri.getHost();
+
+                            String requestJSON = URLDecoder.decode(intent.getStringExtra("request"), "UTF-8");
+
+                            JsonObject obj = new JsonParser().parse(requestJSON).getAsJsonObject();
+                            JsonElement type = obj.get("type");
+                            if (type == null) {
+                                Log.e(TAG, "no type");
+                                finish();
+                                return;
+                            }
+                            if ("u2f_register_request".equals(type.getAsString())) {
+                                ChromeU2FRegisterRequest chromeRequest = JSON.fromJson(requestJSON, ChromeU2FRegisterRequest.class);
+                                handleU2FRegister(intent, chromeRequest, facetId);
+                                return;
+                            } else if ("u2f_sign_request".equals(type.getAsString())) {
+                                ChromeU2FAuthenticateRequest chromeRequest = JSON.fromJson(requestJSON, ChromeU2FAuthenticateRequest.class);
+                                handleU2FAuthenticate(intent, chromeRequest, facetId);
+                                return;
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (CryptoException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (InvalidAppIdException e) {
+                            //TODO return error code for bad request
+                        } catch (URISyntaxException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    finish();
                 }
             }
-        }
-        finish();
+        }).start();
     }
 
     private void handleU2FAuthenticate(Intent intent, ChromeU2FAuthenticateRequest chromeRequest, String facetId) throws InvalidAppIdException, CryptoException, IOException {
@@ -132,7 +134,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         }
         request.keyHandle = keyHandle;
 
-        dialog = new AlertDialog.Builder(this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setIcon(R.mipmap.ic_launcher)
                 .setTitle("Krypton Authenticator")
                 .setMessage("Sign-in to " + KnownAppIds.displayAppId(request.appId) + "?")
@@ -171,9 +173,11 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
                 })
                 .setOnCancelListener((v) -> {
                     finish();
-                })
-                .create();
-        dialog.show();
+                });
+        runOnUiThread(() -> {
+            dialog = builder.create();
+            dialog.show();
+        });
     }
 
     private void handleU2FRegister(Intent intent, ChromeU2FRegisterRequest chromeRequest, String facetId) throws InvalidAppIdException, CryptoException, IOException {
@@ -195,7 +199,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         request.challenge = SHA256.digest(clientData.getBytes("UTF-8"));
         request.appId = chromeRequest.appId;
 
-        dialog = new AlertDialog.Builder(this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setIcon(R.mipmap.ic_launcher)
                 .setTitle("Krypton Authenticator")
                 .setMessage("Register with " + KnownAppIds.displayAppId(request.appId) + "?")
@@ -238,9 +242,11 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
                 })
                 .setOnCancelListener((v) -> {
                     finish();
-                })
-                .create();
-        dialog.show();
+                });
+        runOnUiThread(() -> {
+            dialog = builder.create();
+            dialog.show();
+        });
     }
 
     public static class ChromeU2FRegisterRequest {
@@ -338,11 +344,5 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         }
         super.finish();
         overridePendingTransition(0, android.R.anim.fade_out);
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (!hasFocus) finish();
     }
 }
