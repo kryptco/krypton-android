@@ -17,6 +17,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.List;
 
@@ -68,10 +70,12 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
                     finish();
                     return;
                 }
-                facetId = facetId.replaceAll("/+$", "");
 
                 if (intent.getStringExtra("request") != null) {
                     try {
+                        URI facetIdUri = new URI(facetId);
+                        facetId = facetIdUri.getScheme() + "://" + facetIdUri.getHost();
+
                         String requestJSON = URLDecoder.decode(intent.getStringExtra("request"), "UTF-8");
 
                         JsonObject obj = new JsonParser().parse(requestJSON).getAsJsonObject();
@@ -98,6 +102,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
                         e.printStackTrace();
                     } catch (InvalidAppIdException e) {
                         //TODO return error code for bad request
+                    } catch (URISyntaxException e) {
                         e.printStackTrace();
                     }
                 }
