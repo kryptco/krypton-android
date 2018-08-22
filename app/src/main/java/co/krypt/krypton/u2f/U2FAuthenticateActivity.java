@@ -39,7 +39,6 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
 
     private static final String TAG = U2FAuthenticateActivity.class.getName();
 
-    //TODO: fix exception thrown when activity left without taking action and re-opened from another request
     private AlertDialog dialog = null;
 
     @Override
