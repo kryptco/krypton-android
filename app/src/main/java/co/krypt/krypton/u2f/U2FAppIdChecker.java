@@ -1,8 +1,7 @@
 package co.krypt.krypton.u2f;
 
-import com.j256.ormlite.stmt.query.In;
-
-import java.net.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

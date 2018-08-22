@@ -1,8 +1,7 @@
 package co.krypt.krypton;
 
-import android.telecom.InCallService;
-
 import junit.framework.Assert;
+
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
