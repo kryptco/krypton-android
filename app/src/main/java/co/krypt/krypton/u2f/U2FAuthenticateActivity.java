@@ -73,7 +73,6 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
                 if (intent.getStringExtra("request") != null) {
                     try {
                         String requestJSON = URLDecoder.decode(intent.getStringExtra("request"), "UTF-8");
-                        Log.d(TAG, requestJSON);
 
                         JsonObject obj = new JsonParser().parse(requestJSON).getAsJsonObject();
                         JsonElement type = obj.get("type");
@@ -156,7 +155,6 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
 
                         responseData.signatureData = Base64.encodeURLSafe(signatureData.toByteArray());
 
-                        Log.d(TAG, JSON.toJson(chromeResponse));
                         intent.putExtra("resultData", JSON.toJson(chromeResponse));
                         setResult(RESULT_OK, intent);
                     } catch (IOException | CryptoException e) {
@@ -222,7 +220,6 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
 
                         responseData.registrationData = Base64.encodeURLSafe(registerData.toByteArray());
 
-                        Log.d(TAG, JSON.toJson(chromeResponse));
                         intent.putExtra("resultData", JSON.toJson(chromeResponse));
                         setResult(RESULT_OK, intent);
                     } catch (IOException | CryptoException e) {
