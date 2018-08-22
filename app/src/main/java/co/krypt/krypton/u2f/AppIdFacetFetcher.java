@@ -73,6 +73,7 @@ public class AppIdFacetFetcher implements FacetProvider {
         List<String> facets = new ArrayList<>();
         for (String facet : parsedFacets) {
             try {
+                // FIDO AppID & Facet (v1.2) 3.1.2.13
                 String origin = U2FAppIdChecker.getOriginFromURL(facet);
                 if (origin != null) {
                     facets.add(origin);

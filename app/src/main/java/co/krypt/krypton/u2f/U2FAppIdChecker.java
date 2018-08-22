@@ -7,6 +7,11 @@ import java.util.List;
 
 public final class U2FAppIdChecker {
 
+    public static void verifyU2FAppId(String origin, String appId) throws SecurityException {
+        FacetProvider fetcher = new AppIdFacetFetcher();
+        verifyU2FAppId(fetcher, origin, appId);
+    }
+
     public static void verifyU2FAppId(FacetProvider fetcher, String origin, String appId) throws SecurityException {
         if (origin != null) {
             origin = origin.toLowerCase();
@@ -14,7 +19,7 @@ public final class U2FAppIdChecker {
         if (appId != null) {
             appId = appId.toLowerCase();
         }
-        if (appId == null) {
+        if (appId == null || appId.isEmpty()) {
             // FIDO AppID & Facet (v1.2) 3.1.2.2
             return;
         }

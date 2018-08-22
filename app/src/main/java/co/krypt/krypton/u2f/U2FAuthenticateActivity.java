@@ -104,8 +104,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
     }
 
     private void handleU2FAuthenticate(Intent intent, ChromeU2FAuthenticateRequest chromeRequest, String facetId) throws CryptoException, IOException {
-        FacetProvider fetcher = new AppIdFacetFetcher();
-        U2FAppIdChecker.verifyU2FAppId(fetcher, facetId, chromeRequest.appId);
+        U2FAppIdChecker.verifyU2FAppId(facetId, chromeRequest.appId);
         final U2FAuthenticateRequest request = new U2FAuthenticateRequest();
         request.appId = chromeRequest.appId;
         String clientData = ClientData.createAuthenticate(this, chromeRequest.challenge, facetId);
@@ -172,8 +171,7 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
     }
 
     private void handleU2FRegister(Intent intent, ChromeU2FRegisterRequest chromeRequest, String facetId) throws CryptoException, IOException {
-        FacetProvider fetcher = new AppIdFacetFetcher();
-        U2FAppIdChecker.verifyU2FAppId(fetcher, facetId, chromeRequest.appId);
+        U2FAppIdChecker.verifyU2FAppId(facetId, chromeRequest.appId);
         U2FRegisterRequest request = new U2FRegisterRequest();
         for (RegisteredKey registeredKey: chromeRequest.registeredKeys) {
             if (U2F.keyHandleMatches(Base64.decodeURLSafe(registeredKey.keyHandle), chromeRequest.appId)) {

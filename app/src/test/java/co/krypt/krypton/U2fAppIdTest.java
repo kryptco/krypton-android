@@ -19,6 +19,11 @@ public class U2fAppIdTest {
         U2FAppIdChecker.verifyU2FAppId(fetcher, "https://example.com", null);
     }
     @Test
+    public void emptyAppId_works() throws Exception {
+        FacetProvider fetcher = (String appId) -> new String[0];
+        U2FAppIdChecker.verifyU2FAppId(fetcher, "https://example.com", "");
+    }
+    @Test
     public void equivalentAppId_works() throws Exception {
         FacetProvider fetcher = (String appId) -> new String[0];
         U2FAppIdChecker.verifyU2FAppId(fetcher, "https://example.com", "https://example.com");
@@ -66,6 +71,36 @@ public class U2fAppIdTest {
             return facets;
         };
         U2FAppIdChecker.verifyU2FAppId(fetcher, "https://unprivileged-service.example.com", "https://u2f.example.com/appId.json");
+    }
+    @Test
+    public void caseInsensitive_works() {
+        FacetProvider fetcher = (String appId) -> {
+            String[] facets = new String[1];
+            facets[0] = "https://U2F.example.com";
+            return facets;
+        };
+        U2FAppIdChecker.verifyU2FAppId(fetcher, "https://u2f.example.com", "https://u2f.example.com/appId.json");
+        U2FAppIdChecker.verifyU2FAppId(fetcher, "https://U2f.example.com", "https://u2f.example.com/appId.json");
+        U2FAppIdChecker.verifyU2FAppId(fetcher, "https://u2f.example.com", "https://u2F.example.com/appId.json");
+        U2FAppIdChecker.verifyU2FAppId(fetcher, "https://U2f.example.com", "https://u2F.example.com/appId.json");
+    }
+    @Test
+    public void differentSubdomainAppId_Works() {
+        FacetProvider fetcher = (String appId) -> {
+            String[] facets = new String[1];
+            facets[0] = "https://example.com";
+            return facets;
+        };
+        U2FAppIdChecker.verifyU2FAppId(fetcher, "https://example.com", "https://u2f.example.com/appId.json");
+    }
+    @Test(expected = SecurityException.class)
+    public void fakeAppIdUrl_fails() {
+        FacetProvider fetcher = (String appId) -> {
+            String[] facets = new String[1];
+            facets[0] = "https://example.com";
+            return facets;
+        };
+        U2FAppIdChecker.verifyU2FAppId(fetcher, "https://example.com", "https://u2f.example.com.phishing.net");
     }
 
     @Test
