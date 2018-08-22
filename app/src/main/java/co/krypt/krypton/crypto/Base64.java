@@ -10,20 +10,20 @@ import co.krypt.krypton.exception.CryptoException;
 public class Base64 {
     public static byte[] decode(String s) throws CryptoException {
         try {
-            return android.util.Base64.decode(s, android.util.Base64.DEFAULT);
+            return com.google.crypto.tink.subtle.Base64.decode(s);
         } catch (IllegalArgumentException e) {
             throw new CryptoException(e.getMessage());
         }
     }
     public static byte[] decodeURLSafe(String s) throws CryptoException {
         try {
-            return android.util.Base64.decode(s, android.util.Base64.URL_SAFE);
+            return com.google.crypto.tink.subtle.Base64.urlSafeDecode(s);
         } catch (IllegalArgumentException e) {
             throw new CryptoException(e.getMessage());
         }
     }
     public static String encode(byte[] b) {
-        return com.amazonaws.util.Base64.encodeAsString(b);
+        return com.google.crypto.tink.subtle.Base64.encode(b);
     }
     public static String encodeURLSafe(byte[] b) {
         return com.google.crypto.tink.subtle.Base64.urlSafeEncode(b);
