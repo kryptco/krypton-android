@@ -461,7 +461,7 @@ public class U2F {
                 try {
                     Dao<RegisteredAccount, String> db = new OpenDatabaseHelper(context).getRegisteredAccountDao();
                     UpdateBuilder<RegisteredAccount, String> update = db.updateBuilder();
-                    update.where().eq("key_handle", Base64.encode(u2FAuthenticateRequest.keyHandle));
+                    update.where().eq("key_handle_hash", Base64.encode(SHA256.digest(u2FAuthenticateRequest.keyHandle)));
                     update.updateColumnValue("last_used", System.currentTimeMillis() / 1000);
                     update.update();
                     EventBus.getDefault().post(new IdentityService.AccountsUpdated());
