@@ -312,7 +312,6 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "resume");
         silo.start();
 
-        //TODO move to separate activity?
         Intent intent = getIntent();
         if (intent != null) {
             onNewIntent(intent);
@@ -438,15 +437,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e(TAG, "result: " + data.toString());
-        Bundle bundle = data.getExtras();
-        if (bundle != null) {
-            for (String key : bundle.keySet()) {
-                Object value = bundle.get(key);
-                Log.d(TAG, String.format("%s %s (%s)", key,
-                        value.toString(), value.getClass().getName()));
-            }
-        }
         if (requestCode == USER_AUTHENTICATION_REQUEST) {
             if (resultCode == RESULT_OK) {
                 LocalAuthentication.onSuccess();
@@ -459,8 +449,6 @@ public class MainActivity extends AppCompatActivity {
         if (intent.getStringExtra("requestID") != null) {
             final String requestID = intent.getStringExtra("requestID");
             ApprovalDialog.showApprovalDialog(this, requestID);
-        } else if ("com.google.android.apps.authenticator.AUTHENTICATE".equals(intent.getAction())){
-            Log.d(TAG, "U2F intent: " + intent.getDataString());
         } else {
             Log.d(TAG, "empty intent");
         }
