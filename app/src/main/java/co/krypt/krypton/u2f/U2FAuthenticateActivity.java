@@ -63,7 +63,6 @@ public class U2FAuthenticateActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             if ("com.google.android.apps.authenticator.AUTHENTICATE".equals(intent.getAction())) {
-                //TODO: use referrer extra to verify appId
                 String facetId = intent.getStringExtra("referrer");
                 if (facetId == null) {
                     Log.e(TAG, "no referrer");
