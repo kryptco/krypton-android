@@ -152,9 +152,9 @@ public class Notifications {
             public Void visit(SignRequest signRequest) throws RuntimeException {
                 mBuilder
                         .setContentTitle("SSH Login Approved")
-                        .setContentText(pairing.workstationName + ": " + signRequest.display());
+                        .setContentText(pairing.displayName + ": " + signRequest.display());
                 RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.result_remote);
-                remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
+                remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.displayName);
                 request.fillShortRemoteViews(remoteViewsSmall, true, log != null ? log.getSignature() : null);
                 mBuilder.setContent(remoteViewsSmall);
                 return null;
@@ -164,15 +164,15 @@ public class Notifications {
             public Void visit(GitSignRequest gitSignRequest) throws RuntimeException {
                 mBuilder
                         .setContentTitle(gitSignRequest.title() + " Approved")
-                        .setContentText(pairing.workstationName + ": " + gitSignRequest.display());
+                        .setContentText(pairing.displayName + ": " + gitSignRequest.display());
 
                 RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.result_remote);
-                remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
+                remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.displayName);
                 gitSignRequest.fillShortRemoteViews(remoteViewsSmall, true, log != null ? log.getSignature() : null);
                 mBuilder.setContent(remoteViewsSmall);
 
                 RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.result_remote);
-                remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
+                remoteViewsBig.setTextViewText(R.id.workstationName, pairing.displayName);
                 gitSignRequest.fillRemoteViews(remoteViewsBig, true, log != null ? log.getSignature() : null);
                 mBuilder.setCustomBigContentView(remoteViewsBig);
                 return null;
@@ -266,7 +266,7 @@ public class Notifications {
 
             @Override
             public Void visit(SignRequest signRequest) throws RuntimeException {
-                mBuilder.setContentText(pairing.workstationName + ": " + signRequest.display());
+                mBuilder.setContentText(pairing.displayName + ": " + signRequest.display());
                 return null;
             }
 
@@ -274,16 +274,16 @@ public class Notifications {
             public Void visit(GitSignRequest gitSignRequest) throws RuntimeException {
                 mBuilder
                         .setContentTitle(gitSignRequest.title() + " Rejected")
-                        .setContentText(pairing.workstationName + ": " + gitSignRequest.display());
+                        .setContentText(pairing.displayName + ": " + gitSignRequest.display());
 
                 RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.result_remote);
-                remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
+                remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.displayName);
                 remoteViewsSmall.setTextViewText(R.id.header, "Rejected Request From");
                 gitSignRequest.fillShortRemoteViews(remoteViewsSmall, false, null);
                 mBuilder.setCustomContentView(remoteViewsSmall);
 
                 RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.result_remote);
-                remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
+                remoteViewsBig.setTextViewText(R.id.workstationName, pairing.displayName);
                 remoteViewsBig.setTextViewText(R.id.header, "Rejected Request From");
                 gitSignRequest.fillRemoteViews(remoteViewsBig, false, null);
                 mBuilder.setCustomBigContentView(remoteViewsBig);
@@ -406,7 +406,7 @@ public class Notifications {
                 ;
 
         RemoteViews remoteViewsBig = new RemoteViews(context.getPackageName(), R.layout.request_remote);
-        remoteViewsBig.setTextViewText(R.id.workstationName, pairing.workstationName);
+        remoteViewsBig.setTextViewText(R.id.workstationName, pairing.displayName);
         request.fillRemoteViews(remoteViewsBig, null, null);
         remoteViewsBig.setOnClickPendingIntent(R.id.allowOnce, approveOncePendingIntent);
         remoteViewsBig.setTextViewText(R.id.allowAllTemporarily, "All for " + temporaryApprovalDuration);
@@ -426,9 +426,9 @@ public class Notifications {
             public Void visit(SignRequest signRequest) throws RuntimeException {
                 mBuilder
                         .setContentTitle("Allow SSH Login?")
-                        .setContentText(pairing.workstationName + ": " + signRequest.display());
+                        .setContentText(pairing.displayName + ": " + signRequest.display());
                 RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.request_no_action_remote);
-                remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
+                remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.displayName);
                 request.fillShortRemoteViews(remoteViewsSmall, null, null);
                 mBuilder.setContent(remoteViewsSmall);
 
@@ -449,10 +449,10 @@ public class Notifications {
             @Override
             public Void visit(GitSignRequest gitSignRequest) throws RuntimeException {
                 mBuilder.setContentTitle("Allow " + gitSignRequest.title() + "?")
-                        .setContentText(pairing.workstationName + ": " + gitSignRequest.display());
+                        .setContentText(pairing.displayName + ": " + gitSignRequest.display());
 
                 RemoteViews remoteViewsSmall = new RemoteViews(context.getPackageName(), R.layout.request_no_action_remote);
-                remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.workstationName);
+                remoteViewsSmall.setTextViewText(R.id.workstationName, pairing.displayName);
                 gitSignRequest.fillShortRemoteViews(remoteViewsSmall, null, null);
                 mBuilder.setContent(remoteViewsSmall);
 
@@ -475,7 +475,7 @@ public class Notifications {
             @Override
             public Void visit(HostsRequest hostsRequest) throws RuntimeException {
                 mBuilder.setContentTitle("Send user@hostname records?")
-                        .setContentText(pairing.workstationName + " is requesting your SSH login records.");
+                        .setContentText(pairing.displayName + " is requesting your SSH login records.");
                 mBuilder.addAction(approveOnceBuilder.build());
                 if (temporaryApprovalEnabled) {
                     mBuilder.addAction(approveAllTemporarilyBuilder.build());
@@ -486,7 +486,7 @@ public class Notifications {
             @Override
             public Void visit(ReadTeamRequest readTeamRequest) throws RuntimeException {
                 mBuilder.setContentTitle("Load team data?")
-                        .setContentText(pairing.workstationName + " is requesting to load team data.");
+                        .setContentText(pairing.displayName + " is requesting to load team data.");
                 mBuilder.addAction(approveAllTemporarilyBuilder.build());
                 return null;
             }
@@ -494,7 +494,7 @@ public class Notifications {
             @Override
             public Void visit(LogDecryptionRequest logDecryptionRequest) throws RuntimeException {
                 mBuilder.setContentTitle("Decrypt team logs?")
-                        .setContentText(pairing.workstationName + " is requesting to decrypt team logs.");
+                        .setContentText(pairing.displayName + " is requesting to decrypt team logs.");
                 mBuilder.addAction(approveAllTemporarilyBuilder.build());
                 return null;
             }

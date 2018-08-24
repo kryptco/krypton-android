@@ -27,31 +27,18 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <View
-            android:id="@+id/view"
-            android:layout_width="0dp"
-            android:layout_height="3dp"
-            android:background="@color/appGreen"
-            app:layout_constraintEnd_toEndOf="@+id/deviceName"
-            app:layout_constraintStart_toStartOf="@+id/deviceName"
-            app:layout_constraintTop_toBottomOf="@+id/deviceName" />
-
-        <android.support.v7.widget.AppCompatTextView
+        <EditText
             android:id="@+id/deviceName"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:fontFamily="@font/open_sans_bold"
+            android:inputType="text"
             android:maxLines="1"
-            android:text="TextView"
-            android:textAlignment="center"
-            android:textAllCaps="true"
-            android:textColor="@color/appBlack"
-            android:textSize="22sp"
+            android:singleLine="true"
+            android:text="DisplayName"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_constraintLeft_creator="1"
-            tools:layout_constraintTop_creator="1" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/approvalLabel"
@@ -64,7 +51,6 @@
             android:textColor="@color/appBlack"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/view"
             app:layout_constraintTop_toBottomOf="@+id/deviceName" />
 
         <android.support.v7.widget.AppCompatRadioButton

@@ -153,6 +153,18 @@ public class Pairings {
         }
     }
 
+    public void renamePairing(String pairingUUID, String newDisplayName) {
+        synchronized (lock) {
+            HashSet<Pairing> pairings =  loadAllLocked();
+            for (Pairing pairing: pairings) {
+                if (pairing.getUUIDString().equals(pairingUUID)) {
+                    pairing.displayName = newDisplayName;
+                }
+            }
+            setAllLocked(pairings);
+        }
+    }
+
     public void unpair(Pairing pairing) {
         synchronized (lock) {
             HashSet<Pairing> currentPairings = loadAllLocked();

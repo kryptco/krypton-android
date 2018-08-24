@@ -17,8 +17,10 @@ import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -93,7 +95,20 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         View deviceCardView = inflater.inflate(R.layout.device_card, container, false);
 
         TextView deviceName = (TextView) deviceCardView.findViewById(R.id.deviceName);
-        deviceName.setText(pairing.workstationName);
+        deviceName.setText(pairing.displayName);
+        deviceName.setOnEditorActionListener((v12, keyCode, event) -> {
+            v12.clearFocus();
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v12.getWindowToken(), 0);
+            onDeviceNameChanged(v12.getText().toString());
+            return false;
+        });
+        deviceName.setOnFocusChangeListener((v1, hasFocus) -> {
+            if (!hasFocus) {
+                EditText editText = (EditText) v1;
+                onDeviceNameChanged(editText.getText().toString());
+            }
+        });
 
         manualButton = (RadioButton) deviceCardView.findViewById(R.id.alwaysAsk);
         automaticButton = (RadioButton) deviceCardView.findViewById(R.id.automaticApprovalButton);
@@ -237,6 +252,10 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         }
         attachedContext = null;
         super.onDetach();
+    }
+
+    private void onDeviceNameChanged(String newName) {
+        Silo.shared(getContext()).pairings().renamePairing(pairingUUID, newName);
     }
 
     @Override

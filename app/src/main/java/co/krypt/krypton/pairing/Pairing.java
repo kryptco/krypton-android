@@ -33,6 +33,7 @@ public class Pairing {
     @Nullable
     public final byte[] workstationDeviceIdentifier;
     public final String workstationName;
+    public String displayName;
     public final UUID uuid;
 
     public Pairing(@NonNull byte[] workstationPublicKey, @NonNull byte[] enclaveSecretKey, @NonNull byte[] enclavePublicKey, String workstationName, @Nullable byte[] workstationDeviceIdentifier) throws CryptoException {
@@ -43,6 +44,7 @@ public class Pairing {
         this.enclaveSecretKey = enclaveSecretKey;
         this.enclavePublicKey = enclavePublicKey;
         this.workstationName = workstationName;
+        this.displayName = workstationName;
         this.workstationDeviceIdentifier = workstationDeviceIdentifier;
 
         byte[] hash = SHA256.digest(workstationPublicKey);

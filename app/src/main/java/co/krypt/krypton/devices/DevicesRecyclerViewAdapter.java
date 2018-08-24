@@ -44,7 +44,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         holder.device = sessions.get(position).pairing;
         holder.lastLog = sessions.get(position).lastApproval;
 
-        holder.deviceName.setText(sessions.get(position).pairing.workstationName);
+        holder.deviceName.setText(sessions.get(position).pairing.displayName);
         if (holder.lastLog != null) {
             holder.lastCommand.setText(holder.lastLog.shortDisplay());
             holder.lastCommandTime.setText(DateUtils.getRelativeTimeSpanString(holder.lastLog.unixSeconds() * 1000, System.currentTimeMillis(), 1000));

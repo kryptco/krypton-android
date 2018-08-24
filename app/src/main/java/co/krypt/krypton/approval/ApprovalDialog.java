@@ -148,7 +148,7 @@ public class ApprovalDialog {
         });
         View requestView = activity.getLayoutInflater().inflate(R.layout.request, null);
         TextView workstationNameText = (TextView) requestView.findViewById(R.id.workstationName);
-        workstationNameText.setText(pairing.workstationName);
+        workstationNameText.setText(pairing.displayName);
         ConstraintLayout content = (ConstraintLayout) requestView.findViewById(R.id.content);
         request.fillView(content);
         builder.setView(requestView);
