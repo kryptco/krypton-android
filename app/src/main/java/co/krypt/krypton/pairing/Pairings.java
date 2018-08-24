@@ -158,7 +158,7 @@ public class Pairings {
             HashSet<Pairing> pairings =  loadAllLocked();
             for (Pairing pairing: pairings) {
                 if (pairing.getUUIDString().equals(pairingUUID)) {
-                    pairing.displayName = newDisplayName;
+                    pairing.setDisplayName(newDisplayName);
                 }
             }
             setAllLocked(pairings);

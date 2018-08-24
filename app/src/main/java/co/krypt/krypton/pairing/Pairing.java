@@ -33,8 +33,8 @@ public class Pairing {
     @Nullable
     public final byte[] workstationDeviceIdentifier;
     public final String workstationName;
-    public String displayName;
     public final UUID uuid;
+    private String displayName;
 
     public Pairing(@NonNull byte[] workstationPublicKey, @NonNull byte[] enclaveSecretKey, @NonNull byte[] enclavePublicKey, String workstationName, @Nullable byte[] workstationDeviceIdentifier) throws CryptoException {
         if (workstationPublicKey.length != Sodium.crypto_box_publickeybytes()) {
@@ -86,6 +86,20 @@ public class Pairing {
 
     public static Pairing generate(Context context, PairingQR pairingQR) throws CryptoException {
         return Pairing.generate(context, pairingQR.workstationPublicKey, pairingQR.workstationName, pairingQR.deviceId);
+    }
+
+    public String getDisplayName() {
+        if (displayName == null || displayName.isEmpty()) {
+            return workstationName;
+        }
+        return displayName;
+    }
+
+    public void setDisplayName(String newDisplayName) {
+        if (newDisplayName == null || newDisplayName.isEmpty()) {
+            displayName = workstationName;
+        }
+        displayName = newDisplayName;
     }
 
     public byte[] wrapKey() throws CryptoException {

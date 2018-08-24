@@ -95,7 +95,7 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         View deviceCardView = inflater.inflate(R.layout.device_card, container, false);
 
         TextView deviceName = (TextView) deviceCardView.findViewById(R.id.deviceName);
-        deviceName.setText(pairing.displayName);
+        deviceName.setText(pairing.getDisplayName());
         deviceName.setOnEditorActionListener((v12, keyCode, event) -> {
             v12.clearFocus();
             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);

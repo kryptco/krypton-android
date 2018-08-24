@@ -264,10 +264,7 @@ public class Silo {
     private void onMessageJob(UUID pairingUUID, byte[] incoming, String communicationMedium) {
         try {
             NetworkMessage message = NetworkMessage.parse(incoming);
-            Pairing pairing;
-            synchronized (pairingsLock) {
-                pairing = pairings().getPairing(pairingUUID);
-            }
+            Pairing pairing = pairings().getPairing(pairingUUID);
             if (pairing == null) {
                 Log.e(TAG, "not valid pairing: " + pairingUUID);
                 return;
