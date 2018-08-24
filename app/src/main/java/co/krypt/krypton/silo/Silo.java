@@ -115,7 +115,6 @@ public class Silo {
 
     private final Pairings pairingStorage;
     private final MeStorage meStorage;
-    private Map<UUID, Pairing> activePairingsByUUID = new HashMap<>();
     private Map<Pairing, SQSPoller> pollers = new HashMap<>();
 
     @Nullable
@@ -138,7 +137,6 @@ public class Silo {
         Set<Pairing> pairings = pairingStorage.loadAll();
         bluetoothTransport = BluetoothTransport.init(context);
         for (Pairing p : pairings) {
-            activePairingsByUUID.put(p.uuid, p);
             if (bluetoothTransport != null) {
                 bluetoothTransport.add(p);
             }
@@ -173,7 +171,7 @@ public class Silo {
 
     public void start() {
         synchronized (pairingsLock) {
-            for (Pairing pairing : activePairingsByUUID.values()) {
+            for (Pairing pairing : pairings().loadAll()) {
                 Log.i(TAG, "starting "+ Base64.encodeAsString(pairing.workstationPublicKey));
                 SQSPoller poller = pollers.remove(pairing);
                 if (poller != null) {
@@ -209,7 +207,7 @@ public class Silo {
 
     public Pairing pair(Pairing pairing) throws CryptoException, TransportException {
         synchronized (pairingsLock) {
-            Pairing oldPairing = activePairingsByUUID.get(pairing.uuid);
+            Pairing oldPairing = pairings().getPairing(pairing.uuid);
             if (oldPairing != null) {
                 Log.w(TAG, "already paired with " + pairing.workstationName);
                 return oldPairing;
@@ -219,7 +217,6 @@ public class Silo {
             send(pairing, wrappedKeyMessage);
 
             pairingStorage.pair(pairing);
-            activePairingsByUUID.put(pairing.uuid, pairing);
             pollers.put(pairing, new SQSPoller(context, pairing));
             if (bluetoothTransport != null) {
                 bluetoothTransport.add(pairing);
@@ -242,7 +239,6 @@ public class Silo {
         }
         synchronized (pairingsLock) {
             pairingStorage.unpair(pairing);
-            activePairingsByUUID.remove(pairing.uuid);
             SQSPoller poller = pollers.remove(pairing);
             if (poller != null) {
                 poller.stop();
@@ -255,8 +251,7 @@ public class Silo {
 
     public void unpairAll() {
         synchronized (pairingsLock) {
-            List<Pairing> toDelete = new ArrayList<>(activePairingsByUUID.values());
-            for (Pairing pairing: toDelete) {
+            for (Pairing pairing: pairings().loadAll()) {
                 unpair(pairing, true);
             }
         }
@@ -271,7 +266,7 @@ public class Silo {
             NetworkMessage message = NetworkMessage.parse(incoming);
             Pairing pairing;
             synchronized (pairingsLock) {
-                pairing = activePairingsByUUID.get(pairingUUID);
+                pairing = pairings().getPairing(pairingUUID);
             }
             if (pairing == null) {
                 Log.e(TAG, "not valid pairing: " + pairingUUID);
