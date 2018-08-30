@@ -12,205 +12,225 @@
     android:layout_marginTop="8dp"
     android:background="@drawable/top_bottom_border"
     android:elevation="4dp"
+    android:padding="8dp"
     app:layoutManager="LinearLayoutManager"
     tools:context="co.krypt.krypton.devices.DevicesFragment">
 
     <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
+        android:id="@+id/titleContainer"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="0dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <EditText
             android:id="@+id/deviceName"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:inputType="text"
             android:maxLines="1"
             android:singleLine="true"
             android:text="DisplayName"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintEnd_toStartOf="@+id/deviceIcon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/approvalLabel"
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/deviceIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/user_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/originalNameLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:fontFamily="@font/open_sans_semibold"
-            android:text="When should Krypton ask for your approval?"
-            android:textAlignment="textStart"
-            android:textColor="@color/appBlack"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/deviceName" />
-
-        <android.support.v7.widget.AppCompatRadioButton
-            android:id="@+id/alwaysAsk"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@android:color/transparent"
-            android:button="@android:color/transparent"
-            android:drawableTop="?android:attr/listChoiceIndicatorSingle"
-            android:fontFamily="@font/open_sans"
-            android:text="Always ask"
-            android:textColor="@color/appBlack"
-            app:layout_constraintEnd_toStartOf="@+id/automaticApprovalButton"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/temporaryApprovalsContainer" />
-
-        <android.support.v7.widget.AppCompatRadioButton
-            android:id="@+id/automaticApprovalButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="16dp"
-            android:background="@android:color/transparent"
-            android:button="@android:color/transparent"
-            android:drawableTop="?android:attr/listChoiceIndicatorSingle"
-            android:fontFamily="@font/open_sans"
-            android:text="Never ask"
-            android:textColor="@color/appBlack"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/alwaysAsk"
-            app:layout_constraintTop_toTopOf="@+id/alwaysAsk" />
+            android:text="TextView"
+            app:layout_constraintEnd_toStartOf="@+id/deviceIcon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/deviceName"
+            tools:text="Originally WorkstationName" />
+    </android.support.constraint.ConstraintLayout>
 
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/temporaryApprovalsContainer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@color/appWhite"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/approvalLabel"
-            app:layout_constraintTop_toBottomOf="@+id/approvalLabel">
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/approvalLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/open_sans_semibold"
+        android:text="When should Krypton ask for your approval?"
+        android:textAlignment="textStart"
+        android:textColor="@color/appBlack"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleContainer" />
 
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/temporaryApprovalsHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/open_sans"
-                android:text="* some requests are temporarily approved"
-                android:textAlignment="textStart"
-                android:textColor="@color/appGray"
-                android:textSize="12sp"
-                android:textStyle="normal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/temporaryApprovalsContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/appWhite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/approvalLabel"
+        app:layout_constraintTop_toBottomOf="@+id/approvalLabel">
 
-
-            <android.support.v7.widget.AppCompatButton
-                android:id="@+id/temporaryApprovalsViewButton"
-                style="@android:style/Widget.Holo.TextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:background="@android:color/transparent"
-                android:fontFamily="@font/open_sans_bold"
-                android:minHeight="0dp"
-                android:minWidth="0dp"
-                android:padding="2dp"
-                android:text="View"
-                android:textAllCaps="false"
-                android:textColor="@color/appGray"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/temporaryApprovalsHeader"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <android.support.v7.widget.AppCompatButton
-                android:id="@+id/temporaryApprovalsResetButton"
-                style="@android:style/Widget.Holo.TextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:background="@android:color/transparent"
-                android:fontFamily="@font/open_sans_bold"
-                android:minHeight="0dp"
-                android:minWidth="0dp"
-                android:padding="2dp"
-                android:text="Reset"
-                android:textAllCaps="false"
-                android:textColor="@android:color/holo_red_light"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/temporaryApprovalsViewButton"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </android.support.constraint.ConstraintLayout>
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/requireUnknownHostApprovalContainer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:background="@color/appWhite"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/approvalLabel"
-            app:layout_constraintTop_toBottomOf="@+id/alwaysAsk">
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:background="@color/appGreen"
-                android:visibility="gone"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <android.support.v7.widget.SwitchCompat
-                android:id="@+id/requireUnknownHostApprovalSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/requireUnknownHostApprovalHeader" />
-
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/requireUnknownHostApprovalHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/open_sans_semibold"
-                android:text="Always ask for unknown hosts"
-                android:textColor="@color/appBlack"
-                android:textSize="16sp"
-                android:textStyle="normal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@+id/requireUnknownHostApprovalSwitch"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </android.support.constraint.ConstraintLayout>
-
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/unpairButton"
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/temporaryApprovalsHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:layout_marginTop="32dp"
-            android:background="@drawable/flat_button"
-            android:backgroundTint="@android:color/holo_red_light"
-            android:fontFamily="@font/open_sans_bold"
-            android:minHeight="36dip"
-            android:text="Unpair"
-            android:textColor="@android:color/holo_red_light"
-            android:textSize="16sp"
+            android:fontFamily="@font/open_sans"
+            android:text="* some requests are temporarily approved"
+            android:textAlignment="textStart"
+            android:textColor="@color/appGray"
+            android:textSize="12sp"
+            android:textStyle="normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/requireUnknownHostApprovalContainer" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/temporaryApprovalsViewButton"
+            style="@android:style/Widget.Holo.TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:background="@android:color/transparent"
+            android:fontFamily="@font/open_sans_bold"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:padding="2dp"
+            android:text="View"
+            android:textAllCaps="false"
+            android:textColor="@color/appGray"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/temporaryApprovalsHeader"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/temporaryApprovalsResetButton"
+            style="@android:style/Widget.Holo.TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:background="@android:color/transparent"
+            android:fontFamily="@font/open_sans_bold"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:padding="2dp"
+            android:text="Reset"
+            android:textAllCaps="false"
+            android:textColor="@android:color/holo_red_light"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/temporaryApprovalsViewButton"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
+
+    <android.support.v7.widget.AppCompatRadioButton
+        android:id="@+id/alwaysAsk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/transparent"
+        android:button="@android:color/transparent"
+        android:drawableTop="?android:attr/listChoiceIndicatorSingle"
+        android:fontFamily="@font/open_sans"
+        android:text="Always ask"
+        android:textColor="@color/appBlack"
+        app:layout_constraintEnd_toStartOf="@+id/automaticApprovalButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/temporaryApprovalsContainer" />
+
+    <android.support.v7.widget.AppCompatRadioButton
+        android:id="@+id/automaticApprovalButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:background="@android:color/transparent"
+        android:button="@android:color/transparent"
+        android:drawableTop="?android:attr/listChoiceIndicatorSingle"
+        android:fontFamily="@font/open_sans"
+        android:text="Never ask"
+        android:textColor="@color/appBlack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/alwaysAsk"
+        app:layout_constraintTop_toTopOf="@+id/alwaysAsk" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/requireUnknownHostApprovalContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:background="@color/appWhite"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/approvalLabel"
+        app:layout_constraintTop_toBottomOf="@+id/alwaysAsk">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:background="@color/appGreen"
+            android:visibility="gone"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/requireUnknownHostApprovalSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/requireUnknownHostApprovalHeader" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/requireUnknownHostApprovalHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans_semibold"
+            android:text="Always ask for unknown hosts"
+            android:textColor="@color/appBlack"
+            android:textSize="16sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/requireUnknownHostApprovalSwitch"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/unpairButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/flat_button"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:fontFamily="@font/open_sans_bold"
+        android:minHeight="36dip"
+        android:text="Unpair"
+        android:textColor="@android:color/holo_red_light"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/requireUnknownHostApprovalContainer" />
 
 </android.support.constraint.ConstraintLayout>

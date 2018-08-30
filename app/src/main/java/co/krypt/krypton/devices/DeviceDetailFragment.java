@@ -110,6 +110,14 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
             }
         });
 
+        TextView originalNameLabel = deviceCardView.findViewById(R.id.originalNameLabel);
+        if (pairing.getDisplayName().equals(pairing.workstationName)) {
+            originalNameLabel.setText("");
+        }
+        else {
+            originalNameLabel.setText("Originally \"" + pairing.workstationName + "\"");
+        }
+
         manualButton = (RadioButton) deviceCardView.findViewById(R.id.alwaysAsk);
         automaticButton = (RadioButton) deviceCardView.findViewById(R.id.automaticApprovalButton);
 
