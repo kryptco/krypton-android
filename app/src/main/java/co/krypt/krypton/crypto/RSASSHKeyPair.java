@@ -133,7 +133,7 @@ public class RSASSHKeyPair implements SSHKeyPairI {
             case "rsa-sha2-512":
                 return KeyProperties.DIGEST_SHA512;
             default:
-                throw new CryptoException("unsuported algo: " + algo);
+                throw new CryptoException("unsupported algo: " + algo);
         }
     }
 
