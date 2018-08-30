@@ -24,7 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <EditText
+        <android.support.v7.widget.AppCompatEditText
             android:id="@+id/deviceName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/originalNameLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

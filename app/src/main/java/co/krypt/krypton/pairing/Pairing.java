@@ -34,6 +34,7 @@ public class Pairing {
     public final byte[] workstationDeviceIdentifier;
     public final String workstationName;
     public final UUID uuid;
+    @Nullable
     private String displayName;
 
     public Pairing(@NonNull byte[] workstationPublicKey, @NonNull byte[] enclaveSecretKey, @NonNull byte[] enclavePublicKey, String workstationName, @Nullable byte[] workstationDeviceIdentifier) throws CryptoException {

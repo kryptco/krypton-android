@@ -48,6 +48,9 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     private RadioButton manualButton;
     private RadioButton automaticButton;
 
+    private TextView deviceName;
+    private TextView originalNameLabel;
+
     private Button viewTemporaryApprovalsButton;
     private Button resetTemporaryApprovalsButton;
     private ViewGroup temporaryApprovalsContainer;
@@ -94,8 +97,7 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
 
         View deviceCardView = inflater.inflate(R.layout.device_card, container, false);
 
-        TextView deviceName = (TextView) deviceCardView.findViewById(R.id.deviceName);
-        deviceName.setText(pairing.getDisplayName());
+        deviceName = (TextView) deviceCardView.findViewById(R.id.deviceName);
         deviceName.setOnEditorActionListener((v12, keyCode, event) -> {
             v12.clearFocus();
             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -109,14 +111,8 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
                 onDeviceNameChanged(editText.getText().toString());
             }
         });
-
-        TextView originalNameLabel = deviceCardView.findViewById(R.id.originalNameLabel);
-        if (pairing.getDisplayName().equals(pairing.workstationName)) {
-            originalNameLabel.setText("");
-        }
-        else {
-            originalNameLabel.setText("Originally \"" + pairing.workstationName + "\"");
-        }
+        originalNameLabel = deviceCardView.findViewById(R.id.originalNameLabel);
+        updateDisplayNameViews();
 
         manualButton = (RadioButton) deviceCardView.findViewById(R.id.alwaysAsk);
         automaticButton = (RadioButton) deviceCardView.findViewById(R.id.automaticApprovalButton);
@@ -239,6 +235,19 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         }
     }
 
+    private void updateDisplayNameViews() {
+        final Pairing pairing = Silo.shared(getContext()).pairings().getPairing(pairingUUID);
+        if (pairing == null) {
+            return;
+        }
+        deviceName.setText(pairing.getDisplayName());
+        if (pairing.getDisplayName().equals(pairing.workstationName)) {
+            originalNameLabel.setText("");
+        }
+        else {
+            originalNameLabel.setText("Originally \"" + pairing.workstationName + "\"");
+        }
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -264,6 +273,7 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
 
     private void onDeviceNameChanged(String newName) {
         Silo.shared(getContext()).pairings().renamePairing(pairingUUID, newName);
+        updateDisplayNameViews();
     }
 
     @Override
