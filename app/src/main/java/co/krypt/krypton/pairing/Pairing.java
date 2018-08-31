@@ -97,10 +97,10 @@ public class Pairing {
     }
 
     public void setDisplayName(String newDisplayName) {
-        if (newDisplayName == null || newDisplayName.isEmpty()) {
+        if (newDisplayName == null || newDisplayName.trim().isEmpty()) {
             displayName = workstationName;
         }
-        displayName = newDisplayName;
+        displayName = newDisplayName.trim();
     }
 
     public byte[] wrapKey() throws CryptoException {
