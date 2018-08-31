@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -113,6 +114,24 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         });
         originalNameLabel = deviceCardView.findViewById(R.id.originalNameLabel);
         updateDisplayNameViews();
+
+        AppCompatImageView deviceIcon = deviceCardView.findViewById(R.id.deviceIcon);
+        if (pairing.deviceType == null) {
+            deviceIcon.setImageResource(R.drawable.terminal_icon);
+        } else switch (pairing.deviceType) {
+            case FIREFOX:
+                deviceIcon.setImageResource(R.drawable.firefox);
+                break;
+            case CHROME:
+                deviceIcon.setImageResource(R.drawable.chrome);
+                break;
+            case SAFARI:
+                deviceIcon.setImageResource(R.drawable.safari);
+                break;
+            default:
+                deviceIcon.setImageResource(R.drawable.terminal_icon);
+                break;
+        }
 
         manualButton = (RadioButton) deviceCardView.findViewById(R.id.alwaysAsk);
         automaticButton = (RadioButton) deviceCardView.findViewById(R.id.automaticApprovalButton);

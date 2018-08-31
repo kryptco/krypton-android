@@ -29,7 +29,7 @@ public class PairingQR {
     public byte[] deviceId;
     @SerializedName("b")
     @Nullable
-    String browser;
+    public String browser;
 
     //  version null in kr version < 2.0.0
     @SerializedName("v")

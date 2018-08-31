@@ -31,16 +31,19 @@ public class Pairing {
     final byte[] enclaveSecretKey;
     final byte[] enclavePublicKey;
     @Nullable
+    public DeviceType deviceType;
+    @Nullable
     public final byte[] workstationDeviceIdentifier;
     public final String workstationName;
     public final UUID uuid;
     @Nullable
     private String displayName;
 
-    public Pairing(@NonNull byte[] workstationPublicKey, @NonNull byte[] enclaveSecretKey, @NonNull byte[] enclavePublicKey, String workstationName, @Nullable byte[] workstationDeviceIdentifier) throws CryptoException {
+    public Pairing(@NonNull byte[] workstationPublicKey, @NonNull byte[] enclaveSecretKey, @NonNull byte[] enclavePublicKey, String workstationName, @Nullable byte[] workstationDeviceIdentifier, DeviceType deviceType) throws CryptoException {
         if (workstationPublicKey.length != Sodium.crypto_box_publickeybytes()) {
             throw new SodiumException("workstation public key invalid");
         }
+        this.deviceType = deviceType;
         this.workstationPublicKey = workstationPublicKey;
         this.enclaveSecretKey = enclaveSecretKey;
         this.enclavePublicKey = enclavePublicKey;
@@ -65,7 +68,7 @@ public class Pairing {
        return "CACHED_PAIRING." + Base64.encode(workstationPublicKey);
     }
 
-    public static synchronized Pairing generate(Context context, @NonNull byte[] workstationPublicKey, String workstationName, @Nullable byte[] workstationDeviceIdentifier) throws CryptoException {
+    public static synchronized Pairing generate(Context context, @NonNull byte[] workstationPublicKey, String workstationName, @Nullable byte[] workstationDeviceIdentifier, String browser) throws CryptoException {
         byte[] enclavePublicKey = new byte[Sodium.crypto_box_publickeybytes()];
         byte[] enclaveSecretKey = new byte[Sodium.crypto_box_secretkeybytes()];
 
@@ -82,11 +85,60 @@ public class Pairing {
             throw new SodiumException("keypair generate failed");
         }
 
-        return new Pairing(workstationPublicKey, enclaveSecretKey, enclavePublicKey, workstationName, workstationDeviceIdentifier);
+        DeviceType deviceType;
+        switch (browser) {
+            case "firefox":
+                deviceType = DeviceType.FIREFOX;
+                break;
+            case "chrome":
+                deviceType = DeviceType.CHROME;
+                break;
+            case "safari":
+                deviceType = DeviceType.SAFARI;
+                break;
+            default:
+                deviceType = DeviceType.UNKNOWN;
+        }
+
+        return new Pairing(workstationPublicKey, enclaveSecretKey, enclavePublicKey, workstationName, workstationDeviceIdentifier, deviceType);
     }
 
     public static Pairing generate(Context context, PairingQR pairingQR) throws CryptoException {
-        return Pairing.generate(context, pairingQR.workstationPublicKey, pairingQR.workstationName, pairingQR.deviceId);
+        return Pairing.generate(context, pairingQR.workstationPublicKey, pairingQR.workstationName, pairingQR.deviceId, pairingQR.browser);
+    }
+
+    public void updateDeviceType() {
+        if (deviceType == null) {
+            if (workstationName.startsWith("Firefox")) {
+                deviceType = DeviceType.FIREFOX;
+            }
+            else if (workstationName.startsWith("Chrome")) {
+                deviceType = DeviceType.CHROME;
+            }
+            else if (workstationName.startsWith("Safari")) {
+                deviceType = DeviceType.SAFARI;
+            }
+            else {
+                deviceType = DeviceType.UNKNOWN;
+            }
+        }
+    }
+
+    public String getBrowser() {
+        if (deviceType == null) {
+            updateDeviceType();
+            return "Unknown/Not a browser";
+        }
+        else switch (deviceType) {
+            case FIREFOX:
+                return "Firefox";
+            case CHROME:
+                return "Chrome/Chromium";
+            case SAFARI:
+                return "Safari";
+            default:
+                return "Unknown/Not a browser";
+        }
     }
 
     public String getDisplayName() {

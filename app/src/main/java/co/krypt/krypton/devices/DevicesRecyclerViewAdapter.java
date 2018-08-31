@@ -1,5 +1,6 @@
 package co.krypt.krypton.devices;
 
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -45,6 +46,23 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         holder.lastLog = sessions.get(position).lastApproval;
 
         holder.deviceName.setText(sessions.get(position).pairing.getDisplayName());
+        if (holder.device.deviceType == null) {
+            holder.deviceIcon.setImageResource(R.drawable.terminal_icon);
+        } else switch (holder.device.deviceType) {
+            case FIREFOX:
+                holder.deviceIcon.setImageResource(R.drawable.firefox);
+                break;
+            case CHROME:
+                holder.deviceIcon.setImageResource(R.drawable.chrome);
+                break;
+            case SAFARI:
+                holder.deviceIcon.setImageResource(R.drawable.safari);
+                break;
+            default:
+                holder.deviceIcon.setImageResource(R.drawable.terminal_icon);
+                break;
+        }
+
         if (holder.lastLog != null) {
             holder.lastCommand.setText(holder.lastLog.shortDisplay());
             holder.lastCommandTime.setText(DateUtils.getRelativeTimeSpanString(holder.lastLog.unixSeconds() * 1000, System.currentTimeMillis(), 1000));
@@ -71,6 +89,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView deviceName;
+        public final AppCompatImageView deviceIcon;
         public final TextView lastCommand;
         public final TextView lastCommandTime;
         public Pairing device;
@@ -80,6 +99,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
             super(view);
             mView = view;
             deviceName = (TextView) view.findViewById(R.id.deviceName);
+            deviceIcon = (AppCompatImageView) view.findViewById(R.id.deviceIcon);
             lastCommand = (TextView) view.findViewById(R.id.lastCommandText);
             lastCommand.setText("");
             lastCommandTime = (TextView) view.findViewById(R.id.lastCommandTimeText);

@@ -74,7 +74,10 @@ public class Pairings {
         HashSet<Pairing> pairings = new HashSet<>();
         Set<String> jsonPairings = new HashSet<>(preferences.getStringSet(PAIRINGS_KEY, new ArraySet<String>()));
         for (String jsonPairing : jsonPairings) {
-            pairings.add(JSON.fromJson(jsonPairing, Pairing.class));
+            Pairing pairing = JSON.fromJson(jsonPairing, Pairing.class);
+            //Update legacy pairings
+            pairing.updateDeviceType();
+            pairings.add(pairing);
         }
         return pairings;
     }
