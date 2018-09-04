@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
+    android:name="co.krypt.kryptonite.devices.DevicesFragment"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="8dp"
+    android:background="@drawable/top_bottom_border"
+    android:elevation="4dp"
+    android:padding="8dp"
+    app:layoutManager="LinearLayoutManager"
+    tools:context="co.krypt.krypton.devices.DevicesFragment">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/titleContainer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.v7.widget.AppCompatEditText
+            android:id="@+id/deviceName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:inputType="text"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:text="DisplayName"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintEnd_toStartOf="@+id/deviceIcon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/deviceIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/user_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/originalNameLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            android:text="TextView"
+            app:layout_constraintEnd_toStartOf="@+id/deviceIcon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/deviceName"
+            tools:text="Originally WorkstationName" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/allowU2FZeroTouchContainer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:background="@color/appWhite"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleContainer">
+
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/allowU2FZeroTouchSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/allowU2FZeroTouchLabel" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/allowU2FZeroTouchLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans_semibold"
+            android:text="Allow Zero-Touch U2F approvals"
+            android:textColor="@color/appBlack"
+            android:textSize="16sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/allowU2FZeroTouchSwitch"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/unpairButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/flat_button"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:fontFamily="@font/open_sans_bold"
+        android:minHeight="36dip"
+        android:text="Unpair"
+        android:textColor="@android:color/holo_red_light"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/allowU2FZeroTouchContainer" />
+
+</android.support.constraint.ConstraintLayout>

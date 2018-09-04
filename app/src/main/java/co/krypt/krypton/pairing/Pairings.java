@@ -59,6 +59,10 @@ public class Pairings {
         return pairingUUIDString + ".APPROVED_UNTIL";
     }
 
+    public static String pairingU2FZeroTouchKey(String pairingUUIDString) {
+        return pairingUUIDString + ".U2F_ZERO_TOUCH_ALLOWED";
+    }
+
     public void registerOnSharedPreferenceChangedListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
         synchronized (lock) {
             preferences.registerOnSharedPreferenceChangeListener(listener);
@@ -112,6 +116,21 @@ public class Pairings {
             if (!approved) {
                 editor.putLong(pairingApprovedUntilKey(pairingUUID), -1);
             }
+            editor.apply();
+        }
+    }
+
+    public Boolean getU2FZeroTouchAllowed(String pairingUUID) {
+        synchronized (lock) {
+            return preferences.getBoolean(pairingU2FZeroTouchKey(pairingUUID), false);
+        }
+    }
+
+    public Boolean getU2FZeroTouchAllowed(Pairing pairing) { return getU2FZeroTouchAllowed(pairing.getUUIDString()); }
+
+    public void setU2FZeroTouchAllowed(String pairingUUID, boolean u2fZeroTouchAllowed) {
+        synchronized (lock) {
+            SharedPreferences.Editor editor = preferences.edit().putBoolean(pairingU2FZeroTouchKey(pairingUUID), u2fZeroTouchAllowed);
             editor.apply();
         }
     }

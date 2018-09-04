@@ -107,24 +107,11 @@ public class Pairing {
         return Pairing.generate(context, pairingQR.workstationPublicKey, pairingQR.workstationName, pairingQR.deviceId, pairingQR.browser);
     }
 
-    public void updateDeviceType() {
-        if (deviceType == null) {
-            if (workstationName.startsWith("Firefox")) {
-                deviceType = DeviceType.FIREFOX;
-            }
-            else if (workstationName.startsWith("Chrome")) {
-                deviceType = DeviceType.CHROME;
-            }
-            else if (workstationName.startsWith("Safari")) {
-                deviceType = DeviceType.SAFARI;
-            }
-            else {
-                deviceType = DeviceType.UNKNOWN;
-            }
-        }
+    public Boolean isBrowser() {
+        return !(deviceType == DeviceType.UNKNOWN);
     }
 
-    public String getBrowser() {
+    public String getDeviceTypeString() {
         if (deviceType == null) {
             updateDeviceType();
             return "Unknown/Not a browser";
@@ -153,6 +140,23 @@ public class Pairing {
             displayName = workstationName;
         }
         displayName = newDisplayName.trim();
+    }
+
+    public void updateDeviceType() {
+        if (deviceType == null) {
+            if (workstationName.startsWith("Firefox ")) {
+                deviceType = DeviceType.FIREFOX;
+            }
+            else if (workstationName.startsWith("Chrome ")) {
+                deviceType = DeviceType.CHROME;
+            }
+            else if (workstationName.startsWith("Safari ")) {
+                deviceType = DeviceType.SAFARI;
+            }
+            else {
+                deviceType = DeviceType.UNKNOWN;
+            }
+        }
     }
 
     public byte[] wrapKey() throws CryptoException {

@@ -33,6 +33,7 @@ import java.util.UUID;
 import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
 import co.krypt.krypton.approval.ApprovalsFragment;
+import co.krypt.krypton.pairing.DeviceType;
 import co.krypt.krypton.pairing.Pairing;
 import co.krypt.krypton.pairing.Pairings;
 import co.krypt.krypton.policy.Approval;
@@ -96,7 +97,45 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
             return view;
         }
 
-        View deviceCardView = inflater.inflate(R.layout.device_card, container, false);
+        View deviceCardView;
+        if (pairing.isBrowser() && pairing.deviceType == DeviceType.CHROME) {
+            deviceCardView = createExtDeviceCardView(inflater, container, savedInstanceState, pairing);
+        }
+        else {
+            deviceCardView = createCliDeviceCardView(inflater, container, savedInstanceState, pairing);
+        }
+
+        signatureLogAdapter.deviceCardView.set(deviceCardView);
+
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
+        Context context = recyclerView.getContext();
+        if (mColumnCount <= 1) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+        }
+        recyclerView.setAdapter(signatureLogAdapter);
+
+
+        onDeviceLogReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                signatureLogAdapter.setLogs(
+                        Silo.shared(getContext()).pairings().getAllLogsTimeDescending(pairingUUID)
+                );
+            }
+        };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Pairings.ON_DEVICE_LOG_ACTION);
+        LocalBroadcastManager.getInstance(context).registerReceiver(onDeviceLogReceiver, filter);
+        Silo.shared(getContext()).pairings().registerOnSharedPreferenceChangedListener(this);
+
+        return view;
+    }
+
+    public View createCliDeviceCardView(LayoutInflater inflater, ViewGroup container,
+                                Bundle savedInstanceState, Pairing pairing) {
+        View deviceCardView = inflater.inflate(R.layout.cli_device_card, container, false);
 
         deviceName = (TextView) deviceCardView.findViewById(R.id.deviceName);
         deviceName.setOnEditorActionListener((v12, keyCode, event) -> {
@@ -116,22 +155,7 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         updateDisplayNameViews();
 
         AppCompatImageView deviceIcon = deviceCardView.findViewById(R.id.deviceIcon);
-        if (pairing.deviceType == null) {
-            deviceIcon.setImageResource(R.drawable.terminal_icon);
-        } else switch (pairing.deviceType) {
-            case FIREFOX:
-                deviceIcon.setImageResource(R.drawable.firefox);
-                break;
-            case CHROME:
-                deviceIcon.setImageResource(R.drawable.chrome);
-                break;
-            case SAFARI:
-                deviceIcon.setImageResource(R.drawable.safari);
-                break;
-            default:
-                deviceIcon.setImageResource(R.drawable.terminal_icon);
-                break;
-        }
+        deviceIcon.setImageResource(R.drawable.terminal_icon);
 
         manualButton = (RadioButton) deviceCardView.findViewById(R.id.alwaysAsk);
         automaticButton = (RadioButton) deviceCardView.findViewById(R.id.automaticApprovalButton);
@@ -178,33 +202,68 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
                 new Pairings(getContext()).setRequireUnknownHostManualApproval(pairing, isChecked);
             }
         });
+        return deviceCardView;
+    }
 
-        signatureLogAdapter.deviceCardView.set(deviceCardView);
+    public View createExtDeviceCardView(LayoutInflater inflater, ViewGroup container,
+                                Bundle savedInstanceState, Pairing pairing) {
+        View deviceCardView = inflater.inflate(R.layout.ext_device_card, container, false);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
-        Context context = recyclerView.getContext();
-        if (mColumnCount <= 1) {
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        } else {
-            recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-        }
-        recyclerView.setAdapter(signatureLogAdapter);
-
-
-        onDeviceLogReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                signatureLogAdapter.setLogs(
-                        Silo.shared(getContext()).pairings().getAllLogsTimeDescending(pairingUUID)
-                );
+        deviceName = (TextView) deviceCardView.findViewById(R.id.deviceName);
+        deviceName.setOnEditorActionListener((v12, keyCode, event) -> {
+            v12.clearFocus();
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v12.getWindowToken(), 0);
+            onDeviceNameChanged(v12.getText().toString());
+            return false;
+        });
+        deviceName.setOnFocusChangeListener((v1, hasFocus) -> {
+            if (!hasFocus) {
+                EditText editText = (EditText) v1;
+                onDeviceNameChanged(editText.getText().toString());
             }
-        };
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Pairings.ON_DEVICE_LOG_ACTION);
-        LocalBroadcastManager.getInstance(context).registerReceiver(onDeviceLogReceiver, filter);
-        Silo.shared(getContext()).pairings().registerOnSharedPreferenceChangedListener(this);
+        });
+        originalNameLabel = deviceCardView.findViewById(R.id.originalNameLabel);
+        updateDisplayNameViews();
 
-        return view;
+        AppCompatImageView deviceIcon = deviceCardView.findViewById(R.id.deviceIcon);
+        if (pairing.deviceType == null) {
+            deviceIcon.setImageResource(R.drawable.user_icon);
+        } else switch (pairing.deviceType) {
+            case FIREFOX:
+                deviceIcon.setImageResource(R.drawable.firefox);
+                break;
+            case CHROME:
+                deviceIcon.setImageResource(R.drawable.chrome);
+                break;
+            case SAFARI:
+                deviceIcon.setImageResource(R.drawable.safari);
+                break;
+            default:
+                deviceIcon.setImageResource(R.drawable.user_icon);
+                break;
+        }
+
+        final SwitchCompat allowU2FZeroTouchSwitch = (SwitchCompat) deviceCardView.findViewById(R.id.allowU2FZeroTouchSwitch);
+        allowU2FZeroTouchSwitch.setChecked(new Pairings(getContext()).getU2FZeroTouchAllowed(pairing));
+        allowU2FZeroTouchSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                new Pairings(getContext()).setU2FZeroTouchAllowed(pairing.getUUIDString(), isChecked);
+            }
+        });
+
+        unpairButton = (Button) deviceCardView.findViewById(R.id.unpairButton);
+        unpairButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Silo.shared(v.getContext()).unpair(pairing, true);
+                new Analytics(getContext()).postEvent("device", "unpair", null, null, false);
+                getFragmentManager().popBackStackImmediate();
+            }
+        });
+
+        return deviceCardView;
     }
 
     @Override
