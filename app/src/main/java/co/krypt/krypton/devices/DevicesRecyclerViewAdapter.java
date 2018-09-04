@@ -12,6 +12,7 @@ import java.util.List;
 
 import co.krypt.krypton.R;
 import co.krypt.krypton.log.Log;
+import co.krypt.krypton.pairing.DeviceType;
 import co.krypt.krypton.pairing.Pairing;
 import co.krypt.krypton.pairing.Session;
 
@@ -46,22 +47,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         holder.lastLog = sessions.get(position).lastApproval;
 
         holder.deviceName.setText(sessions.get(position).pairing.getDisplayName());
-        if (holder.device.deviceType == null) {
-            holder.deviceIcon.setImageResource(R.drawable.terminal_icon);
-        } else switch (holder.device.deviceType) {
-            case FIREFOX:
-                holder.deviceIcon.setImageResource(R.drawable.firefox);
-                break;
-            case CHROME:
-                holder.deviceIcon.setImageResource(R.drawable.chrome);
-                break;
-            case SAFARI:
-                holder.deviceIcon.setImageResource(R.drawable.safari);
-                break;
-            default:
-                holder.deviceIcon.setImageResource(R.drawable.terminal_icon);
-                break;
-        }
+        holder.deviceIcon.setImageResource(DeviceType.getDeviceIcon(holder.device.deviceType));
 
         if (holder.lastLog != null) {
             holder.lastCommand.setText(holder.lastLog.shortDisplay());

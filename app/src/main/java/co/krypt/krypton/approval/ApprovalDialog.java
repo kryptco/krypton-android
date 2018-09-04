@@ -5,6 +5,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.util.MutableBoolean;
 import android.view.View;
 import android.widget.TextView;
 
@@ -23,6 +24,7 @@ import co.krypt.krypton.protocol.TeamOperationRequest;
 import co.krypt.krypton.protocol.U2FAuthenticateRequest;
 import co.krypt.krypton.protocol.U2FRegisterRequest;
 import co.krypt.krypton.protocol.UnpairRequest;
+import co.krypt.krypton.silo.Silo;
 
 /**
  * Created by Kevin King on 5/5/17.
@@ -130,15 +132,39 @@ public class ApprovalDialog {
 
             @Override
             public Void visit(U2FRegisterRequest u2FRegisterRequest) throws RuntimeException {
+                MutableBoolean isZeroTouchChecked = new MutableBoolean(false);
+                final CharSequence[] options = {"Automatically approve future requests from this device"};
+                builder.setMultiChoiceItems(options, null, (dialog, which, isChecked) -> {isZeroTouchChecked.value = isChecked;});
                 builder.setPositiveButton("Allow",
-                        (dialog, id) -> Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ONCE));
+                        (dialog, id) -> {
+                            // Only overwrite this setting when the box is checked.
+                            // If the setting was already true, the user shouldn't have gotten here,
+                            // and if it was changed while the notification was pending we don't want to overwrite that.
+                            if (isZeroTouchChecked.value) {
+                                Silo silo = Silo.shared(activity.getApplicationContext());
+                                silo.pairings().setU2FZeroTouchAllowed(pairing.getUUIDString(), isZeroTouchChecked.value);
+                            }
+                            Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ONCE);
+                        });
                 return null;
             }
 
             @Override
             public Void visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws RuntimeException {
+                MutableBoolean isZeroTouchChecked = new MutableBoolean(false);
+                final CharSequence[] options = {"Automatically approve future requests from this device"};
+                builder.setMultiChoiceItems(options, null, (dialog, which, isChecked) -> {isZeroTouchChecked.value = isChecked;});
                 builder.setPositiveButton("Allow",
-                        (dialog, id) -> Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ONCE));
+                        (dialog, id) -> {
+                            // Only overwrite this setting when the box is checked.
+                            // If the setting was already true, the user shouldn't have gotten here,
+                            // and if it was changed while the notification was pending we don't want to overwrite that.
+                            if (isZeroTouchChecked.value) {
+                                Silo silo = Silo.shared(activity.getApplicationContext());
+                                silo.pairings().setU2FZeroTouchAllowed(pairing.getUUIDString(), isZeroTouchChecked.value);
+                            }
+                            Policy.onAction(activity.getApplicationContext(), requestID, Policy.APPROVE_ONCE);
+                        });
                 return null;
             }
         });
@@ -151,7 +177,7 @@ public class ApprovalDialog {
         workstationNameText.setText(pairing.getDisplayName());
         ConstraintLayout content = (ConstraintLayout) requestView.findViewById(R.id.content);
         request.fillView(content);
-        builder.setView(requestView);
+        builder.setCustomTitle(requestView);
         builder.create().show();
     }
 }

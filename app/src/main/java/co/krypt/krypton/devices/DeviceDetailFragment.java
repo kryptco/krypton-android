@@ -98,7 +98,7 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         }
 
         View deviceCardView;
-        if (pairing.isBrowser() && pairing.deviceType == DeviceType.CHROME) {
+        if (pairing.isBrowser()) {
             deviceCardView = createExtDeviceCardView(inflater, container, savedInstanceState, pairing);
         }
         else {
@@ -227,22 +227,7 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         updateDisplayNameViews();
 
         AppCompatImageView deviceIcon = deviceCardView.findViewById(R.id.deviceIcon);
-        if (pairing.deviceType == null) {
-            deviceIcon.setImageResource(R.drawable.user_icon);
-        } else switch (pairing.deviceType) {
-            case FIREFOX:
-                deviceIcon.setImageResource(R.drawable.firefox);
-                break;
-            case CHROME:
-                deviceIcon.setImageResource(R.drawable.chrome);
-                break;
-            case SAFARI:
-                deviceIcon.setImageResource(R.drawable.safari);
-                break;
-            default:
-                deviceIcon.setImageResource(R.drawable.user_icon);
-                break;
-        }
+        deviceIcon.setImageResource(DeviceType.getDeviceIcon(pairing.deviceType));
 
         final SwitchCompat allowU2FZeroTouchSwitch = (SwitchCompat) deviceCardView.findViewById(R.id.allowU2FZeroTouchSwitch);
         allowU2FZeroTouchSwitch.setChecked(new Pairings(getContext()).getU2FZeroTouchAllowed(pairing));

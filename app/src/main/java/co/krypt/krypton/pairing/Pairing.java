@@ -30,7 +30,6 @@ public class Pairing {
     public final byte[] workstationPublicKey;
     final byte[] enclaveSecretKey;
     final byte[] enclavePublicKey;
-    @Nullable
     public DeviceType deviceType;
     @Nullable
     public final byte[] workstationDeviceIdentifier;
@@ -85,20 +84,7 @@ public class Pairing {
             throw new SodiumException("keypair generate failed");
         }
 
-        DeviceType deviceType;
-        switch (browser) {
-            case "firefox":
-                deviceType = DeviceType.FIREFOX;
-                break;
-            case "chrome":
-                deviceType = DeviceType.CHROME;
-                break;
-            case "safari":
-                deviceType = DeviceType.SAFARI;
-                break;
-            default:
-                deviceType = DeviceType.UNKNOWN;
-        }
+        DeviceType deviceType = DeviceType.fromBrowser(browser);
 
         return new Pairing(workstationPublicKey, enclaveSecretKey, enclavePublicKey, workstationName, workstationDeviceIdentifier, deviceType);
     }
@@ -108,24 +94,7 @@ public class Pairing {
     }
 
     public Boolean isBrowser() {
-        return !(deviceType == DeviceType.UNKNOWN);
-    }
-
-    public String getDeviceTypeString() {
-        if (deviceType == null) {
-            updateDeviceType();
-            return "Unknown/Not a browser";
-        }
-        else switch (deviceType) {
-            case FIREFOX:
-                return "Firefox";
-            case CHROME:
-                return "Chrome/Chromium";
-            case SAFARI:
-                return "Safari";
-            default:
-                return "Unknown/Not a browser";
-        }
+        return deviceType.isBrowser();
     }
 
     public String getDisplayName() {
@@ -144,18 +113,7 @@ public class Pairing {
 
     public void updateDeviceType() {
         if (deviceType == null) {
-            if (workstationName.startsWith("Firefox ")) {
-                deviceType = DeviceType.FIREFOX;
-            }
-            else if (workstationName.startsWith("Chrome ")) {
-                deviceType = DeviceType.CHROME;
-            }
-            else if (workstationName.startsWith("Safari ")) {
-                deviceType = DeviceType.SAFARI;
-            }
-            else {
-                deviceType = DeviceType.UNKNOWN;
-            }
+            deviceType = DeviceType.fromWorkstationName(workstationName);
         }
     }
 

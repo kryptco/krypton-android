@@ -68,7 +68,23 @@
         android:layout_marginTop="32dp"
         android:background="@color/appWhite"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleContainer">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/allowU2FZeroTouchLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/open_sans_semibold"
+            android:text="Allow zero-touch U2F approvals on this device"
+            android:textColor="@color/appBlack"
+            android:textSize="16sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/allowU2FZeroTouchSwitch"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.v7.widget.SwitchCompat
             android:id="@+id/allowU2FZeroTouchSwitch"
@@ -78,21 +94,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@+id/allowU2FZeroTouchLabel" />
-
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/allowU2FZeroTouchLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/open_sans_semibold"
-            android:text="Allow Zero-Touch U2F approvals"
-            android:textColor="@color/appBlack"
-            android:textSize="16sp"
-            android:textStyle="normal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/allowU2FZeroTouchSwitch"
-            app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 

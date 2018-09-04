@@ -207,12 +207,12 @@ public class Policy {
 
                 @Override
                 public Boolean visit(U2FRegisterRequest u2FRegisterRequest) throws Unrecoverable {
-                    return !settings.oneTouchLogin();
+                    return silo.pairings().getU2FZeroTouchAllowed(pairing);
                 }
 
                 @Override
                 public Boolean visit(U2FAuthenticateRequest u2FAuthenticateRequest) throws Unrecoverable {
-                    return !settings.oneTouchLogin();
+                    return silo.pairings().getU2FZeroTouchAllowed(pairing);
                 }
             });
         } catch (Exception e) {
