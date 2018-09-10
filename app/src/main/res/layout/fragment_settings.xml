@@ -84,65 +84,13 @@
             android:layout_height="wrap_content">
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/oneTouchLoginContainer"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="@color/appWhite"
-                android:visibility="gone"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/oneTouchLoginToggle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text=""
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/oneTouchLoginHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="4dp"
-                    android:fontFamily="@font/open_sans_bold"
-                    android:text="One-Touch U2F Login: Ask me every time?"
-                    android:textColor="@color/appBlack"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@+id/oneTouchLoginToggle"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/oneTouchLoginText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="2dp"
-                    android:fontFamily="@font/open_sans"
-                    android:text="Krypton will ask you before approving a U2F login."
-                    android:textColor="@color/appBlack"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@+id/oneTouchLoginToggle"
-                    app:layout_constraintTop_toBottomOf="@+id/oneTouchLoginHeader" />
-
-            </android.support.constraint.ConstraintLayout>
-
-            <android.support.constraint.ConstraintLayout
                 android:id="@+id/disableAnalyticsContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@color/appWhite"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/oneTouchLoginContainer"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:layout_editor_absoluteY="145dp">
 
                 <android.support.v7.widget.SwitchCompat

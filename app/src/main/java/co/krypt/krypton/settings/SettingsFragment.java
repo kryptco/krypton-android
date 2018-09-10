@@ -137,15 +137,6 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        SwitchCompat oneTouchLoginSwitch = root.findViewById(R.id.oneTouchLoginToggle);
-        oneTouchLoginSwitch.setChecked(settings.oneTouchLogin());
-        oneTouchLoginSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                settings.setOneTouchLogin(isChecked);
-            }
-        });
-
         SwitchCompat disableAnalyticsSwitch = (SwitchCompat) root.findViewById(R.id.disableAnalyticsSwitch);
         disableAnalyticsSwitch.setChecked(new Analytics(getContext()).isDisabled());
         disableAnalyticsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

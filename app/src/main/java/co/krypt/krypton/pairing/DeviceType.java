@@ -6,6 +6,7 @@ public enum DeviceType {
     CHROME,
     FIREFOX,
     SAFARI,
+    MICROSOFT_EDGE,
     UNKNOWN;
 
     public static DeviceType fromBrowser(String browser) {
@@ -16,6 +17,8 @@ public enum DeviceType {
                 return DeviceType.CHROME;
             case "safari":
                 return DeviceType.SAFARI;
+            case "edge":
+                return DeviceType.MICROSOFT_EDGE;
             default:
                 return DeviceType.UNKNOWN;
         }
@@ -43,6 +46,8 @@ public enum DeviceType {
                 return R.drawable.chrome;
             case SAFARI:
                 return R.drawable.safari;
+            case MICROSOFT_EDGE:
+                return R.drawable.microsoft_edge;
             default:
                 return R.drawable.terminal_icon;
         }
