@@ -36,28 +36,31 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.device, parent, false);
-        return new ViewHolder(view);
+        View view;
+        if (viewType == 1) {
+            //Extension device
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.ext_device, parent, false);
+        }
+        else {
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.cli_device, parent, false);
+        }
+        return new ViewHolder(view, viewType);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.device = sessions.get(position).pairing;
-        holder.lastLog = sessions.get(position).lastApproval;
 
         holder.deviceName.setText(sessions.get(position).pairing.getDisplayName());
-        holder.deviceIcon.setImageResource(DeviceType.getDeviceIcon(holder.device.deviceType));
-
-        if (holder.lastLog != null) {
-            holder.lastCommand.setText(holder.lastLog.shortDisplay());
-            holder.lastCommandTime.setText(DateUtils.getRelativeTimeSpanString(holder.lastLog.unixSeconds() * 1000, System.currentTimeMillis(), 1000));
-        } else {
-            holder.lastCommand.setText("no activity");
-            holder.lastCommandTime.setText("");
+        if(holder.getItemViewType() == 1) {
+            holder.deviceIcon.setImageResource(DeviceType.getDeviceIcon(holder.device.deviceType));
         }
 
-       holder.mView.setOnClickListener(new View.OnClickListener() {
+        holder.updateLastLog(sessions.get(position).lastApproval);
+
+        holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
@@ -72,16 +75,23 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         return sessions.size();
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        Pairing pairing = sessions.get(position).pairing;
+        return pairing.isBrowser() ? 1 : 0;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView deviceName;
         public final AppCompatImageView deviceIcon;
         public final TextView lastCommand;
         public final TextView lastCommandTime;
+        public final int viewType;
         public Pairing device;
-        public Log lastLog;
+        private Log lastLog;
 
-        public ViewHolder(final View view) {
+        public ViewHolder(final View view, int viewType) {
             super(view);
             mView = view;
             deviceName = (TextView) view.findViewById(R.id.deviceName);
@@ -90,6 +100,31 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
             lastCommand.setText("");
             lastCommandTime = (TextView) view.findViewById(R.id.lastCommandTimeText);
             lastCommandTime.setText("");
+            this.viewType = viewType;
+        }
+
+        public void updateLastLog(Log log) {
+            lastLog = log;
+            switch (viewType) {
+                case 1: //Extension device
+                    if (lastLog != null) {
+                        lastCommand.setText(lastLog.shortDisplay());
+                        lastCommandTime.setText(DateUtils.getRelativeTimeSpanString(lastLog.unixSeconds() * 1000, System.currentTimeMillis(), 1000));
+                    } else {
+                        lastCommand.setText("no activity");
+                        lastCommandTime.setText("");
+                    }
+                    break;
+                default:
+                    if (lastLog != null) {
+                        lastCommand.setText(lastLog.shortDisplay());
+                        lastCommandTime.setText(DateUtils.getRelativeTimeSpanString(lastLog.unixSeconds() * 1000, System.currentTimeMillis(), 1000));
+                    } else {
+                        lastCommand.setText("no activity");
+                        lastCommandTime.setText("");
+                    }
+                    break;
+            }
         }
 
         @Override

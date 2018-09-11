@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    >
+    android:background="@drawable/top_bottom_border">
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/label"
@@ -31,33 +30,31 @@
         android:id="@+id/message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:layout_marginLeft="8dp"
+        android:layout_toLeftOf="@+id/time"
+        android:layout_toRightOf="@id/label"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:scrollHorizontally="true"
         android:text="message"
         android:textAllCaps="false"
         android:textColor="@color/appBlack"
         android:textSize="16sp"
-        app:fontFamily="@font/code"
         android:textStyle="bold"
-        android:layout_toRightOf="@id/label"
-        android:layout_toLeftOf="@+id/time"
-        android:maxLines="1"
-        android:scrollHorizontally="true"
-        android:ellipsize="end"
-        android:layout_centerVertical="true"
-        />
+        app:fontFamily="@font/code" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:layout_marginRight="8dp"
         android:text="5m ago"
         android:textAllCaps="true"
-        android:textColor="@color/appGray"
-        app:fontFamily="@font/open_sans"
+        android:textColor="@color/appBlack"
         android:textSize="10sp"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        />
+        app:fontFamily="@font/open_sans" />
 
 </RelativeLayout>

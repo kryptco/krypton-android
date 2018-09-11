@@ -8,34 +8,35 @@
     android:layout_height="match_parent"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
+    android:background="@color/appBlueGrayBackground"
     app:layoutManager="LinearLayoutManager"
     tools:context="co.krypt.krypton.devices.DevicesFragment"
-    tools:listitem="@layout/device" >
+    tools:listitem="@layout/device">
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/list"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:id="@+id/list"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:layout_constraintBottom_creator="1"
-        tools:layout_constraintLeft_creator="1" />
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1" />
 
     <LinearLayout
-        android:orientation="vertical"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_height="0dp"
+        android:id="@+id/deviceDetail"
         android:layout_width="0dp"
-        app:layout_constraintRight_toRightOf="@+id/list"
+        android:layout_height="0dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="@+id/list"
-        android:id="@+id/deviceDetail"></LinearLayout>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@+id/list"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintTop_creator="1" />
 
-    <include layout="@layout/fragment_devices_empty"/>
+    <include layout="@layout/fragment_devices_empty" />
 </android.support.constraint.ConstraintLayout>

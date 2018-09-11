@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#5BC894</color>
-    <color name="colorPrimaryDark">#2B424B</color>
+    <color name="colorPrimary">#5bc894</color>
+    <color name="colorPrimaryDark">#2b424b</color>
     <!--<color name="colorAccent">#11A9E4</color>-->
     <color name="colorAccent">#5BC894</color>
     <color name="colorDestructive">#e4113c</color>
     <color name="appBlueGrayBackground">#27272780</color>
 
     <color name="appGreen">#5bc894</color>
-    <color name="appWhite">#FFFFFF</color>
+    <color name="appWhite">#ffffff</color>
     <color name="appGray">#aaaaaa</color>
     <color name="appBlack">#343434</color>
     <color name="appBlue">#666ee8</color>
@@ -20,5 +20,6 @@
     <color name="appBrightGreen">#11c56f</color>
     <color name="appBrightPink">#F71871</color>
     <color name="appBrightBlue">#2E81EF</color>
+    <color name="appBlueGray">#697f94</color>
 
 </resources>
