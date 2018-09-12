@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/top_bottom_border">
+    android:layout_marginBottom="4dp"
+    android:background="@color/appWhite"
+    android:id="@+id/relativeLayout3">
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="4dp"
         android:background="@drawable/hash_bg"
         android:ellipsize="end"
         android:maxLines="1"
@@ -24,16 +23,19 @@
         android:textColor="@color/appWhite"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:fontFamily="@font/open_sans_semibold" />
+        app:fontFamily="@font/open_sans_semibold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
+        android:layout_marginBottom="4dp"
         android:layout_marginLeft="8dp"
-        android:layout_toLeftOf="@+id/time"
-        android:layout_toRightOf="@id/label"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="4dp"
         android:ellipsize="end"
         android:maxLines="2"
         android:scrollHorizontally="true"
@@ -42,19 +44,35 @@
         android:textColor="@color/appBlack"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:fontFamily="@font/code" />
+        app:fontFamily="@font/code"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/label"
+        app:layout_constraintRight_toLeftOf="@+id/time"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
         android:layout_marginRight="8dp"
         android:text="5m ago"
         android:textAllCaps="true"
         android:textColor="@color/appBlack"
         android:textSize="10sp"
-        app:fontFamily="@font/open_sans" />
+        app:fontFamily="@font/open_sans"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
-</RelativeLayout>
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginEnd="64dp"
+        android:layout_marginStart="64dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

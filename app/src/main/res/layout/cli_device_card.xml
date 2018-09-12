@@ -29,6 +29,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            android:backgroundTint="@color/appGreen"
+            android:drawableEnd="@drawable/pencil_edit_button_16"
+            android:drawablePadding="4dp"
+            android:drawableTint="@color/appGreen"
             android:ellipsize="end"
             android:inputType="text"
             android:maxLines="1"
@@ -44,7 +48,6 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/user_icon"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
