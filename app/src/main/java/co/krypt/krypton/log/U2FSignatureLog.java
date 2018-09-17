@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.text.format.DateUtils;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.annotations.SerializedName;
@@ -132,6 +133,9 @@ public class U2FSignatureLog implements Log {
 
         TextView domainText = view.findViewById(R.id.domainText);
         domainText.setText(KnownAppIds.displayAppId(appId));
+
+        ImageView icon = view.findViewById(R.id.logIcon);
+        icon.setImageResource(KnownAppIds.displayAppLogo(appId));
 
         return view;
     }
