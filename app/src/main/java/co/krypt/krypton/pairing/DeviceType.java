@@ -10,6 +10,9 @@ public enum DeviceType {
     UNKNOWN;
 
     public static DeviceType fromBrowser(String browser) {
+        if (browser == null) {
+            return DeviceType.UNKNOWN;
+        }
         switch (browser) {
             case "firefox":
                 return DeviceType.FIREFOX;
@@ -31,6 +34,8 @@ public enum DeviceType {
             return DeviceType.CHROME;
         } else if (workstationName.startsWith("Safari ")) {
             return DeviceType.SAFARI;
+        } else if (workstationName.startsWith("Microsoft Edge ")) {
+            return DeviceType.MICROSOFT_EDGE;
         } else {
             return DeviceType.UNKNOWN;
         }
