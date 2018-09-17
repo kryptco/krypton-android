@@ -112,7 +112,7 @@ public class U2FSignatureLog implements Log {
     public View fillLongView(ConstraintLayout container) {
         container.removeAllViews();
         View v = fillShortView(container);
-        ((TextView) v.findViewById(R.id.message)).setMaxLines(Integer.MAX_VALUE);
+        ((TextView) v.findViewById(R.id.domainText)).setMaxLines(Integer.MAX_VALUE);
         return v;
     }
 
@@ -123,21 +123,15 @@ public class U2FSignatureLog implements Log {
     }
 
     public View fillView(ConstraintLayout container, @Nullable Boolean approved, @Nullable String signature) {
-        View view = View.inflate(container.getContext(), R.layout.ssh_short, container);
+        View view = View.inflate(container.getContext(), R.layout.u2f_log, container);
 
-        TextView messageText = view.findViewById(R.id.message);
-        messageText.setText(shortDisplay());
+        String actionString = (isRegister ? "Registered " : "Signed in ")
+                + DateUtils.getRelativeTimeSpanString(unixSeconds() * 1000, System.currentTimeMillis(), 1000);
+        TextView actionText = view.findViewById(R.id.actionText);
+        actionText.setText(actionString);
 
-        TextView label = view.findViewById(R.id.label);
-        label.setText("U2F");
-        if (approved != null && !approved) {
-            label.setBackgroundResource(R.drawable.hash_red_bg);
-        }
-
-        TextView timeText = view.findViewById(R.id.time);
-        timeText.setText(
-                DateUtils.getRelativeTimeSpanString(unixSeconds() * 1000, System.currentTimeMillis(), 1000)
-        );
+        TextView domainText = view.findViewById(R.id.domainText);
+        domainText.setText(KnownAppIds.displayAppId(appId));
 
         return view;
     }
