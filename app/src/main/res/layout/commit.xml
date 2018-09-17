@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/appWhite"
     android:orientation="vertical"
+    app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"
-    >
+    app:layout_constraintTop_toTopOf="parent">
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/hash"
@@ -32,11 +32,11 @@
         android:id="@+id/messageContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:background="@color/appBlack"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/hash"
-        android:layout_marginTop="4dp">
+        app:layout_constraintTop_toBottomOf="@id/hash">
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/header"
@@ -44,10 +44,10 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="4dp"
+            android:fontFamily="@font/open_sans"
             android:text="Git Commit Signature"
             android:textAllCaps="true"
             android:textColor="@color/appWhite"
-            android:fontFamily="@font/open_sans"
             android:textSize="10sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -72,10 +72,10 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:layout_marginRight="8dp"
+            android:fontFamily="@font/open_sans"
             android:text="5m ago"
             android:textAllCaps="true"
             android:textColor="@color/appWhite"
-            android:fontFamily="@font/open_sans"
             android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -88,10 +88,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="0dp"
+        android:fontFamily="@font/open_sans_semibold"
         android:text="Author"
         android:textAllCaps="true"
         android:textColor="@color/appGray"
-        android:fontFamily="@font/open_sans_semibold"
         android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="@+id/author"
         app:layout_constraintRight_toRightOf="@+id/committerLabel"
@@ -101,47 +101,48 @@
         android:id="@+id/author"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="4dp"
         android:fontFamily="@font/code"
         android:text="@string/exampleUserID"
         android:textColor="@color/appGreen"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/messageContainer"
-        android:layout_marginTop="4dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/authorLabel"
-        android:layout_marginRight="4dp"
         app:layout_constraintHorizontal_bias="0.0"
-        android:layout_marginLeft="4dp" />
+        app:layout_constraintLeft_toRightOf="@id/authorLabel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/messageContainer" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/committer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="4dp"
         android:fontFamily="@font/code"
         android:text="@string/exampleUserID"
         android:textColor="@color/appGreen"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/author"
         app:layout_constraintLeft_toRightOf="@id/committerLabel"
-        android:layout_marginTop="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginLeft="4dp"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/author" />
+
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/committerLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
         android:layout_marginRight="4dp"
-        android:text="Committer"
-        android:textAllCaps="true"
         android:fontFamily="@font/open_sans_semibold"
+        android:text="Committer"
 
+        android:textAllCaps="true"
         android:textColor="@color/appGray"
         android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="@+id/committer"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/committer"
-        android:layout_marginLeft="8dp" />
+        app:layout_constraintTop_toTopOf="@+id/committer" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/tree"
@@ -164,17 +165,17 @@
         android:id="@+id/treeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
         android:layout_marginRight="4dp"
+        android:fontFamily="@font/open_sans_semibold"
         android:text="Tree"
         android:textAllCaps="true"
         android:textColor="@color/appGray"
-        android:textSize="10sp"
-        android:fontFamily="@font/open_sans_semibold"
 
-        app:layout_constraintTop_toTopOf="@id/tree"
+        android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="@id/tree"
         app:layout_constraintRight_toRightOf="@id/committerLabel"
-        android:layout_marginLeft="8dp" />
+        app:layout_constraintTop_toTopOf="@id/tree" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/parent"
@@ -196,15 +197,26 @@
         android:id="@+id/parentLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
         android:layout_marginRight="4dp"
+        android:fontFamily="@font/open_sans_semibold"
         android:text="Parent"
         android:textAllCaps="true"
         android:textColor="@color/appGray"
-        android:fontFamily="@font/open_sans_semibold"
         android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="@+id/parent"
-        app:layout_constraintTop_toTopOf="@+id/parent"
         app:layout_constraintRight_toRightOf="@id/committerLabel"
-        android:layout_marginLeft="8dp" />
+        app:layout_constraintTop_toTopOf="@+id/parent" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginEnd="64dp"
+        android:layout_marginStart="64dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
