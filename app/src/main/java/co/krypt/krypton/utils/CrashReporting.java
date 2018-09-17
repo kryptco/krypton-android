@@ -1,7 +1,7 @@
 package co.krypt.krypton.utils;
 
+import com.crashlytics.android.Crashlytics;
 import com.github.anrwatchdog.ANRWatchDog;
-import com.google.firebase.crash.FirebaseCrash;
 
 import co.krypt.krypton.BuildConfig;
 
@@ -18,7 +18,7 @@ public class CrashReporting {
                     .setIgnoreDebugger(true)
                     .setReportMainThreadOnly();
             if (!BuildConfig.DEBUG) {
-                anrWatchDog.setANRListener(FirebaseCrash::report);
+                anrWatchDog.setANRListener(Crashlytics::logException);
             }
             anrWatchDog.start();
         }

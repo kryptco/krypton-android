@@ -3,7 +3,7 @@ package co.krypt.krypton.protocol;
 import android.util.Log;
 
 import com.amazonaws.util.Base64;
-import com.google.firebase.crash.FirebaseCrash;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -44,7 +44,7 @@ public class HostAuth {
             hasSSHWire = true;
         } catch (UnsatisfiedLinkError e) {
             Log.e(TAG, e.getMessage());
-            FirebaseCrash.report(e);
+            Crashlytics.logException(e);
         }
     }
 }

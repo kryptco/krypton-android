@@ -3,7 +3,7 @@ package co.krypt.krypton.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.google.firebase.crash.FirebaseCrash;
+import com.crashlytics.android.Crashlytics;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
@@ -98,7 +98,7 @@ public class OpenDatabaseHelper extends OrmLiteSqliteOpenHelper {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            FirebaseCrash.report(e);
+            Crashlytics.logException(e);
         }
     }
 

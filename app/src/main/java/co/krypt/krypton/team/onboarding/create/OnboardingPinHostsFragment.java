@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.google.firebase.crash.FirebaseCrash;
+import com.crashlytics.android.Crashlytics;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -76,7 +76,7 @@ public class OnboardingPinHostsFragment extends Fragment implements OnboardingPi
                         );
                     } catch (CryptoException e) {
                         e.printStackTrace();
-                        FirebaseCrash.report(e);
+                        Crashlytics.logException(e);
                     }
                 }
             }
