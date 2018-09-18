@@ -57,12 +57,18 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     private Button resetTemporaryApprovalsButton;
     private ViewGroup temporaryApprovalsContainer;
 
+    private SwitchCompat allowU2FZeroTouchSwitch;
+
     private Button unpairButton;
 
     private BroadcastReceiver onDeviceLogReceiver;
     private Context attachedContext;
 
     private Dao.DaoObserver daoObserver = this::updateApprovalButtons;
+
+    private CompoundButton.OnCheckedChangeListener u2fZeroTouchOnCheckedChangeListener = (CompoundButton buttonView, boolean isChecked) -> {
+        new Pairings(getContext()).setU2FZeroTouchAllowed(pairingUUID, isChecked);
+    };
 
     public DeviceDetailFragment() {
     }
@@ -229,14 +235,9 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         AppCompatImageView deviceIcon = deviceCardView.findViewById(R.id.deviceIcon);
         deviceIcon.setImageResource(DeviceType.getDeviceIcon(pairing.deviceType));
 
-        final SwitchCompat allowU2FZeroTouchSwitch = (SwitchCompat) deviceCardView.findViewById(R.id.allowU2FZeroTouchSwitch);
+        allowU2FZeroTouchSwitch = (SwitchCompat) deviceCardView.findViewById(R.id.allowU2FZeroTouchSwitch);
         allowU2FZeroTouchSwitch.setChecked(new Pairings(getContext()).getU2FZeroTouchAllowed(pairing));
-        allowU2FZeroTouchSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                new Pairings(getContext()).setU2FZeroTouchAllowed(pairing.getUUIDString(), isChecked);
-            }
-        });
+        allowU2FZeroTouchSwitch.setOnCheckedChangeListener(u2fZeroTouchOnCheckedChangeListener);
 
         unpairButton = (Button) deviceCardView.findViewById(R.id.unpairButton);
         unpairButton.setOnClickListener(new View.OnClickListener() {
@@ -260,6 +261,7 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         onDeviceLogReceiver = null;
         super.onDestroyView();
     }
+
 
     private synchronized void updateApprovalButtons() {
         new Handler(Looper.getMainLooper()).post(() -> {
@@ -343,6 +345,11 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(Pairings.pairingApprovedKey(pairingUUID)) || key.equals(Pairings.pairingApprovedUntilKey(pairingUUID))) {
             updateApprovalButtons();
+        }
+        else if (key.equals(Pairings.pairingU2FZeroTouchKey(pairingUUID))) {
+            allowU2FZeroTouchSwitch.setOnCheckedChangeListener(null);
+            allowU2FZeroTouchSwitch.setChecked(new Pairings(getContext()).getU2FZeroTouchAllowed(pairingUUID));
+            allowU2FZeroTouchSwitch.setOnCheckedChangeListener(u2fZeroTouchOnCheckedChangeListener);
         }
     }
 
