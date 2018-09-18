@@ -208,6 +208,12 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
                 new Pairings(getContext()).setRequireUnknownHostManualApproval(pairing, isChecked);
             }
         });
+
+        try {
+            Silo.shared(getContext()).pairings().dbHelper.getApprovalDao().registerObserver(daoObserver);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return deviceCardView;
     }
 
@@ -255,6 +261,11 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     @Override
     public void onDestroyView() {
         Silo.shared(getContext()).pairings().unregisterOnSharedPreferenceChangedListener(this);
+        try {
+            Silo.shared(getContext()).pairings().dbHelper.getApprovalDao().unregisterObserver(daoObserver);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         if (attachedContext != null && onDeviceLogReceiver != null) {
             LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(onDeviceLogReceiver);
         }
@@ -318,20 +329,10 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
     public void onAttach(Context context) {
         super.onAttach(context);
         attachedContext = context;
-        try {
-            Silo.shared(context).pairings().dbHelper.getApprovalDao().registerObserver(daoObserver);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     public void onDetach() {
-        try {
-            Silo.shared(attachedContext).pairings().dbHelper.getApprovalDao().unregisterObserver(daoObserver);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
         attachedContext = null;
         super.onDetach();
     }
