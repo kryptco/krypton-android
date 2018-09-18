@@ -27,7 +27,7 @@
             android:text="u2f.domain.com"
             android:textColor="@color/appBlack"
             android:textSize="16sp"
-            app:layout_constraintEnd_toStartOf="@+id/logIcon"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -43,6 +43,8 @@
             android:textSize="12sp"
             app:fontFamily="@font/open_sans_semibold"
             app:layout_constraintTop_toBottomOf="@+id/domainText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:layout_editor_absoluteX="8dp" />
     </android.support.constraint.ConstraintLayout>
 
