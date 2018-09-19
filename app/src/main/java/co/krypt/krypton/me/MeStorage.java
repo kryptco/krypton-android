@@ -42,6 +42,8 @@ public class MeStorage {
     private SharedPreferences preferences;
     private final Context context;
 
+    private Profile cachedProfile;
+
     public MeStorage(Context context) {
         preferences = context.getSharedPreferences("ME_MANAGER_PREFERENCES", Context.MODE_PRIVATE);
         this.context = context;
@@ -58,7 +60,16 @@ public class MeStorage {
     }
 
     public Profile load() {
-        return loadWithUserID(null);
+        synchronized (lock) {
+            if (cachedProfile == null) {
+                cachedProfile = loadWithUserID(null);
+            }
+            if (cachedProfile == null) {
+                //There's nothing to load, so let's not NPE here
+                return null;
+            }
+            return new Profile(cachedProfile);
+        }
     }
 
     public Profile loadWithUserID(@Nullable UserID userID) {
@@ -120,12 +131,14 @@ public class MeStorage {
             preferences.edit()
                     .remove("ME")
                     .remove("ME.USER_IDS").apply();
+            cachedProfile = null;
         }
     }
 
     public void set(Profile profile) {
         synchronized (lock) {
             preferences.edit().putString("ME", JSON.toJson(profile)).apply();
+            cachedProfile = profile;
         }
     }
 

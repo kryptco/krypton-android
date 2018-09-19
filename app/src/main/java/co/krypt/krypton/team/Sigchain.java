@@ -497,6 +497,11 @@ public class Sigchain {
         @SerializedName("billing_host")
         @JSON.JsonRequired
         public String billingHost;
+
+        public ServerEndpoints(ServerEndpoints serverEndpoints) {
+            this.apiHost = serverEndpoints.apiHost;
+            this.billingHost = serverEndpoints.billingHost;
+        }
     }
 
     public static class TeamCheckpoint {
@@ -515,6 +520,13 @@ public class Sigchain {
         @SerializedName("server_endpoints")
         @JSON.JsonRequired
         public ServerEndpoints serverEndpoints;
+
+        public TeamCheckpoint(TeamCheckpoint teamCheckpoint) {
+            this.teamPublicKey = teamCheckpoint.teamPublicKey.clone();
+            this.lastBlockHash = teamCheckpoint.lastBlockHash.clone();
+            this.publicKey = teamCheckpoint.publicKey.clone();
+            this.serverEndpoints = teamCheckpoint.serverEndpoints == null ? null : new ServerEndpoints(teamCheckpoint.serverEndpoints);
+        }
     }
 
     public static class UpdateTeamOutput {

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import co.krypt.krypton.me.MeStorage;
 import co.krypt.krypton.protocol.Profile;
+import co.krypt.krypton.silo.Silo;
 
 /**
  * Created by Kevin King on 1/9/17.
@@ -63,7 +64,7 @@ public class Settings {
     }
 
     public boolean developerMode() {
-        Profile profile = new MeStorage(context).load();
+        Profile profile = Silo.shared(context).meStorage().load();
         synchronized (lock) {
             return preferences.getBoolean(DEVELOPER_MODE_KEY, profile != null && profile.sshWirePublicKey != null);
         }

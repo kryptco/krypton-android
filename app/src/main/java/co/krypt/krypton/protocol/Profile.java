@@ -34,16 +34,25 @@ public class Profile {
     public Sigchain.TeamCheckpoint teamCheckpoint;
 
     @SerializedName("device_identifier")
+    @Nullable
     public byte[] deviceIdentifier;
 
     public Profile() { }
+
+    public Profile(Profile profile) {
+        this(profile.email,
+             profile.sshWirePublicKey == null ? null : profile.sshWirePublicKey.clone(),
+             profile.deviceIdentifier == null ? null : profile.deviceIdentifier.clone(),
+             profile.pgpPublicKey == null ? null : profile.pgpPublicKey.clone(),
+             profile.teamCheckpoint);
+    }
 
     public Profile(String email, byte[] sshWirePublicKey, byte[] deviceIdentifier, @Nullable byte[] pgpPublicKey, @Nullable Sigchain.TeamCheckpoint teamCheckpoint) {
         this.email = email;
         this.sshWirePublicKey = sshWirePublicKey;
         this.deviceIdentifier = deviceIdentifier;
         this.pgpPublicKey = pgpPublicKey;
-        this.teamCheckpoint = teamCheckpoint;
+        this.teamCheckpoint = teamCheckpoint == null ? null : new Sigchain.TeamCheckpoint(teamCheckpoint);
     }
 
     public String authorizedKeysFormat() {

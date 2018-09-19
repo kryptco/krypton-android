@@ -16,6 +16,7 @@ import co.krypt.krypton.me.MeStorage;
 import co.krypt.krypton.protocol.JSON;
 import co.krypt.krypton.protocol.Profile;
 import co.krypt.krypton.settings.Settings;
+import co.krypt.krypton.silo.Silo;
 import co.krypt.krypton.team.billing.Billing;
 import co.krypt.krypton.team.onboarding.create.CreateTeamData;
 import co.krypt.krypton.uiutils.Error;
@@ -34,8 +35,8 @@ public class TeamDataProvider {
         }
     }
 
-    public static boolean shouldShowTeamsTab(Context context)  {
-        Profile profile = new MeStorage(context).load();
+    public static boolean shouldShowTeamsTab(Context context) {
+        Profile profile = Silo.shared(context).meStorage().load();
         Settings settings = new Settings(context);
         return settings.developerMode() && (profile != null) && (profile.teamCheckpoint != null) && Native.linked.get();
     }
