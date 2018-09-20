@@ -160,9 +160,6 @@ public class DeviceDetailFragment extends Fragment implements SharedPreferences.
         originalNameLabel = deviceCardView.findViewById(R.id.originalNameLabel);
         updateDisplayNameViews();
 
-        AppCompatImageView deviceIcon = deviceCardView.findViewById(R.id.deviceIcon);
-        deviceIcon.setImageResource(R.drawable.terminal_icon);
-
         manualButton = (RadioButton) deviceCardView.findViewById(R.id.alwaysAsk);
         automaticButton = (RadioButton) deviceCardView.findViewById(R.id.automaticApprovalButton);
 

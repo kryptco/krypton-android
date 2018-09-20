@@ -47,7 +47,7 @@
             android:id="@+id/deviceIcon"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/user_icon"
+            android:src="@drawable/terminal_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
