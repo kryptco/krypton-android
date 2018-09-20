@@ -44,6 +44,7 @@ import co.krypt.krypton.onboarding.u2f.U2FOnboardingProgress;
 import co.krypt.krypton.onboarding.u2f.U2FOnboardingStage;
 import co.krypt.krypton.pairing.PairFragment;
 import co.krypt.krypton.policy.LocalAuthentication;
+import co.krypt.krypton.protocol.Profile;
 import co.krypt.krypton.settings.Settings;
 import co.krypt.krypton.settings.SettingsFragment;
 import co.krypt.krypton.silo.Notifications;
@@ -112,8 +113,11 @@ public class MainActivity extends AppCompatActivity {
         if (silo.pairings().loadAll().size() > 0) {
             u2fProgress.setStage(U2FOnboardingStage.DONE);
         }
-        if (silo.meStorage().load() != null) {
+        Profile me = silo.meStorage().load();
+        if (me != null && me.sshWirePublicKey != null) {
             devopsProgress.setStage(DevopsOnboardingStage.DONE);
+        } else if (!devopsProgress.inProgress()){
+            devopsProgress.reset();
         }
         if (u2fProgress.inProgress()
                 || (new Settings(getApplicationContext()).developerMode() && devopsProgress.inProgress())) {
