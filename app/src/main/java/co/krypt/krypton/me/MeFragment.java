@@ -63,7 +63,7 @@ public class MeFragment extends Fragment {
         accounts = v.findViewById(R.id.accounts);
         accounts.setAdapter(accountsAdapter);
 
-        accounts.addHeaderView(inflater.inflate(R.layout.fragment_me_header, container, false));
+        accounts.addHeaderView(inflater.inflate(R.layout.fragment_me_header, accounts, false));
 
         profileEmail = v.findViewById(R.id.profileEmail);
         profileEmail.setText("loading...");
