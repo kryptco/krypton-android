@@ -139,7 +139,7 @@ public class GenerateFragment extends Fragment {
                         fragmentTransaction
                                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left)
                                 .add(R.id.activity_onboarding, firstPairCliFragment)
-                                .hide(generatingFragment).show(firstPairCliFragment).commit();
+                                .hide(generatingFragment).show(firstPairCliFragment).commitAllowingStateLoss();
                     }
                 } catch (InvalidKeyException | IOException | CryptoException | UnsupportedOperationException | IllegalArgumentException e) {
                     e.printStackTrace();
