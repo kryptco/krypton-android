@@ -59,6 +59,7 @@ public class MeStorage {
         return keyPair.get();
     }
 
+    @Nullable
     public Profile load() {
         synchronized (lock) {
             if (cachedProfile == null) {

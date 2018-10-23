@@ -400,7 +400,11 @@ public class Silo {
                 public Void visit(MeRequest meRequest) throws CryptoException {
                     if (meRequest.u2fOnly != null && meRequest.u2fOnly) {
                         response.meResponse = new MeResponse(new Profile());
-                        String deviceName = meStorage.load().email;
+                        String deviceName = null;
+                        Profile profile = meStorage.load();
+                        if (profile != null)  {
+                            deviceName = profile.email;
+                        }
                         if(TextUtils.isEmpty(deviceName)) {
                             deviceName = MeStorage.getDeviceName();
                         }
