@@ -85,6 +85,7 @@ dependencies {
     implementation 'com.google.zxing:core:3.3.1'
     implementation 'mobi.upod:time-duration-picker:1.1.3'
     implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation 'commons-codec:commons-codec:1.11'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:1.10.19'
     testImplementation 'org.powermock:powermock-module-junit4:1.6.4'
