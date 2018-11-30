@@ -30,6 +30,7 @@ import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.BarcodeView;
 
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -39,6 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import co.krypt.krypton.R;
 import co.krypt.krypton.analytics.Analytics;
+import co.krypt.krypton.crypto.TOTP;
 import co.krypt.krypton.exception.CryptoException;
 import co.krypt.krypton.exception.TransportException;
 import co.krypt.krypton.onboarding.OnboardingActivity;
@@ -48,7 +50,6 @@ import co.krypt.krypton.silo.Silo;
 import co.krypt.krypton.team.Sigchain;
 import co.krypt.krypton.team.invite.inperson.member.MemberEnterEmail;
 import co.krypt.krypton.team.invite.inperson.member.MemberScan;
-import co.krypt.krypton.uiutils.Error;
 import co.krypt.krypton.uiutils.Transitions;
 import co.krypt.kryptonite.MainActivity;
 
@@ -104,6 +105,30 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
             PairDialogFragment pairDialog = new PairDialogFragment();
             pairDialog.setTargetFragment(this, 0);
             pairDialog.show(getFragmentManager(), "PAIR_NEW_DEVICE");
+        }
+    }
+
+    public void onTOTPScanned(String totpURI) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Would you like to register this Backup Code?");
+        builder.setNegativeButton("No", (dialog, id) -> {
+            return;
+        });
+        builder.setPositiveButton("Yes", (dialog, id) -> {
+            try {
+                TOTP.registerTOTPAccount(getContext(), totpURI);
+            } catch(URISyntaxException e) {
+                e.printStackTrace();
+                builder.setMessage("Bad QR code");
+                builder.create().show();
+            }
+        });
+        if(!isTotpDialogOpen) {
+            isTotpDialogOpen = true;
+            builder.setOnDismissListener(dialogInterface -> {
+                isTotpDialogOpen = false;
+            });
+            builder.create().show();
         }
     }
 
@@ -165,26 +190,13 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_pair, container, false);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setMessage("This is not a valid Krypton QR code.\n\nKrypton does not yet support one-time passcodes for two-factor. Make sure you install the Krypton Browser Extension and scan the QR code to pair.\n\nMany sites require first setting up a backup two-factor method before adding a security key. You can either use SMS codes or download a one-time passcode app like Google Authenticator.");
-        builder.setPositiveButton("Ok", (dialog, id) -> {
-            return;
-        });
-
         barcodeView = (BarcodeView) rootView.findViewById(R.id.camera_preview);
         barcodeView.decodeContinuous(new BarcodeCallback() {
             @Override
             public void barcodeResult(BarcodeResult result) {
                 if (result.getText() != null) {
                     if(result.getText().startsWith("otpauth://")) {
-                        if(!isTotpDialogOpen) {
-                            isTotpDialogOpen = true;
-                            builder.setOnDismissListener(dialogInterface -> {
-                                isTotpDialogOpen = false;
-                            });
-                            builder.create().show();
-                        }
-                        return;
+                        onTOTPScanned(result.getText());
                     }
                     //  handle in-person team invite
                     try {
