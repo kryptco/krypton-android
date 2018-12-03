@@ -14,6 +14,18 @@
     app:cardCornerRadius="8dp"
     app:cardElevation="7dp">
 
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/login" />
+
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/issuer"
         android:layout_width="0dp"
@@ -27,20 +39,8 @@
         android:textColor="@color/appBlack"
         android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@id/showCodeButton"
-        app:layout_constraintStart_toEndOf="@+id/logo"
+        app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/login" />
 
     <TextView
         android:id="@+id/showCodeButton"
@@ -87,7 +87,7 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/timeRemaining"
         app:layout_constraintEnd_toStartOf="@+id/showCodeButton"
-        app:layout_constraintStart_toEndOf="@+id/logo"
+        app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
@@ -100,6 +100,6 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/showCodeButton"
-        app:layout_constraintStart_toEndOf="@+id/logo" />
+        app:layout_constraintStart_toEndOf="@+id/icon" />
 
 </android.support.constraint.ConstraintLayout>

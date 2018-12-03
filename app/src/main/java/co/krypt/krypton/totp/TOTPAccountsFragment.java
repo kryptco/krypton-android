@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ import co.krypt.krypton.R;
 import co.krypt.krypton.crypto.TOTP;
 import co.krypt.krypton.exception.CryptoException;
 import co.krypt.krypton.silo.IdentityService;
+import co.krypt.krypton.uiutils.Icons;
 
 public class TOTPAccountsFragment extends Fragment {
     private static final String TAG = "TOTPAccountsFragment";
@@ -110,6 +112,7 @@ public class TOTPAccountsFragment extends Fragment {
             private Handler updater;
             private Runnable updaterTask;
 
+            public ImageView icon;
             public TextView issuer;
             public TextView username;
             public TextView otp;
@@ -125,6 +128,7 @@ public class TOTPAccountsFragment extends Fragment {
                 super(view);
                 mView = view;
 
+                icon = mView.findViewById(R.id.icon);
                 issuer = mView.findViewById(R.id.issuer);
                 username = mView.findViewById(R.id.username);
                 otp = mView.findViewById(R.id.otp);
@@ -224,6 +228,7 @@ public class TOTPAccountsFragment extends Fragment {
             }
 
             private void updateView() {
+                icon.setImageResource(Icons.getIconFromTOTPIssuer(account.issuer));
                 issuer.setText(account.issuer);
                 username.setText(account.getUsername());
                 updateOtp();

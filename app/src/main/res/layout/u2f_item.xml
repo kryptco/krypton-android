@@ -22,11 +22,11 @@
         android:textColor="@color/appBlack"
         android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@id/securedIcon"
-        app:layout_constraintStart_toEndOf="@+id/logo"
+        app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/logo"
+        android:id="@+id/icon"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginStart="8dp"

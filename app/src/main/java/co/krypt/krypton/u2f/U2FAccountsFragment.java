@@ -184,7 +184,7 @@ public class U2FAccountsFragment extends Fragment {
             AppCompatTextView name = v.findViewById(R.id.accountName);
             name.setText(account.name);
 
-            AppCompatImageView logo = v.findViewById(R.id.logo);
+            AppCompatImageView logo = v.findViewById(R.id.icon);
             logo.setImageResource(account.logo);
 
             AppCompatTextView addedOn = v.findViewById(R.id.dateAdded);
