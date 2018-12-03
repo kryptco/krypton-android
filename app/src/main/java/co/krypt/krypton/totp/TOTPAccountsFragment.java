@@ -1,6 +1,9 @@
 package co.krypt.krypton.totp;
 
 import android.animation.ObjectAnimator;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,11 +11,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -130,6 +136,36 @@ public class TOTPAccountsFragment extends Fragment {
                 };
 
                 view.setOnClickListener(this::toggleView);
+                view.setOnLongClickListener(this::showPopupMenu);
+            }
+
+            private void copyOTPToClipboard() {
+                try {
+                    ClipboardManager clipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText("TOTP Code", account.getOtp()));
+                    Toast.makeText(getContext(), "Code copied to clipboard", Toast.LENGTH_SHORT).show();
+                    //TODO: clear code on expiry (requires API 28)
+                }
+                catch (CryptoException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Failed to copy code to clipboard", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            private boolean showPopupMenu(View v) {
+                PopupMenu popupMenu = new PopupMenu(getContext(), showCodeButton);
+                popupMenu.inflate(R.menu.totp_item_menu);
+                popupMenu.setOnMenuItemClickListener((MenuItem item) -> {
+                    int id = item.getItemId();
+                    switch (id) {
+                        case R.id.copyOTPToClipboard:
+                            copyOTPToClipboard();
+                            return true;
+                    }
+                    return true;
+                });
+                popupMenu.show();
+                return true;
             }
 
             private void toggleView(View v) {
