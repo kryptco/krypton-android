@@ -86,6 +86,9 @@ public class TOTPAccountsFragment extends Fragment {
     private class TOTPRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public List<TOTPAccount> accounts;
 
+        //The position of the TOTP account which is displaying an OTP
+        public int openCode = -1;
+
         private TOTPRecyclerViewAdapter(List<TOTPAccount> accounts) {
             this.accounts = accounts;
         }
@@ -102,6 +105,21 @@ public class TOTPAccountsFragment extends Fragment {
             TOTPViewHolder totpHolder = (TOTPViewHolder) holder;
             totpHolder.account = accounts.get(position);
             totpHolder.updateView();
+            if (openCode == position) {
+                totpHolder.showCode();
+            }
+            else {
+                totpHolder.hideCode();
+            }
+            totpHolder.mView.setOnClickListener((View v) -> {
+                if (openCode == position) {
+                    openCode = -1;
+                }
+                else {
+                    openCode = position;
+                }
+                notifyDataSetChanged();
+            });
         }
 
         @Override
@@ -164,8 +182,6 @@ public class TOTPAccountsFragment extends Fragment {
                         updater.postDelayed(this, 1000);
                     }
                 };
-
-                view.setOnClickListener(this::toggleView);
                 view.setOnLongClickListener(this::showPopupMenu);
             }
 
@@ -180,6 +196,18 @@ public class TOTPAccountsFragment extends Fragment {
                     e.printStackTrace();
                     Toast.makeText(getContext(), "Failed to copy code to clipboard", Toast.LENGTH_SHORT).show();
                 }
+            }
+
+            public void hideCode() {
+                codeShown = false;
+                issuer.setVisibility(View.VISIBLE);
+                username.setVisibility(View.VISIBLE);
+                otp.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
+                showCodeButton.setText("Show");
+                showCodeButton.getBackground().setTint(appGreen);
+                showCodeButton.setTextColor(appGreen);
+                updater.removeCallbacks(updaterTask);
             }
 
             private void openDeleteDialog() {
@@ -222,27 +250,25 @@ public class TOTPAccountsFragment extends Fragment {
                 return true;
             }
 
+            public void showCode() {
+                codeShown = true;
+                issuer.setVisibility(View.INVISIBLE);
+                username.setVisibility(View.INVISIBLE);
+                otp.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
+                showCodeButton.setText("Hide");
+                showCodeButton.getBackground().setTint(appWarning);
+                showCodeButton.setTextColor(appWarning);
+                updater.post(updaterTask);
+            }
+
             private void toggleView(View v) {
                 codeShown = !codeShown;
                 if (codeShown) {
-                    issuer.setVisibility(View.INVISIBLE);
-                    username.setVisibility(View.INVISIBLE);
-                    otp.setVisibility(View.VISIBLE);
-                    progressBar.setVisibility(View.VISIBLE);
-                    showCodeButton.setText("Hide");
-                    showCodeButton.getBackground().setTint(appWarning);
-                    showCodeButton.setTextColor(appWarning);
-                    updater.post(updaterTask);
+                    showCode();
                 }
                 else {
-                    issuer.setVisibility(View.VISIBLE);
-                    username.setVisibility(View.VISIBLE);
-                    otp.setVisibility(View.INVISIBLE);
-                    progressBar.setVisibility(View.INVISIBLE);
-                    showCodeButton.setText("Show");
-                    showCodeButton.getBackground().setTint(appGreen);
-                    showCodeButton.setTextColor(appGreen);
-                    updater.removeCallbacks(updaterTask);
+                    hideCode();
                 }
             }
 
