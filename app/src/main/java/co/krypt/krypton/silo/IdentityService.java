@@ -47,6 +47,8 @@ public class IdentityService {
         EventBus.getDefault().postSticky(new GetProfileResult(new MeStorage(request.context).load()));
     }
 
-    public static final class AccountsUpdated {}
+    public static final class TOTPAccountsUpdated {}
+
+    public static final class U2FAccountsUpdated {}
 
 }

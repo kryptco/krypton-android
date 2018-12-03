@@ -85,7 +85,7 @@ public class U2FAccountsFragment extends Fragment {
 
         EventBus.getDefault().register(this);
         EventBus.getDefault().post(new IdentityService.GetProfile(getContext()));
-        updateAccounts(new IdentityService.AccountsUpdated());
+        updateAccounts(new IdentityService.U2FAccountsUpdated());
         return v;
     }
 
@@ -102,7 +102,7 @@ public class U2FAccountsFragment extends Fragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void updateAccounts(IdentityService.AccountsUpdated _) {
+    public void updateAccounts(IdentityService.U2FAccountsUpdated _) {
         try {
             List<U2F.KeyManager.Account> securedAccounts = U2F.getAccounts(getContext());
             List<U2F.KeyManager.Account> filteredAccounts = new ArrayList<>();
@@ -223,7 +223,7 @@ public class U2FAccountsFragment extends Fragment {
                             }
 
                             prefs.edit().putStringSet(HIDDEN_ACCOUNTS_KEY, hiddenAccounts).commit();
-                            EventBus.getDefault().post(new IdentityService.AccountsUpdated());
+                            EventBus.getDefault().post(new IdentityService.U2FAccountsUpdated());
                         })
                         .setNeutralButton("Cancel", (d, w) -> {})
                         .create().show();

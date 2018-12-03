@@ -211,7 +211,7 @@ public class U2F {
                     loadOrGenerateKeyPair(keyHandleToTag(keyHandle), appId),
                     keyHandle
             );
-            EventBus.getDefault().post(new IdentityService.AccountsUpdated());
+            EventBus.getDefault().post(new IdentityService.U2FAccountsUpdated());
             return kp;
         }
 
@@ -421,7 +421,7 @@ public class U2F {
                                     u2fRegisterRequest.appId,
                                     System.currentTimeMillis() / 1000
                             ));
-                    EventBus.getDefault().post(new IdentityService.AccountsUpdated());
+                    EventBus.getDefault().post(new IdentityService.U2FAccountsUpdated());
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -464,7 +464,7 @@ public class U2F {
                     update.where().eq("key_handle_hash", Base64.encode(SHA256.digest(u2FAuthenticateRequest.keyHandle)));
                     update.updateColumnValue("last_used", System.currentTimeMillis() / 1000);
                     update.update();
-                    EventBus.getDefault().post(new IdentityService.AccountsUpdated());
+                    EventBus.getDefault().post(new IdentityService.U2FAccountsUpdated());
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

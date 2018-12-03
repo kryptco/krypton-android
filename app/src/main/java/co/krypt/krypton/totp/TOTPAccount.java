@@ -19,7 +19,7 @@ import co.krypt.krypton.exception.CryptoException;
 @DatabaseTable(tableName = "totp_accounts")
 public class TOTPAccount {
     @DatabaseField(columnName = "registration_uri", id = true)
-    private String uri;
+    public String uri;
 
     @DatabaseField(columnName = "label")
     public String label;

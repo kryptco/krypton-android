@@ -20,11 +20,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.List;
 
 import co.krypt.krypton.R;
 import co.krypt.krypton.crypto.TOTP;
 import co.krypt.krypton.exception.CryptoException;
+import co.krypt.krypton.silo.IdentityService;
 
 public class TOTPAccountsFragment extends Fragment {
     private static final String TAG = "TOTPAccountsFragment";
@@ -52,11 +56,29 @@ public class TOTPAccountsFragment extends Fragment {
         totpAccounts = v.findViewById(R.id.totpAccounts);
         totpAccounts.setAdapter(totpAccountsAdapter);
         totpAccounts.setLayoutManager(new LinearLayoutManager(getContext()));
+        EventBus.getDefault().register(this);
         return v;
     }
 
+    @Override
+    public void onDestroyView() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroyView();
+    }
+
+    @Subscribe
+    public void refreshAccounts(IdentityService.TOTPAccountsUpdated _) {
+        try {
+            totpAccountsAdapter.accounts = TOTP.getAccounts(getContext());
+            totpAccountsAdapter.notifyDataSetChanged();
+        }
+        catch (CryptoException e) {
+            e.printStackTrace();
+        }
+    }
+
     private class TOTPRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private final List<TOTPAccount> accounts;
+        public List<TOTPAccount> accounts;
 
         private TOTPRecyclerViewAdapter(List<TOTPAccount> accounts) {
             this.accounts = accounts;

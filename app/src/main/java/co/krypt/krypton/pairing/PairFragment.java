@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.JsonParseException;
 import com.google.zxing.ResultPoint;
@@ -31,6 +32,7 @@ import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -109,25 +111,37 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
     }
 
     public void onTOTPScanned(String totpURI) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setMessage("Would you like to register this Backup Code?");
-        builder.setNegativeButton("No", (dialog, id) -> {
-            return;
-        });
-        builder.setPositiveButton("Yes", (dialog, id) -> {
-            try {
-                TOTP.registerTOTPAccount(getContext(), totpURI);
-            } catch(URISyntaxException e) {
-                e.printStackTrace();
-                builder.setMessage("Bad QR code");
-                builder.create().show();
-            }
-        });
         if(!isTotpDialogOpen) {
-            isTotpDialogOpen = true;
+            try {
+                if (TOTP.checkAccountExists(getContext(), totpURI)) {
+                    Toast.makeText(getContext(), "This account has already been registered", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } catch (CryptoException e) {
+                e.printStackTrace();
+                Toast.makeText(getContext(), "Bad QR code", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setMessage("Would you like to register this Backup Code?");
+            builder.setNegativeButton("No", (dialog, id) -> {
+                return;
+            });
+            builder.setPositiveButton("Yes", (dialog, id) -> {
+                try {
+                    TOTP.registerTOTPAccount(getContext(), totpURI);
+                } catch(URISyntaxException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Bad QR code", Toast.LENGTH_SHORT).show();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Unable to save QR code", Toast.LENGTH_SHORT).show();
+                }
+            });
             builder.setOnDismissListener(dialogInterface -> {
                 isTotpDialogOpen = false;
             });
+            isTotpDialogOpen = true;
             builder.create().show();
         }
     }

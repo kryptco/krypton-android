@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.j256.ormlite.dao.Dao;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
@@ -16,6 +18,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import co.krypt.krypton.db.OpenDatabaseHelper;
 import co.krypt.krypton.exception.CryptoException;
+import co.krypt.krypton.silo.IdentityService;
 import co.krypt.krypton.totp.TOTPAccount;
 
 public class TOTP {
@@ -63,6 +66,16 @@ public class TOTP {
         return mac.doFinal(data);
     }
 
+    public static boolean checkAccountExists(Context context, String totpUri) throws CryptoException {
+        List<TOTPAccount> accounts = getAccounts(context);
+        for (TOTPAccount account : accounts) {
+            if (account.uri.equals(totpUri)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static List<TOTPAccount> getAccounts(Context context) throws CryptoException {
         synchronized (TOTP.class) {
             try {
@@ -75,12 +88,9 @@ public class TOTP {
         }
     }
 
-    public static void registerTOTPAccount(Context context, String totpUri) throws URISyntaxException {
-        try {
-            Dao<TOTPAccount, String> db = new OpenDatabaseHelper(context).getTOTPAccountDao();
-            db.create(new TOTPAccount(totpUri));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public static void registerTOTPAccount(Context context, String totpUri) throws SQLException, URISyntaxException {
+        Dao<TOTPAccount, String> db = new OpenDatabaseHelper(context).getTOTPAccountDao();
+        db.create(new TOTPAccount(totpUri));
+        EventBus.getDefault().post(new IdentityService.TOTPAccountsUpdated());
     }
 }
