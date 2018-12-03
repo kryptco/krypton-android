@@ -211,6 +211,7 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
                 if (result.getText() != null) {
                     if(result.getText().startsWith("otpauth://")) {
                         onTOTPScanned(result.getText());
+                        return;
                     }
                     //  handle in-person team invite
                     try {
