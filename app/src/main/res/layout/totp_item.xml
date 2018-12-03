@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/top_bottom_border"
+    android:clickable="false"
+    android:elevation="4dp"
+    android:padding="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="7dp">
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/issuer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:singleLine="true"
+        android:text="Issuer"
+        android:textColor="@color/appBlack"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@id/showCodeButton"
+        app:layout_constraintStart_toEndOf="@+id/logo"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/login" />
+
+    <TextView
+        android:id="@+id/showCodeButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/flat_button"
+        android:backgroundTint="@color/appGreen"
+        android:fontFamily="@font/open_sans_bold"
+        android:padding="4dp"
+        android:text="Show"
+        android:textAlignment="center"
+        android:textColor="@color/appGreen"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:lines="1"
+        android:text="user@example.com"
+        app:layout_constraintEnd_toStartOf="@+id/showCodeButton"
+        app:layout_constraintStart_toStartOf="@+id/issuer"
+        app:layout_constraintTop_toBottomOf="@+id/issuer" />
+
+    <TextView
+        android:id="@+id/otp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="XXXXXX"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textColor="@color/appBlack"
+        android:textSize="42sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/timeRemaining"
+        app:layout_constraintEnd_toStartOf="@+id/showCodeButton"
+        app:layout_constraintStart_toEndOf="@+id/logo"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/timeRemaining"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/showCodeButton"
+        app:layout_constraintStart_toEndOf="@+id/logo" />
+
+</android.support.constraint.ConstraintLayout>

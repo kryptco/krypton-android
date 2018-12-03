@@ -1,0 +1,16 @@
+<android.support.v7.widget.ListViewCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/accounts"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/appBlueGrayBackground"
+    android:divider="@color/zxing_transparent"
+    android:dividerHeight="16dp"
+    android:footerDividersEnabled="true"
+    android:overScrollMode="never"
+    android:listSelector="@android:color/transparent"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp" />

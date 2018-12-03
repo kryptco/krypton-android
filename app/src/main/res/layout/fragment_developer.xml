@@ -6,8 +6,7 @@
     android:background="@color/appWhite"
     android:clickable="true"
     android:focusable="true"
-    android:focusableInTouchMode="true"
-    tools:context="co.krypt.krypton.me.MeFragment">
+    android:focusableInTouchMode="true">
 
     <!-- Dummy item to prevent EditText from receiving focus -->
 

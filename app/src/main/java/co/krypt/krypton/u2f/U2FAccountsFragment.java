@@ -1,4 +1,4 @@
-package co.krypt.krypton.me;
+package co.krypt.krypton.u2f;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -31,14 +31,15 @@ import java.util.Set;
 import co.krypt.krypton.R;
 import co.krypt.krypton.crypto.U2F;
 import co.krypt.krypton.exception.CryptoException;
+import co.krypt.krypton.me.MeStorage;
 import co.krypt.krypton.protocol.Profile;
 import co.krypt.krypton.silo.IdentityService;
 import co.krypt.krypton.silo.Silo;
 import co.krypt.krypton.u2f.KnownAppIds;
 import co.krypt.krypton.uiutils.Error;
 
-public class MeFragment extends Fragment {
-    private static final String TAG = "MeFragment";
+public class U2FAccountsFragment extends Fragment {
+    private static final String TAG = "U2FAccountsFragment";
     private EditText profileEmail;
     private ListViewCompat accounts;
     private ArrayAdapter<U2F.KeyManager.Account> accountsAdapter;
@@ -46,7 +47,7 @@ public class MeFragment extends Fragment {
     private SharedPreferences prefs;
     private static final String HIDDEN_ACCOUNTS_KEY = "HIDDEN_ACCOUNTS";
 
-    public MeFragment() { }
+    public U2FAccountsFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,7 @@ public class MeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_me, container, false);
+        View v = inflater.inflate(R.layout.fragment_u2f_accounts, container, false);
 
         accountsAdapter = new AccountsAdapter(getContext());
         accounts = v.findViewById(R.id.accounts);
@@ -167,7 +168,7 @@ public class MeFragment extends Fragment {
     private class AccountsAdapter extends ArrayAdapter<U2F.KeyManager.Account> {
 
         public AccountsAdapter(@NonNull Context context) {
-            super(context, R.layout.account_item, R.id.accountName);
+            super(context, R.layout.u2f_item, R.id.accountName);
         }
 
         @NonNull

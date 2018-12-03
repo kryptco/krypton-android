@@ -36,7 +36,8 @@ import co.krypt.krypton.approval.ApprovalDialog;
 import co.krypt.krypton.developer.DeveloperFragment;
 import co.krypt.krypton.devices.DevicesFragment;
 import co.krypt.krypton.help.HelpFragment;
-import co.krypt.krypton.me.MeFragment;
+import co.krypt.krypton.totp.TOTPAccountsFragment;
+import co.krypt.krypton.u2f.U2FAccountsFragment;
 import co.krypt.krypton.onboarding.OnboardingActivity;
 import co.krypt.krypton.onboarding.devops.DevopsOnboardingProgress;
 import co.krypt.krypton.onboarding.devops.DevopsOnboardingStage;
@@ -59,11 +60,12 @@ import co.krypt.krypton.utils.Services;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    public static final int ME_FRAGMENT_POSITION = 0;
-    public static final int PAIR_FRAGMENT_POSITION = 1;
-    public static final int DEVICES_FRAGMENT_POSITION = 2;
-    public static final int DEVELOPER_FRAGMENT_POSITION = 3;
-    public static final int TEAM_FRAGMENT_POSITION = 4;
+    public static final int KEYS_FRAGMENT_POSITION = 0;
+    public static final int CODES_FRAGMENT_POSITION = 1;
+    public static final int PAIR_FRAGMENT_POSITION = 2;
+    public static final int DEVICES_FRAGMENT_POSITION = 3;
+    public static final int DEVELOPER_FRAGMENT_POSITION = 4;
+    public static final int TEAM_FRAGMENT_POSITION = 5;
 
     public static final int CAMERA_PERMISSION_REQUEST = 0;
     public static final int USER_AUTHENTICATION_REQUEST = 2;
@@ -201,8 +203,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void postActivePage(int position) {
         switch (position) {
-            case ME_FRAGMENT_POSITION:
-                new Analytics(getApplicationContext()).postPageView("Me");
+            case KEYS_FRAGMENT_POSITION:
+                new Analytics(getApplicationContext()).postPageView("Keys");
+                break;
+            case CODES_FRAGMENT_POSITION:
+                new Analytics(getApplicationContext()).postPageView("Codes");
                 break;
             case PAIR_FRAGMENT_POSITION:
                 new Analytics(getApplicationContext()).postPageView("Pair");
@@ -237,7 +242,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        private MeFragment meFragment = new MeFragment();
+        private U2FAccountsFragment keysFragment = new U2FAccountsFragment();
+        private TOTPAccountsFragment codesFragment = new TOTPAccountsFragment();
         private PairFragment pairFragment = PairFragment.newInstance();
         private DevicesFragment devicesFragment = DevicesFragment.newInstance(1);
         private DeveloperFragment developerFragment = new DeveloperFragment();
@@ -247,8 +253,10 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             switch (position) {
-                case ME_FRAGMENT_POSITION:
-                    return meFragment;
+                case KEYS_FRAGMENT_POSITION:
+                    return keysFragment;
+                case CODES_FRAGMENT_POSITION:
+                    return codesFragment;
                 case PAIR_FRAGMENT_POSITION:
                     return pairFragment;
                 case DEVICES_FRAGMENT_POSITION:
@@ -263,8 +271,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            //  default Accounts, Pair, Devices
-            int numTabs = 3;
+            //  default Keys, Codes, Pair, Devices
+            int numTabs = 4;
             if (new Settings(getApplicationContext()).developerMode()) {
                 //  developer tab
                 numTabs += 1;
@@ -278,8 +286,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
-                case ME_FRAGMENT_POSITION:
-                    return "Accounts";
+                case KEYS_FRAGMENT_POSITION:
+                    return "Security Keys";
+                case CODES_FRAGMENT_POSITION:
+                    return "Backup Codes";
                 case PAIR_FRAGMENT_POSITION:
                     return "Pair";
                 case DEVICES_FRAGMENT_POSITION:
