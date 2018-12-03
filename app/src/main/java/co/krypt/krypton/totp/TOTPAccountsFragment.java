@@ -1,9 +1,11 @@
 package co.krypt.krypton.totp;
 
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
@@ -24,6 +27,7 @@ import android.widget.Toast;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import co.krypt.krypton.R;
@@ -178,6 +182,27 @@ public class TOTPAccountsFragment extends Fragment {
                 }
             }
 
+            private void openDeleteDialog() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setMessage("Are you sure you want to delete this Backup Code?");
+                builder.setNegativeButton("Cancel", (dialog, id) -> {
+                    return;
+                });
+                builder.setPositiveButton("Delete", (dialog, id) -> {
+                    try {
+                        TOTP.deleteTOTPAccount(getContext(), account);
+                    }
+                    catch (SQLException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getContext(), "An error occurred", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                Button delete = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                delete.setTextColor(getContext().getColor(R.color.appReject));
+            }
+
             private boolean showPopupMenu(View v) {
                 PopupMenu popupMenu = new PopupMenu(getContext(), showCodeButton);
                 popupMenu.inflate(R.menu.totp_item_menu);
@@ -186,6 +211,9 @@ public class TOTPAccountsFragment extends Fragment {
                     switch (id) {
                         case R.id.copyOTPToClipboard:
                             copyOTPToClipboard();
+                            return true;
+                        case R.id.removeAccount:
+                            openDeleteDialog();
                             return true;
                     }
                     return true;

@@ -4,4 +4,7 @@
     <item
         android:id="@+id/copyOTPToClipboard"
         android:title="Copy To Clipboard" />
+    <item
+        android:id="@+id/removeAccount"
+        android:title="Remove Account" />
 </menu>

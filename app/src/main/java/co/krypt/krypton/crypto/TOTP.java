@@ -76,6 +76,12 @@ public class TOTP {
         return false;
     }
 
+    public static void deleteTOTPAccount(Context context, TOTPAccount account) throws SQLException {
+        Dao<TOTPAccount, String> db = new OpenDatabaseHelper(context).getTOTPAccountDao();
+        db.delete(account);
+        EventBus.getDefault().post(new IdentityService.TOTPAccountsUpdated());
+    }
+
     public static List<TOTPAccount> getAccounts(Context context) throws CryptoException {
         synchronized (TOTP.class) {
             try {
