@@ -145,6 +145,24 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                setTabIcons();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                setTabIcons();
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                setTabIcons();
+            }
+        });
+
+        setTabIcons();
 
         ImageButton settingsButton = (ImageButton) findViewById(R.id.settingsButton);
         settingsButton.setOnClickListener(new View.OnClickListener() {
@@ -195,6 +213,55 @@ public class MainActivity extends AppCompatActivity {
 
     public void setActiveTab(int position) {
         mViewPager.setCurrentItem(position, true);
+    }
+
+    public void setTabIcons() {
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout.Tab keysTab = tabLayout.getTabAt(KEYS_FRAGMENT_POSITION);
+        TabLayout.Tab codesTab = tabLayout.getTabAt(CODES_FRAGMENT_POSITION);
+        TabLayout.Tab pairTab = tabLayout.getTabAt(PAIR_FRAGMENT_POSITION);
+        TabLayout.Tab deviceTab = tabLayout.getTabAt(DEVICES_FRAGMENT_POSITION);
+        TabLayout.Tab developerTab = tabLayout.getTabAt(DEVELOPER_FRAGMENT_POSITION);
+        if(keysTab != null) {
+            if(keysTab.isSelected()) {
+                keysTab.setIcon(R.drawable.keys_selected_green);
+            }
+            else {
+                keysTab.setIcon(R.drawable.keys);
+            }
+        }
+        if(codesTab != null) {
+            if(codesTab.isSelected()) {
+                codesTab.setIcon(R.drawable.codes_selected_green);
+            }
+            else {
+                codesTab.setIcon(R.drawable.codes);
+            }
+        }
+        if(pairTab != null) {
+            if(pairTab.isSelected()) {
+                pairTab.setIcon(R.drawable.pair_selected_green);
+            }
+            else {
+                pairTab.setIcon(R.drawable.pair);
+            }
+        }
+        if(deviceTab != null) {
+            if(deviceTab.isSelected()) {
+                deviceTab.setIcon(R.drawable.device_selected_green);
+            }
+            else {
+                deviceTab.setIcon(R.drawable.device);
+            }
+        }
+        if(developerTab != null) {
+            if(developerTab.isSelected()) {
+                developerTab.setIcon(R.drawable.developer_green);
+            }
+            else {
+                developerTab.setIcon(R.drawable.developer);
+            }
+        }
     }
 
     public void postCurrentActivePageView() {

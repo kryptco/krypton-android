@@ -47,4 +47,9 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
+    <style name="MainTabText" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">9sp</item>
+    </style>
+
+
 </resources>
