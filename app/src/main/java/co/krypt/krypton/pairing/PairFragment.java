@@ -14,6 +14,7 @@ import android.os.Looper;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Base64;
@@ -112,6 +113,14 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
 
     public synchronized void onTOTPScanned(String totpURI) {
         if(!isTotpDialogOpen) {
+            FragmentActivity activity = getActivity();
+            MainActivity mainActivity;
+            if (!(activity instanceof MainActivity)) {
+                // If we're in an onboarding activity, the pair fragment should only be handling pairings, not TOTP.
+                return;
+            } else {
+                mainActivity = (MainActivity) activity;
+            }
             try {
                 if (TOTP.checkAccountExists(getContext(), totpURI)) {
                     Toast.makeText(getContext(), "This account has already been registered", Toast.LENGTH_SHORT).show();
@@ -137,6 +146,7 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
                     e.printStackTrace();
                     Toast.makeText(getContext(), "Unable to save QR code", Toast.LENGTH_SHORT).show();
                 }
+                mainActivity.setActiveTab(MainActivity.CODES_FRAGMENT_POSITION);
             });
             builder.setOnDismissListener(dialogInterface -> {
                 isTotpDialogOpen = false;
