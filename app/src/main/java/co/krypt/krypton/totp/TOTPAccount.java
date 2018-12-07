@@ -69,14 +69,20 @@ public class TOTPAccount {
     }
 
     public String getOtp() throws CryptoException {
-        System.out.println(secret.toString());
         return TOTP.generateOtp(secret, period, digits);
     }
 
+    // Returns the number of seconds that the current OTP has been valid
     public int getOtpAge() {
         return (int) (System.currentTimeMillis() / 1000) % period;
     }
 
+    /**
+     * Retrieves the account name from the URI. The label takes one of two forms:
+     * "accountname", or "issuer:accountname"
+     * https://github.com/google/google-authenticator/wiki/Key-Uri-Format
+     * @return
+     */
     public String getUsername() {
         String[] parts = label.split(":");
         if(parts.length == 2) {

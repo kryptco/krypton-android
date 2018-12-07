@@ -64,6 +64,7 @@ import co.krypt.krypton.protocol.U2FAuthenticateResponse;
 import co.krypt.krypton.protocol.U2FRegisterRequest;
 import co.krypt.krypton.protocol.U2FRegisterResponse;
 import co.krypt.krypton.silo.IdentityService;
+import co.krypt.krypton.silo.Silo;
 import co.krypt.krypton.u2f.KnownAppIds;
 import co.krypt.krypton.u2f.RegisteredAccount;
 
@@ -124,7 +125,7 @@ public class U2F {
 
             SharedPreferences prefs = u2fPrefs(context);
             if (!prefs.getBoolean(MIGRATED_KEY, false)) {
-                Dao<RegisteredAccount, String> db = new OpenDatabaseHelper(context).getRegisteredAccountDao();
+                Dao<RegisteredAccount, String> db = Silo.shared(context).dbHelper().getRegisteredAccountDao();
 
                 KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
                 keyStore.load(null);
@@ -173,7 +174,7 @@ public class U2F {
                     }
                     List<Account> accounts = new ArrayList<>();
 
-                    Dao<RegisteredAccount, String> db = new OpenDatabaseHelper(context).getRegisteredAccountDao();
+                    Dao<RegisteredAccount, String> db = Silo.shared(context).dbHelper().getRegisteredAccountDao();
 
                     for (RegisteredAccount registeredAccount: db.queryForAll()) {
                         Date added = new Date(registeredAccount.added * 1000);
@@ -413,7 +414,7 @@ public class U2F {
                 byte[] attestationCertificateBytes = attestationCert.getEncoded();
 
                 try {
-                    Dao<RegisteredAccount, String> db = new OpenDatabaseHelper(context).getRegisteredAccountDao();
+                    Dao<RegisteredAccount, String> db = Silo.shared(context).dbHelper().getRegisteredAccountDao();
                     db.create(
                             new RegisteredAccount(
                                     Base64.encode(SHA256.digest(keyHandle)),
@@ -459,7 +460,7 @@ public class U2F {
                 byte[] signature = signDigest(toSignData);
 
                 try {
-                    Dao<RegisteredAccount, String> db = new OpenDatabaseHelper(context).getRegisteredAccountDao();
+                    Dao<RegisteredAccount, String> db = Silo.shared(context).dbHelper().getRegisteredAccountDao();
                     UpdateBuilder<RegisteredAccount, String> update = db.updateBuilder();
                     update.where().eq("key_handle_hash", Base64.encode(SHA256.digest(u2FAuthenticateRequest.keyHandle)));
                     update.updateColumnValue("last_used", System.currentTimeMillis() / 1000);

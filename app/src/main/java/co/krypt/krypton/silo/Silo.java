@@ -169,6 +169,8 @@ public class Silo {
         return meStorage;
     }
 
+    public OpenDatabaseHelper dbHelper() { return dbHelper; }
+
     public void start() {
         synchronized (pairingsLock) {
             for (Pairing pairing : pairings().loadAll()) {

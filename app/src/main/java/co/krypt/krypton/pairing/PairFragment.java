@@ -110,14 +110,14 @@ public class PairFragment extends Fragment implements PairDialogFragment.PairLis
         }
     }
 
-    public void onTOTPScanned(String totpURI) {
+    public synchronized void onTOTPScanned(String totpURI) {
         if(!isTotpDialogOpen) {
             try {
                 if (TOTP.checkAccountExists(getContext(), totpURI)) {
                     Toast.makeText(getContext(), "This account has already been registered", Toast.LENGTH_SHORT).show();
                     return;
                 }
-            } catch (CryptoException e) {
+            } catch (SQLException e) {
                 e.printStackTrace();
                 Toast.makeText(getContext(), "Bad QR code", Toast.LENGTH_SHORT).show();
                 return;

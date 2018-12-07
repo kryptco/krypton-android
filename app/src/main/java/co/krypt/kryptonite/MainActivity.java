@@ -358,7 +358,7 @@ public class MainActivity extends AppCompatActivity {
                 case CODES_FRAGMENT_POSITION:
                     return "Backup Codes";
                 case PAIR_FRAGMENT_POSITION:
-                    return "Pair";
+                    return "Scan";
                 case DEVICES_FRAGMENT_POSITION:
                     return "Computers";
                 case DEVELOPER_FRAGMENT_POSITION:

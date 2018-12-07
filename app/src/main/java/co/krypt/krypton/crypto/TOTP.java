@@ -19,9 +19,10 @@ import javax.crypto.spec.SecretKeySpec;
 import co.krypt.krypton.db.OpenDatabaseHelper;
 import co.krypt.krypton.exception.CryptoException;
 import co.krypt.krypton.silo.IdentityService;
+import co.krypt.krypton.silo.Silo;
 import co.krypt.krypton.totp.TOTPAccount;
 
-public class TOTP {
+public final class TOTP {
 
     public static final int DEFAULT_PERIOD = 30;
     public static final int DEFAULT_OTP_LENGTH = 6;
@@ -41,7 +42,6 @@ public class TOTP {
                     |(hash[offset + 3] & 0xff);
 
             int otp;
-            System.out.println(i);
             if (n == 8) {
                 otp = i % 100000000;
             } else {
@@ -66,36 +66,24 @@ public class TOTP {
         return mac.doFinal(data);
     }
 
-    public static boolean checkAccountExists(Context context, String totpUri) throws CryptoException {
-        List<TOTPAccount> accounts = getAccounts(context);
-        for (TOTPAccount account : accounts) {
-            if (account.uri.equals(totpUri)) {
-                return true;
-            }
-        }
-        return false;
+    public static boolean checkAccountExists(Context context, String totpUri) throws SQLException {
+        Dao<TOTPAccount, String> db = Silo.shared(context).dbHelper().getTOTPAccountDao();
+        return db.idExists(totpUri);
     }
 
     public static void deleteTOTPAccount(Context context, TOTPAccount account) throws SQLException {
-        Dao<TOTPAccount, String> db = new OpenDatabaseHelper(context).getTOTPAccountDao();
+        Dao<TOTPAccount, String> db = Silo.shared(context).dbHelper().getTOTPAccountDao();
         db.delete(account);
         EventBus.getDefault().post(new IdentityService.TOTPAccountsUpdated());
     }
 
-    public static List<TOTPAccount> getAccounts(Context context) throws CryptoException {
-        synchronized (TOTP.class) {
-            try {
-                Dao<TOTPAccount, String> db = new OpenDatabaseHelper(context).getTOTPAccountDao();
-                return db.queryForAll();
-            } catch (NullPointerException | SQLException e) {
-                e.printStackTrace();
-                throw new CryptoException(e);
-            }
-        }
+    public static List<TOTPAccount> getAccounts(Context context) throws SQLException {
+        Dao<TOTPAccount, String> db = Silo.shared(context).dbHelper().getTOTPAccountDao();
+        return db.queryForAll();
     }
 
     public static void registerTOTPAccount(Context context, String totpUri) throws SQLException, URISyntaxException {
-        Dao<TOTPAccount, String> db = new OpenDatabaseHelper(context).getTOTPAccountDao();
+        Dao<TOTPAccount, String> db = Silo.shared(context).dbHelper().getTOTPAccountDao();
         db.create(new TOTPAccount(totpUri));
         EventBus.getDefault().post(new IdentityService.TOTPAccountsUpdated());
     }

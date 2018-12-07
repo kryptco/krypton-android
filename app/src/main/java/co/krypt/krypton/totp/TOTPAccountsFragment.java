@@ -24,6 +24,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -50,7 +52,8 @@ public class TOTPAccountsFragment extends Fragment {
         try {
             totpAccountsAdapter = new TOTPRecyclerViewAdapter(TOTP.getAccounts(getContext()));
         }
-        catch (CryptoException e) {
+        catch (SQLException e) {
+            Crashlytics.logException(e);
             e.printStackTrace();
         }
     }
@@ -78,7 +81,7 @@ public class TOTPAccountsFragment extends Fragment {
             totpAccountsAdapter.accounts = TOTP.getAccounts(getContext());
             totpAccountsAdapter.notifyDataSetChanged();
         }
-        catch (CryptoException e) {
+        catch (SQLException e) {
             e.printStackTrace();
         }
     }
