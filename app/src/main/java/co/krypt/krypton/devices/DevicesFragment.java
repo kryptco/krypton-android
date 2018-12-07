@@ -86,7 +86,7 @@ public class DevicesFragment extends Fragment implements OnDeviceListInteraction
             public void onClick(View v) {
                 Activity activity = getActivity();
                 if (activity instanceof MainActivity) {
-                    ((MainActivity) activity).setActiveTab(MainActivity.PAIR_FRAGMENT_POSITION);
+                    ((MainActivity) activity).setActiveTab(MainActivity.SCAN_FRAGMENT_POSITION);
                 }
             }
         });

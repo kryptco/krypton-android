@@ -49,7 +49,7 @@ public class HelpFragment extends Fragment {
                     mainActivity.getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom)
                             .hide(self).remove(self).commit();
-                    mainActivity.setActiveTab(MainActivity.PAIR_FRAGMENT_POSITION);
+                    mainActivity.setActiveTab(MainActivity.SCAN_FRAGMENT_POSITION);
                 }
             }
         });

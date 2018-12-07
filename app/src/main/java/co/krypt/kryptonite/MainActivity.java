@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     public static final int KEYS_FRAGMENT_POSITION = 0;
     public static final int CODES_FRAGMENT_POSITION = 1;
-    public static final int PAIR_FRAGMENT_POSITION = 2;
+    public static final int SCAN_FRAGMENT_POSITION = 2;
     public static final int DEVICES_FRAGMENT_POSITION = 3;
     public static final int DEVELOPER_FRAGMENT_POSITION = 4;
     public static final int TEAM_FRAGMENT_POSITION = 5;
@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         TabLayout.Tab keysTab = tabLayout.getTabAt(KEYS_FRAGMENT_POSITION);
         TabLayout.Tab codesTab = tabLayout.getTabAt(CODES_FRAGMENT_POSITION);
-        TabLayout.Tab pairTab = tabLayout.getTabAt(PAIR_FRAGMENT_POSITION);
+        TabLayout.Tab pairTab = tabLayout.getTabAt(SCAN_FRAGMENT_POSITION);
         TabLayout.Tab deviceTab = tabLayout.getTabAt(DEVICES_FRAGMENT_POSITION);
         TabLayout.Tab developerTab = tabLayout.getTabAt(DEVELOPER_FRAGMENT_POSITION);
         if(keysTab != null) {
@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
             case CODES_FRAGMENT_POSITION:
                 new Analytics(getApplicationContext()).postPageView("Codes");
                 break;
-            case PAIR_FRAGMENT_POSITION:
+            case SCAN_FRAGMENT_POSITION:
                 new Analytics(getApplicationContext()).postPageView("Pair");
                 break;
             case DEVICES_FRAGMENT_POSITION:
@@ -324,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
                     return keysFragment;
                 case CODES_FRAGMENT_POSITION:
                     return codesFragment;
-                case PAIR_FRAGMENT_POSITION:
+                case SCAN_FRAGMENT_POSITION:
                     return pairFragment;
                 case DEVICES_FRAGMENT_POSITION:
                     return devicesFragment;
@@ -357,7 +357,7 @@ public class MainActivity extends AppCompatActivity {
                     return "Security Keys";
                 case CODES_FRAGMENT_POSITION:
                     return "Backup Codes";
-                case PAIR_FRAGMENT_POSITION:
+                case SCAN_FRAGMENT_POSITION:
                     return "Scan";
                 case DEVICES_FRAGMENT_POSITION:
                     return "Computers";

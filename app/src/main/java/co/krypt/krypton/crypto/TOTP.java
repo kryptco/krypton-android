@@ -16,7 +16,6 @@ import java.util.List;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import co.krypt.krypton.db.OpenDatabaseHelper;
 import co.krypt.krypton.exception.CryptoException;
 import co.krypt.krypton.silo.IdentityService;
 import co.krypt.krypton.silo.Silo;

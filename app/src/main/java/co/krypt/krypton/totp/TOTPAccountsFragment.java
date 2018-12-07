@@ -37,12 +37,14 @@ import co.krypt.krypton.crypto.TOTP;
 import co.krypt.krypton.exception.CryptoException;
 import co.krypt.krypton.silo.IdentityService;
 import co.krypt.krypton.uiutils.Icons;
+import co.krypt.kryptonite.MainActivity;
 
 public class TOTPAccountsFragment extends Fragment {
     private static final String TAG = "TOTPAccountsFragment";
 
     private RecyclerView totpAccounts;
     private TOTPRecyclerViewAdapter totpAccountsAdapter;
+    private View noCodesContainer;
 
     public TOTPAccountsFragment() { }
 
@@ -65,7 +67,13 @@ public class TOTPAccountsFragment extends Fragment {
         totpAccounts = v.findViewById(R.id.totpAccounts);
         totpAccounts.setAdapter(totpAccountsAdapter);
         totpAccounts.setLayoutManager(new LinearLayoutManager(getContext()));
+        noCodesContainer = v.findViewById(R.id.totpEmptyContainer);
+        v.findViewById(R.id.scanTOTPButton).setOnClickListener((event) -> {
+            MainActivity activity = (MainActivity) getActivity();
+            activity.setActiveTab(MainActivity.SCAN_FRAGMENT_POSITION);
+        });
         EventBus.getDefault().register(this);
+        refreshAccounts(null);
         return v;
     }
 
@@ -80,6 +88,11 @@ public class TOTPAccountsFragment extends Fragment {
         try {
             totpAccountsAdapter.accounts = TOTP.getAccounts(getContext());
             totpAccountsAdapter.notifyDataSetChanged();
+            if (!totpAccountsAdapter.accounts.isEmpty()) {
+                noCodesContainer.setVisibility(View.GONE);
+            } else {
+                noCodesContainer.setVisibility(View.VISIBLE);
+            }
         }
         catch (SQLException e) {
             e.printStackTrace();
