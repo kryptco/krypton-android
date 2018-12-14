@@ -8,8 +8,8 @@ android {
         applicationId "co.krypt.kryptonite"
         minSdkVersion 23
         targetSdkVersion 26
-        versionCode 60
-        versionName "2.5.5"
+        versionCode 61
+        versionName "2.5.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
