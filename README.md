@@ -1,3 +1,7 @@
+# DEPRECATED
+
+**This project is not maintained.** Please migrate to [Akamai MFA](https://mfa.akamai.com/help).
+
 <a href="https://krypt.co"><img src="https://krypt.co/static/dist/img/krypton_core_logo.svg" width="200"/> </a>
 
 __Krypton__ generates and stores an SSH key pair on a mobile phone. The
